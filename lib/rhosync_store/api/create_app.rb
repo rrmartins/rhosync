@@ -1,3 +1,5 @@
+require 'zip/zip'
+
 api :create_app do |app_name,payload|
   upload_file(app_name,payload) if payload[:upload_file]
 end

@@ -8,8 +8,6 @@ require 'spec/interop/test'
 
 set :environment, :test
 set :run, false
-set :raise_errors, true
-set :logging, false
 set :views, File.join(File.dirname(__FILE__),'..','..','views')
 
 require File.join(File.dirname(__FILE__),'..','..','rhosync.rb')

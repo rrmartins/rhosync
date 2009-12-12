@@ -51,16 +51,17 @@ module RhosyncStore
   # TODO: replace with real logger
   class Logger
     @@enabled = true
-    def self.info(*args)
-      puts args.join unless args.nil? or @@enabled == false
-    end
     
-    def self.error(*args)
-      puts args.join unless args.nil? or @@enabled == false
-    end
+    class << self
+      attr_accessor :enabled
+      
+      def info(*args)
+        puts args.join unless args.nil? or @@enabled == false
+      end
     
-    def self.enabled=(value)
-      @@enabled=value
+      def error(*args)
+        puts args.join unless args.nil? or @@enabled == false
+      end
     end
   end
 end

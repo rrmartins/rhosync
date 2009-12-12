@@ -4,7 +4,6 @@ require 'sinatra'
 require 'erb'
 require 'json'
 require 'fileutils'
-require 'zip/zip'
 
 require 'rhosync_store'
 require 'helpers/rhosync_helper'
@@ -93,4 +92,4 @@ def api(name)
   end
 end
 
-Dir["#{File.dirname(__FILE__)}/lib/rhosync_store/api/**/*.rb"].each { |service| load service }
+Dir["#{File.dirname(__FILE__)}/lib/rhosync_store/api/**/*.rb"].each { |api| load api }

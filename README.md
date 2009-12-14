@@ -41,6 +41,7 @@ TODO
 * logging
   * TBD
 * Finish Sync States (client<->server<->backend)
+  * Blob sync
 * Performance tests (ClientSync, SourceSync)
 * Add queue layer for background adapters
 * Administration web console

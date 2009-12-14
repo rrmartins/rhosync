@@ -94,6 +94,7 @@ describe "Rhosync Protocol" do
                   :client_id => @c.id,
                   :source_name => @s.name}
         do_post "/apps/#{@a.name}", params
+        _print_messages
         get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,
           :version => ClientSync::VERSION
       end

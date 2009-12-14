@@ -26,15 +26,15 @@ configure :development,:test,:production do
 end
 
 before do
-  unless request.env['PATH_INFO'].split('/').last == 'clientlogin'
-    throw :halt, [401, "Not authenticated"] if login_required
-  end
   if request.env['CONTENT_TYPE'] == 'application/json'
     params.merge!(JSON.parse(request.body.read))
     request.body.rewind
   end
   if params[:version] and params[:version].to_i < 3
     throw :halt, [404, "Server supports version 3 or higher of the protocol."]
+  end
+  unless request.env['PATH_INFO'].split('/').last == 'clientlogin'
+    throw :halt, [401, "Not authenticated"] if login_required
   end
 end
 

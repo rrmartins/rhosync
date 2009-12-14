@@ -28,7 +28,8 @@ describe "Rhosync" do
   end
 
   it "should respond with 200 if logged in" do
-    do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
+    params = {"login" => @u.login, "password" => 'testpass'}
+    do_post "/apps/#{@a.name}/clientlogin",params
     get '/'
     last_response.status.should == 200
   end

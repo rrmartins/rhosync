@@ -5,7 +5,7 @@ module RhosyncStore
     VERSION = 3
     
     def initialize(source,client,p_size=nil)
-      @source,@client,@p_size = source,client,p_size ? p_size : 500
+      @source,@client,@p_size = source,client,p_size ? p_size.to_i : 500
       @source_sync = SourceSync.new(@source)
       @clientdoc = Document.new('cd',@source.app.id,@source.user.id,@client.id,@source.name)
     end

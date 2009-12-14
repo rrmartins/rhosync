@@ -1,4 +1,4 @@
-app: MyApp
+app: Myapp
 adapters:
   SampleAdapter:
     url: http://example.com

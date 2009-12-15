@@ -1,5 +1,4 @@
-app: Myapp
-adapters:
+sources:
   SampleAdapter:
     url: http://example.com
     login: testuser

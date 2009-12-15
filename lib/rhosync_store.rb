@@ -12,7 +12,7 @@ require 'rhosync_store/client'
 require 'rhosync_store/client_sync'
 require 'rhosync_store/source_adapter'
 require 'rhosync_store/source_sync'
-
+  
 # Various module utilities for the store
 module RhosyncStore
   class InvalidArgumentError < RuntimeError; end
@@ -65,3 +65,5 @@ module RhosyncStore
     end
   end
 end
+
+

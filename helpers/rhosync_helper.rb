@@ -18,7 +18,7 @@ helpers do
   end
   
   def current_user
-    User.with_key(session[:login]) if User.is_exist?(session[:login])
+    User.with_key(session[:login]) if User.is_exist?(session[:login],'login')
   end
   
   def current_app

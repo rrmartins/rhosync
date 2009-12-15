@@ -61,11 +61,16 @@ describe "SourceAdapterHelper", :shared => true do
   before(:each) do
     @a_fields = { :name => 'testapp' }
     @a = App.create(@a_fields)
-    @c_fields = {:device_type => 'iPhone'}
-    @c = Client.create(@c_fields)
     @u_fields = {:login => 'testuser'}
     @u = User.create(@u_fields) 
     @u.password = 'testpass'
+    @c_fields = {
+      :device_type => 'iPhone',
+      :user_id => @u.id,
+      :app_id => @a.id 
+    }
+    @c = Client.create(@c_fields)
+    @u.clients << @c.id
     @s_fields = {
       :name => 'SampleAdapter',
       :url => 'http://example.com',
@@ -75,6 +80,8 @@ describe "SourceAdapterHelper", :shared => true do
       :app_id => @a.id
     }
     @s = Source.create(@s_fields)
+    @a.sources << @s.id
+    @a.users << @u.id
   end
   
   def do_post(url,params)

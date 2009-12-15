@@ -53,7 +53,7 @@ post '/apps/:app_name/clientlogin' do
 end
 
 get '/apps/:app_name/clientcreate' do
-  client = Client.create(:user_id => current_user.id)
+  client = Client.create(:user_id => current_user.id,:app_id => current_app.id)
   { "client" => { "client_id" =>  client.id.to_s } }.to_json
 end
 
@@ -88,7 +88,7 @@ end
 # Management routes
 def api(name)
   post '/api/:app_name/:name' do
-    yield params[:app_name],params[:payload]
+    yield params[:app_name],current_user,params[:payload]
   end
 end
 

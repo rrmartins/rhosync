@@ -47,6 +47,10 @@ module RhosyncStore
       redis.incr "sequence:#{self.prefix}:id"
     end
   
+    def self.is_exist?(id,attrib_name)
+      !redis.get(self._field_key(self._prefix,id,attrib_name)).nil?
+    end
+      
   protected
     def prefix #:nodoc:
       @prefix ||= self.class.prefix || self.class.class_prefix(self.class)
@@ -171,9 +175,9 @@ module RhosyncStore
           v
         end
  
-        # def self.load(v)
-        #   v
-        # end
+        def self.load(v)
+          v
+        end
       end
  
       class Integer

@@ -26,7 +26,7 @@ describe "Rhosync" do
     do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
   end
   
-  it "should upload zipfile" do
+  it "should upload zipfile and create app and sources" do
     file = File.join(File.dirname(__FILE__),'..','apps',@appname)
     compress(file)
     zipfile = File.join(file,"#{@appname}.zip")
@@ -34,15 +34,17 @@ describe "Rhosync" do
       :upload_file => Rack::Test::UploadedFile.new(zipfile, "application/octet-stream"),
       :foo => 'bar'}
     FileUtils.rm zipfile
+    App.is_exist?(@appname,'name').should == true
+    sources = App.with_key(@appname).sources.members.sort
+    sources.should == ["SampleAdapter", "SimpleAdapter"]
+    sources.each do |source|    
+      Source.is_exist?(source,'name').should == true
+    end
     target = File.join(File.dirname(__FILE__),'..','..','apps',@appname)
     entries = Dir.entries(target)
     entries.reject! {|entry| entry == '.' || entry == '..'}
-    entries.sort.should == ["adapters", "config.yml", "vendor"]
+    entries.sort.should == ["config.yml", "sources", "vendor"]
     FileUtils.rm_rf File.join(File.dirname(__FILE__),'..','..','apps')
-  end
-  
-  it "should call create_app" do
-    post "/api/#{@appname}/create_app", :payload => {:foo => 'bar'}.to_json
   end
   
   def compress(path)

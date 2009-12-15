@@ -25,4 +25,15 @@ describe "User" do
   it "should fail to authenticate with nil user" do
     User.authenticate('niluser','doesnotmatter').should be_nil
   end
+  
+  it "should delete user and user clients" do
+    clientdoc = Document.new('cd',@a.id,@u.login,@c.id,@s.name)
+    @a.store.put_data(clientdoc.get_key,@data)
+    cid = @c.id    
+    @u.delete
+    User.is_exist?(@u_fields[:login],'login').should == false
+    Client.is_exist?(cid,'device_type').should == false
+    @a.store.get_data(clientdoc.get_key).should == {}
+  end
+  
 end

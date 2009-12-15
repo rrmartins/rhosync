@@ -1,9 +1,4 @@
-if RUBY_VERSION >= '1.9'
-    require 'digest/sha1'
-else
-    require 'sha1'
-end
-
+require 'digest/sha1'
 
 module RhosyncStore
   # Inspired by sinatra-authentication
@@ -13,6 +8,7 @@ module RhosyncStore
     field :email,:string
     field :salt,:string
     field :hashed_password,:string
+    set   :clients, :string
     
     class << self
       def create(fields={})
@@ -21,14 +17,10 @@ module RhosyncStore
       end
     
       def authenticate(login,password)
-        return unless is_exist?(login)
+        return unless is_exist?(login,'login')
         current_user = with_key(login)
         return if current_user.nil?
         return current_user if User.encrypt(password, current_user.salt) == current_user.hashed_password
-      end
-      
-      def is_exist?(login)
-        !redis.get(self._field_key(self._prefix,login,'login')).nil?
       end
     end
     
@@ -38,6 +30,13 @@ module RhosyncStore
       self.hashed_password = User.encrypt(@password, self.salt)
     end
     
+    def delete
+      clients.members.each do |client_id|
+        Client.with_key(client_id).delete
+      end
+      super
+    end  
+      
     protected
     def self.encrypt(pass, salt)
       Digest::SHA1.hexdigest(pass+salt)

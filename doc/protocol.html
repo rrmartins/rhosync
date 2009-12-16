@@ -1,0 +1,106 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Rhosync API</title>
+	
+	<link rel="stylesheet" href="./public/css/screen.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="./public/css/print.css" type="text/css" media="print">
+	<!--[if lt IE 8]>
+	  <link rel="stylesheet" href="./public/css/ie.css" type="text/css" media="screen, projection">
+	<![endif]-->
+	<link rel="stylesheet" href="./public/css/style.css" type="text/css" media="screen" charset="utf-8"/>
+  </head>
+
+  <body>
+	<br/><br/>
+	<div class="container">
+	  <div id="wrapper">
+		 <h1>Table of Contents</h1>
+		 <ul id="toc">
+		   
+		     <li><span>1.</span> <a href="#1">clientlogin - authenticate client</a><br/></li>
+		   
+		     <li><span>2.</span> <a href="#2">clientlogin - login failure</a><br/></li>
+		   
+		     <li><span>3.</span> <a href="#3">clientcreate - create client id</a><br/></li>
+		   
+		     <li><span>4.</span> <a href="#4">clientregister - register client device / id</a><br/></li>
+		   
+		     <li><span>5.</span> <a href="#5">clientreset - reset client database</a><br/></li>
+		   
+		 </ul>
+	  </div>
+	</div>
+	<br/><br/>
+	<div class="container">
+	  <div class="span-24 content">
+	    <h2 id='1'>1. clientlogin - authenticate client</h2>
+
+<h3 id='request_post_appstestappclientlogin'>Request: POST /apps/testapp/clientlogin</h3>
+<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>application/json</td>
+</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>42</td>
+</tr><tr><td style='text-align: left;'>Cookie</td>
+</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody><tr><td style='text-align: left;'>{&#8220;password&#8221;:&#8221;testpass&#8221;,&#8221;login&#8221;:&#8221;testuser&#8221;}</td>
+</tr></tbody></table>
+<h3 id='response_200'>Response: 200</h3>
+<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>text/html</td>
+</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>0</td>
+</tr><tr><td style='text-align: left;'>Set-Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Thu, 16-Dec-2010 03:15:43 GMT</td>
+</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody /></table>
+<h2 id='2'>2. clientlogin - login failure</h2>
+
+<h3 id='request_post_appstestappclientlogin'>Request: POST /apps/testapp/clientlogin</h3>
+<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>application/json</td>
+</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>43</td>
+</tr><tr><td style='text-align: left;'>Cookie</td>
+</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody><tr><td style='text-align: left;'>{&#8220;password&#8221;:&#8221;wrongpass&#8221;,&#8221;login&#8221;:&#8221;testuser&#8221;}</td>
+</tr></tbody></table>
+<h3 id='response_401'>Response: 401</h3>
+<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>text/html</td>
+</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>0</td>
+</tr><tr><td style='text-align: left;'>Set-Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4w%0A&#8211;82e343026c76175ba5fb184e4d69ef89274328f3; path=/; expires=Thu, 16-Dec-2010 03:15:43 GMT</td>
+</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody /></table>
+<h2 id='3'>3. clientcreate - create client id</h2>
+
+<h3 id='request_get_appstestappclientcreate'>Request: GET /apps/testapp/clientcreate</h3>
+<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>&#160;</td>
+</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>0</td>
+</tr><tr><td style='text-align: left;'>Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody /></table>
+<h3 id='response_200'>Response: 200</h3>
+<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>text/html</td>
+</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>28</td>
+</tr><tr><td style='text-align: left;'>Set-Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Thu, 16-Dec-2010 03:15:44 GMT</td>
+</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody><tr><td style='text-align: left;'>{&#8220;client&#8221;:{&#8220;client_id&#8221;:&#8221;2&#8221;}}</td>
+</tr></tbody></table>
+<h2 id='4'>4. clientregister - register client device / id</h2>
+
+<h3 id='request_post_appstestappclientregister'>Request: POST /apps/testapp/clientregister</h3>
+<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>application/json</td>
+</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>38</td>
+</tr><tr><td style='text-align: left;'>Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody><tr><td style='text-align: left;'>{&#8220;device_type&#8221;:&#8221;iPhone&#8221;,&#8221;client_id&#8221;:1}</td>
+</tr></tbody></table>
+<h3 id='response_200'>Response: 200</h3>
+<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>text/html</td>
+</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>0</td>
+</tr><tr><td style='text-align: left;'>Set-Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Thu, 16-Dec-2010 03:15:44 GMT</td>
+</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody /></table>
+<h2 id='5'>5. clientreset - reset client database</h2>
+
+<h3 id='request_get_appstestappclientresetclient_id1'>Request: GET /apps/testapp/clientreset?client_id=1</h3>
+<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>&#160;</td>
+</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>0</td>
+</tr><tr><td style='text-align: left;'>Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody /></table>
+<h3 id='response_200'>Response: 200</h3>
+<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>text/html</td>
+</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>0</td>
+</tr><tr><td style='text-align: left;'>Set-Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Thu, 16-Dec-2010 03:15:44 GMT</td>
+</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody /></table>
+	  </div>
+	</div>
+  </body>
+</html>

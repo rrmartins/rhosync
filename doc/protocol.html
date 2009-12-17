@@ -26,9 +26,43 @@
 		   
 		     <li><span>3.</span> <a href="#3">clientcreate - create client id</a><br/></li>
 		   
-		     <li><span>4.</span> <a href="#4">clientregister - register client device / id</a><br/></li>
+		     <li><span>4.</span> <a href="#4">clientregister - register client device_type</a><br/></li>
 		   
 		     <li><span>5.</span> <a href="#5">clientreset - reset client database</a><br/></li>
+		   
+		     <li><span>6.</span> <a href="#6">create - create object(s)</a><br/></li>
+		   
+		     <li><span>7.</span> <a href="#7">update - update object(s)</a><br/></li>
+		   
+		     <li><span>8.</span> <a href="#8">delete - delete object(s)</a><br/></li>
+		   
+		     <li><span>9.</span> <a href="#9">create-update-delete - create,update,delete object(s)</a><br/></li>
+		   
+		     <li><span>10.</span> <a href="#10">create-with-link - send link for created object</a><br/></li>
+		   
+		     <li><span>11.</span> <a href="#11">query-error - send query error</a><br/></li>
+		   
+		     <li><span>12.</span> <a href="#12">login-error - send login error</a><br/></li>
+		   
+		     <li><span>13.</span> <a href="#13">logoff-error - send logoff error</a><br/></li>
+		   
+		     <li><span>14.</span> <a href="#14">create-error - send create error</a><br/></li>
+		   
+		     <li><span>15.</span> <a href="#15">update-error - send update error</a><br/></li>
+		   
+		     <li><span>16.</span> <a href="#16">delete-error - send delete error</a><br/></li>
+		   
+		     <li><span>17.</span> <a href="#17">insert objects - send insert objects</a><br/></li>
+		   
+		     <li><span>18.</span> <a href="#18">delete objects - send delete objects</a><br/></li>
+		   
+		     <li><span>19.</span> <a href="#19">insert-delete objects - send insert and delete objects</a><br/></li>
+		   
+		     <li><span>20.</span> <a href="#20">search result - send search results</a><br/></li>
+		   
+		     <li><span>21.</span> <a href="#21">search error - send search error</a><br/></li>
+		   
+		     <li><span>22.</span> <a href="#22">multi source search - send multiple sources in search results</a><br/></li>
 		   
 		 </ul>
 	  </div>
@@ -36,70 +70,1590 @@
 	<br/><br/>
 	<div class="container">
 	  <div class="span-24 content">
-	    <h2 id='1'>1. clientlogin - authenticate client</h2>
+<h2 id='1'>1. clientlogin - authenticate client</h2>
 
-<h3 id='request_post_appstestappclientlogin'>Request: POST /apps/testapp/clientlogin</h3>
-<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>application/json</td>
-</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>42</td>
-</tr><tr><td style='text-align: left;'>Cookie</td>
-</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody><tr><td style='text-align: left;'>{&#8220;password&#8221;:&#8221;testpass&#8221;,&#8221;login&#8221;:&#8221;testuser&#8221;}</td>
-</tr></tbody></table>
-<h3 id='response_200'>Response: 200</h3>
-<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>text/html</td>
-</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>0</td>
-</tr><tr><td style='text-align: left;'>Set-Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Thu, 16-Dec-2010 03:15:43 GMT</td>
-</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody /></table>
+<h3>Request: POST /apps/testapp/clientlogin</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>42</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"password":"testpass","login":"testuser"}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
 <h2 id='2'>2. clientlogin - login failure</h2>
 
-<h3 id='request_post_appstestappclientlogin'>Request: POST /apps/testapp/clientlogin</h3>
-<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>application/json</td>
-</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>43</td>
-</tr><tr><td style='text-align: left;'>Cookie</td>
-</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody><tr><td style='text-align: left;'>{&#8220;password&#8221;:&#8221;wrongpass&#8221;,&#8221;login&#8221;:&#8221;testuser&#8221;}</td>
-</tr></tbody></table>
-<h3 id='response_401'>Response: 401</h3>
-<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>text/html</td>
-</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>0</td>
-</tr><tr><td style='text-align: left;'>Set-Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4w%0A&#8211;82e343026c76175ba5fb184e4d69ef89274328f3; path=/; expires=Thu, 16-Dec-2010 03:15:43 GMT</td>
-</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody /></table>
+<h3>Request: POST /apps/testapp/clientlogin</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>43</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"password":"wrongpass","login":"testuser"}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 401</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4w%0A--82e343026c76175ba5fb184e4d69ef89274328f3; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
 <h2 id='3'>3. clientcreate - create client id</h2>
 
-<h3 id='request_get_appstestappclientcreate'>Request: GET /apps/testapp/clientcreate</h3>
-<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>&#160;</td>
-</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>0</td>
-</tr><tr><td style='text-align: left;'>Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
-</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody /></table>
-<h3 id='response_200'>Response: 200</h3>
-<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>text/html</td>
-</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>28</td>
-</tr><tr><td style='text-align: left;'>Set-Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Thu, 16-Dec-2010 03:15:44 GMT</td>
-</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody><tr><td style='text-align: left;'>{&#8220;client&#8221;:{&#8220;client_id&#8221;:&#8221;2&#8221;}}</td>
-</tr></tbody></table>
-<h2 id='4'>4. clientregister - register client device / id</h2>
+<h3>Request: GET /apps/testapp/clientcreate</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>28</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>{"client":{"client_id":"2"}}</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='4'>4. clientregister - register client device_type</h2>
 
-<h3 id='request_post_appstestappclientregister'>Request: POST /apps/testapp/clientregister</h3>
-<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>application/json</td>
-</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>38</td>
-</tr><tr><td style='text-align: left;'>Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
-</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody><tr><td style='text-align: left;'>{&#8220;device_type&#8221;:&#8221;iPhone&#8221;,&#8221;client_id&#8221;:1}</td>
-</tr></tbody></table>
-<h3 id='response_200'>Response: 200</h3>
-<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>text/html</td>
-</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>0</td>
-</tr><tr><td style='text-align: left;'>Set-Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Thu, 16-Dec-2010 03:15:44 GMT</td>
-</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody /></table>
+<h3>Request: POST /apps/testapp/clientregister</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>38</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"device_type":"iPhone","client_id":1}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
 <h2 id='5'>5. clientreset - reset client database</h2>
 
-<h3 id='request_get_appstestappclientresetclient_id1'>Request: GET /apps/testapp/clientreset?client_id=1</h3>
-<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>&#160;</td>
-</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>0</td>
-</tr><tr><td style='text-align: left;'>Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
-</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody /></table>
-<h3 id='response_200'>Response: 200</h3>
-<table><thead><tr><th>Header</th><th>Value</th></tr></thead><tbody><tr><td style='text-align: left;'>Content-Type</td><td style='text-align: left;'>text/html</td>
-</tr><tr><td style='text-align: left;'>Content-Length</td><td style='text-align: left;'>0</td>
-</tr><tr><td style='text-align: left;'>Set-Cookie</td><td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A&#8211;dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Thu, 16-Dec-2010 03:15:44 GMT</td>
-</tr></tbody></table><table><thead><tr><th>Body</th></tr></thead><tbody /></table>
+<h3>Request: GET /apps/testapp/clientreset?client_id=1</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='6'>6. create - create object(s)</h2>
+
+<h3>Request: POST /apps/testapp</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>111</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"client_id":1,"source_name":"SampleAdapter","create":{"1":{"price":"199.99","brand":"Apple","name":"iPhone"}}}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='7'>7. update - update object(s)</h2>
+
+<h3>Request: POST /apps/testapp</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>111</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"client_id":1,"source_name":"SampleAdapter","update":{"1":{"price":"199.99","brand":"Apple","name":"iPhone"}}}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='8'>8. delete - delete object(s)</h2>
+
+<h3>Request: POST /apps/testapp</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>111</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"client_id":1,"delete":{"1":{"price":"199.99","brand":"Apple","name":"iPhone"}},"source_name":"SampleAdapter"}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='9'>9. create-update-delete - create,update,delete object(s)</h2>
+
+<h3>Request: POST /apps/testapp</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>236</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"client_id":1,"delete":{"3":{"price":"299.99","brand":"HTC","name":"Fuze"}},"source_name":"SampleAdapter","create":{"1":{"price":"199.99","brand":"Apple","name":"iPhone"}},"update":{"2":{"price":"99.99","brand":"Android","name":"G2"}}}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='10'>10. create-with-link - send link for created object</h2>
+
+<h3>Request: GET /apps/testapp?client_id=1&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>128</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":"30214363264105"},{"count":0},{"progress_count":0},{"total_count":0},{"links":{"4":{"l":"backend_id"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='11'>11. query-error - send query error</h2>
+
+<h3>Request: GET /apps/testapp?client_id=1&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>145</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":""},{"count":0},{"progress_count":0},{"total_count":0},{"source-error":{"query-error":{"message":"Error during query"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='12'>12. login-error - send login error</h2>
+
+<h3>Request: GET /apps/testapp?client_id=1&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>143</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":""},{"count":0},{"progress_count":0},{"total_count":0},{"source-error":{"login-error":{"message":"Error logging in"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='13'>13. logoff-error - send logoff error</h2>
+
+<h3>Request: GET /apps/testapp?client_id=1&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>276</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":"30214363372634"},{"count":1},{"progress_count":1},{"total_count":1},{"source-error":{"logoff-error":{"message":"Error logging off"}},"insert":{"0_broken_object_id":{"name":"logoff error","an_attribute":"Error logging off","rhomobile.rhoclient":"1"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='14'>14. create-error - send create error</h2>
+
+<h3>Request: GET /apps/testapp?client_id=1&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>224</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":""},{"count":0},{"progress_count":0},{"total_count":0},{"create-error":{"0_broken_object_id":{"name":"wrongname","an_attribute":"error create"},"0_broken_object_id-error":{"message":"error create"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='15'>15. update-error - send update error</h2>
+
+<h3>Request: GET /apps/testapp?client_id=1&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>224</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":""},{"count":0},{"progress_count":0},{"total_count":0},{"update-error":{"0_broken_object_id":{"name":"wrongname","an_attribute":"error update"},"0_broken_object_id-error":{"message":"error update"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='16'>16. delete-error - send delete error</h2>
+
+<h3>Request: GET /apps/testapp?client_id=1&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>224</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":""},{"count":0},{"progress_count":0},{"total_count":0},{"delete-error":{"0_broken_object_id":{"name":"wrongname","an_attribute":"error delete"},"0_broken_object_id-error":{"message":"error delete"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='17'>17. insert objects - send insert objects</h2>
+
+<h3>Request: GET /apps/testapp?client_id=1&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>265</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":"30214363619020"},{"count":2},{"progress_count":2},{"total_count":2},{"insert":{"1":{"price":"199.99","name":"iPhone","brand":"Apple","rhomobile.rhoclient":"1"},"2":{"price":"99.99","brand":"Android","name":"G2","rhomobile.rhoclient":"1"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='18'>18. delete objects - send delete objects</h2>
+
+<h3>Request: GET /apps/testapp?client_id=1&token=30214363648741&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>265</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":"30214363684309"},{"count":2},{"progress_count":0},{"total_count":2},{"delete":{"1":{"price":"199.99","name":"iPhone","brand":"Apple","rhomobile.rhoclient":"1"},"2":{"price":"99.99","brand":"Android","name":"G2","rhomobile.rhoclient":"1"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='19'>19. insert-delete objects - send insert and delete objects</h2>
+
+<h3>Request: GET /apps/testapp?client_id=1&token=30214363726821&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>272</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":"30214363753268"},{"count":2},{"progress_count":2},{"total_count":2},{"delete":{"2":{"price":"99.99","brand":"Android","name":"G2","rhomobile.rhoclient":"1"}},"insert":{"3":{"price":"299.99","brand":"HTC","name":"Fuze","rhomobile.rhoclient":"1"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='20'>20. search result - send search results</h2>
+
+<h3>Request: GET /apps/testapp/search?client_id=1&search[name]=iPhone&version=3&sources[]=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>124</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[[{"version":3},{"source":"SampleAdapter"},{"count":1},{"insert":{"1":{"name":"iPhone","price":"199.99","brand":"Apple"}}}]]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='21'>21. search error - send search error</h2>
+
+<h3>Request: GET /apps/testapp/search?client_id=1&search[name]=iPhone&version=3&sources[]=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>112</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[[{"version":3},{"source":"SampleAdapter"},{"search-error":{"search-error":{"message":"Error during search"}}}]]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='22'>22. multi source search - send multiple sources in search results</h2>
+
+<h3>Request: GET /apps/testapp/search?client_id=1&search[search]=bar&version=3&sources[]=SimpleAdapter&sources[]=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>212</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7BjoKbG9naW4iDXRlc3R1c2Vy%0A--dcc6cc899654f861e7418af70ee4c1826aa5a154; path=/; expires=Fri, 17-Dec-2010 00:52:43 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[[{"version":3},{"source":"SimpleAdapter"},{"count":1},{"insert":{"obj":{"foo":"bar"}}}],[{"version":3},{"source":"SampleAdapter"},{"count":1},{"insert":{"1":{"name":"iPhone","price":"199.99","brand":"Apple"}}}]]</td>
+    </tr>
+  </tbody>
+</table>
 	  </div>
 	</div>
   </body>

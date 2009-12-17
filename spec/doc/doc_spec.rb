@@ -29,8 +29,8 @@ describe "Rhosync Protocol" do
   
   before(:all) do
     $rand_id ||= 0
-    $content ||= ''
     $content_table ||= []
+    $content ||= []
   end
   
   before(:each) do
@@ -39,264 +39,229 @@ describe "Rhosync Protocol" do
   end
   
   after(:each) do
-    _print_messages
+    #_print_messages
     _print_markdown if @title and @description
   end
   
   after(:all) do
-    _write_doc if $content
+    _write_doc if $content and $content.length > 0
   end
   
-  #describe "unauthenticated routes - clientlogin" do
-    it "end clientlogin" do
-      do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
-      @title,@description = 'clientlogin', 'authenticate client'
-    end
-  #end
+  before(:each) do
+    do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
+  end
   
-  #describe "unauthenticated routes - clientlogin with wrong login or password " do
-    it "end wrong login or password clientlogin" do
-      do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'wrongpass'
-      @title,@description = 'clientlogin', 'login failure'
-    end
-  #end
+  it "clientlogin" do
+    do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
+    @title,@description = 'clientlogin', 'authenticate client'
+  end
   
-    describe "authenticated routes" do
-      before(:each) do
-        do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
-      end
-      
-      describe "- clientcreate" do
-        it "end clientcreate" do 
-          get "/apps/#{@a.name}/clientcreate"
-          @title,@description = 'clientcreate', 'create client id'          
-        end
-      end
-      
-      describe "- clientregister" do
-        it "end clientregister" do
-          do_post "/apps/#{@a.name}/clientregister", "device_type" => "iPhone", "client_id" => @c.id
-          @title,@description = 'clientregister', 'register client device / id'     
-        end
-      end
-      
-      describe "- clientreset" do
-        it "end clientreset" do
-          get "/apps/#{@a.name}/clientreset", :client_id => @c.id
-          @title,@description = 'clientreset', 'reset client database'
-        end
-      end
-      
-      ['create','update','delete'].each do |operation|
-        describe "- client #{operation} object(s)" do
-          it "end client #{operation} object(s)" do
-            params = {operation=>{'1'=>@product1},
-                      :client_id => @c.id,
-                      :source_name => @s.name}
-            do_post "/apps/#{@a.name}", params
-          end
-        end
-      end
-      
-      describe "- client create,update,delete objects" do
-        it "end client create,update,delete objects" do
-          params = {'create'=>{'1'=>@product1},
-                    'update'=>{'2'=>@product2},
-                    'delete'=>{'3'=>@product3},
-                    :client_id => @c.id,
-                    :source_name => @s.name}
-          do_post "/apps/#{@a.name}", params
-        end
-      end
-      
-      describe "- client create object where backend provides object id in adapter.create" do
-        it "end client create object where backend provides object id in adapter.create" do
-          @product4['link'] = 'test link'
-          params = {'create'=>{'4'=>@product4},
-                    :client_id => @c.id,
-                    :source_name => @s.name}
-          do_post "/apps/#{@a.name}", params
-          _print_messages
-          get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,
-            :version => ClientSync::VERSION
-        end
-      end
-      
-      describe "- server send source query error to client" do
-        it "end server send source query error to client" do
-          set_test_data('test_db_storage',{},"Error during query",'query error')
-          get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
-        end
-      end
-      
-      describe "- server send source login error to client" do
-        it "end server send source login error to client" do
-          @u.login = nil
-          get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
-        end
-      end
-      
-      describe "- server send source logoff error to client" do
-        it "end server send source logoff error to client" do
-          set_test_data('test_db_storage',{},"Error logging off",'logoff error')
-          get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
-        end
-      end
-      
-      ['create','update','delete'].each do |operation|
-        describe "- client #{operation} object(s) with error" do
-          it "end client #{operation} object(s) with error" do
-            params = {operation=>{ERROR=>{'an_attribute'=>"error #{operation}",'name'=>'wrongname'}},
-                      :client_id => @c.id,
-                      :source_name => @s.name}
-            do_post "/apps/#{@a.name}", params
-            get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
-          end
-        end
-      end
-      
-      describe "- server send insert objects to client" do
-        it "end server send insert objects to client" do
-          cs = ClientSync.new(@s,@c,1)
-          data = {'1'=>@product1,'2'=>@product2}
-          set_test_data('test_db_storage',data)
-          get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
-        end
-      end
-      
-      describe "- server send delete objects to client" do
-        it "end server send delete objects to client" do 
-          cs = ClientSync.new(@s,@c,1)
-          data = {'1'=>@product1,'2'=>@product2}
-          set_test_data('test_db_storage',data)
-          get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
-          token = @store.get_value(cs.clientdoc.get_page_token_dockey)
-          @store.flash_data('test_db_storage')
-          @s.refresh_time = Time.now.to_i
-          get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
-            :version => ClientSync::VERSION
-        end
-      end
-      
-      describe "- server send insert,delete objects to client" do
-        it "end server send insert,delete objects to client" do 
-          cs = ClientSync.new(@s,@c,1)
-          data = {'1'=>@product1,'2'=>@product2}
-          set_test_data('test_db_storage',data)
-          get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
-          token = @store.get_value(cs.clientdoc.get_page_token_dockey)
-          set_test_data('test_db_storage',{'1'=>@product1,'3'=>@product3})
-          @s.refresh_time = Time.now.to_i
-          get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
-            :version => ClientSync::VERSION
-        end
-      end
-      
-      describe "- server send search results" do
-        it "end server send search results" do
-          sources = ['SampleAdapter']
-          @store.put_data('test_db_storage',@data)
-          params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
-            :version => ClientSync::VERSION}
-          get "/apps/#{@a.name}/search",params
-        end
-      end
-      
-      describe "- should get search results with error" do
-        it "end should get search results with error" do
-          sources = ['SampleAdapter']
-          msg = "Error during search"
-          error = set_test_data('test_db_storage',@data,msg,'search error')
-          params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
-            :version => ClientSync::VERSION}
-          get "/apps/#{@a.name}/search",params
-        end
-      end
-      
-      describe "- should get multiple source search results" do
-        it "end should get multiple source search results" do
-          @s_fields[:name] = 'SimpleAdapter'
-          @s1 = Source.create(@s_fields)
-          @store.put_data('test_db_storage',@data)
-          sources = ['SimpleAdapter','SampleAdapter']
-          params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},
-            :version => ClientSync::VERSION}
-          get "/apps/#{@a.name}/search",params
-        end  
-      end
+  it "wrong login or password clientlogin" do
+    do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'wrongpass'
+    @title,@description = 'clientlogin', 'login failure'
+  end
+  
+  it "clientcreate" do 
+    get "/apps/#{@a.name}/clientcreate"
+    @title,@description = 'clientcreate', 'create client id'          
+  end
+  
+  it "clientregister" do
+    do_post "/apps/#{@a.name}/clientregister", "device_type" => "iPhone", "client_id" => @c.id
+    @title,@description = 'clientregister', 'register client device_type'     
+  end
+  
+  it "clientreset" do
+    get "/apps/#{@a.name}/clientreset", :client_id => @c.id
+    @title,@description = 'clientreset', 'reset client database'
+  end
+  
+  ['create','update','delete'].each do |operation|
+    it "client #{operation} object(s)" do
+      params = {operation=>{'1'=>@product1},
+                :client_id => @c.id,
+                :source_name => @s.name}
+      do_post "/apps/#{@a.name}", params
+      @title,@description = operation, "#{operation} object(s)"
     end
+  end
+  
+  it "client create,update,delete objects" do
+    params = {'create'=>{'1'=>@product1},
+              'update'=>{'2'=>@product2},
+              'delete'=>{'3'=>@product3},
+              :client_id => @c.id,
+              :source_name => @s.name}
+    do_post "/apps/#{@a.name}", params
+    @title,@description = 'create-update-delete', 'create,update,delete object(s)'
+  end
+  
+  it "server sends link created object" do
+    @product4['link'] = 'test link'
+    params = {'create'=>{'4'=>@product4},
+              :client_id => @c.id,
+              :source_name => @s.name}
+    do_post "/apps/#{@a.name}", params
+    get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,
+      :version => ClientSync::VERSION
+    @title,@description = 'create-with-link', 'send link for created object'
+  end
+  
+  it "server send source query error to client" do
+    set_test_data('test_db_storage',{},"Error during query",'query error')
+    get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+    @title,@description = 'query-error', 'send query error'
+  end
+  
+  it "server send source login error to client" do
+    @u.login = nil
+    get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+    @title,@description = 'login-error', 'send login error'
+  end
+  
+  it "server send source logoff error to client" do
+    set_test_data('test_db_storage',{},"Error logging off",'logoff error')
+    get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+    @title,@description = 'logoff-error', 'send logoff error'
+  end
+  
+  ['create','update','delete'].each do |operation|
+    it "client #{operation} object(s) with error" do
+      params = {operation=>{ERROR=>{'an_attribute'=>"error #{operation}",'name'=>'wrongname'}},
+                :client_id => @c.id,
+                :source_name => @s.name}
+      do_post "/apps/#{@a.name}", params
+      get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+      @title,@description = "#{operation}-error", "send #{operation} error"
+    end
+  end
+  
+  it "server send insert objects to client" do
+    cs = ClientSync.new(@s,@c,1)
+    data = {'1'=>@product1,'2'=>@product2}
+    set_test_data('test_db_storage',data)
+    get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+    @title,@description = 'insert objects', 'send insert objects'
+  end
+  
+  it "server send delete objects to client" do 
+    cs = ClientSync.new(@s,@c,1)
+    data = {'1'=>@product1,'2'=>@product2}
+    set_test_data('test_db_storage',data)
+    get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+    token = @store.get_value(cs.clientdoc.get_page_token_dockey)
+    @store.flash_data('test_db_storage')
+    @s.refresh_time = Time.now.to_i
+    get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
+      :version => ClientSync::VERSION
+    @title,@description = 'delete objects', 'send delete objects'
+  end
+  
+  it "server send insert,delete objects to client" do 
+    cs = ClientSync.new(@s,@c,1)
+    data = {'1'=>@product1,'2'=>@product2}
+    set_test_data('test_db_storage',data)
+    get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+    token = @store.get_value(cs.clientdoc.get_page_token_dockey)
+    set_test_data('test_db_storage',{'1'=>@product1,'3'=>@product3})
+    @s.refresh_time = Time.now.to_i
+    get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
+      :version => ClientSync::VERSION
+    @title,@description = 'insert-delete objects', 'send insert and delete objects'
+  end
+  
+  it "server send search results" do
+    sources = ['SampleAdapter']
+    @store.put_data('test_db_storage',@data)
+    params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
+      :version => ClientSync::VERSION}
+    get "/apps/#{@a.name}/search",params
+    @title,@description = 'search result', 'send search results'
+  end
+  
+  it "should get search results with error" do
+    sources = ['SampleAdapter']
+    msg = "Error during search"
+    error = set_test_data('test_db_storage',@data,msg,'search error')
+    params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
+      :version => ClientSync::VERSION}
+    get "/apps/#{@a.name}/search",params
+    @title,@description = 'search error', 'send search error'
+  end
+  
+  it "should get multiple source search results" do
+    @s_fields[:name] = 'SimpleAdapter'
+    @s1 = Source.create(@s_fields)
+    @store.put_data('test_db_storage',@data)
+    sources = ['SimpleAdapter','SampleAdapter']
+    params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},
+      :version => ClientSync::VERSION}
+    get "/apps/#{@a.name}/search",params
+    @title,@description = 'multi source search', 'send multiple sources in search results'
+  end  
   
   private
-  def _print_messages
-    method = last_request.env['REQUEST_METHOD']
-    query_string = last_request.env['QUERY_STRING'].empty? ? '' : "?#{last_request.env['QUERY_STRING']}"
-    body = last_request.body.read
-    last_request.body.rewind
-    response_body = last_response.body
-    puts '-'*25 + 'REQUEST' + '-'*25
-    puts "METHOD URL: #{method} #{last_request.env['PATH_INFO']}#{query_string}"
-    puts '-'*57
-    puts "Request Headers: "
-    puts ' "Content-Type"=>' + last_request.env['CONTENT_TYPE'].inspect unless method == 'GET'
-    puts ' "Content-Length"=>' + last_request.env['CONTENT_LENGTH'].inspect unless method == 'GET'
-    puts ' "Cookie"=>' + last_request.env['HTTP_COOKIE'].inspect
-    if not body.empty?
-      puts "Request Body:"
-      puts body
-    end
-    puts '-'*25 + 'RESPONSE' + '-'*24
-    puts "Response Headers: "
-    pp last_response.headers
-    puts "Response Status: " + last_response.status.to_s
-    if not response_body.empty?
-      puts "Response body: "
-      puts response_body
-    end
-  end
+  # def _print_messages
+  #   method = last_request.env['REQUEST_METHOD']
+  #   query_string = last_request.env['QUERY_STRING'].empty? ? '' : "?#{last_request.env['QUERY_STRING']}"
+  #   body = last_request.body.read
+  #   last_request.body.rewind
+  #   response_body = last_response.body
+  #   puts '-'*25 + 'REQUEST' + '-'*25
+  #   puts "METHOD URL: #{method} #{last_request.env['PATH_INFO']}#{query_string}"
+  #   puts '-'*57
+  #   puts "Request Headers: "
+  #   puts ' "Content-Type"=>' + last_request.env['CONTENT_TYPE'].inspect unless method == 'GET'
+  #   puts ' "Content-Length"=>' + last_request.env['CONTENT_LENGTH'].inspect unless method == 'GET'
+  #   puts ' "Cookie"=>' + last_request.env['HTTP_COOKIE'].inspect
+  #   if not body.empty?
+  #     puts "Request Body:"
+  #     puts body
+  #   end
+  #   puts '-'*25 + 'RESPONSE' + '-'*24
+  #   puts "Response Headers: "
+  #   pp last_response.headers
+  #   puts "Response Status: " + last_response.status.to_s
+  #   if not response_body.empty?
+  #     puts "Response body: "
+  #     puts response_body
+  #   end
+  # end
   
   def _print_markdown
-    method = last_request.env['REQUEST_METHOD']
-    query_string = last_request.env['QUERY_STRING'].empty? ? '' : "?#{last_request.env['QUERY_STRING']}"
-    body = last_request.body.read
-    last_request.body.rewind
     $content_table << {$rand_id => "#{@title} - #{@description}"}
-    
-    data =<<-CONTENT
-## #{$rand_id}. #{@title} - #{@description} {##{$rand_id}}
-
-### Request: #{method} #{last_request.env['PATH_INFO']}#{query_string}
-
-Header        | Value
---------------|------------------------------------
-Content-Type  | #{_get_header_text(last_request.env['CONTENT_TYPE'])}  
-Content-Length| #{_get_header_text(last_request.env['CONTENT_LENGTH'])}
-Cookie        | #{_get_header_text(last_request.env['HTTP_COOKIE'])}
-
-Body    |
---------|
-#{body} |
-
-
-### Response: #{last_response.status.to_s}
-
-Header        | Value
---------------| :----------------------------------
-Content-Type  | #{_get_header_text(last_response.headers['Content-Type'])}
-Content-Length| #{_get_header_text(last_response.headers['Content-Length'])}
-Set-Cookie    | #{_get_header_text(last_response.headers['Set-Cookie'])}
-
-Body    |
---------|
-#{last_response.body} |
-
-    CONTENT
+    data = {
+      :title => @title,
+      :description => @description,
+      :rand_id => $rand_id,
+      :req_method => last_request.env['REQUEST_METHOD'],
+      :req_url => last_request.env['PATH_INFO'],
+      :req_query_string => last_request.env['QUERY_STRING'].empty? ? '' : "?#{last_request.env['QUERY_STRING']}",
+      :req_content_type => _get_header_text(last_request.env['CONTENT_TYPE']),
+      :req_content_length => _get_header_text(last_request.env['CONTENT_LENGTH']),
+      :req_cookie => _get_header_text(last_request.env['HTTP_COOKIE']),
+      :req_body => last_request.body.read,
+      :res_status => last_response.status.to_s,
+      :res_content_type => _get_header_text(last_response.headers['Content-Type']),
+      :res_content_length => _get_header_text(last_response.headers['Content-Length']),
+      :res_cookie => _get_header_text(last_response.headers['Set-Cookie']),
+      :res_body => last_response.body
+    }
+    last_request.body.rewind
     $content << data
   end
   
   def _write_doc
-    @doc = Maruku.new($content).to_html
-    page = ERB.new(File.read(File.join(File.dirname(__FILE__),'base.html'))).result(binding)
-    File.open(File.join('doc','protocol.html'),'w') { |f| f.write(page) }
+    File.open(File.join('doc','protocol.html'),'w') do |file|
+      header = ERB.new(File.read(File.join(File.dirname(__FILE__),'header.html'))).result(binding)
+      file.write(header)
+      page = ERB.new(File.read(File.join(File.dirname(__FILE__),'base.html')))
+      $content.each do |data|
+        file.write(page.result(binding))
+      end
+      footer = ERB.new(File.read(File.join(File.dirname(__FILE__),'footer.html'))).result(binding)
+      file.write(footer)
+    end
   end
   
   def _get_header_text(header)

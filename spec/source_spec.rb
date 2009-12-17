@@ -32,4 +32,17 @@ describe "Source" do
     @s.app.name.should == @a_fields[:name]
     @s.document.get_key.should == "md:#{@s.app.id}:#{@u.id}:0:#{@s_fields[:name]}"
   end
+  
+  it "should delete source" do
+    @s.delete
+    Source.is_exist?(@s_fields[:name],'name').should == false
+  end
+  
+  it "should delete master and all documents associated with source" do
+    masterdoc = Document.new('md',@a.id,@u.login,0,@s.name)    
+    @a.store.put_data(masterdoc.get_key,@data)
+    @s.delete
+    @a.store.get_data(masterdoc.get_key).should == {}
+    @a.store.db.keys(masterdoc.get_key).should == []
+  end
 end

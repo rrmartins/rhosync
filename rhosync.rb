@@ -87,7 +87,7 @@ end
 
 # Management routes
 def api(name)
-  post '/api/:app_name/:name' do
+  post "/api/:app_name/#{name}" do
     yield params[:app_name],current_user,params[:payload]
   end
 end

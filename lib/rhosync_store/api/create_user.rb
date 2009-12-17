@@ -1,3 +1,3 @@
-api :create_app do |app_name,user,payload|
+api :create_user do |app_name,user,payload|
 
 end

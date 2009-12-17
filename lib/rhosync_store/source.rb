@@ -37,5 +37,10 @@ module RhosyncStore
     def document
       @document.nil? ? @document = Document.new('md',self.app_id,self.user_id,'0',self.name) : @document
     end
+    
+    def delete
+       self.app.store.flash_data(Document.new('md*',self.app_id,self.user_id,0,'*').get_key)
+      super
+    end
   end
 end

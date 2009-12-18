@@ -1,10 +1,22 @@
 helpers do
+  def check_api_token
+    params[:api_token] and ApiToken.is_exist?(params[:api_token],'value')
+  end
+  
+  def do_login
+    if login
+      status 200
+    else
+      status 401
+    end
+  end
+  
   def login_required
     current_user.nil?
   end
   
   def login
-    if current_app.can_authenticate?
+    if current_app and current_app.can_authenticate?
       user = current_app.authenticate(params[:login], params[:password], session)
     else
       user = User.authenticate(params[:login], params[:password])
@@ -23,10 +35,15 @@ helpers do
   end
   
   def current_user
-    puts "appname: #{@appname}"
-    if User.is_exist?(session[:login],'login') && session[:app_name] == params[:app_name]
-      User.with_key(session[:login])
+    if User.is_exist?(session[:login],'login') 
+      user = User.with_key(session[:login])
+      return user if user.admin == 1 || session[:app_name] == params[:app_name]
     end
+    nil
+  end
+  
+  def api_user
+    ApiToken.with_key(params[:api_token]).user
   end
   
   def current_app

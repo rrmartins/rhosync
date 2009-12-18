@@ -17,9 +17,18 @@ describe "Rhosync" do
   include RhosyncStore
   
   it_should_behave_like "SourceAdapterHelper"
+  
+  before(:each) do
+    RhosyncStore.bootstrap(File.join(File.dirname(__FILE__),'..','apps'))
+  end
 
   def app
     @app ||= Sinatra::Application
+  end
+  
+  it "should login without app_name" do
+    post "/login", "login" => 'admin', "password" => ''
+    last_response.should be_ok
   end
   
   it "should respond with 401 to /apps/:app_name" do

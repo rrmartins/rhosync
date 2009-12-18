@@ -44,10 +44,6 @@ end
   end
 end
 
-get "/" do
-  erb :index
-end
-
 # Collection routes
 post '/login' do
   logout
@@ -95,7 +91,11 @@ end
 # Management routes
 def api(name)
   post "/api/:app_name/#{name}" do
-    yield params[:app_name],current_user,params[:payload]
+    if check_api_token
+      yield params[:app_name],api_user,params[:payload]
+    else
+      throw :halt, [422, "No API token provided"]
+    end
   end
 end
 

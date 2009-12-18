@@ -27,7 +27,9 @@ module RhosyncStore
   def bootstrap(appdir)
     RhosyncStore.app_directory = appdir
     unless User.is_exist?('admin','login')
-      User.create({:login => 'admin', :admin => 1}).password = ''
+      admin = User.create({:login => 'admin', :admin => 1})
+      admin.password = ''
+      admin.create_token
     end
   end
   

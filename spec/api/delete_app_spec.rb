@@ -8,7 +8,7 @@ describe "RhosyncApiDeleteApp" do
     sources = App.with_key(@appname).sources.members.sort
     sources.should == ["SampleAdapter", "SimpleAdapter"]
 
-    post "/api/#{@appname}/delete_app"
+    post "/api/#{@appname}/delete_app", :api_token => @api_token
     
     App.is_exist?(@appname,'name').should == false
     sources.each do |source|    
@@ -16,5 +16,4 @@ describe "RhosyncApiDeleteApp" do
     end
     File.exists?(File.join(File.dirname(__FILE__),'..','..','apps',@appname)).should == false
   end
-    
 end

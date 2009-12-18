@@ -11,6 +11,19 @@ describe "User" do
     @u1.email.should == @u_fields[:email]
   end
   
+  it "should create token for user" do
+    token = @u.create_token
+    token.length.should == 32
+    ApiToken.with_key(token).user_id.should == @u.id
+  end
+  
+  it "should maintain only one token for user" do
+    token = @u.create_token
+    ApiToken.is_exist?(token,'value').should == true
+    @u.create_token
+    ApiToken.is_exist?(token,'value').should == false
+  end
+  
   it "should authenticate with proper credentials" do
     @u1 = User.authenticate(@u_fields[:login],'testpass')
     @u1.should_not be_nil

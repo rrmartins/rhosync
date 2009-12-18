@@ -6,7 +6,12 @@ module RhosyncStore
     
     def self.create(fields)
       fields[:value] = UUIDTools::UUID.random_create.to_s.gsub(/\-/,'')
-      super(fields)
+      fields[:id] = fields[:value]
+      object = super(fields)
+    end
+    
+    def user
+      User.with_key(self.user_id)
     end
   end
 end

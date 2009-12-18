@@ -10,6 +10,7 @@ module RhosyncStore
     field :hashed_password,:string
     set   :clients, :string
     field :admin, :int
+    field :token_id, :string
     
     class << self
       def create(fields={})
@@ -36,7 +37,14 @@ module RhosyncStore
         Client.with_key(client_id).delete
       end
       super
-    end  
+    end
+    
+    def create_token
+      if self.token_id && ApiToken.is_exist?(self.token_id,'value')
+        ApiToken.with_key(self.token_id).delete 
+      end
+      self.token_id = ApiToken.create(:user_id => self.login).id
+    end
       
     protected
     def self.encrypt(pass, salt)

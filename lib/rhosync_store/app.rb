@@ -11,8 +11,7 @@ module RhosyncStore
         begin
           require underscore(fields[:name])
           @delegate = fields[:name].constantize
-        rescue Exception    
-        end
+        rescue Exception; end
         super(fields)
       end
     

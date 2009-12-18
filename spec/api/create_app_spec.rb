@@ -3,6 +3,13 @@ require File.join(File.dirname(__FILE__),'api_helper')
 describe "RhosyncApiCreateApp" do
   it_should_behave_like "ApiHelper"
   
+  it "should return 422 with wrong api token" do
+    @api_token = 'wrongtoken'
+    upload_test_apps
+    last_response.status.should == 422
+    last_response.body.should == "No API token provided"
+  end
+  
   it "should upload zipfile and create app and sources" do   
     upload_test_apps
     

@@ -26,7 +26,7 @@ describe "ApiHelper", :shared => true do
   before(:each) do
     @appname = 'rhotestapp'
     RhosyncStore.bootstrap(File.join(File.dirname(__FILE__),'..','..','apps'))
-    do_post "/login", "login" => 'admin', "password" => ''
+    @api_token = User.with_key('admin').token_id
   end
   
   after(:each) do
@@ -38,9 +38,8 @@ def upload_test_apps
   file = File.join(File.dirname(__FILE__),'..','apps',@appname)
   compress(file)
   zipfile = File.join(file,"#{@appname}.zip")
-  post "/api/#{@appname}/create_app", :payload => {
-    :upload_file => Rack::Test::UploadedFile.new(zipfile, "application/octet-stream"),
-    :foo => 'bar'}
+  post "/api/#{@appname}/create_app", :api_token => @api_token, :payload => {
+    :upload_file => Rack::Test::UploadedFile.new(zipfile, "application/octet-stream")}
   FileUtils.rm zipfile
 end
 

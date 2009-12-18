@@ -7,5 +7,6 @@ describe "ApiToken" do
     token = ApiToken.create(:user_id => @u.id)
     token.value.length.should == 32
     token.user_id.should == @u.id
+    token.user.login.should == @u.login
   end
 end

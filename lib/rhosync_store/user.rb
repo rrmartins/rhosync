@@ -9,6 +9,7 @@ module RhosyncStore
     field :salt,:string
     field :hashed_password,:string
     set   :clients, :string
+    field :admin, :int
     
     class << self
       def create(fields={})

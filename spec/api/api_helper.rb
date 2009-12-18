@@ -25,9 +25,8 @@ describe "ApiHelper", :shared => true do
   
   before(:each) do
     @appname = 'rhotestapp'
-    puts "logging into: #{@appname}"
-    do_post "/apps/#{@appname}/clientlogin", "login" => @u.login, "password" => 'testpass'
-    puts "after login: #{@appname}"
+    RhosyncStore.bootstrap(File.join(File.dirname(__FILE__),'..','..','apps'))
+    do_post "/login", "login" => 'admin', "password" => ''
   end
   
   after(:each) do

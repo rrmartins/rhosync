@@ -6,6 +6,7 @@ require 'zip/zip'
 require 'rhosync_store/model'
 require 'rhosync_store/source'
 require 'rhosync_store/user'
+require 'rhosync_store/api_token'
 require 'rhosync_store/app'
 require 'rhosync_store/document'
 require 'rhosync_store/store'
@@ -20,6 +21,14 @@ module RhosyncStore
   
   class << self
     attr_accessor :app_directory
+  end
+
+  # Server hook to initialize RhosyncStore
+  def bootstrap(appdir)
+    RhosyncStore.app_directory = appdir
+    unless User.is_exist?('admin','login')
+      User.create({:login => 'admin', :admin => 1}).password = ''
+    end
   end
   
   # Adds given path to top of ruby load path

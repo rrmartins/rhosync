@@ -21,8 +21,8 @@ configure :test do
   add_adapter_path(File.join(File.dirname(__FILE__),'spec','adapters'))
 end
 
-configure :development,:test,:production do
-  RhosyncStore.app_directory = File.join('apps')
+configure :development,:test,:production do 
+  RhosyncStore.bootstrap(File.join('apps'))
 end
 
 before do
@@ -33,8 +33,14 @@ before do
   if params[:version] and params[:version].to_i < 3
     throw :halt, [404, "Server supports version 3 or higher of the protocol."]
   end
-  unless request.env['PATH_INFO'].split('/').last == 'clientlogin'
-    throw :halt, [401, "Not authenticated"] if login_required
+end
+
+%w[get post].each do |verb|
+  send(verb, "/apps/:app_name*") do
+    unless request.env['PATH_INFO'].split('/').last == 'clientlogin'
+      throw :halt, [401, "Not authenticated"] if login_required
+    end
+    pass
   end
 end
 
@@ -43,13 +49,14 @@ get "/" do
 end
 
 # Collection routes
+post '/login' do
+  logout
+  do_login
+end
+
 post '/apps/:app_name/clientlogin' do
   logout
-  if login
-    status 200
-  else
-    status 401
-  end
+  do_login
 end
 
 get '/apps/:app_name/clientcreate' do

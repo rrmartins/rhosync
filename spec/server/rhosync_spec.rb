@@ -22,16 +22,9 @@ describe "Rhosync" do
     @app ||= Sinatra::Application
   end
   
-  it "should respond with 401 to /" do
-    get '/'
+  it "should respond with 401 to /apps/:app_name" do
+    get "/apps/#{@a.name}"
     last_response.status.should == 401
-  end
-
-  it "should respond with 200 if logged in" do
-    params = {"login" => @u.login, "password" => 'testpass'}
-    do_post "/apps/#{@a.name}/clientlogin",params
-    get '/'
-    last_response.status.should == 200
   end
 
   describe "auth routes" do

@@ -9,12 +9,10 @@ module RhosyncStore
       def create(fields={})
         fields[:id] = fields[:name]
         begin
-          puts "underscore: #{underscore(fields[:name])}"
           require underscore(fields[:name])
           @delegate = fields[:name].constantize
         rescue Exception    
         end
-        puts "@delegate: #{@delegate.inspect}"
         super(fields)
       end
     

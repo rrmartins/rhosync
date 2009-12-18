@@ -22,6 +22,7 @@ module RhosyncStore
       adapter=nil
       if source
         begin
+          source.name.strip! if source.name
           Logger.info "Creating class for #{source.name}"
           require underscore(source.name)
           adapter=(Object.const_get(source.name)).new(source,credential) 

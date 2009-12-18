@@ -3,11 +3,39 @@ module RhosyncStore
     field :name, :string
     set   :users, :string
     set   :sources, :string
-    attr_reader :store
+    attr_reader :store,:delegate
     
-    def self.create(fields={})
-      fields[:id] = fields[:name]
-      super(fields)
+    class << self
+      def create(fields={})
+        fields[:id] = fields[:name]
+        begin
+          puts "underscore: #{underscore(fields[:name])}"
+          require underscore(fields[:name])
+          @delegate = fields[:name].constantize
+        rescue Exception    
+        end
+        puts "@delegate: #{@delegate.inspect}"
+        super(fields)
+      end
+    
+      def appdir(name)
+        File.join(RhosyncStore.app_directory,name)
+      end
+    end
+    
+    def can_authenticate?
+      @delegate && @delegate.singleton_methods.include?("authenticate")
+    end
+
+    def authenticate(login, password, session)
+      if @delegate && @delegate.authenticate(login, password, session)
+        user = User.with_key(login)
+        if not user
+          user = User.create(:login => login)
+          self.users << user
+        end
+        return user
+      end
     end
     
     def delete

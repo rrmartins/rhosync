@@ -9,7 +9,7 @@ describe "RhosyncStoreHelper", :shared => true do
   end
   
   before(:all) do
-    RhosyncStore.add_adapter_path(File.join(File.dirname(__FILE__),'adapters'))
+    RhosyncStore.add_adapter_path(File.join(File.dirname(__FILE__),'apps','rhotestapp','sources'))
   end
 end
 

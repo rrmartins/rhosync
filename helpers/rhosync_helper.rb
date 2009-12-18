@@ -4,9 +4,14 @@ helpers do
   end
   
   def login
-    user = User.authenticate(params[:login], params[:password])
+    if current_app.can_authenticate?
+      user = current_app.authenticate(params[:login], params[:password], session)
+    else
+      user = User.authenticate(params[:login], params[:password])
+    end
     if user
       session[:login] = user.login
+      session[:app_name] = params[:app_name]
       true
     else
       false
@@ -18,7 +23,10 @@ helpers do
   end
   
   def current_user
-    User.with_key(session[:login]) if User.is_exist?(session[:login],'login')
+    puts "appname: #{@appname}"
+    if User.is_exist?(session[:login],'login') && session[:app_name] == params[:app_name]
+      User.with_key(session[:login])
+    end
   end
   
   def current_app

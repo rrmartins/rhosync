@@ -25,7 +25,13 @@ describe "ApiHelper", :shared => true do
   
   before(:each) do
     @appname = 'rhotestapp'
-    do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
+    puts "logging into: #{@appname}"
+    do_post "/apps/#{@appname}/clientlogin", "login" => @u.login, "password" => 'testpass'
+    puts "after login: #{@appname}"
+  end
+  
+  after(:each) do
+    FileUtils.rm_rf File.join(File.dirname(__FILE__),'..','..','apps')
   end
 end
 

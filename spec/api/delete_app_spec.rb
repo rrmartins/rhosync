@@ -15,7 +15,6 @@ describe "RhosyncApiDeleteApp" do
       Source.is_exist?(source,'name').should == false
     end
     File.exists?(File.join(File.dirname(__FILE__),'..','..','apps',@appname)).should == false
-    FileUtils.rm_rf File.join(File.dirname(__FILE__),'..','..','apps')
   end
     
 end

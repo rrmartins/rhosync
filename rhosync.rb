@@ -15,7 +15,7 @@ include RhosyncStore
 use Rack::Session::Cookie, :key => 'rhosync_session',
                            :path => '/',
                            :expire_after => 31536000,
-                           :secret => 'b4990ed033389801c9ca1fe7844c07f9a719d48adc211f64412f53e7147ad2c36a36bcd334ccddc633a4ea6d35c2bbbeae1f6e3b833340a711e76edef734abee'
+                           :secret => '<changeme>'
 
 configure :test do 
   add_adapter_path(File.join(File.dirname(__FILE__),'spec','adapters'))

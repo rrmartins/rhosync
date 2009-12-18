@@ -18,3 +18,7 @@ Windows Notes: when run any spec task error message box (ruby.exe - Unable to lo
 This is problem with relevance-rcov.
 
 4. Checkout the API documentation: <http://rdoc.info/projects/rhomobile/rhosync-datacache>
+
+DOCS
+-------------------------------------------------------------
+Run 'rake doc' to generate documentation files.  See the result in doc/protocol.html.

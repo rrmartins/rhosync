@@ -1,0 +1,6 @@
+sources:
+  SampleAdapter:
+    url: http://example.com
+    login: testuser
+    password: testpass
+    poll_interval: 300

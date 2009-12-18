@@ -2,6 +2,7 @@ require 'rubygems'
 require 'redis'
 require 'json'
 require 'base64'
+require 'zip/zip'
 require 'rhosync_store/model'
 require 'rhosync_store/source'
 require 'rhosync_store/user'
@@ -23,7 +24,12 @@ module RhosyncStore
   
   # Adds given path to top of ruby load path
   def add_adapter_path(path)
-    $:.unshift path
+    check_and_add(path)
+  end
+  
+  # Add path to load_path unless it has been added already
+  def check_and_add(path)
+    $:.unshift path unless $:.include?(path) 
   end
   
   # Serializes oav to set element
@@ -44,6 +50,21 @@ module RhosyncStore
     gsub(/([a-z\d])([A-Z])/,'\1_\2').
     tr("-", "_").
     downcase
+  end
+  
+  def unzip_file(file_dir,payload)
+    uploaded_file = File.join(file_dir, payload[:upload_file][:filename])
+    File.open(uploaded_file, 'wb') do |file|
+      file.write(payload[:upload_file][:tempfile].read)
+    end
+    Zip::ZipFile.open(uploaded_file) do |zip_file|
+      zip_file.each do |f|
+        f_path = File.join(file_dir,f.name)
+        FileUtils.mkdir_p(File.dirname(f_path))
+        zip_file.extract(f, f_path)
+      end
+    end
+    FileUtils.rm_f(uploaded_file)
   end
   
   module_function :add_adapter_path

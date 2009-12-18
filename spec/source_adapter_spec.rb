@@ -24,6 +24,11 @@ describe "SourceAdapter" do
     lambda { SourceAdapter.create(broken_source) }.should raise_error(Exception)
   end
   
+  it "should create SourceAdapter with trailing spaces" do
+    @s.name = 'SimpleAdapter '
+    SourceAdapter.create(@s,nil).is_a?(SimpleAdapter).should be_true
+  end
+  
   describe "SourceAdapter methods" do
     it "should execute SourceAdapter login method with source vars" do
       @sa.login.should == true

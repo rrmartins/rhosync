@@ -6,7 +6,9 @@ set :environment, :production
 
 require 'rhosync.rb'
 
-RhosyncStore.add_adapter_path(File.join(File.dirname(__FILE__),'spec','adapters'))
+configure :development,:production do 
+  RhosyncStore.bootstrap(File.join('apps'))
+end
 
 FileUtils.mkdir_p 'log' unless File.exists?('log')
 log = File.new("log/sinatra.log", "a+")

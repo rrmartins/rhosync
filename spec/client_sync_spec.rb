@@ -1,6 +1,7 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
 
 describe "ClientSync" do
+  it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
   before(:each) do

@@ -8,7 +8,6 @@ require 'spec/interop/test'
 
 set :environment, :test
 set :run, false
-set :views, File.join(File.dirname(__FILE__),'..','..','views')
 
 require File.join(File.dirname(__FILE__),'..','..','rhosync.rb')
 
@@ -45,6 +44,12 @@ describe "Rhosync" do
     it "should respond 401 for incorrect username or password" do
       do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'wrongpass'
       last_response.status.should == 401
+    end
+    
+    it "should create unknown user through delegated authentication" do
+      do_post "/apps/#{@a.name}/clientlogin", "login" => 'newuser', "password" => 'testpass'
+      User.is_exist?('newuser','login').should == true
+      @a.users.members.sort.should == ['newuser','testuser']
     end
   end
   

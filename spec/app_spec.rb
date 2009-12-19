@@ -1,8 +1,9 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
 
 describe "App" do
+  it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
-  
+    
   it "should create app with fields" do
     @a.id.should == @a_fields[:name]
     @a1 = App.with_key(@a_fields[:name])
@@ -26,6 +27,6 @@ describe "App" do
     @a.delete
     Source.is_exist?(@s_fields[:name],'name').should == false
     User.is_exist?(@u_fields[:login],'login') == false
-    App.is_exist?("testapp",'name').should == false
+    App.is_exist?(@a_fields[:name],'name').should == false
   end
 end

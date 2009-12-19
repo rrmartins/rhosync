@@ -10,8 +10,6 @@ require 'maruku'
 
 set :environment, :test
 set :run, false
-set :raise_errors, true
-set :logging, false
 
 require File.join(File.dirname(__FILE__),'..','..','rhosync.rb')
 
@@ -21,6 +19,7 @@ describe "Rhosync Protocol" do
   
   Logger.enabled = false
   
+  it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
 
   def app
@@ -34,6 +33,7 @@ describe "Rhosync Protocol" do
   end
   
   before(:each) do
+    do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
     @title,@description = nil,nil
     $rand_id += 1
   end
@@ -45,10 +45,6 @@ describe "Rhosync Protocol" do
   
   after(:all) do
     _write_doc if $content and $content.length > 0
-  end
-  
-  before(:each) do
-    do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
   end
   
   it "clientlogin" do

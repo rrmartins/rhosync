@@ -1,6 +1,7 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
 
 describe "Source" do
+  it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
   it "should create source with @s_fields" do

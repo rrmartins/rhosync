@@ -37,10 +37,14 @@ describe "RhosyncApiCreateApp" do
   end
   
   it "should re-load SampleAdapter on second create" do
-    @sa = SourceAdapter.create(@s,nil)
-    lambda { @sa.hello }.should raise_error(Exception)
+    upload_test_apps
+    lambda { SourceAdapter.create(@s,nil).hello }.should raise_error(Exception)
+    FileUtils.rm_rf File.join(File.dirname(__FILE__),'..','..','apps')
     @appname = 'testapptwo'
+    target = File.join(File.dirname(__FILE__),'..','apps',@appname)
+    FileUtils.cp_r File.join(File.dirname(__FILE__),'..','testdata',@appname), target
     upload_test_apps
     SourceAdapter.create(@s,nil).hello.should == 'hello'
+    FileUtils.rm_rf target
   end
 end

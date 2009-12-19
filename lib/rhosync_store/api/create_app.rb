@@ -5,7 +5,7 @@ api :create_app do |app_name,user,payload|
   if config and config['sources']
     app = App.create(:name => app_name)
     appdir = App.appdir(app_name)
-    set_load_path(appdir,app_name)
+    set_load_path(appdir)
     load underscore(app_name+'.rb') if File.exists?(File.join(appdir,app_name+'.rb'))
     config['sources'].each do |source_name,fields|
       fields[:name] = source_name
@@ -16,14 +16,6 @@ api :create_app do |app_name,user,payload|
       # load ruby file for source adapter to re-load class
       load underscore(source.name+'.rb')
     end
-  end
-end
-
-def set_load_path(appdir,app_name)
-  check_and_add(appdir)
-  check_and_add(File.join(appdir,'sources'))
-  Dir["#{appdir}/vendor/*"].each do |dir|
-    check_and_add(File.join(dir,'lib'))
   end
 end
 

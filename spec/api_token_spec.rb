@@ -1,6 +1,7 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
 
 describe "ApiToken" do
+  it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
   it "should generate api token with user" do

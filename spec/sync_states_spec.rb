@@ -1,6 +1,7 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
 
 describe "Sync Server States" do
+  it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "StorageStateHelper"
   
   before(:each) do    

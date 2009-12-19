@@ -19,6 +19,8 @@ require 'rhosync_store/source_sync'
 module RhosyncStore
   class InvalidArgumentError < RuntimeError; end
   
+  class RhosyncServerError < RuntimeError; end
+  
   class << self
     attr_accessor :app_directory
   end
@@ -26,6 +28,15 @@ module RhosyncStore
   # Server hook to initialize RhosyncStore
   def bootstrap(appdir)
     RhosyncStore.app_directory = appdir
+    # Add appdir and sources subdirectory
+    # to load path if appdir exists
+    if File.exist?(appdir)
+      Dir.entries(appdir).each do |dir|
+        unless dir == '..' || dir == '.'
+          set_load_path(File.join(appdir,dir))
+        end
+      end
+    end
     unless User.is_exist?('admin','login')
       admin = User.create({:login => 'admin', :admin => 1})
       admin.password = ''
@@ -33,9 +44,12 @@ module RhosyncStore
     end
   end
   
-  # Adds given path to top of ruby load path
-  def add_adapter_path(path)
-    check_and_add(path)
+  def set_load_path(appdir)
+    check_and_add(appdir)
+    check_and_add(File.join(appdir,'sources'))
+    Dir["#{appdir}/vendor/*"].each do |dir|
+      check_and_add(File.join(dir,'lib'))
+    end
   end
   
   # Add path to load_path unless it has been added already
@@ -63,6 +77,15 @@ module RhosyncStore
     downcase
   end
   
+  # Taken from rails inflector
+  def camelize(lower_case_and_underscored_word, first_letter_in_uppercase = true)
+    if first_letter_in_uppercase
+      lower_case_and_underscored_word.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
+    # else
+    #       lower_case_and_underscored_word.to_s[0].chr.downcase + camelize(lower_case_and_underscored_word)[1..-1]
+    end
+  end
+  
   def unzip_file(file_dir,payload)
     uploaded_file = File.join(file_dir, payload[:upload_file][:filename])
     File.open(uploaded_file, 'wb') do |file|
@@ -77,9 +100,7 @@ module RhosyncStore
     end
     FileUtils.rm_f(uploaded_file)
   end
-  
-  module_function :add_adapter_path
-  
+    
   # TODO: replace with real logger
   class Logger
     @@enabled = true

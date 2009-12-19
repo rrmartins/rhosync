@@ -26,6 +26,10 @@ module RhosyncStore
       end
     end
     
+    def new_password=(pass)
+      self.password=(pass)
+    end
+    
     def password=(pass)
       @password = pass
       self.salt = User.random_string(10) if !self.salt
@@ -44,6 +48,12 @@ module RhosyncStore
         ApiToken.with_key(self.token_id).delete 
       end
       self.token_id = ApiToken.create(:user_id => self.login).id
+    end
+    
+    def update(fields)
+      fields.each do |key,value|
+        self.send("#{key.to_sym}=", value) unless key == 'login'
+      end  
     end
       
     protected

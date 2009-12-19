@@ -7,6 +7,7 @@ class RhosyncStore::SourceAdapter
 end
 
 describe "SourceAdapter" do
+  it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
   before(:each) do

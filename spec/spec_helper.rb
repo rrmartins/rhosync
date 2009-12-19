@@ -7,10 +7,6 @@ describe "RhosyncStoreHelper", :shared => true do
     @store = RhosyncStore::Store.new
     @store.db.flushdb
   end
-  
-  before(:all) do
-    RhosyncStore.add_adapter_path(File.join(File.dirname(__FILE__),'apps','rhotestapp','sources'))
-  end
 end
 
 describe "RhosyncStoreDataHelper", :shared => true do
@@ -59,7 +55,7 @@ describe "SourceAdapterHelper", :shared => true do
   ERROR = '0_broken_object_id' unless defined? ERROR
   
   before(:each) do
-    @a_fields = { :name => 'testapp' }
+    @a_fields = { :name => 'rhotestapp' }
     @a = App.create(@a_fields)
     @u_fields = {:login => 'testuser'}
     @u = User.create(@u_fields) 
@@ -111,5 +107,11 @@ describe "StorageStateHelper", :shared => true do
   
   before(:each) do
     @s.name = 'StorageStateAdapter'
+  end
+end
+
+describe "SpecBootstrapHelper", :shared => true do
+  before(:all) do
+    RhosyncStore.bootstrap(File.join(File.dirname(__FILE__),'apps'))
   end
 end

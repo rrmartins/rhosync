@@ -17,14 +17,6 @@ use Rack::Session::Cookie, :key => 'rhosync_session',
                            :expire_after => 31536000,
                            :secret => '<changeme>'
 
-configure :test do 
-  add_adapter_path(File.join(File.dirname(__FILE__),'spec','adapters'))
-end
-
-configure :development,:test,:production do 
-  RhosyncStore.bootstrap(File.join('apps'))
-end
-
 before do
   if request.env['CONTENT_TYPE'] == 'application/json'
     params.merge!(JSON.parse(request.body.read))
@@ -90,9 +82,13 @@ end
 
 # Management routes
 def api(name)
-  post "/api/:app_name/#{name}" do
+  post "/api/#{name}" do
     if check_api_token
-      yield params[:app_name],api_user,params[:payload]
+      begin
+        yield params[:app_name],api_user,params[:payload]
+      rescue Exception => e
+        throw :halt, [500, e.message]
+      end
     else
       throw :halt, [422, "No API token provided"]
     end

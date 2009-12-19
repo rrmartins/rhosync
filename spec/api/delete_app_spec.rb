@@ -8,7 +8,7 @@ describe "RhosyncApiDeleteApp" do
     sources = App.with_key(@appname).sources.members.sort
     sources.should == ["SampleAdapter", "SimpleAdapter"]
 
-    post "/api/#{@appname}/delete_app", :api_token => @api_token
+    post "/api/delete_app", :app_name => @appname, :api_token => @api_token
     
     App.is_exist?(@appname,'name').should == false
     sources.each do |source|    

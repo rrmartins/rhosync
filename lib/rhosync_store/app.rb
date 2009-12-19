@@ -10,7 +10,6 @@ module RhosyncStore
         fields[:id] = fields[:name]
         begin
           require underscore(fields[:name])
-          @delegate = fields[:name].constantize
         rescue Exception; end
         super(fields)
       end
@@ -21,15 +20,15 @@ module RhosyncStore
     end
     
     def can_authenticate?
-      @delegate && @delegate.singleton_methods.include?("authenticate")
+      self.delegate && self.delegate.singleton_methods.include?("authenticate")
     end
 
     def authenticate(login, password, session)
-      if @delegate && @delegate.authenticate(login, password, session)
-        user = User.with_key(login)
+      if self.delegate && self.delegate.authenticate(login, password, session)
+        user = User.with_key(login) if User.is_exist?(login,'login')
         if not user
           user = User.create(:login => login)
-          self.users << user
+          self.users << user.id
         end
         return user
       end
@@ -43,6 +42,10 @@ module RhosyncStore
         User.with_key(user_name).delete
       end
       super
+    end
+    
+    def delegate
+      @delegate.nil? ? Object.const_get(camelize(self.name)) : @delegate
     end
       
     # Returns the data-store for an App

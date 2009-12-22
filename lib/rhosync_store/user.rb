@@ -50,6 +50,10 @@ module RhosyncStore
       self.token_id = ApiToken.create(:user_id => self.login).id
     end
     
+    def token
+      ApiToken.with_key(self.token_id)
+    end
+    
     def update(fields)
       fields.each do |key,value|
         self.send("#{key.to_sym}=", value) unless key == 'login'

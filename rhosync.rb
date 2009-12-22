@@ -29,7 +29,7 @@ end
 
 %w[get post].each do |verb|
   send(verb, "/apps/:app_name*") do
-    unless request.env['PATH_INFO'].split('/').last == 'clientlogin'
+    unless request_action == 'clientlogin'
       throw :halt, [401, "Not authenticated"] if login_required
     end
     pass
@@ -85,7 +85,7 @@ def api(name)
   post "/api/#{name}" do
     if check_api_token
       begin
-        yield params[:app_name],api_user,params[:payload]
+        yield params,api_user
       rescue Exception => e
         throw :halt, [500, e.message]
       end

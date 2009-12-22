@@ -8,8 +8,8 @@ describe "RhosyncApiUploadFile" do
     file = File.join(File.dirname(__FILE__),'..','testdata')    
     compress(file)
     zipfile = File.join(file,"testdata.zip")
-    post "/api/upload_file", :app_name => @appname, :api_token => @api_token, :payload => {
-      :upload_file => Rack::Test::UploadedFile.new(zipfile, "application/octet-stream")}
+    post "/api/upload_file", :app_name => @appname, :api_token => @api_token,
+      :upload_file => Rack::Test::UploadedFile.new(zipfile, "application/octet-stream")
     FileUtils.rm zipfile
     expected = File.join(App.appdir(@appname),'compress-data.txt')
     File.exists?(expected).should == true

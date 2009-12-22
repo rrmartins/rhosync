@@ -86,10 +86,10 @@ module RhosyncStore
     end
   end
   
-  def unzip_file(file_dir,payload)
-    uploaded_file = File.join(file_dir, payload[:upload_file][:filename])
+  def unzip_file(file_dir,params)
+    uploaded_file = File.join(file_dir, params[:filename])
     File.open(uploaded_file, 'wb') do |file|
-      file.write(payload[:upload_file][:tempfile].read)
+      file.write(params[:tempfile].read)
     end
     Zip::ZipFile.open(uploaded_file) do |zip_file|
       zip_file.each do |f|

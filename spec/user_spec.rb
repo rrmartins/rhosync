@@ -18,6 +18,12 @@ describe "User" do
     ApiToken.with_key(token).user_id.should == @u.id
   end
   
+  it "should get token for user" do
+    token = @u.create_token
+    @u.token.value.length.should == 32
+    @u.token.value.should == token
+  end
+  
   it "should maintain only one token for user" do
     token = @u.create_token
     ApiToken.is_exist?(token,'value').should == true

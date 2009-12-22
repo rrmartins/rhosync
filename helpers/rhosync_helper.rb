@@ -1,6 +1,11 @@
 helpers do
+  def request_action
+    request.env['PATH_INFO'].split('/').last
+  end
+  
   def check_api_token
-    params[:api_token] and ApiToken.is_exist?(params[:api_token],'value')
+    request_action == 'get_api_token' or 
+      (params[:api_token] and ApiToken.is_exist?(params[:api_token],'value'))
   end
   
   def do_login
@@ -43,7 +48,7 @@ helpers do
   end
   
   def api_user
-    ApiToken.with_key(params[:api_token]).user
+    request_action == 'get_api_token' ? current_user : ApiToken.with_key(params[:api_token]).user
   end
   
   def current_app

@@ -1,5 +1,5 @@
-api :update_user do |app_name,user,payload|
-  user = User.authenticate(payload[:login], payload[:password])
+api :update_user do |params,user|
+  user = User.authenticate(params[:login], params[:password])
   raise RhosyncServerError.new("Unknown user/password") unless user
-  user.update(payload[:attributes])
+  user.update(params[:attributes])
 end

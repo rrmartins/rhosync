@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__),'api_helper')
 
-describe "RhosyncApiCreateApp" do
+describe "RhosyncApiImportApp" do
   it_should_behave_like "ApiHelper"
   
   it "should return 422 with wrong api token" do
@@ -10,7 +10,7 @@ describe "RhosyncApiCreateApp" do
     last_response.body.should == "No API token provided"
   end
   
-  it "should upload zipfile and create app and sources" do   
+  it "should upload zipfile and import app and sources" do   
     upload_test_apps
     
     App.is_exist?(@appname,'name').should == true

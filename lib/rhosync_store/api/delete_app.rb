@@ -1,4 +1,4 @@
-api :delete_app do |app_name,user,payload|
-  App.with_key(app_name).delete if App.is_exist?(app_name,'name')
-  FileUtils.rm_rf File.join(File.dirname(__FILE__),'..','..','..','apps',app_name)
+api :delete_app do |params,user|
+  App.with_key(params[:app_name]).delete if App.is_exist?(params[:app_name],'name')
+  FileUtils.rm_rf File.join(File.dirname(__FILE__),'..','..','..','apps',params[:app_name])
 end

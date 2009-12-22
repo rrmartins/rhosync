@@ -38,8 +38,8 @@ def upload_test_apps
   file = File.join(File.dirname(__FILE__),'..','apps',@appname)
   compress(file)
   zipfile = File.join(file,"#{@appname}.zip")
-  post "/api/create_app", :app_name => @appname, :api_token => @api_token, :payload => {
-    :upload_file => Rack::Test::UploadedFile.new(zipfile, "application/octet-stream")}
+  post "/api/import_app", :app_name => @appname, :api_token => @api_token, 
+    :upload_file => Rack::Test::UploadedFile.new(zipfile, "application/octet-stream")
   FileUtils.rm zipfile
 end
 

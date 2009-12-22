@@ -1,5 +1,6 @@
-api :create_app do |app_name,user,payload|
-  upload_file(app_name,payload) if payload[:upload_file]
+api :import_app do |params,user|
+  app_name = params[:app_name]
+  upload_file(app_name,params[:upload_file]) if params[:upload_file]
   App.with_key(app_name).delete if App.is_exist?(app_name,'name')
   config = YAML.load File.read(File.join(RhosyncStore.app_directory,app_name,'config.yml'))
   if config and config['sources']
@@ -19,9 +20,9 @@ api :create_app do |app_name,user,payload|
   end
 end
 
-def upload_file(app_name,payload)
+def upload_file(app_name,params)
   appdir = App.appdir(app_name)
   FileUtils.rm_rf(appdir)
   FileUtils.mkdir_p(appdir)
-  unzip_file(appdir,payload)
+  unzip_file(appdir,params)
 end

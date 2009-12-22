@@ -1,4 +1,4 @@
-api :upload_file do |app_name,user,payload|
-  appdir = App.appdir(app_name)
-  unzip_file(appdir,payload) if File.exists?(appdir)
+api :upload_file do |params,user|
+  appdir = App.appdir(params[:app_name])
+  unzip_file(appdir,params[:upload_file]) if File.exists?(appdir)
 end

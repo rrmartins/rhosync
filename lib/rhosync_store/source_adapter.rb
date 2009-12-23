@@ -61,6 +61,7 @@ module RhosyncStore
       else
         @source.app.store.put_data(dockey,@result)
       end
+      @source.app.store.put_value(@source.document.get_datasize_dockey,@result.size)
     end
   
     # only implement this if you want RhoSync to install a callback into your backend

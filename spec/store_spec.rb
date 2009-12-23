@@ -21,11 +21,6 @@ describe "RhosyncStore" do
       @store.get_data(@mdoc.get_key).should == new_data
     end
     
-    it "should compute setcount in put_data" do
-      @store.put_data(@mdoc.get_key,@data).should == true
-      @store.get_datasize(Document.get_datasize_dockey(@mdoc.get_key)).should == 3
-    end
-    
     it "should put_value and get_value" do
       @store.put_value('foo','bar')
       @store.get_value('foo').should == 'bar'
@@ -79,10 +74,9 @@ describe "RhosyncStore" do
     end
     
     it "should get_keys" do
-      expected = ["doc1:1:1:1:source1", "doc1:1:1:1:source1-count", 
-        "doc1:1:1:1:source2", "doc1:1:1:1:source2-count"]
+      expected = ["doc1:1:1:1:source1", "doc1:1:1:1:source2"]
       @store.put_data(expected[0],@data)
-      @store.put_data(expected[2],@data)
+      @store.put_data(expected[1],@data)
       @store.get_keys('doc1:1:1:1:*').sort.should == expected
     end
   end

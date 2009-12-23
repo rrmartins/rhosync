@@ -24,7 +24,7 @@ module RhosyncStore
       res['insert'] = compute_page
       res['links'] = @source.app.store.get_data(@clientdoc.get_create_links_dockey)
       res['delete'] = compute_deleted_page
-      @source.app.store.put_data(@clientdoc.get_key,res['insert'],true)
+      @source.app.store.put_data(@clientdoc.get_key,res['insert'],true)      
       @source.app.store.delete_data(@clientdoc.get_key,res['delete'])
       res.reject! {|key,value| value.nil? or value.empty?}
       res['token'] = compute_token unless res.empty?
@@ -40,11 +40,11 @@ module RhosyncStore
           {'source'=>@source.name},
           {'search-error'=>error} ]
       else  
-        res = compute_search 
+        res,search_size = compute_search 
         return if res.empty?
         [ {'version'=>VERSION},
           {'source'=>@source.name},
-          {'count'=>res.length},
+          {'count'=>res.size},
           {'insert'=>res} ]
       end
     end
@@ -66,8 +66,11 @@ module RhosyncStore
     # Computes diffs between master doc and client doc, trims it to page size, 
     # stores page, and returns page as hash  
     def compute_page
-      res = _compute_diff(@clientdoc.get_key,@source.document.get_key)
+      res,diffsize = _compute_diff(@clientdoc.get_key,@source.document.get_key)
       @source.app.store.put_data(@clientdoc.get_page_dockey,res)
+      progress_count = @source.app.store.get_value(@source.document.get_datasize_dockey).to_i - diffsize
+      
+      @source.app.store.put_value(@clientdoc.get_datasize_dockey,progress_count)
       res
     end
     
@@ -125,12 +128,13 @@ module RhosyncStore
     def _compute_diff(srckey,dstkey)
       res = {}
       page_size = @p_size
-      @source.app.store.get_diff_data(srckey,dstkey).each do |key,item|
+      diff = @source.app.store.get_diff_data(srckey,dstkey)
+      diff.each do |key,item|
         res[key] = item
         page_size -= 1
         break if page_size <= 0         
       end
-      res
+      [res,diff.size]
     end
     
     def _receive_cud(operation,params)
@@ -174,8 +178,8 @@ module RhosyncStore
       count = 0
       count += res['insert'].length if res['insert']
       count += res['delete'].length if res['delete']
-      progress_count = @source.app.store.get_datasize(Document.get_datasize_dockey(@clientdoc.get_key))
-      total_count = @source.app.store.get_datasize(Document.get_datasize_dockey(@source.document.get_key))
+      total_count = @source.app.store.get_value(@source.document.get_datasize_dockey).to_i
+      progress_count = @source.app.store.get_value(@clientdoc.get_datasize_dockey).to_i
       token = res['token']
       res.delete('token')
       [ {'version'=>VERSION},

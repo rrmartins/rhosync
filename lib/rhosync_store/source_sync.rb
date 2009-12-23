@@ -66,10 +66,9 @@ module RhosyncStore
     end
     
     def _process_cud(operation)
-      errors = {}
-      object_links = {}
+      errors,links,deletes,creates = {},{},{},{}
       client_id = nil
-      modified_doc = _op_dockey(@source.document,operation)
+      modified_doc = @source.document.send("get_#{operation}_dockey")
       modified = @source.app.store.get_data(modified_doc)
       # Process operation queue, one object at a time
       modified.each do |key,value|
@@ -84,9 +83,18 @@ module RhosyncStore
           # Perform operation
           link = @adapter.send operation, value
           # Store object-id link for the client
-          if operation == 'create' and link and link.is_a?(String)
-            object_links[client_id] ||= {}
-            object_links[client_id][key] = { 'l' => link }
+          if operation == 'create'
+            # If we have a link, store object in client document
+            # Otherwise, store object for delete on client
+            if link and link.is_a?(String)
+              links[client_id] ||= {}
+              links[client_id][key] = { 'l' => link }
+              creates[client_id] ||= {}
+              creates[client_id][link] = value
+            else
+              deletes[client_id] ||= {}
+              deletes[client_id][key] = value
+            end
           end
         rescue Exception => e
           Logger.error "SourceAdapter raised #{operation} exception: #{e}"
@@ -96,24 +104,25 @@ module RhosyncStore
           break
         end
       end
-      # Record errors
+      # Record operation results
       doc = Document.new('cd',@source.app.id,@source.user.id,'',@source.name)
-      errors.each do |client_id,errors|
-        doc.client_id = client_id
-        @source.app.store.put_data(_op_dockey(doc,operation,'_errors'),errors,true)
-      end
-      # Record links
-      object_links.each do |client_id,links|
-        doc.client_id = client_id
-        @source.app.store.put_data(_op_dockey(doc,operation,'_links'),links,true)
+      [ {:data => errors, :doc_key => "get_#{operation}_errors_dockey"}, 
+        {:data => links, :doc_key => "get_#{operation}_links_dockey"},
+        {:data => creates, :doc_key => "get_key"},
+        {:data => deletes, :doc_key => "get_delete_page_dockey"} 
+      ].each do |bucket|
+        _record_operation_result(doc,operation,bucket[:doc_key],bucket[:data])
       end
       # Record rest of queue (if something in the middle failed)
-      @source.app.store.put_data(_op_dockey(@source.document,operation),modified)
+      @source.app.store.put_data(modified_doc,modified)
       true
     end
     
-    def _op_dockey(doc,operation,suffix='')
-      doc.send "get_#{operation}#{suffix}_dockey"
+    def _record_operation_result(doc,operation,doc_key,result)
+      result.each do |client_id,data|
+        doc.client_id = client_id
+        @source.app.store.put_data(doc.send(doc_key),data,true)
+      end
     end
     
     # Read Operation; params are query arguments

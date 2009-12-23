@@ -62,8 +62,8 @@ module RhosyncStore
       "#{@doctype}:#{@app_id.to_s}:#{@user_id.to_s}:#{@client_id.to_s}:#{@source_name}"
     end
     
-    def self.get_datasize_dockey(dockey)
-      "#{dockey}-count"
+    def get_datasize_dockey
+      _get_doc("datasize")
     end
     
     private

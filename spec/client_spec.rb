@@ -54,7 +54,7 @@ describe "Client" do
     @a.store.get_data(clientdoc.get_create_errors_dockey).should == {}
     @a.store.get_data(clientdoc.get_create_links_dockey).should == {}
     @a.store.get_data(clientdoc.get_source_errors_dockey).should == {}
-    @a.store.get_value(Document.get_datasize_dockey(clientdoc.get_key)).should == nil    
+    @a.store.get_value(clientdoc.get_datasize_dockey).should == nil    
     @a.store.get_data(@cdoc.get_key).should == @data    
   end
 end

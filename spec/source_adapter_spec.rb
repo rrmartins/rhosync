@@ -66,11 +66,21 @@ describe "SourceAdapter" do
       @sa.query.should == expected
       @sa.sync.should == true
       @s.app.store.get_data(@s.document.get_key).should == expected
+      @s.app.store.get_value(@s.document.get_datasize_dockey).to_i.should == 2
     end
     
     it "should fail gracefully if @result is missing" do
       @sa.inject_result nil
       lambda { @sa.query }.should_not raise_error
+    end
+        
+    it "should reset count if @result is empty" do
+      @sa.inject_result({'1'=>@product1,'2'=>@product2})
+      @sa.query; @sa.sync
+      @s.app.store.get_value(@s.document.get_datasize_dockey).to_i.should == 2
+      @sa.inject_result({})
+      @sa.query; @sa.sync
+      @s.app.store.get_value(@s.document.get_datasize_dockey).to_i.should == 0
     end
     
     it "should execute SourceAdapter create method" do

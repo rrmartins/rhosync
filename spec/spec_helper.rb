@@ -84,6 +84,29 @@ describe "SourceAdapterHelper", :shared => true do
     post url, params.to_json, {'CONTENT_TYPE'=>'application/json'}
   end
   
+  def dump_db_data(store)
+    puts "*"*50 
+    puts "DATA DUMP"
+    puts "*"*50
+    store.db.keys('*').sort.each do |key|
+      next if not key =~ /md|cd/ 
+      line = ""
+      line << "#{key}: "
+      type = store.db.type key
+      if type == 'set'
+        if not key =~ /sources|clients|users/
+          line << "#{store.get_data(key).inspect}"
+        else
+          line << "#{store.db.smembers(key).inspect}"
+        end  
+      else
+        line << "#{store.db.get key}"
+      end
+      puts line
+    end
+    puts "*"*50
+  end
+  
   def set_test_data(dockey,data,error_message=nil,error_name='wrongname')
     if error_message
       error = {'an_attribute'=>error_message,'name'=>error_name} 

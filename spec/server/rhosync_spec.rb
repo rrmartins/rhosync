@@ -132,7 +132,7 @@ describe "Rhosync" do
       last_response.content_type.should == 'application/json'
       token = @store.get_value(cs.clientdoc.get_page_token_dockey)
       JSON.parse(last_response.body).should == [{"version"=>ClientSync::VERSION},{"token"=>token}, 
-        {"count"=>2}, {"progress_count"=>2},{"total_count"=>2},{'insert'=>data}]
+        {"count"=>2}, {"progress_count"=>0},{"total_count"=>2},{'insert'=>data}]
     end
     
     it "should get inserts json and confirm token" do
@@ -143,7 +143,7 @@ describe "Rhosync" do
       last_response.should be_ok
       token = @store.get_value(cs.clientdoc.get_page_token_dockey)
       JSON.parse(last_response.body).should == [{"version"=>ClientSync::VERSION},{"token"=>token}, 
-        {"count"=>2}, {"progress_count"=>2}, {"total_count"=>2},{'insert'=>data}]
+        {"count"=>2}, {"progress_count"=>0}, {"total_count"=>2},{'insert'=>data}]
       get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
         :version => ClientSync::VERSION
       last_response.should be_ok
@@ -160,7 +160,7 @@ describe "Rhosync" do
       last_response.should be_ok
       token = @store.get_value(cs.clientdoc.get_page_token_dockey)
       JSON.parse(last_response.body).should == [{"version"=>ClientSync::VERSION},{"token"=>token}, 
-        {"count"=>2}, {"progress_count"=>2}, {"total_count"=>2},{'insert'=>data}]
+        {"count"=>2}, {"progress_count"=>0}, {"total_count"=>2},{'insert'=>data}]
       
       @store.flash_data('test_db_storage')
       @s.refresh_time = Time.now.to_i      
@@ -170,7 +170,7 @@ describe "Rhosync" do
       last_response.should be_ok
       token = @store.get_value(cs.clientdoc.get_page_token_dockey)
       JSON.parse(last_response.body).should == [{"version"=>ClientSync::VERSION},{"token"=>token}, 
-        {"count"=>2}, {"progress_count"=>0}, {"total_count"=>2},{'delete'=>data}]
+        {"count"=>2}, {"progress_count"=>0}, {"total_count"=>0},{'delete'=>data}]
     end
     
     it "should get search results" do

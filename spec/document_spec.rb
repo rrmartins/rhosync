@@ -63,6 +63,6 @@ describe "Document" do
   end
   
   it "should get_datasize_dockey" do
-    Document.get_datasize_dockey('foo').should == "foo-count"    
+    @d.get_datasize_dockey.should == "#{@doctype}-datasize:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"    
   end
 end

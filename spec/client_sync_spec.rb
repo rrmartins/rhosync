@@ -23,7 +23,7 @@ describe "ClientSync" do
       set_test_data('test_db_storage',data)
       @cs.send_cud.should == [{'version'=>ClientSync::VERSION},
         {'token'=>@a.store.get_value(@cs.clientdoc.get_page_token_dockey)},
-        {'count'=>data.size},{'progress_count'=>data.size},
+        {'count'=>data.size},{'progress_count'=>0},
         {'total_count'=>data.size},expected]
       verify_result(@cs.clientdoc.get_page_dockey => data,
         @cs.clientdoc.get_delete_page_dockey => {},
@@ -51,7 +51,7 @@ describe "ClientSync" do
       set_test_data('test_db_storage',{},msg,'logoff error')
       @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
         {"token"=>@a.store.get_value(@cs.clientdoc.get_page_token_dockey)}, 
-        {"count"=>1}, {"progress_count"=>1}, {"total_count"=>1}, 
+        {"count"=>1}, {"progress_count"=>0}, {"total_count"=>1}, 
         {"source-error"=>{"logoff-error"=>{"message"=>msg}}, 
         "insert"=>{ERROR=>{"name"=>"logoff error", "an_attribute"=>msg, 
           "rhomobile.rhoclient"=>"1"}}}]
@@ -154,9 +154,10 @@ describe "ClientSync" do
     it "should return diffs between master documents and client documents limited by page size" do
       @store.put_data(@s.document.get_key,@data).should == true
       @store.get_data(@s.document.get_key).should == @data
-
+      @store.put_value(@s.document.get_datasize_dockey,@data.size)
       @expected = {'1'=>@product1,'2'=>@product2}
       @cs.compute_page.should == @expected
+      @store.get_value(@cs.clientdoc.get_datasize_dockey).to_i.should == 0
       @store.get_data(@cs.clientdoc.get_page_dockey).should == @expected      
     end
 
@@ -204,7 +205,7 @@ describe "ClientSync" do
       @cs.send_cud(nil,params)
       token = @store.get_value(@cs.clientdoc.get_page_token_dockey)
       @cs.send_cud.should == [{"version"=>ClientSync::VERSION},{"token"=>token}, 
-        {"count"=>1}, {"progress_count"=>1},{"total_count"=>1},{'insert' => expected}]
+        {"count"=>1}, {"progress_count"=>0},{"total_count"=>1},{'insert' => expected}]
       @cs.send_cud(token).should == [{"version"=>ClientSync::VERSION},{"token"=>""}, 
         {"count"=>0}, {"progress_count"=>1}, {"total_count"=>1}, {}]
       @store.get_data(@cs.clientdoc.get_page_dockey).should == {}              

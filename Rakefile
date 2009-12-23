@@ -24,3 +24,8 @@ TYPES.each do |type,files|
     t.rcov_opts = OPTS[:rcov_opts]
   end
 end
+
+desc "Load console environment"
+task :console do
+  sh "irb -rubygems -r rhosync.rb"
+end

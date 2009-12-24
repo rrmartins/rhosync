@@ -21,6 +21,10 @@ module RhosyncStore
     def get_search_errors_dockey
       _get_doc("search-errors")
     end
+  
+    def get_search_token_dockey
+      _get_doc("search-token")
+    end  
     
     def get_delete_page_dockey
       _get_doc("delete-page")

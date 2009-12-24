@@ -66,7 +66,7 @@ module RhosyncStore
     end
     
     def _process_cud(operation)
-      errors,links,deletes,creates = {},{},{},{}
+      errors,links,deletes,creates,dels = {},{},{},{},{}
       client_id = nil
       modified_doc = @source.document.send("get_#{operation}_dockey")
       modified = @source.app.store.get_data(modified_doc)
@@ -95,6 +95,9 @@ module RhosyncStore
               deletes[client_id] ||= {}
               deletes[client_id][key] = value
             end
+          elsif operation == 'delete'
+            dels[client_id] ||= {}
+            dels[client_id][key] = value
           end
         rescue Exception => e
           Logger.error "SourceAdapter raised #{operation} exception: #{e}"
@@ -112,6 +115,14 @@ module RhosyncStore
         {:data => deletes, :doc_key => "get_delete_page_dockey"} 
       ].each do |bucket|
         _record_operation_result(doc,operation,bucket[:doc_key],bucket[:data])
+      end
+      if operation == 'delete'
+        # Clean up deleted objects from master document and corresponding client document
+        dels.each do |client_id,data|
+          doc.client_id = client_id
+          @source.app.store.delete_data(doc.get_key,data)
+          @source.app.store.delete_data(@source.document.get_key,data)
+        end
       end
       # Record rest of queue (if something in the middle failed)
       @source.app.store.put_data(modified_doc,modified)
@@ -132,6 +143,7 @@ module RhosyncStore
         if operation == 'search'
           sdoc = Document.new('cd',@source.app.id,@source.user.id,client_id,@source.name)
           errorkey = sdoc.get_search_errors_dockey
+          compute_token sdoc.get_search_token_dockey
           @adapter.search params
           @adapter.save sdoc.get_search_dockey
         else

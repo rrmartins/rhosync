@@ -107,6 +107,17 @@ describe "SourceAdapterHelper", :shared => true do
     puts "*"*50
   end
   
+  def add_client_id(data)
+    res = Marshal.load(Marshal.dump(data))
+    res.each { |key,value| value['rhomobile.rhoclient'] = @c.id.to_s }
+  end
+  
+  def set_state(state)
+    state.each do |dockey,data|
+      @a.store.put_data(dockey,data)
+    end
+  end
+  
   def set_test_data(dockey,data,error_message=nil,error_name='wrongname')
     if error_message
       error = {'an_attribute'=>error_message,'name'=>error_name} 

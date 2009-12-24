@@ -27,26 +27,15 @@ module RhosyncStore
       @source.app.store.put_data(@clientdoc.get_key,res['insert'],true)      
       @source.app.store.delete_data(@clientdoc.get_key,res['delete'])
       res.reject! {|key,value| value.nil? or value.empty?}
-      res['token'] = compute_token unless res.empty?
+      res['token'] = compute_token(@clientdoc.get_page_token_dockey) unless res.empty?
       res.merge!(_send_errors)
       _format_result(res)
     end
     
     def search(params)
-      @source_sync.search(@client.id,params)
-      error = @source.app.store.get_data(@clientdoc.get_search_errors_dockey)
-      if not error.empty?
-        [ {'version'=>VERSION},
-          {'source'=>@source.name},
-          {'search-error'=>error} ]
-      else  
-        res,search_size = compute_search 
-        return if res.empty?
-        [ {'version'=>VERSION},
-          {'source'=>@source.name},
-          {'count'=>res.size},
-          {'insert'=>res} ]
-      end
+      return _resend_search_result(params[:search_token]) if params[:search_token] and params[:resend]
+      _ack_search(params[:search_token]) if params[:search_token]
+      _do_search(params[:search_params]) if params[:search_params]
     end
     
     # Resend token for a client, also sends exceptions
@@ -95,14 +84,7 @@ module RhosyncStore
       end
       res
     end
-    
-    # Computes token for a single client request
-    def compute_token
-      token = _token
-      @source.app.store.put_value(@clientdoc.get_page_token_dockey,token)
-      token.to_s
-    end
-    
+        
     class << self
       # Resets the store for a given app,client
       def reset(app,user,client)
@@ -125,6 +107,46 @@ module RhosyncStore
     end
     
     private
+    def _resend_search_result(search_token)
+       _format_search_result
+    end
+    
+    def _ack_search(search_token)
+      error = @source.app.store.get_data(@clientdoc.get_search_errors_dockey)
+      if not error.empty?
+        @source.app.store.flash_data(@clientdoc.get_search_errors_dockey)
+      else
+        res =  @source.app.store.get_data(@clientdoc.get_search_dockey)
+        @source.app.store.get_data(@clientdoc.get_key,res,true)
+        @source.app.store.flash_data(@clientdoc.get_search_dockey)        
+      end
+      {}
+    end
+    
+    def _do_search(search_params)
+      @source_sync.search(@client.id,params)
+       _format_search_result      
+    end
+    
+    def _format_search_result
+      error = @source.app.store.get_data(@clientdoc.get_search_errors_dockey)
+      search_token = @source.app.store.get_value(@clientdoc.get_search_token_dockey)
+      if not error.empty?
+        [ {'version'=>VERSION},
+          {'search_token' => search_token},
+          {'source'=>@source.name},
+          {'search-error'=>error} ]
+      else  
+        res,search_size = compute_search 
+        return if res.empty?
+        [ {'version'=>VERSION},
+          {'search_token' => search_token},
+          {'source'=>@source.name},
+          {'count'=>res.size},
+          {'insert'=>res} ]
+       end
+    end
+    
     def _compute_diff(srckey,dstkey)
       res = {}
       page_size = @p_size
@@ -144,10 +166,6 @@ module RhosyncStore
         value['rhomobile.rhoclient'] = @client.id.to_s
       end
       @source.app.store.put_data(dockey,params,true)
-    end
-    
-    def _token
-      ((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i
     end
     
     def _ack_token(token)

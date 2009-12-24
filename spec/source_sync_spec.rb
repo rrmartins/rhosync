@@ -128,10 +128,14 @@ describe "SourceSync" do
     
     describe "delete" do
       it "should do delete with no errors" do
-        set_test_data(@s.document.get_delete_dockey,{'4'=>@product4})
+        set_state(@s.document.get_delete_dockey => add_client_id({'4'=>@product4}),
+          @s.document.get_key => {'4'=>@product4,'3'=>@product3},
+          @clientdoc.get_key => {'4'=>@product4,'3'=>@product3})
         @ss.delete.should == true
         verify_result(@s.document.get_delete_errors_dockey => {},
-          @s.document.get_delete_dockey => {})
+          @s.document.get_delete_dockey => {},
+          @s.document.get_key => {'3'=>@product3},
+          @clientdoc.get_key => {'3'=>@product3})
       end
       
       it "should do delete with errors" do

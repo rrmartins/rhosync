@@ -68,6 +68,17 @@ module RhosyncStore
     [res[0], res[1], Base64.decode64(res[2])]
   end
   
+  def get_token
+    ((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i
+  end
+  
+  # Computes token for a single client request
+  def compute_token(doc_key)
+    token = get_token
+    @source.app.store.put_value(doc_key,token)
+    token.to_s
+  end
+  
   # Returns require-friendly filename for a class
   def underscore(camel_cased_word)
     camel_cased_word.to_s.gsub(/::/, '/').

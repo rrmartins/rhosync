@@ -60,6 +60,6 @@ helpers do
   end
   
   def current_client
-    Client.with_key(params[:client_id]) if params[:client_id]
+    Client.with_key(params[:client_id].to_s) if params[:client_id]
   end
 end

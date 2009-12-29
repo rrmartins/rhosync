@@ -61,6 +61,7 @@ describe "Rhosync" do
     it "should respond to clientcreate" do
       get "/apps/#{@a.name}/clientcreate"
       last_response.should be_ok
+      last_response.content_type.should == 'application/json'
       last_response.body.should == { "client" => { "client_id" => "2" } }.to_json
       Client.with_key(2).user_id.should == 'testuser'
     end
@@ -180,6 +181,7 @@ describe "Rhosync" do
       params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
         :version => ClientSync::VERSION}
       get "/apps/#{@a.name}/search",params
+      last_response.content_type.should == 'application/json'
       JSON.parse(last_response.body).should == [[{'version'=>ClientSync::VERSION},
         {'source'=>sources[0]},{'count'=>1},{'insert'=>{'1'=>@product1}}]]
     end

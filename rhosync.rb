@@ -48,6 +48,7 @@ post '/apps/:app_name/clientlogin' do
 end
 
 get '/apps/:app_name/clientcreate' do
+  content_type :json
   client = Client.create(:user_id => current_user.id,:app_id => current_app.id)
   { "client" => { "client_id" =>  client.id.to_s } }.to_json
 end

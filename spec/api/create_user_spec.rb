@@ -4,14 +4,14 @@ describe "RhosyncApiCreateUser" do
   it_should_behave_like "ApiHelper"
   
   it "should create user as admin" do
-    attributes = { :login => 'testuser1', :password => 'testpass1' }
+    params = { :app_name => @appname, :api_token => @api_token,
+      :login => 'testuser1', :password => 'testpass1' }
     upload_test_apps
-    post "/api/create_user", :app_name => @appname, :api_token => @api_token,
-      :attributes => attributes
+    post "/api/create_user", params
     last_response.should be_ok
-    User.with_key('testuser1').login.should == attributes[:login]
-    User.authenticate(attributes[:login],
-      attributes[:password]).login.should == attributes[:login]
-    @a.users.members.should == ['testuser1']
+    User.with_key(params[:login]).login.should == params[:login]
+    User.authenticate(params[:login],
+      params[:password]).login.should == params[:login]
+    @a.users.members.should == [params[:login]]
   end
 end

@@ -28,6 +28,7 @@ module RhosyncStore
           adapter=(Object.const_get(source.name)).new(source,credential) 
         rescue Exception=>e
           Logger.error "Failure to create adapter from class #{source.name}: #{e.inspect.to_s}"
+          #Logger.error e.backtrace.join("\n")
           raise e
         end
       end

@@ -114,7 +114,11 @@ describe "SourceAdapterHelper", :shared => true do
   
   def set_state(state)
     state.each do |dockey,data|
-      @a.store.put_data(dockey,data)
+      if data.is_a?(Hash)
+        @a.store.put_data(dockey,data)
+      else
+        @a.store.put_value(dockey,data)
+      end
     end
   end
   
@@ -130,8 +134,12 @@ describe "SourceAdapterHelper", :shared => true do
   
   def verify_result(result)
     result.each do |dockey,expected|
-      expected[ERROR].delete('rhomobile.rhoclient') if expected[ERROR]
-      @a.store.get_data(dockey).should == expected
+      expected[ERROR].delete('rhomobile.rhoclient') if expected and expected[ERROR]
+      if expected.is_a?(Hash)
+        @a.store.get_data(dockey).should == expected
+      else
+        @a.store.get_value(dockey).should == expected
+      end
     end
   end
 end

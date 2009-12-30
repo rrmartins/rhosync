@@ -33,9 +33,11 @@ module RhosyncStore
     end
     
     def search(params)
+      res = []
       return _resend_search_result(params[:search_token]) if params[:search_token] and params[:resend]
       _ack_search(params[:search_token]) if params[:search_token]
-      _do_search(params[:search_params]) if params[:search_params]
+      res = _do_search(params[:search]) if params[:search]
+      res
     end
     
     # Resend token for a client, also sends exceptions
@@ -94,9 +96,10 @@ module RhosyncStore
         end
       end
     
-      def search_all(client,sources=[],params=nil)
+      def search_all(client,params=nil)
+        return [] unless params[:sources]
         res = []
-        sources.each do |source|
+        params[:sources].each do |source|
           s = Source.with_key(source)
           cs = ClientSync.new(s,client,params[:p_size])
           search_res = cs.search(params)
@@ -112,33 +115,30 @@ module RhosyncStore
     end
     
     def _ack_search(search_token)
-      error = @source.app.store.get_data(@clientdoc.get_search_errors_dockey)
-      if not error.empty?
+      token = @source.app.store.get_value(@clientdoc.get_search_token_dockey)
+      if token == search_token
         @source.app.store.flash_data(@clientdoc.get_search_errors_dockey)
-      else
-        res =  @source.app.store.get_data(@clientdoc.get_search_dockey)
-        @source.app.store.get_data(@clientdoc.get_key,res,true)
-        @source.app.store.flash_data(@clientdoc.get_search_dockey)        
+        @source.app.store.flash_data(@clientdoc.get_search_dockey)    
+        @source.app.store.flash_data(@clientdoc.get_search_token_dockey)        
       end
-      {}
     end
     
-    def _do_search(search_params)
+    def _do_search(params)
       @source_sync.search(@client.id,params)
-       _format_search_result      
+      _format_search_result      
     end
     
     def _format_search_result
       error = @source.app.store.get_data(@clientdoc.get_search_errors_dockey)
-      search_token = @source.app.store.get_value(@clientdoc.get_search_token_dockey)
       if not error.empty?
         [ {'version'=>VERSION},
-          {'search_token' => search_token},
           {'source'=>@source.name},
           {'search-error'=>error} ]
       else  
+        search_token = @source.app.store.get_value(@clientdoc.get_search_token_dockey)
+        search_token ||= ''
         res,search_size = compute_search 
-        return if res.empty?
+        return [] if res.empty?
         [ {'version'=>VERSION},
           {'search_token' => search_token},
           {'source'=>@source.name},

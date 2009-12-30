@@ -78,7 +78,7 @@ end
 
 get '/apps/:app_name/search' do
   content_type :json
-  ClientSync.search_all(current_client,params[:sources],params[:search]).to_json
+  ClientSync.search_all(current_client,params).to_json
 end
 
 # Management routes

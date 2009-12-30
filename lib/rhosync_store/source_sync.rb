@@ -27,11 +27,9 @@ module RhosyncStore
     end
     
     def search(client_id=nil,params=nil)
-      return if _auth_op('login') == false
-      
+      return if _auth_op('login',client_id) == false
       res = _read('search',client_id,params)
-      
-      _auth_op('logoff')
+      _auth_op('logoff',client_id)
       res
     end
     
@@ -52,14 +50,15 @@ module RhosyncStore
     end
     
     private
-    def _auth_op(operation)
+    def _auth_op(operation,client_id=-1)
+      edockey = client_id == -1 ? @source.document.get_source_errors_dockey :
+        Document.new('cd',@source.app.id,@source.user.id,client_id,@source.name).get_search_errors_dockey
       begin
+        @source.app.store.flash_data(edockey) if operation == 'login'
         @adapter.send operation
-        @source.app.store.flash_data(@source.document.get_source_errors_dockey) if operation == 'login'
       rescue Exception => e
         Logger.error "SourceAdapter raised #{operation} exception: #{e}"
-        @source.app.store.put_data(@source.document.get_source_errors_dockey,
-                                   {"#{operation}-error"=>{'message'=>e.message}},true)
+        @source.app.store.put_data(edockey,{"#{operation}-error"=>{'message'=>e.message}},true)
         return false
       end
       true

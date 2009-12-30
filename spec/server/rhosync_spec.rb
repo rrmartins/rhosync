@@ -175,19 +175,19 @@ describe "Rhosync" do
     end
     
     it "should get search results" do
-      pending "fix server search"
       sources = ['SampleAdapter']
+      cs = ClientSync.new(@s,@c,1)
       @store.put_data('test_db_storage',@data)
       params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
         :version => ClientSync::VERSION}
       get "/apps/#{@a.name}/search",params
       last_response.content_type.should == 'application/json'
-      JSON.parse(last_response.body).should == [[{'version'=>ClientSync::VERSION},
+      token = @store.get_value(cs.clientdoc.get_search_token_dockey)
+      JSON.parse(last_response.body).should == [[{'version'=>ClientSync::VERSION},{'search_token'=>token},
         {'source'=>sources[0]},{'count'=>1},{'insert'=>{'1'=>@product1}}]]
     end
     
     it "should get search results with error" do
-      pending "fix server search"
       sources = ['SampleAdapter']
       msg = "Error during search"
       error = set_test_data('test_db_storage',@data,msg,'search error')
@@ -199,18 +199,21 @@ describe "Rhosync" do
     end
     
     it "should get multiple source search results" do
-      pending "fix server search"
       @s_fields[:name] = 'SimpleAdapter'
       @s1 = Source.create(@s_fields)
       @store.put_data('test_db_storage',@data)
+      cs = ClientSync.new(@s,@c,1)
+      cs1 = ClientSync.new(@s1,@c,1)
       sources = ['SimpleAdapter','SampleAdapter']
       params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},
         :version => ClientSync::VERSION}
       get "/apps/#{@a.name}/search",params
+      token1 = @store.get_value(cs1.clientdoc.get_search_token_dockey)
+      token = @store.get_value(cs.clientdoc.get_search_token_dockey)
       JSON.parse(last_response.body).should == [
-        [{"version"=>ClientSync::VERSION}, {"source"=>"SimpleAdapter"}, 
+        [{"version"=>ClientSync::VERSION},{'search_token'=>token1},{"source"=>"SimpleAdapter"}, 
          {"count"=>1}, {"insert"=>{'obj'=>{'foo'=>'bar'}}}],
-        [{"version"=>ClientSync::VERSION}, {"source"=>"SampleAdapter"}, 
+        [{"version"=>ClientSync::VERSION},{'search_token'=>token},{"source"=>"SampleAdapter"}, 
          {"count"=>1}, {"insert"=>{'1'=>@product1}}]]
     end
   end

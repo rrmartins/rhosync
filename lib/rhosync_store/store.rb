@@ -16,11 +16,18 @@ module RhosyncStore
     def put_data(dockey,data={},append=false)
       if dockey
         flash_data("#{dockey}*") unless append
-        data.each do |key,value|
-          value.each do |attrib,value|
-            unless _is_reserved?(attrib,value)
-              res = @@db.sadd(dockey,setelement(key,attrib,value))
+        # Inserts a hash or array
+        if data.is_a?(Hash)
+          data.each do |key,value|
+            value.each do |attrib,value|
+              unless _is_reserved?(attrib,value)
+                @@db.sadd(dockey,setelement(key,attrib,value))
+              end
             end
+          end
+        else
+          data.each do |value|
+            @@db.sadd(dockey,value)
           end
         end
       end
@@ -41,13 +48,17 @@ module RhosyncStore
     end
   
     # Retrieves set for given dockey,source,user
-    def get_data(dockey)
-      res = {}
+    def get_data(dockey,type=Hash)
+      res = type == Hash ? {} : []
       if dockey
         @@db.smembers(dockey).each do |element|
-          key,attrib,value = getelement(element)
-          res[key] = {} unless res[key]
-          res[key].merge!({attrib => value})
+          if type == Hash
+            key,attrib,value = getelement(element)
+            res[key] = {} unless res[key]
+            res[key].merge!({attrib => value})
+          else
+            res << element
+          end
         end
         res
       end
@@ -69,9 +80,17 @@ module RhosyncStore
     # Deletes data from a given doctype,source,user
     def delete_data(dockey,data={})
       if dockey
-        data.each do |key,value|
-          value.each do |attrib,val|
-            @@db.srem(dockey,setelement(key,attrib,val))
+        if data.is_a?(Array) and not data.empty?
+          # TODO: This will be very slow if the set is huge
+          @@db.smembers(dockey).each do |member|
+            key,attrib,value = getelement(member)
+            @@db.srem(dockey,member) if data.include?(key)
+          end
+        else  
+          data.each do |key,value|
+            value.each do |attrib,val|
+              @@db.srem(dockey,setelement(key,attrib,val))
+            end
           end
         end
       end
@@ -88,6 +107,11 @@ module RhosyncStore
     # Returns array of keys matching a given keymask
     def get_keys(keymask)
       @@db.keys(keymask)
+    end
+    
+    # Returns true if given item is a member of the given set
+    def ismember?(setkey,item)
+      @@db.sismember(setkey,item)
     end
     
     private  

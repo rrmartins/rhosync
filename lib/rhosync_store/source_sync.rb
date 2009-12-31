@@ -64,74 +64,111 @@ module RhosyncStore
       true
     end
     
-    def _process_cud(operation)
-      errors,links,deletes,creates,dels = {},{},{},{},{}
-      client_id = nil
-      modified_doc = @source.document.send("get_#{operation}_dockey")
-      modified = @source.app.store.get_data(modified_doc)
+    def _process_create(client_id,key,value,links,creates,deletes)
+      # Perform operation
+      link = @adapter.create value
+      # Store object-id link for the client
+      # If we have a link, store object in client document
+      # Otherwise, store object for delete on client
+      if link and link.is_a?(String)
+        links ||= {}
+        links[key] = { 'l' => link }
+        creates ||= {}
+        creates[link] = value
+      else
+        deletes ||= {}
+        deletes[key] = value
+      end
+    end
+    
+    def _process_update(client_id,key,value)
+      # Add id to object hash to forward to backend call
+      value['id'] = key
+      # Perform operation
+      @adapter.update value
+    end
+    
+    def _process_delete(client_id,object_id,dels)
+      # Perform operation
+      puts "_process_delete: #{object_id}"
+      @adapter.delete object_id
+      dels ||= []
+      dels << object_id
+    end
+    
+    def _process_client_cud(client_id,operation)
+      errors,links,deletes,creates,dels = {},{},{},{},[]
+      doc = Document.new('cd',@source.app.id,@source.user.id,client_id,@source.name)
+      modified_doc = doc.send("get_#{operation}_dockey")
+      modified = @source.app.store.get_data(modified_doc,operation == 'delete' ? Array : Hash)
       # Process operation queue, one object at a time
-      modified.each do |key,value|
+      modified.each do |item|
+        # We might have array or single item
+        puts "inside modified: #{item.inspect}"
+        key = item.is_a?(Array) ? item[0] : item
+        value = item.is_a?(Array) ? item[1] : item
         begin
           # Remove object from queue
+          puts "inside loop: #{key.inspect}, #{value.inspect}, #{operation.inspect}"
           modified.delete(key)
-          # Add id to object hash to forward to backend call
-          value['id'] = key unless operation == 'create'
-          # Extract meta-client_id so we can store it later
-          client_id = value['rhomobile.rhoclient']
-          value.delete('rhomobile.rhoclient')
-          # Perform operation
-          link = @adapter.send operation, value
-          # Store object-id link for the client
-          if operation == 'create'
-            # If we have a link, store object in client document
-            # Otherwise, store object for delete on client
-            if link and link.is_a?(String)
-              links[client_id] ||= {}
-              links[client_id][key] = { 'l' => link }
-              creates[client_id] ||= {}
-              creates[client_id][link] = value
-            else
-              deletes[client_id] ||= {}
-              deletes[client_id][key] = value
-            end
-          elsif operation == 'delete'
-            dels[client_id] ||= {}
-            dels[client_id][key] = value
+          # Call on source adapter to process individual object
+          case operation
+          when 'create'
+            _process_create(client_id,key,value,links,creates,deletes)
+          when 'update'
+            _process_update(client_id,key,value)
+          when 'delete'
+            _process_delete(client_id,value,dels)
           end
         rescue Exception => e
           Logger.error "SourceAdapter raised #{operation} exception: #{e}"
-          errors[client_id] ||= {}
-          errors[client_id][key] = value
-          errors[client_id]["#{key}-error"] = {'message'=>e.message}
+          errors ||= {}
+          errors[key] = value
+          errors["#{key}-error"] = {'message'=>e.message}
           break
         end
       end
+      
       # Record operation results
-      doc = Document.new('cd',@source.app.id,@source.user.id,'',@source.name)
-      [ {:data => errors, :doc_key => "get_#{operation}_errors_dockey"}, 
-        {:data => links, :doc_key => "get_#{operation}_links_dockey"},
-        {:data => creates, :doc_key => "get_key"},
-        {:data => deletes, :doc_key => "get_delete_page_dockey"} 
-      ].each do |bucket|
-        _record_operation_result(doc,operation,bucket[:doc_key],bucket[:data])
+      { "get_key" => creates,         
+        "get_delete_page_dockey" => deletes,
+        "get_#{operation}_links_dockey" => links,
+        "get_#{operation}_errors_dockey" => errors }.each do |key,value|
+        @source.app.store.put_data(doc.send(key),value,true) unless value.empty?
       end
       if operation == 'delete'
+        puts "dels is: #{dels.inspect}"
         # Clean up deleted objects from master document and corresponding client document
-        dels.each do |client_id,data|
-          doc.client_id = client_id
-          @source.app.store.delete_data(doc.get_key,data)
-          @source.app.store.delete_data(@source.document.get_key,data)
-        end
+        @source.app.store.delete_data(doc.get_key,dels)
+        @source.app.store.delete_data(@source.document.get_key,dels)
       end
       # Record rest of queue (if something in the middle failed)
-      @source.app.store.put_data(modified_doc,modified)
-      true
+      puts "modified is: #{modified.inspect}"
+      if modified.empty?
+        @source.app.store.flash_data(modified_doc)
+      else
+        @source.app.store.put_data(modified_doc,modified)
+      end
+      modified.size
     end
     
-    def _record_operation_result(doc,operation,doc_key,result)
-      result.each do |client_id,data|
-        doc.client_id = client_id
-        @source.app.store.put_data(doc.send(doc_key),data,true)
+    def _process_cud(operation)
+      # Pull client ids from modified queue and process them
+      operation_key = @source.document.send("get_#{operation}_dockey")
+      clients = @source.app.store.get_data(operation_key,Array)
+      puts "clients in process_cud: #{clients.inspect}"
+      clients.each do |client_id|
+        puts "processing client: #{client_id}"
+        if _process_client_cud(client_id,operation) == 0
+          clients.delete(client_id)
+          puts "clients inside loop: #{clients.inspect}"
+        end
+      end
+      puts "clients after process: #{clients.inspect}"
+      if clients.empty?
+        @source.app.store.flash_data(operation_key)
+      else
+        @source.app.store.put_data(operation_key,clients)
       end
     end
     

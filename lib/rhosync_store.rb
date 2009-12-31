@@ -65,7 +65,7 @@ module RhosyncStore
   # De-serializes oav from set element
   def getelement(element)
     res = element.split(':')
-    [res[0], res[1], Base64.decode64(res[2])]
+    [res[0], res[1], Base64.decode64(res[2].to_s)]
   end
   
   def get_token

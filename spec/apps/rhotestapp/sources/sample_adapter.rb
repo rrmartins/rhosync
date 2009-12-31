@@ -30,15 +30,16 @@ class SampleAdapter < SourceAdapter
   end
  
   def update(name_value_list)
-    @source.app.store.put_data('test_update_storage',{name_value_list['id']=>name_value_list},true)
     raise SourceAdapterException.new("No id provided in name_value_list") unless name_value_list['id']
+    @source.app.store.put_data('test_update_storage',{name_value_list['id']=>name_value_list},true)
     _raise_exception(name_value_list) 
   end
  
-  def delete(name_value_list)
-    @source.app.store.put_data('test_delete_storage',{name_value_list['id']=>name_value_list},true)
-    raise SourceAdapterException.new("No id provided in name_value_list") unless name_value_list['id']
-    _raise_exception(name_value_list)  
+  def delete(id)
+    puts "inside delete: #{id}"
+    raise SourceAdapterException.new("No id provided for delete") unless id
+    raise SourceAdapterServerErrorException.new("Error delete record") if id == ERROR
+    @source.app.store.put_data('test_delete_storage',[id],true)
   end
  
   def logoff

@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__),'api_helper')
 
-describe "RhosyncApiDeleteApp" do
+describe "RhosyncApiUpdateUser" do
   it_should_behave_like "ApiHelper"
   
   it "should update user successfully" do

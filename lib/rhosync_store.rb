@@ -95,6 +95,17 @@ module RhosyncStore
     end
   end
   
+  def check_default_secret!
+    if Sinatra::Application.secret == '<changeme>'                        
+      Logger.error "*"*60
+      Logger.error ""
+      Logger.error "WARNING: Change the session secret in config.ru from <changeme> to something secure."
+      Logger.error "  i.e. running `rake secret` in a rails app will generate a secret you could use."
+      Logger.error ""
+      Logger.error "*"*60
+    end
+  end
+  
   def unzip_file(file_dir,params)
     uploaded_file = File.join(file_dir, params[:filename])
     File.open(uploaded_file, 'wb') do |file|

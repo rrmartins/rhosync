@@ -5,6 +5,7 @@ set :run, false
 set :environment, :production
 enable :raise_errors
 set :clean_trace, false
+set :secret, '<changeme>'
 
 require 'rhosync.rb'
 

@@ -11,6 +11,7 @@ include RhosyncStore
 
 set :environment, :test
 set :run, false
+set :secret, '<changeme>'
 
 require File.join(File.dirname(__FILE__),'..','..','rhosync.rb')
 

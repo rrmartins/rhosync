@@ -34,6 +34,15 @@ describe "Rhosync" do
     get "/apps/#{@a.name}"
     last_response.status.should == 401
   end
+  
+  it "should have default session secret" do
+    Sinatra::Application.secret.should == "<changeme>"
+  end
+  
+  it "should update session secret" do
+    set :secret, "newsecret"
+    Sinatra::Application.secret.should == "newsecret"
+  end
 
   describe "auth routes" do
     it "should login user with correct username,password" do

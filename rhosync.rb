@@ -15,7 +15,10 @@ include RhosyncStore
 use Rack::Session::Cookie, :key => 'rhosync_session',
                            :path => '/',
                            :expire_after => 31536000,
-                           :secret => '<changeme>'
+                           :secret => Sinatra::Application.secret
+
+# Whine about the default session secret
+check_default_secret!
 
 before do
   if request.env['CONTENT_TYPE'] == 'application/json'

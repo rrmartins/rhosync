@@ -29,3 +29,8 @@ desc "Load console environment"
 task :console do
   sh "irb -rubygems -r rhosync.rb"
 end
+
+desc "Start server using config.ru"
+task :start do
+  sh "rackup config.ru"
+end

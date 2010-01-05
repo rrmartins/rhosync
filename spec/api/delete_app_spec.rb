@@ -5,8 +5,7 @@ describe "RhosyncApiDeleteApp" do
   
   it "should delete aplication" do
     upload_test_apps
-    sources = App.with_key(@appname).sources.members.sort
-    sources.should == ["SampleAdapter", "SimpleAdapter"]
+    sources = App.with_key(@appname).sources.members
 
     post "/api/delete_app", :app_name => @appname, :api_token => @api_token
     

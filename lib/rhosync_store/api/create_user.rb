@@ -4,5 +4,6 @@ api :create_user do |params,user|
     u = User.create({:login => params[:attributes]['login']})
     u.password = params[:attributes]['password']
     app.users << u.login
+    "User created"
   end
 end

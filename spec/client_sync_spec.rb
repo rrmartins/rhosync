@@ -276,5 +276,9 @@ describe "ClientSync" do
       @store.get_data(@cs.clientdoc.get_page_dockey).should == {}              
       @store.get_value(@cs.clientdoc.get_page_token_dockey).should be_nil
     end
+    
+    it "should remove page and delete page when token is acknowledged" do
+      pending
+    end
   end
 end

@@ -7,7 +7,7 @@ module RhosyncStore
     def initialize(source,client,p_size=nil)
       @source,@client,@p_size = source,client,p_size ? p_size.to_i : 500
       @source_sync = SourceSync.new(@source)
-      @clientdoc = Document.new('cd',@source.app.id,@source.user.id,@client.id,@source.name)
+      @clientdoc = Document.new('cd',@source.app.id,@client.user_id,@client.id,@source.name)
     end
     
     def receive_cud(cud_params={},query_params=nil)
@@ -173,7 +173,9 @@ module RhosyncStore
       if stored_token 
         if token and stored_token == token
           @source.app.store.put_value(@clientdoc.get_page_token_dockey,nil)
-          @source.app.store.put_value(@clientdoc.get_create_links_dockey,nil)
+          @source.app.store.flash_data(@clientdoc.get_create_links_dockey)
+          @source.app.store.flash_data(@clientdoc.get_page_dockey)
+          @source.app.store.flash_data(@clientdoc.get_delete_page_dockey)
           return true
         end
       else

@@ -44,9 +44,13 @@ describe "Sync Server States" do
       @product1['link'] = 'temp1'
       params = {'create'=>{'1'=>@product1}}
       backend_data = {'backend_id'=>@product1}
-      set_state('test_db_storage' => backend_data)
+      set_state(@cs.clientdoc.get_datasize_dockey => 0,
+        @s.document.get_datasize_dockey => 0)
+      @s.refresh_time = Time.now.to_i + 3600
       @cs.receive_cud(params)
       verify_result(@cs.clientdoc.get_create_dockey => {},
+        @cs.clientdoc.get_datasize_dockey => "1",
+        @s.document.get_datasize_dockey => "1",
         @cs.clientdoc.get_key => backend_data,
         @s.document.get_create_dockey => [],
         @cs.clientdoc.get_create_links_dockey => {'1'=>{'l'=>'backend_id'}},
@@ -57,14 +61,21 @@ describe "Sync Server States" do
   describe "client deletes objects" do
     it "should delete object" do
       params = {'delete'=>{'1'=>@product1}}
-      set_state(@cs.clientdoc.get_key => {'1'=>@product1},
-        @s.document.get_key => {'1'=>@product1})
+      data = {'1'=>@product1,'2'=>@product2,'3'=>@product3}
+      expected = {'2'=>@product2,'3'=>@product3}
+      set_state(@cs.clientdoc.get_key => data,
+        @cs.clientdoc.get_datasize_dockey => data.size,
+        @s.document.get_key => data,
+        @s.document.get_datasize_dockey => data.size)
+      @s.refresh_time = Time.now.to_i + 3600
       @cs.receive_cud(params)
       verify_result(@cs.clientdoc.get_delete_dockey => {},
-        @cs.clientdoc.get_key => {},
+        @cs.clientdoc.get_key => expected,
         @s.document.get_delete_dockey => [],
-        @s.document.get_key => {},
+        @s.document.get_key => expected,
         @cs.clientdoc.get_delete_page_dockey => {},
+        @cs.clientdoc.get_datasize_dockey => "2",
+        @s.document.get_datasize_dockey => "2",
         'test_delete_storage' => {'1'=>@product1})
     end
   end

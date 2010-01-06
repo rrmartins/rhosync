@@ -127,19 +127,23 @@ module RhosyncStore
       end
       
       # Record operation results
-      { "get_key" => creates,         
-        "get_delete_page_dockey" => deletes,
+      { "get_delete_page_dockey" => deletes,
         "get_#{operation}_links_dockey" => links,
         "get_#{operation}_errors_dockey" => errors }.each do |key,value|
         @source.app.store.put_data(doc.send(key),value,true) unless value.empty?
       end
       unless operation != 'create' and creates.empty?
+        @source.app.store.put_data(doc.get_key,creates,true)
         @source.app.store.put_data(@source.document.get_key,creates,true)
+        _update_count(doc.get_datasize_dockey,creates.size)
+        _update_count(@source.document.get_datasize_dockey,creates.size)
       end
       if operation == 'delete'
         # Clean up deleted objects from master document and corresponding client document
         @source.app.store.delete_data(doc.get_key,dels)
         @source.app.store.delete_data(@source.document.get_key,dels)
+        _update_count(doc.get_datasize_dockey,-dels.size)
+        _update_count(@source.document.get_datasize_dockey,-dels.size)
       end
       # Record rest of queue (if something in the middle failed)
       if modified.empty?
@@ -190,6 +194,12 @@ module RhosyncStore
         @source.app.store.put_data(errorkey,{"#{operation}-error"=>{'message'=>e.message}},true)
       end
       true
+    end
+    
+    # Update count for a given document
+    def _update_count(doc,count)
+      value = Store.db.get(doc).to_i + count
+      Store.db.set(doc,value < 0 ? 0 : value) 
     end
   end
 end

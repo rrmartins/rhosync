@@ -8,7 +8,9 @@ module RhosyncStore
       raise "Error connecting to Redis store." unless @@db and @@db.is_a?(Redis)
     end
     
-    def db; @@db end
+    def self.db; @@db ||= Redis.new end
+    
+    def db; self.class.db end
   
     # Adds set with given data, replaces existing set
     # if it exists or appends data to the existing set

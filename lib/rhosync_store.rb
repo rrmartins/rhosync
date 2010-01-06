@@ -37,6 +37,10 @@ module RhosyncStore
         end
       end
     end
+    create_admin_user
+  end
+  
+  def create_admin_user
     unless User.is_exist?('admin','login')
       admin = User.create({:login => 'admin', :admin => 1})
       admin.password = ''

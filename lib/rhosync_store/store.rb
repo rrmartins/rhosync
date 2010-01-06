@@ -80,17 +80,9 @@ module RhosyncStore
     # Deletes data from a given doctype,source,user
     def delete_data(dockey,data={})
       if dockey
-        if data.is_a?(Array) and not data.empty?
-          # TODO: This will be very slow if the set is huge
-          @@db.smembers(dockey).each do |member|
-            key,attrib,value = getelement(member)
-            @@db.srem(dockey,member) if data.include?(key)
-          end
-        else  
-          data.each do |key,value|
-            value.each do |attrib,val|
-              @@db.srem(dockey,setelement(key,attrib,val))
-            end
+        data.each do |key,value|
+          value.each do |attrib,val|
+            @@db.srem(dockey,setelement(key,attrib,val))
           end
         end
       end

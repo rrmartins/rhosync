@@ -52,7 +52,8 @@ module RhosyncStore
     private
     def _auth_op(operation,client_id=-1)
       edockey = client_id == -1 ? @source.document.get_source_errors_dockey :
-        Document.new('cd',@source.app.id,@source.user.id,client_id,@source.name).get_search_errors_dockey
+        Document.new('cd',@source.app.id,Client.with_key(client_id).user_id,
+          client_id,@source.name).get_search_errors_dockey
       begin
         @source.app.store.flash_data(edockey) if operation == 'login'
         @adapter.send operation
@@ -70,11 +71,11 @@ module RhosyncStore
       # Store object-id link for the client
       # If we have a link, store object in client document
       # Otherwise, store object for delete on client
-      if link and link.is_a?(String)
+      if link
         links ||= {}
-        links[key] = { 'l' => link }
+        links[key] = { 'l' => link.to_s }
         creates ||= {}
-        creates[link] = value
+        creates[link.to_s] = value
       else
         deletes ||= {}
         deletes[key] = value
@@ -88,28 +89,24 @@ module RhosyncStore
       @adapter.update value
     end
     
-    def _process_delete(client_id,object_id,dels)
+    def _process_delete(client_id,key,value,dels)
+      value['id'] = key
       # Perform operation
-      puts "_process_delete: #{object_id}"
-      @adapter.delete object_id
-      dels ||= []
-      dels << object_id
+      @adapter.delete value
+      dels ||= {}
+      dels[key] = value
     end
     
     def _process_client_cud(client_id,operation)
-      errors,links,deletes,creates,dels = {},{},{},{},[]
-      doc = Document.new('cd',@source.app.id,@source.user.id,client_id,@source.name)
+      errors,links,deletes,creates,dels = {},{},{},{},{}
+      doc = Document.new('cd',@source.app.id,Client.with_key(client_id).user_id,
+        client_id,@source.name)
       modified_doc = doc.send("get_#{operation}_dockey")
-      modified = @source.app.store.get_data(modified_doc,operation == 'delete' ? Array : Hash)
+      modified = @source.app.store.get_data(modified_doc)
       # Process operation queue, one object at a time
-      modified.each do |item|
-        # We might have array or single item
-        puts "inside modified: #{item.inspect}"
-        key = item.is_a?(Array) ? item[0] : item
-        value = item.is_a?(Array) ? item[1] : item
+      modified.each do |key,value|
         begin
           # Remove object from queue
-          puts "inside loop: #{key.inspect}, #{value.inspect}, #{operation.inspect}"
           modified.delete(key)
           # Call on source adapter to process individual object
           case operation
@@ -118,7 +115,7 @@ module RhosyncStore
           when 'update'
             _process_update(client_id,key,value)
           when 'delete'
-            _process_delete(client_id,value,dels)
+            _process_delete(client_id,key,value,dels)
           end
         rescue Exception => e
           Logger.error "SourceAdapter raised #{operation} exception: #{e}"
@@ -136,14 +133,15 @@ module RhosyncStore
         "get_#{operation}_errors_dockey" => errors }.each do |key,value|
         @source.app.store.put_data(doc.send(key),value,true) unless value.empty?
       end
+      unless operation != 'create' and creates.empty?
+        @source.app.store.put_data(@source.document.get_key,creates,true)
+      end
       if operation == 'delete'
-        puts "dels is: #{dels.inspect}"
         # Clean up deleted objects from master document and corresponding client document
         @source.app.store.delete_data(doc.get_key,dels)
         @source.app.store.delete_data(@source.document.get_key,dels)
       end
       # Record rest of queue (if something in the middle failed)
-      puts "modified is: #{modified.inspect}"
       if modified.empty?
         @source.app.store.flash_data(modified_doc)
       else
@@ -156,15 +154,11 @@ module RhosyncStore
       # Pull client ids from modified queue and process them
       operation_key = @source.document.send("get_#{operation}_dockey")
       clients = @source.app.store.get_data(operation_key,Array)
-      puts "clients in process_cud: #{clients.inspect}"
       clients.each do |client_id|
-        puts "processing client: #{client_id}"
         if _process_client_cud(client_id,operation) == 0
           clients.delete(client_id)
-          puts "clients inside loop: #{clients.inspect}"
         end
       end
-      puts "clients after process: #{clients.inspect}"
       if clients.empty?
         @source.app.store.flash_data(operation_key)
       else
@@ -177,7 +171,8 @@ module RhosyncStore
       errorkey = nil
       begin
         if operation == 'search'
-          sdoc = Document.new('cd',@source.app.id,@source.user.id,client_id,@source.name)
+          sdoc = Document.new('cd',@source.app.id,Client.with_key(client_id).user_id,
+            client_id,@source.name)
           errorkey = sdoc.get_search_errors_dockey
           compute_token sdoc.get_search_token_dockey
           @adapter.search params

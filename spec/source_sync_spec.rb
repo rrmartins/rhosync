@@ -138,7 +138,7 @@ describe "SourceSync" do
     
     describe "delete" do
       it "should do delete with no errors" do
-        set_state(@clientdoc.get_delete_dockey => ['4'],
+        set_state(@clientdoc.get_delete_dockey => {'4'=>@product4},
           @s.document.get_delete_dockey => [@c.id],
           @s.document.get_key => {'4'=>@product4,'3'=>@product3},
           @clientdoc.get_key => {'4'=>@product4,'3'=>@product3})
@@ -152,13 +152,13 @@ describe "SourceSync" do
       
       it "should do delete with errors" do
         msg = "Error delete record"
-        data = [ERROR,'2']
+        data = add_error_object({'2'=>@product2},msg)
         set_state(@clientdoc.get_delete_dockey => data,
           @s.document.get_delete_dockey => [@c.id])
         @ss.delete
         verify_result(@clientdoc.get_delete_errors_dockey => 
-          {"#{ERROR}-error"=>{"message"=>msg}, ERROR=>{ERROR=>""}},
-            @clientdoc.get_delete_dockey => ['2'],
+          {"#{ERROR}-error"=>{"message"=>msg}, ERROR=>data[ERROR]},
+            @clientdoc.get_delete_dockey => {'2'=>@product2},
             @s.document.get_delete_dockey => [@c.id.to_s])
       end
     end

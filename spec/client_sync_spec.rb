@@ -10,7 +10,7 @@ describe "ClientSync" do
   
   describe "cud methods" do
     it "should handle receive cud" do
-      params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>['3']}
+      params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
       @cs.receive_cud(params)
       verify_result(@s.document.get_create_dockey => [],
         @s.document.get_update_dockey => [],
@@ -70,11 +70,13 @@ describe "ClientSync" do
       
       it "should handle delete errors" do
         msg = "Error delete record"
-        op_data = {'delete'=>[ERROR]}
+        error_objs = add_error_object({},"Error delete record")
+        op_data = {'delete'=>error_objs}
+        puts "op_data: #{op_data.inspect}"
         @cs.receive_cud(op_data)
         @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
           {"token"=>""}, {"count"=>0}, {"progress_count"=>0}, {"total_count"=>0},
-          {"delete-error"=>{"#{ERROR}-error"=>{"message"=>msg},ERROR=>{ERROR=>""}}}]      
+          {"delete-error"=>{"#{ERROR}-error"=>{"message"=>msg},ERROR=>error_objs[ERROR]}}]      
       end
       
       def receive_and_send_cud(operation)
@@ -90,7 +92,7 @@ describe "ClientSync" do
     it "should handle receive_cud" do
       expected = {'1'=>@product1,'2'=>@product2}
       set_test_data('test_db_storage',expected)
-      params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>['3']}
+      params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
       @cs.receive_cud(params)
       verify_result(@s.document.get_create_dockey => [],
         @s.document.get_update_dockey => [],

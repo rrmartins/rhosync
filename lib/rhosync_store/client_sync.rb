@@ -207,7 +207,7 @@ module RhosyncStore
         {'token'=>(token ? token : '')},
         {'count'=>count},
         {'progress_count'=>progress_count},
-        {'total_count'=>total_count}, 
+        {'total_count'=>total_count},
         res ]
     end
   end

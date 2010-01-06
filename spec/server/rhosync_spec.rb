@@ -8,6 +8,7 @@ require 'spec/interop/test'
 
 set :environment, :test
 set :run, false
+set :secret, "secure!"
 
 require File.join(File.dirname(__FILE__),'..','..','rhosync.rb')
 
@@ -36,12 +37,14 @@ describe "Rhosync" do
   end
   
   it "should have default session secret" do
-    Sinatra::Application.secret.should == "<changeme>"
+    Sinatra::Application.secret.should == "secure!"
   end
   
-  it "should update session secret" do
-    set :secret, "newsecret"
-    Sinatra::Application.secret.should == "newsecret"
+  it "should update session secret to default" do
+    set :secret, "<changeme>"
+    Sinatra::Application.secret.should == "<changeme>"
+    Logger.should_receive(:error).any_number_of_times.with(any_args())
+    check_default_secret!
   end
 
   describe "auth routes" do

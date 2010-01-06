@@ -10,6 +10,7 @@ require 'maruku'
 
 set :environment, :test
 set :run, false
+set :secret, 'secure!'
 
 require File.join(File.dirname(__FILE__),'..','..','rhosync.rb')
 

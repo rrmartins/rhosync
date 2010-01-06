@@ -13,6 +13,12 @@ describe "RhosyncStore" do
       @store.put_data(@mdoc.get_key,@data).should == true
       @store.get_data(@mdoc.get_key).should == @data
     end
+    
+    it "should add simple array data to new set" do
+      @data = ['1','2','3']
+      @store.put_data(@mdoc.get_key,@data).should == true
+      @store.get_data(@mdoc.get_key,Array).sort.should == @data
+    end
   
     it "should replace simple data to existing set" do
       new_data,new_data['3'] = {},{'name' => 'Droid','brand' => 'Google'}
@@ -24,6 +30,13 @@ describe "RhosyncStore" do
     it "should put_value and get_value" do
       @store.put_value('foo','bar')
       @store.get_value('foo').should == 'bar'
+    end
+    
+    it "should return true/false if element ismember of a set" do
+      @store.put_data('foo',['a'])
+      @store.ismember?('foo','a').should == true
+      
+      @store.ismember?('foo','b').should == false
     end
     
     it "should return attributes modified in doc2" do

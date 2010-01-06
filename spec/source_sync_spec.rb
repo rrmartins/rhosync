@@ -82,69 +82,84 @@ describe "SourceSync" do
     
     describe "create" do
       it "should do create where adapter.create returns nil" do
-        set_test_data(@s.document.get_create_dockey,{'2'=>@product2})
-        @ss.create.should == true
-        verify_result(@s.document.get_create_errors_dockey => {},
-          @s.document.get_create_links_dockey => {},
-          @s.document.get_create_dockey => {})
+        set_state(@clientdoc.get_create_dockey => {'2'=>@product2},
+          @s.document.get_create_dockey => [@c.id])
+        @ss.create
+        verify_result(@s.document.get_create_dockey => [],
+          @clientdoc.get_create_errors_dockey => {},
+          @clientdoc.get_create_links_dockey => {},
+          @clientdoc.get_create_dockey => {})
       end
     
       it "should do create where adapter.create returns object link" do
         @product4['link'] = 'test link'
-        set_test_data(@s.document.get_create_dockey,{'4'=>@product4})
-        @ss.create.should == true
-        verify_result(@s.document.get_create_errors_dockey => {},
+        set_state(@clientdoc.get_create_dockey => {'4'=>@product4},
+          @s.document.get_create_dockey => [@c.id])
+        @ss.create
+        verify_result(@clientdoc.get_create_errors_dockey => {},
           @clientdoc.get_create_links_dockey => {'4'=>{'l'=>'backend_id'}},
-          @s.document.get_create_dockey => {})
+          @clientdoc.get_create_dockey => {},
+          @s.document.get_create_dockey => [])
       end
     
       it "should raise exception on adapter.create" do
         msg = "Error creating record"
-        created_data = set_test_data(@s.document.get_create_dockey,{'4'=>@product4,'2'=>@product2},msg)
-        @ss.create.should == true
+        data = add_error_object({'4'=>@product4,'2'=>@product2},msg)
+        set_state({@clientdoc.get_create_dockey => data,
+          @s.document.get_create_dockey => [@c.id]})
+        @ss.create
         verify_result(@clientdoc.get_create_errors_dockey => 
-          {"#{ERROR}-error"=>{"message"=>msg},ERROR=>created_data[ERROR]})
+          {"#{ERROR}-error"=>{"message"=>msg},ERROR=>data[ERROR]})
       end
     end
     
     describe "update" do
       it "should do update with no errors" do
-        set_test_data(@s.document.get_update_dockey,{'4'=> { 'price' => '199.99' }})
-        @ss.update.should == true
-        verify_result(@s.document.get_update_errors_dockey => {},
-          @s.document.get_update_dockey => {})
+        set_state(@clientdoc.get_update_dockey => {'4'=> { 'price' => '199.99' }},
+          @s.document.get_update_dockey => [@c.id])
+        @ss.update
+        verify_result(@s.document.get_update_dockey => [],
+          @clientdoc.get_update_errors_dockey => {},
+          @clientdoc.get_update_dockey => {})
       end
       
       it "should do update with errors" do
         msg = "Error updating record"
-        data = set_test_data(@s.document.get_update_dockey,{'4'=> { 'price' => '199.99' }},msg)
-        @ss.update.should == true
+        data = add_error_object({'4'=> { 'price' => '199.99' }},msg)
+        set_state(@clientdoc.get_update_dockey => data,
+          @s.document.get_update_dockey => [@c.id])
+        @ss.update
         verify_result(@clientdoc.get_update_errors_dockey =>
           {"#{ERROR}-error"=>{"message"=>msg}, ERROR=>data[ERROR]},
-            @s.document.get_update_dockey => {'4'=> { 'price' => '199.99', 
-            'rhomobile.rhoclient' => @c.id.to_s }})
+            @clientdoc.get_update_dockey => {'4'=> { 'price' => '199.99'}},
+          @s.document.get_update_dockey => [@c.id.to_s])
       end
     end
     
     describe "delete" do
       it "should do delete with no errors" do
-        set_state(@s.document.get_delete_dockey => add_client_id({'4'=>@product4}),
+        set_state(@clientdoc.get_delete_dockey => ['4'],
+          @s.document.get_delete_dockey => [@c.id],
           @s.document.get_key => {'4'=>@product4,'3'=>@product3},
           @clientdoc.get_key => {'4'=>@product4,'3'=>@product3})
-        @ss.delete.should == true
-        verify_result(@s.document.get_delete_errors_dockey => {},
-          @s.document.get_delete_dockey => {},
+        @ss.delete
+        verify_result(@clientdoc.get_delete_errors_dockey => {},
+          @s.document.get_delete_dockey => [],
           @s.document.get_key => {'3'=>@product3},
-          @clientdoc.get_key => {'3'=>@product3})
+          @clientdoc.get_key => {'3'=>@product3},
+          @clientdoc.get_delete_dockey => {})
       end
       
       it "should do delete with errors" do
-        msg = "Error deleting record"
-        data = set_test_data(@s.document.get_delete_dockey,{'4'=>@product4,'2'=>@product2},msg)
-        @ss.delete.should == true
+        msg = "Error delete record"
+        data = [ERROR,'2']
+        set_state(@clientdoc.get_delete_dockey => data,
+          @s.document.get_delete_dockey => [@c.id])
+        @ss.delete
         verify_result(@clientdoc.get_delete_errors_dockey => 
-          {"#{ERROR}-error"=>{"message"=>msg}, ERROR=>data.delete(ERROR)},
-            @s.document.get_delete_dockey => data)
+          {"#{ERROR}-error"=>{"message"=>msg}, ERROR=>{ERROR=>""}},
+            @clientdoc.get_delete_dockey => ['2'],
+            @s.document.get_delete_dockey => [@c.id.to_s])
       end
     end
     

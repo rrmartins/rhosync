@@ -111,10 +111,16 @@ describe "SourceAdapterHelper", :shared => true do
     res = Marshal.load(Marshal.dump(data))
     res.each { |key,value| value['rhomobile.rhoclient'] = @c.id.to_s }
   end
-  
+
+  def add_error_object(data,error_message,error_name='wrongname')
+    error = {'an_attribute'=>error_message,'name'=>error_name} 
+    data.merge!({ERROR=>error})
+    data
+  end
+      
   def set_state(state)
     state.each do |dockey,data|
-      if data.is_a?(Hash)
+      if data.is_a?(Hash) or data.is_a?(Array)
         @a.store.put_data(dockey,data)
       else
         @a.store.put_value(dockey,data)
@@ -127,16 +133,16 @@ describe "SourceAdapterHelper", :shared => true do
       error = {'an_attribute'=>error_message,'name'=>error_name} 
       data.merge!({ERROR=>error})
     end  
-    data.each { |key,value| value['rhomobile.rhoclient'] = @c.id.to_s }
     @a.store.put_data(dockey,data)
     data
   end
   
   def verify_result(result)
     result.each do |dockey,expected|
-      expected[ERROR].delete('rhomobile.rhoclient') if expected and expected[ERROR]
       if expected.is_a?(Hash)
         @a.store.get_data(dockey).should == expected
+      elsif expected.is_a?(Array)
+        @a.store.get_data(dockey,Array).should == expected
       else
         @a.store.get_value(dockey).should == expected
       end

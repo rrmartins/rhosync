@@ -10,11 +10,14 @@ describe "ClientSync" do
   
   describe "cud methods" do
     it "should handle receive cud" do
-      params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
+      params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>['3']}
       @cs.receive_cud(params)
-      verify_result(@s.document.get_create_dockey => {},
-        @s.document.get_update_dockey => {},
-        @s.document.get_delete_dockey => {})
+      verify_result(@s.document.get_create_dockey => [],
+        @s.document.get_update_dockey => [],
+        @s.document.get_delete_dockey => [],
+        @cs.clientdoc.get_create_dockey => {},
+        @cs.clientdoc.get_update_dockey => {},
+        @cs.clientdoc.get_delete_dockey => {})
     end
   
     it "should handle send cud" do
@@ -53,8 +56,7 @@ describe "ClientSync" do
         {"token"=>@a.store.get_value(@cs.clientdoc.get_page_token_dockey)}, 
         {"count"=>1}, {"progress_count"=>0}, {"total_count"=>1}, 
         {"source-error"=>{"logoff-error"=>{"message"=>msg}}, 
-        "insert"=>{ERROR=>{"name"=>"logoff error", "an_attribute"=>msg, 
-          "rhomobile.rhoclient"=>"1"}}}]
+        "insert"=>{ERROR=>{"name"=>"logoff error", "an_attribute"=>msg}}}]
     end
     
     describe "send errors in send_cud" do
@@ -67,14 +69,18 @@ describe "ClientSync" do
       end
       
       it "should handle delete errors" do
-        receive_and_send_cud('delete')
+        msg = "Error delete record"
+        op_data = {'delete'=>[ERROR]}
+        @cs.receive_cud(op_data)
+        @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
+          {"token"=>""}, {"count"=>0}, {"progress_count"=>0}, {"total_count"=>0},
+          {"delete-error"=>{"#{ERROR}-error"=>{"message"=>msg},ERROR=>{ERROR=>""}}}]      
       end
       
       def receive_and_send_cud(operation)
         msg = "Error #{operation} record"
         op_data = {operation=>{ERROR=>{'an_attribute'=>msg,'name'=>'wrongname'}}}
         @cs.receive_cud(op_data)
-        op_data[operation][ERROR].delete('rhomobile.rhoclient')
         @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
           {"token"=>""}, {"count"=>0}, {"progress_count"=>0}, {"total_count"=>0},
           {"#{operation}-error"=>{"#{ERROR}-error"=>{"message"=>msg},ERROR=>op_data[operation][ERROR]}}]
@@ -84,17 +90,20 @@ describe "ClientSync" do
     it "should handle receive_cud" do
       expected = {'1'=>@product1,'2'=>@product2}
       set_test_data('test_db_storage',expected)
-      params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
+      params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>['3']}
       @cs.receive_cud(params)
-      verify_result(@s.document.get_create_dockey => {},
-        @s.document.get_update_dockey => {},
-        @s.document.get_delete_dockey => {},
+      verify_result(@s.document.get_create_dockey => [],
+        @s.document.get_update_dockey => [],
+        @s.document.get_delete_dockey => [],
+        @cs.clientdoc.get_create_dockey => {},
+        @cs.clientdoc.get_update_dockey => {},
+        @cs.clientdoc.get_delete_dockey => {},
         @s.document.get_key => expected)
     end
     
     it "should handle send_cud with query_params" do
       expected = {'1'=>@product1}
-      set_test_data('test_db_storage',{'1'=>@product1,'2'=>@product2,'4'=>@product4})
+      set_state('test_db_storage' => {'1'=>@product1,'2'=>@product2,'4'=>@product4})
       params = {'name' => 'iPhone'}
       @cs.send_cud(nil,params)
       verify_result(@s.document.get_key => expected,
@@ -104,9 +113,9 @@ describe "ClientSync" do
   
   describe "reset" do
     it "should handle reset" do
-      @a.store.put_data(@cs.clientdoc.get_key,@data)
+      set_state(@cs.clientdoc.get_key => @data)
       ClientSync.reset(@a,@u,@c)
-      @a.store.get_data(@cs.clientdoc.get_key).should == {}
+      verify_result(@cs.clientdoc.get_key => {})
     end
   end
   
@@ -119,7 +128,7 @@ describe "ClientSync" do
     
     it "should handle search" do
       params = {:search => {'name' => 'iPhone'}}
-      set_test_data('test_db_storage',@data)
+      set_state('test_db_storage' => @data)
       res = @cs.search(params)
       token = @a.store.get_value(@cs.clientdoc.get_search_token_dockey)
       res.should == [{'version'=>ClientSync::VERSION},{'search_token'=>token},
@@ -130,7 +139,7 @@ describe "ClientSync" do
     
     it "should handle search with nil result" do
       params = {:search => {'name' => 'foo'}}
-      set_test_data('test_db_storage',@data)
+      set_state('test_db_storage' => @data)
       @cs.search(params).should == []
       verify_result(@cs.clientdoc.get_search_dockey => {},
         @cs.clientdoc.get_search_errors_dockey => {})
@@ -159,7 +168,7 @@ describe "ClientSync" do
     
     it "should handle search all" do
       sources = ['SampleAdapter']
-      set_test_data('test_db_storage',@data)
+      set_state('test_db_storage' => @data)
       res = ClientSync.search_all(@c,{:sources => sources,:search => {'name' => 'iPhone'}})
       token = @a.store.get_value(@cs.clientdoc.get_search_token_dockey)
       res.should == [[{'version'=>ClientSync::VERSION},{'search_token'=>token},

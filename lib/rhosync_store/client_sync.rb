@@ -161,11 +161,12 @@ module RhosyncStore
     
     def _receive_cud(operation,params)
       return if not ['create','update','delete'].include?(operation)
-      dockey = @source.document.send "get_#{operation}_dockey"
-      params.each do |key,value|
-        value['rhomobile.rhoclient'] = @client.id.to_s
+      source_dockey = @source.document.send "get_#{operation}_dockey"
+      client_dockey = @clientdoc.send "get_#{operation}_dockey"
+      @source.app.store.put_data(client_dockey,params,true)
+      unless @source.app.store.ismember?(source_dockey,@client.id)
+        @source.app.store.put_data(source_dockey,[@client.id],true)
       end
-      @source.app.store.put_data(dockey,params,true)
     end
     
     def _ack_token(token)

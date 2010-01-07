@@ -9,6 +9,7 @@ require 'rhosync_store'
 require 'helpers/rhosync_helper'
 
 enable :raise_errors
+set :secret, '<changeme>' unless defined? Sinatra::Application.secret
 
 include RhosyncStore
 

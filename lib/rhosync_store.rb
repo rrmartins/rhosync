@@ -3,12 +3,12 @@ require 'redis'
 require 'json'
 require 'base64'
 require 'zip/zip'
+require 'rhosync_store/document'
 require 'rhosync_store/model'
 require 'rhosync_store/source'
 require 'rhosync_store/user'
 require 'rhosync_store/api_token'
 require 'rhosync_store/app'
-require 'rhosync_store/document'
 require 'rhosync_store/store'
 require 'rhosync_store/client'
 require 'rhosync_store/client_sync'
@@ -21,12 +21,15 @@ module RhosyncStore
   
   class RhosyncServerError < RuntimeError; end
   
+  VERSION = '1.5.0'
+  
   class << self
     attr_accessor :app_directory
   end
 
   # Server hook to initialize RhosyncStore
   def bootstrap(appdir)
+    Store.create
     RhosyncStore.app_directory = appdir
     # Add appdir and sources subdirectory
     # to load path if appdir exists
@@ -79,7 +82,7 @@ module RhosyncStore
   # Computes token for a single client request
   def compute_token(doc_key)
     token = get_token
-    @source.app.store.put_value(doc_key,token)
+    Store.put_value(doc_key,token)
     token.to_s
   end
   

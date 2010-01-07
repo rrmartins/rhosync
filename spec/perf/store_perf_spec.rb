@@ -3,18 +3,13 @@ require 'faker'
 
 describe "RhosyncStore Performance" do
   it_should_behave_like "RhosyncStoreDataHelper"
-  
-  before(:each) do
-    @store = RhosyncStore::Store.new
-    @store.db.flushdb
-  end
 
   it "should process get/put for 1000 records (6000 elements)" do
     @data = get_test_data(1000)
     start = start_timer
-    @store.put_data(@mdoc.get_key,@data).should == true
+    Store.put_data('mdoc',@data).should == true
     start = lap_timer('put_data duration',start)
-    @store.get_data(@mdoc.get_key).should == @data
+    Store.get_data('mdoc').should == @data
     lap_timer('get_data duration',start)
   end
 
@@ -23,10 +18,10 @@ describe "RhosyncStore Performance" do
     @data1 = get_test_data(1000)
     @data1['950']['Phone1'] = 'This is changed'
     expected = {'950' => {'Phone1' => 'This is changed'}}
-    @store.put_data(@mdoc,@data).should == true
-    @store.put_data(@cdoc,@data1).should == true
+    Store.put_data('mdoc',@data).should == true
+    Store.put_data('cdoc',@data1).should == true
     start = start_timer
-    @store.get_diff_data(@mdoc,@cdoc).should == expected
+    Store.get_diff_data('mdoc','cdoc').should == expected
     lap_timer('get_diff_data duration', start)
   end
 

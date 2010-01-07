@@ -3,7 +3,7 @@ module RhosyncStore
     field :name, :string
     set   :users, :string
     set   :sources, :string
-    attr_reader :store,:delegate
+    attr_reader :delegate
     
     class << self
       def create(fields={})
@@ -46,11 +46,6 @@ module RhosyncStore
     
     def delegate
       @delegate.nil? ? Object.const_get(camelize(self.name)) : @delegate
-    end
-      
-    # Returns the data-store for an App
-    def store
-      @store.nil? ? @store = Store.new : @store
     end
   end
 end

@@ -20,6 +20,8 @@ use Rack::Session::Cookie, :key => 'rhosync_session',
 # Whine about the default session secret
 check_default_secret!
 
+Logger.info "Rhosync Server v#{RhosyncStore::VERSION} started..."
+
 before do
   if request.env['CONTENT_TYPE'] == 'application/json'
     params.merge!(JSON.parse(request.body.read))
@@ -62,7 +64,7 @@ post '/apps/:app_name/clientregister' do
 end
 
 get '/apps/:app_name/clientreset' do
-  ClientSync.reset(current_app,current_user,current_client)
+  ClientSync.reset(current_client)
   status 200
 end
 

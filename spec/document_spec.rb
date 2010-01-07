@@ -1,72 +1,21 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
 
 describe "Document" do
-  before(:each) do
-    @doctype = 'md'
-    @source = 'TestSource'
-    @user = 5
-    @client = 12345
-    @app = 2
-    @d = Document.new(@doctype,@app,@user,@client,@source)
+  it_should_behave_like "SpecBootstrapHelper"
+  it_should_behave_like "SourceAdapterHelper"
+  
+  it "should generate client docname" do
+    @c.docname(:foo).should == "client:#{@a.id}:#{@u.id}:#{@c.doc_suffix(:foo)}"
   end
   
-  it "should get_key" do
-    @d.get_key.should == "#{@doctype}:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
+  it "should generate source docname" do
+    @s.docname(:foo).should == "source:#{@a.id}:#{@u.id}:#{@s.doc_suffix(:foo)}"
   end
   
-  it "should get_delete_page_dockey" do
-    @d.get_delete_page_dockey.should == "#{@doctype}-delete-page:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
-  end
-  
-  it "should get_page_dockey" do
-    @d.get_page_dockey.should == "#{@doctype}-page:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
-  end
-  
-  it "should get_page_token_dockey" do
-    @d.get_page_token_dockey.should == "#{@doctype}-page-token:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
-  end
-  
-  it "should get_search_dockey" do
-    @d.get_search_dockey.should == "#{@doctype}-search:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
-  end
-  
-  it "should get_search_errors_dockey" do
-    @d.get_search_errors_dockey.should == "#{@doctype}-search-errors:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
-  end
-
-  it "should get_search_token_dockey" do
-    @d.get_search_token_dockey.should == "#{@doctype}-search-token:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
-  end
-  
-  it "should get_update_dockey" do
-    @d.get_update_dockey.should == "#{@doctype}-update:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
-  end
-  
-  it "should get_delete_dockey" do
-    @d.get_delete_dockey.should == "#{@doctype}-delete:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
-  end
-  
-  it "should get_delete_errors_dockey" do
-    @d.get_delete_errors_dockey.should == "#{@doctype}-delete-errors:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
-  end
-  
-  it "should get_create_dockey" do
-    @d.get_create_dockey.should == "#{@doctype}-create:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
-  end
-  
-  it "should get_source_errors_dockey" do
-    @d.get_source_errors_dockey.should == "#{@doctype}-source-errors:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
-  end
-  
-  it "should get_create_errors_dockey" do
-    @d.get_create_errors_dockey.should == "#{@doctype}-create-errors:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"
-  end
-  
-  it "should get_create_links_dockey" do
-    @d.get_create_links_dockey.should == "#{@doctype}-create-links:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"    
-  end
-  
-  it "should get_datasize_dockey" do
-    @d.get_datasize_dockey.should == "#{@doctype}-datasize:#{@app.to_s}:#{@user.to_s}:#{@client.to_s}:#{@source}"    
+  it "should flash_data for docname" do
+    @c.put_data(:foo1,{'1'=>@product1})
+    Store.db.keys(@c.docname('*')).should == [@c.docname(:foo1)]
+    @c.flash_data('*')
+    Store.db.keys(@c.docname(:foo)).should == []
   end
 end

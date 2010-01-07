@@ -23,7 +23,6 @@ module RhosyncStore
       if source
         begin
           source.name.strip! if source.name
-          Logger.info "Creating class for #{source.name}"
           require underscore(source.name)
           adapter=(Object.const_get(source.name)).new(source,credential) 
         rescue Exception=>e
@@ -42,7 +41,7 @@ module RhosyncStore
     def search(params=nil); end
     
     def sync
-      save(@source.document.get_key)
+      save(@source.docname(:md))
     end
   
     def create(name_value_list); end
@@ -55,14 +54,14 @@ module RhosyncStore
 
     def logoff; end
     
-    def save(dockey)
+    def save(docname)
       return if _result_nil?
       if @result.empty?
-        @source.app.store.flash_data(dockey)
+        Store.flash_data(docname)
       else
-        @source.app.store.put_data(dockey,@result)
+        Store.put_data(docname,@result)
       end
-      @source.app.store.put_value(@source.document.get_datasize_dockey,@result.size)
+      @source.put_value(:md_size,@result.size)
     end
   
     # only implement this if you want RhoSync to install a callback into your backend

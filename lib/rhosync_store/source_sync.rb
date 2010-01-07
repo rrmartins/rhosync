@@ -39,7 +39,7 @@ module RhosyncStore
       self.create
       self.update
       self.delete
-
+      
       if @source.poll_interval == 0 or 
         (@source.poll_interval != -1 and @source.refresh_time <= Time.now.to_i)
         self.read(client_id,params)
@@ -51,15 +51,14 @@ module RhosyncStore
     
     private
     def _auth_op(operation,client_id=-1)
-      edockey = client_id == -1 ? @source.document.get_source_errors_dockey :
-        Document.new('cd',@source.app.id,Client.with_key(client_id).user_id,
-          client_id,@source.name).get_search_errors_dockey
+      edockey = client_id == -1 ? @source.docname(:errors) :
+        Client.load(client_id,@source.name).docname(:search_errors)
       begin
-        @source.app.store.flash_data(edockey) if operation == 'login'
+        Store.flash_data(edockey) if operation == 'login'
         @adapter.send operation
       rescue Exception => e
         Logger.error "SourceAdapter raised #{operation} exception: #{e}"
-        @source.app.store.put_data(edockey,{"#{operation}-error"=>{'message'=>e.message}},true)
+        Store.put_data(edockey,{"#{operation}-error"=>{'message'=>e.message}},true)
         return false
       end
       true
@@ -99,10 +98,8 @@ module RhosyncStore
     
     def _process_client_cud(client_id,operation)
       errors,links,deletes,creates,dels = {},{},{},{},{}
-      doc = Document.new('cd',@source.app.id,Client.with_key(client_id).user_id,
-        client_id,@source.name)
-      modified_doc = doc.send("get_#{operation}_dockey")
-      modified = @source.app.store.get_data(modified_doc)
+      client = Client.load(client_id,@source.name)
+      modified = client.get_data(operation)
       # Process operation queue, one object at a time
       modified.each do |key,value|
         begin
@@ -125,81 +122,72 @@ module RhosyncStore
           break
         end
       end
-      
       # Record operation results
-      { "get_delete_page_dockey" => deletes,
-        "get_#{operation}_links_dockey" => links,
-        "get_#{operation}_errors_dockey" => errors }.each do |key,value|
-        @source.app.store.put_data(doc.send(key),value,true) unless value.empty?
+      { "delete_page" => deletes,
+        "#{operation}_links" => links,
+        "#{operation}_errors" => errors }.each do |doctype,value|
+        client.put_data(doctype,value,true) unless value.empty?
       end
       unless operation != 'create' and creates.empty?
-        @source.app.store.put_data(doc.get_key,creates,true)
-        @source.app.store.put_data(@source.document.get_key,creates,true)
-        _update_count(doc.get_datasize_dockey,creates.size)
-        _update_count(@source.document.get_datasize_dockey,creates.size)
+        client.put_data(:cd,creates,true)
+        @source.put_data(:md,creates,true)
+        client.update_count(:cd_size,creates.size)
+        @source.update_count(:md_size,creates.size)
       end
       if operation == 'delete'
         # Clean up deleted objects from master document and corresponding client document
-        @source.app.store.delete_data(doc.get_key,dels)
-        @source.app.store.delete_data(@source.document.get_key,dels)
-        _update_count(doc.get_datasize_dockey,-dels.size)
-        _update_count(@source.document.get_datasize_dockey,-dels.size)
+        client.delete_data(:cd,dels)
+        @source.delete_data(:md,dels)
+        client.update_count(:cd_size,-dels.size)
+        @source.update_count(:md_size,-dels.size)
       end
       # Record rest of queue (if something in the middle failed)
       if modified.empty?
-        @source.app.store.flash_data(modified_doc)
+        client.flash_data(operation)
       else
-        @source.app.store.put_data(modified_doc,modified)
+        client.put_data(operation,modified)
       end
       modified.size
     end
     
     def _process_cud(operation)
       # Pull client ids from modified queue and process them
-      operation_key = @source.document.send("get_#{operation}_dockey")
-      clients = @source.app.store.get_data(operation_key,Array)
+      clients = @source.get_data(operation,Array)
       clients.each do |client_id|
         if _process_client_cud(client_id,operation) == 0
           clients.delete(client_id)
         end
       end
       if clients.empty?
-        @source.app.store.flash_data(operation_key)
+        @source.flash_data(operation)
       else
-        @source.app.store.put_data(operation_key,clients)
+        @source.put_data(operation,clients)
       end
     end
     
     # Read Operation; params are query arguments
     def _read(operation,client_id,params=nil)
-      errorkey = nil
+      errordoc = nil
       begin
         if operation == 'search'
-          sdoc = Document.new('cd',@source.app.id,Client.with_key(client_id).user_id,
-            client_id,@source.name)
-          errorkey = sdoc.get_search_errors_dockey
-          compute_token sdoc.get_search_token_dockey
+          client = Client.load(client_id,@source.name)
+          errordoc = client.docname(:search_errors)
+          compute_token client.docname(:search_token)
           @adapter.search params
-          @adapter.save sdoc.get_search_dockey
+          @adapter.save client.docname(:search)
         else
-          errorkey = @source.document.get_source_errors_dockey
+          errordoc = @source.docname(:errors)
           params ? @adapter.query(params) : @adapter.query
           @adapter.sync
         end
         # operation,sync succeeded, remove errors
-        @source.app.store.flash_data(errorkey)
+        Store.flash_data(errordoc)
       rescue Exception => e
         # store sync,operation exceptions to be sent to all clients for this source/user
         Logger.error "SourceAdapter raised #{operation} exception: #{e}"
-        @source.app.store.put_data(errorkey,{"#{operation}-error"=>{'message'=>e.message}},true)
+        Store.put_data(errordoc,{"#{operation}-error"=>{'message'=>e.message}},true)
       end
       true
-    end
-    
-    # Update count for a given document
-    def _update_count(doc,count)
-      value = Store.db.get(doc).to_i + count
-      Store.db.set(doc,value < 0 ? 0 : value) 
     end
   end
 end

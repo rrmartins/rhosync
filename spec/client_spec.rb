@@ -21,40 +21,17 @@ describe "Client" do
   it "should raise exception if app_id is not specified" do
     lambda { Client.create(:user_id => 'testuser') }.should raise_error(InvalidClientAppIdError, 'Invalid App Id Argument')    
   end
+  
+  it "should raise exception if source_name is nil" do
+    @c.source_name = nil
+    lambda { @c.doc_suffix('foo') }.should raise_error(InvalidSourceNameError, 'Invalid Source Name For Client')
+  end
 
   it "should delete client and all associated documents" do
-    clientdoc = Document.new('cd',@a.id,@u.login,@c.id,@s.name)    
-    @a.store.put_data(@cdoc.get_key,@data)    
-    @a.store.put_data(clientdoc.get_key,@data)
-    @a.store.put_data(clientdoc.get_page_dockey,@data)
-    @a.store.put_value(clientdoc.get_page_token_dockey,"@data")
-    @a.store.put_data(clientdoc.get_search_dockey,@data)
-    @a.store.put_data(clientdoc.get_search_errors_dockey,@data)
-    @a.store.put_data(clientdoc.get_delete_page_dockey,@data)
-    @a.store.put_data(clientdoc.get_delete_errors_dockey,@data)
-    @a.store.put_data(clientdoc.get_update_dockey,@data)
-    @a.store.put_data(clientdoc.get_update_errors_dockey,@data)
-    @a.store.put_data(clientdoc.get_create_dockey,@data)
-    @a.store.put_data(clientdoc.get_create_errors_dockey,@data)
-    @a.store.put_data(clientdoc.get_create_links_dockey,@data)
-    @a.store.put_data(clientdoc.get_source_errors_dockey,@data)
+    set_state(@c.docname(:cd) => @data)    
     
     @c.delete
     
-    @a.store.get_data(clientdoc.get_key).should == {}
-    @a.store.get_data(clientdoc.get_page_dockey).should == {}
-    @a.store.get_value(clientdoc.get_page_token_dockey).should == nil
-    @a.store.get_data(clientdoc.get_search_dockey).should == {}
-    @a.store.get_data(clientdoc.get_search_errors_dockey).should == {}
-    @a.store.get_data(clientdoc.get_delete_page_dockey).should == {}
-    @a.store.get_data(clientdoc.get_delete_errors_dockey).should == {}
-    @a.store.get_data(clientdoc.get_update_dockey).should == {}
-    @a.store.get_data(clientdoc.get_update_errors_dockey).should == {}
-    @a.store.get_data(clientdoc.get_create_dockey).should == {}
-    @a.store.get_data(clientdoc.get_create_errors_dockey).should == {}
-    @a.store.get_data(clientdoc.get_create_links_dockey).should == {}
-    @a.store.get_data(clientdoc.get_source_errors_dockey).should == {}
-    @a.store.get_value(clientdoc.get_datasize_dockey).should == nil    
-    @a.store.get_data(@cdoc.get_key).should == @data    
+    verify_result(@c.docname(:cd) => {})
   end
 end

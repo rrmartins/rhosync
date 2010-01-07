@@ -1,13 +1,13 @@
 module RhosyncStore
   class ClientSync
-    attr_accessor :source,:client,:p_size,:source_sync,:clientdoc
+    attr_accessor :source,:client,:p_size,:source_sync
     
     VERSION = 3
     
     def initialize(source,client,p_size=nil)
       @source,@client,@p_size = source,client,p_size ? p_size.to_i : 500
+      @client.source_name = @source.name
       @source_sync = SourceSync.new(@source)
-      @clientdoc = Document.new('cd',@source.app.id,@client.user_id,@client.id,@source.name)
     end
     
     def receive_cud(cud_params={},query_params=nil)
@@ -22,12 +22,12 @@ module RhosyncStore
       return _format_result(res) unless res.empty?
       @source_sync.process(@client.id,query_params)
       res['insert'] = compute_page
-      res['links'] = @source.app.store.get_data(@clientdoc.get_create_links_dockey)
+      res['links'] = @client.get_data(:create_links)
       res['delete'] = compute_deleted_page
-      @source.app.store.put_data(@clientdoc.get_key,res['insert'],true)      
-      @source.app.store.delete_data(@clientdoc.get_key,res['delete'])
+      @client.put_data(:cd,res['insert'],true)      
+      @client.delete_data(:cd,res['delete'])
       res.reject! {|key,value| value.nil? or value.empty?}
-      res['token'] = compute_token(@clientdoc.get_page_token_dockey) unless res.empty?
+      res['token'] = compute_token(@client.docname(:page_token)) unless res.empty?
       res.merge!(_send_errors)
       _format_result(res)
     end
@@ -44,11 +44,11 @@ module RhosyncStore
     def resend_page(token=nil)
       res = {}
       if not _ack_token(token)     
-        res['insert'] = @source.app.store.get_data(@clientdoc.get_page_dockey)
-        res['links'] = @source.app.store.get_data(@clientdoc.get_create_links_dockey)
-        res['delete'] = @source.app.store.get_data(@clientdoc.get_delete_page_dockey)
+        res['insert'] = @client.get_data(:page)
+        res['links'] = @client.get_data(:create_links)
+        res['delete'] = @client.get_data(:delete_page)
         res.reject! {|key,value| value.nil? or value.empty?}
-        res['token'] = @source.app.store.get_value(@clientdoc.get_page_token_dockey) unless res.empty?
+        res['token'] = @client.get_value(:page_token) unless res.empty?
         res.merge!(_send_errors)
       end
       res
@@ -57,29 +57,28 @@ module RhosyncStore
     # Computes diffs between master doc and client doc, trims it to page size, 
     # stores page, and returns page as hash  
     def compute_page
-      res,diffsize = _compute_diff(@clientdoc.get_key,@source.document.get_key)
-      @source.app.store.put_data(@clientdoc.get_page_dockey,res)
-      progress_count = @source.app.store.get_value(@source.document.get_datasize_dockey).to_i - diffsize
-      
-      @source.app.store.put_value(@clientdoc.get_datasize_dockey,progress_count)
+      res,diffsize = _compute_diff(@client.docname(:cd),@source.docname(:md))
+      @client.put_data(:page,res)
+      progress_count = @source.get_value(:md_size).to_i - diffsize
+      @client.put_value(:cd_size,progress_count)
       res
     end
     
     # Computes search hash
     def compute_search
-      _compute_diff(@clientdoc.get_key,@clientdoc.get_search_dockey)
+      _compute_diff(@client.docname(:cd),@client.docname(:search))
     end
     
     # Computes deleted objects (down to individual attributes) 
     # in the client documet, trims it to page size, stores page, and returns page as hash      
     def compute_deleted_page
       res = {}
-      delete_page_key = @clientdoc.get_delete_page_dockey
+      delete_page_doc = @client.docname(:delete_page)
       page_size = @p_size
-      @source.app.store.get_diff_data(@source.document.get_key,@clientdoc.get_key).each do |key,value|
+      Store.get_diff_data(@source.docname(:md),@client.docname(:cd)).each do |key,value|
         res[key] = value
         value.each do |attrib,val|
-          @source.app.store.db.sadd(delete_page_key,setelement(key,attrib,val))
+          Store.db.sadd(delete_page_doc,setelement(key,attrib,val))
         end
         page_size -= 1
         break if page_size <= 0          
@@ -89,11 +88,8 @@ module RhosyncStore
         
     class << self
       # Resets the store for a given app,client
-      def reset(app,user,client)
-        doc = Document.new('cd',app.id,user.id,client.id,'*')
-        app.store.get_keys(doc.get_key).each do |key|
-          app.store.flash_data(key)
-        end
+      def reset(client)
+        client.flash_data('*')
       end
     
       def search_all(client,params=nil)
@@ -115,11 +111,9 @@ module RhosyncStore
     end
     
     def _ack_search(search_token)
-      token = @source.app.store.get_value(@clientdoc.get_search_token_dockey)
+      token = @client.get_value(:search_token)
       if token == search_token
-        @source.app.store.flash_data(@clientdoc.get_search_errors_dockey)
-        @source.app.store.flash_data(@clientdoc.get_search_dockey)    
-        @source.app.store.flash_data(@clientdoc.get_search_token_dockey)        
+        @client.flash_data('search*')      
       end
     end
     
@@ -129,13 +123,13 @@ module RhosyncStore
     end
     
     def _format_search_result
-      error = @source.app.store.get_data(@clientdoc.get_search_errors_dockey)
+      error = @client.get_data(:search_errors)
       if not error.empty?
         [ {'version'=>VERSION},
           {'source'=>@source.name},
           {'search-error'=>error} ]
       else  
-        search_token = @source.app.store.get_value(@clientdoc.get_search_token_dockey)
+        search_token = @client.get_value(:search_token)
         search_token ||= ''
         res,search_size = compute_search 
         return [] if res.empty?
@@ -150,7 +144,7 @@ module RhosyncStore
     def _compute_diff(srckey,dstkey)
       res = {}
       page_size = @p_size
-      diff = @source.app.store.get_diff_data(srckey,dstkey)
+      diff = Store.get_diff_data(srckey,dstkey)
       diff.each do |key,item|
         res[key] = item
         page_size -= 1
@@ -161,22 +155,20 @@ module RhosyncStore
     
     def _receive_cud(operation,params)
       return if not ['create','update','delete'].include?(operation)
-      source_dockey = @source.document.send "get_#{operation}_dockey"
-      client_dockey = @clientdoc.send "get_#{operation}_dockey"
-      @source.app.store.put_data(client_dockey,params,true)
-      unless @source.app.store.ismember?(source_dockey,@client.id)
-        @source.app.store.put_data(source_dockey,[@client.id],true)
+      @client.put_data(operation,params,true)
+      unless Store.ismember?(@source.docname(operation),@client.id)
+        @source.put_data(operation,[@client.id],true)
       end
     end
     
     def _ack_token(token)
-      stored_token = @source.app.store.get_value(@clientdoc.get_page_token_dockey)
+      stored_token = @client.get_value(:page_token)
       if stored_token 
         if token and stored_token == token
-          @source.app.store.put_value(@clientdoc.get_page_token_dockey,nil)
-          @source.app.store.flash_data(@clientdoc.get_create_links_dockey)
-          @source.app.store.flash_data(@clientdoc.get_page_dockey)
-          @source.app.store.flash_data(@clientdoc.get_delete_page_dockey)
+          @client.put_value(:page_token,nil)
+          @client.flash_data(:create_links)
+          @client.flash_data(:page)
+          @client.flash_data(:delete_page)
           return true
         end
       else
@@ -188,9 +180,9 @@ module RhosyncStore
     def _send_errors
       res = {}
       ['create','update','delete'].each do |operation|
-        res["#{operation}-error"] = @source.app.store.get_data(@clientdoc.send("get_#{operation}_errors_dockey"))
+        res["#{operation}-error"] = @client.get_data("#{operation}_errors")
       end
-      res["source-error"] = @source.app.store.get_data(@source.document.get_source_errors_dockey)
+      res["source-error"] = @source.get_data(:errors)
       res.reject! {|key,value| value.nil? or value.empty?}
       res
     end
@@ -199,8 +191,8 @@ module RhosyncStore
       count = 0
       count += res['insert'].length if res['insert']
       count += res['delete'].length if res['delete']
-      total_count = @source.app.store.get_value(@source.document.get_datasize_dockey).to_i
-      progress_count = @source.app.store.get_value(@clientdoc.get_datasize_dockey).to_i
+      total_count = @source.get_value(:md_size).to_i
+      progress_count = @client.get_value(:cd_size).to_i
       token = res['token']
       res.delete('token')
       [ {'version'=>VERSION},

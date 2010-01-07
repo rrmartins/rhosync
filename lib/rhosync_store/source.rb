@@ -10,7 +10,8 @@ module RhosyncStore
     field :callback_url,:string
     field :user_id,:string
     field :app_id,:string
-    attr_reader :document
+    
+    include Document
     
     def self.create(fields={})
       fields[:name] ||= self.class.name
@@ -34,12 +35,12 @@ module RhosyncStore
       App.with_key(self.app_id)
     end
     
-    def document
-      @document.nil? ? @document = Document.new('md',self.app_id,self.user_id,'0',self.name) : @document
+    def doc_suffix(doctype)
+      "#{self.name}:#{doctype.to_s}"
     end
     
     def delete
-       self.app.store.flash_data(Document.new('md*',self.app_id,self.user_id,0,'*').get_key)
+      flash_data('*')
       super
     end
   end

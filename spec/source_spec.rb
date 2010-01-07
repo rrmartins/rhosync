@@ -31,7 +31,7 @@ describe "Source" do
   
   it "should create source with app and document" do
     @s.app.name.should == @a_fields[:name]
-    @s.document.get_key.should == "md:#{@s.app.id}:#{@u.id}:0:#{@s_fields[:name]}"
+    @s.docname(:md).should == "source:#{@s.app.id}:#{@u.id}:#{@s_fields[:name]}:md"
   end
   
   it "should delete source" do
@@ -40,10 +40,9 @@ describe "Source" do
   end
   
   it "should delete master and all documents associated with source" do
-    masterdoc = Document.new('md',@a.id,@u.login,0,@s.name)    
-    @a.store.put_data(masterdoc.get_key,@data)
+    set_state(@s.docname(:md) => @data)
     @s.delete
-    @a.store.get_data(masterdoc.get_key).should == {}
-    @a.store.db.keys(masterdoc.get_key).should == []
+    verify_result(@s.docname(:md) => {})
+    Store.db.keys(@s.docname('*')).should == []
   end
 end

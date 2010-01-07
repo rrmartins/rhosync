@@ -4,8 +4,8 @@ include RhosyncStore
 
 describe "RhosyncStoreHelper", :shared => true do
   before(:each) do
-    @store = RhosyncStore::Store.new
-    @store.db.flushdb
+    Store.create
+    Store.db.flushdb
   end
 end
 
@@ -43,9 +43,6 @@ describe "RhosyncStoreDataHelper", :shared => true do
     }
     
     @data = {'1'=>@product1,'2'=>@product2,'3'=>@product3}
-    
-    @mdoc = Document.new('md',@app_id,@user_id,@client_id,@source)
-    @cdoc = Document.new('cd',@app_id,@user_id,@client_id,@source)
   end
 end  
 
@@ -65,8 +62,6 @@ describe "SourceAdapterHelper", :shared => true do
       :user_id => @u.id,
       :app_id => @a.id 
     }
-    @c = Client.create(@c_fields)
-    @u.clients << @c.id
     @s_fields = {
       :name => 'SampleAdapter',
       :url => 'http://example.com',
@@ -75,6 +70,9 @@ describe "SourceAdapterHelper", :shared => true do
       :user_id => @u.id,
       :app_id => @a.id
     }
+    @c = Client.create(@c_fields)
+    @c.source_name = @s_fields[:name]
+    @u.clients << @c.id
     @s = Source.create(@s_fields)
     @a.sources << @s.id
     @a.users << @u.id
@@ -121,9 +119,9 @@ describe "SourceAdapterHelper", :shared => true do
   def set_state(state)
     state.each do |dockey,data|
       if data.is_a?(Hash) or data.is_a?(Array)
-        @a.store.put_data(dockey,data)
+        Store.put_data(dockey,data)
       else
-        @a.store.put_value(dockey,data)
+        Store.put_value(dockey,data)
       end
     end
   end
@@ -133,18 +131,18 @@ describe "SourceAdapterHelper", :shared => true do
       error = {'an_attribute'=>error_message,'name'=>error_name} 
       data.merge!({ERROR=>error})
     end  
-    @a.store.put_data(dockey,data)
+    Store.put_data(dockey,data)
     data
   end
   
   def verify_result(result)
     result.each do |dockey,expected|
       if expected.is_a?(Hash)
-        @a.store.get_data(dockey).should == expected
+        Store.get_data(dockey).should == expected
       elsif expected.is_a?(Array)
-        @a.store.get_data(dockey,Array).should == expected
+        Store.get_data(dockey,Array).should == expected
       else
-        @a.store.get_value(dockey).should == expected
+        Store.get_value(dockey).should == expected
       end
     end
   end

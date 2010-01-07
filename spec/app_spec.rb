@@ -13,7 +13,7 @@ describe "App" do
   
   it "should create app with store" do
     @a.name.should == @a_fields[:name]
-    @a.store.db.class.should == Redis 
+    Store.db.class.should == Redis 
   end
   
   it "should add source adapters" do

@@ -47,13 +47,12 @@ describe "User" do
   end
   
   it "should delete user and user clients" do
-    clientdoc = Document.new('cd',@a.id,@u.login,@c.id,@s.name)
-    @a.store.put_data(clientdoc.get_key,@data)
+    @c.put_data(:cd,@data)
     cid = @c.id    
     @u.delete
     User.is_exist?(@u_fields[:login],'login').should == false
     Client.is_exist?(cid,'device_type').should == false
-    @a.store.get_data(clientdoc.get_key).should == {}
+    @c.get_data(:cd).should == {}
   end
   
 end

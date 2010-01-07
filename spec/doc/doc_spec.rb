@@ -146,8 +146,8 @@ describe "Rhosync Protocol" do
     data = {'1'=>@product1,'2'=>@product2}
     set_test_data('test_db_storage',data)
     get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
-    token = @store.get_value(cs.clientdoc.get_page_token_dockey)
-    @store.flash_data('test_db_storage')
+    token = Store.get_value(@c.docname(:page_token))
+    Store.flash_data('test_db_storage')
     @s.refresh_time = Time.now.to_i
     get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
       :version => ClientSync::VERSION
@@ -159,7 +159,7 @@ describe "Rhosync Protocol" do
     data = {'1'=>@product1,'2'=>@product2}
     set_test_data('test_db_storage',data)
     get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
-    token = @store.get_value(cs.clientdoc.get_page_token_dockey)
+    token = Store.get_value(@c.docname(:page_token))
     set_test_data('test_db_storage',{'1'=>@product1,'3'=>@product3})
     @s.refresh_time = Time.now.to_i
     get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
@@ -169,7 +169,7 @@ describe "Rhosync Protocol" do
   
   it "server send search results" do
     sources = ['SampleAdapter']
-    @store.put_data('test_db_storage',@data)
+    Store.put_data('test_db_storage',@data)
     params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
       :version => ClientSync::VERSION}
     get "/apps/#{@a.name}/search",params
@@ -189,7 +189,7 @@ describe "Rhosync Protocol" do
   it "should get multiple source search results" do
     @s_fields[:name] = 'SimpleAdapter'
     @s1 = Source.create(@s_fields)
-    @store.put_data('test_db_storage',@data)
+    Store.put_data('test_db_storage',@data)
     sources = ['SimpleAdapter','SampleAdapter']
     params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},
       :version => ClientSync::VERSION}

@@ -22,7 +22,7 @@ describe "SourceSync" do
     @u.login = nil
     @ss = SourceSync.new(@s)
     @ss.process
-    verify_result(@s.document.get_source_errors_dockey => {'login-error'=>{'message'=>msg}})
+    verify_result(@s.docname(:errors) => {'login-error'=>{'message'=>msg}})
   end
   
   it "should raise SourceAdapterLogoffException if logoff fails" do
@@ -30,45 +30,42 @@ describe "SourceSync" do
     Logger.should_receive(:error).with("SourceAdapter raised logoff exception: #{msg}")
     set_test_data('test_db_storage',{},msg,'logoff error')
     @ss.process
-    verify_result(@s.document.get_source_errors_dockey => {'logoff-error'=>{'message'=>msg}})
+    verify_result(@s.docname(:errors) => {'logoff-error'=>{'message'=>msg}})
   end
   
   it "should hold on read on subsequent call of process" do
     expected = {'1'=>@product1}
-    @a.store.put_data('test_db_storage',expected)
+    Store.put_data('test_db_storage',expected)
     @ss.process
-    @a.store.put_data('test_db_storage',{'2'=>@product2})
+    Store.put_data('test_db_storage',{'2'=>@product2})
     @ss.process
-    verify_result(@s.document.get_key => expected)   
+    verify_result(@s.docname(:md) => expected)   
   end
   
   it "should read on every subsequent call of process" do
     expected = {'2'=>@product2}
     @s.poll_interval = 0
-    @a.store.put_data('test_db_storage',{'1'=>@product1})
+    Store.put_data('test_db_storage',{'1'=>@product1})
     @ss.process
-    @a.store.put_data('test_db_storage',expected)
+    Store.put_data('test_db_storage',expected)
     @ss.process
-    verify_result(@s.document.get_key => expected)    
+    verify_result(@s.docname(:md) => expected)    
   end
 
   it "should never call read on any call of process" do
     @s.poll_interval = -1
-    @a.store.put_data('test_db_storage',{'1'=>@product1})
+    Store.put_data('test_db_storage',{'1'=>@product1})
     @ss.process
-    verify_result(@s.document.get_key => {})
+    verify_result(@s.docname(:md) => {})
   end
     
   describe "methods" do
-    before(:each) do
-      @clientdoc = Document.new('cd',@a.id,@s.user.id,@c.id,@s.name)
-    end
     
     it "should process source adapter" do
       expected = {'1'=>@product1,'2'=>@product2}
-      @a.store.put_data('test_db_storage',expected)
+      Store.put_data('test_db_storage',expected)
       @ss.process
-      verify_result(@s.document.get_key => expected)
+      verify_result(@s.docname(:md) => expected)
     end
     
     it "should call methods in source adapter" do
@@ -82,84 +79,84 @@ describe "SourceSync" do
     
     describe "create" do
       it "should do create where adapter.create returns nil" do
-        set_state(@clientdoc.get_create_dockey => {'2'=>@product2},
-          @s.document.get_create_dockey => [@c.id])
+        set_state(@c.docname(:create) => {'2'=>@product2},
+          @s.docname(:create) => [@c.id])
         @ss.create
-        verify_result(@s.document.get_create_dockey => [],
-          @clientdoc.get_create_errors_dockey => {},
-          @clientdoc.get_create_links_dockey => {},
-          @clientdoc.get_create_dockey => {})
+        verify_result(@s.docname(:create) => [],
+          @c.docname(:create_errors) => {},
+          @c.docname(:create_links) => {},
+          @c.docname(:create) => {})
       end
     
       it "should do create where adapter.create returns object link" do
         @product4['link'] = 'test link'
-        set_state(@clientdoc.get_create_dockey => {'4'=>@product4},
-          @s.document.get_create_dockey => [@c.id])
+        set_state(@c.docname(:create) => {'4'=>@product4},
+          @s.docname(:create) => [@c.id])
         @ss.create
-        verify_result(@clientdoc.get_create_errors_dockey => {},
-          @clientdoc.get_create_links_dockey => {'4'=>{'l'=>'backend_id'}},
-          @clientdoc.get_create_dockey => {},
-          @s.document.get_create_dockey => [])
+        verify_result(@c.docname(:create_errors) => {},
+          @c.docname(:create_links) => {'4'=>{'l'=>'backend_id'}},
+          @c.docname(:create) => {},
+          @s.docname(:create) => [])
       end
     
       it "should raise exception on adapter.create" do
         msg = "Error creating record"
         data = add_error_object({'4'=>@product4,'2'=>@product2},msg)
-        set_state({@clientdoc.get_create_dockey => data,
-          @s.document.get_create_dockey => [@c.id]})
+        set_state({@c.docname(:create) => data,
+          @s.docname(:create) => [@c.id]})
         @ss.create
-        verify_result(@clientdoc.get_create_errors_dockey => 
+        verify_result(@c.docname(:create_errors) => 
           {"#{ERROR}-error"=>{"message"=>msg},ERROR=>data[ERROR]})
       end
     end
     
     describe "update" do
       it "should do update with no errors" do
-        set_state(@clientdoc.get_update_dockey => {'4'=> { 'price' => '199.99' }},
-          @s.document.get_update_dockey => [@c.id])
+        set_state(@c.docname(:update) => {'4'=> { 'price' => '199.99' }},
+          @s.docname(:update) => [@c.id])
         @ss.update
-        verify_result(@s.document.get_update_dockey => [],
-          @clientdoc.get_update_errors_dockey => {},
-          @clientdoc.get_update_dockey => {})
+        verify_result(@s.docname(:update) => [],
+          @c.docname(:update_errors) => {},
+          @c.docname(:update) => {})
       end
       
       it "should do update with errors" do
         msg = "Error updating record"
         data = add_error_object({'4'=> { 'price' => '199.99' }},msg)
-        set_state(@clientdoc.get_update_dockey => data,
-          @s.document.get_update_dockey => [@c.id])
+        set_state(@c.docname(:update) => data,
+          @s.docname(:update) => [@c.id])
         @ss.update
-        verify_result(@clientdoc.get_update_errors_dockey =>
+        verify_result(@c.docname(:update_errors) =>
           {"#{ERROR}-error"=>{"message"=>msg}, ERROR=>data[ERROR]},
-            @clientdoc.get_update_dockey => {'4'=> { 'price' => '199.99'}},
-          @s.document.get_update_dockey => [@c.id.to_s])
+            @c.docname(:update) => {'4'=> { 'price' => '199.99'}},
+          @s.docname(:update) => [@c.id.to_s])
       end
     end
     
     describe "delete" do
       it "should do delete with no errors" do
-        set_state(@clientdoc.get_delete_dockey => {'4'=>@product4},
-          @s.document.get_delete_dockey => [@c.id],
-          @s.document.get_key => {'4'=>@product4,'3'=>@product3},
-          @clientdoc.get_key => {'4'=>@product4,'3'=>@product3})
+        set_state(@c.docname(:delete) => {'4'=>@product4},
+          @s.docname(:delete) => [@c.id],
+          @s.docname(:md) => {'4'=>@product4,'3'=>@product3},
+          @c.docname(:cd) => {'4'=>@product4,'3'=>@product3})
         @ss.delete
-        verify_result(@clientdoc.get_delete_errors_dockey => {},
-          @s.document.get_delete_dockey => [],
-          @s.document.get_key => {'3'=>@product3},
-          @clientdoc.get_key => {'3'=>@product3},
-          @clientdoc.get_delete_dockey => {})
+        verify_result(@c.docname(:delete_errors) => {},
+          @s.docname(:delete) => [],
+          @s.docname(:md) => {'3'=>@product3},
+          @c.docname(:cd) => {'3'=>@product3},
+          @c.docname(:delete) => {})
       end
       
       it "should do delete with errors" do
         msg = "Error delete record"
         data = add_error_object({'2'=>@product2},msg)
-        set_state(@clientdoc.get_delete_dockey => data,
-          @s.document.get_delete_dockey => [@c.id])
+        set_state(@c.docname(:delete) => data,
+          @s.docname(:delete) => [@c.id])
         @ss.delete
-        verify_result(@clientdoc.get_delete_errors_dockey => 
+        verify_result(@c.docname(:delete_errors) => 
           {"#{ERROR}-error"=>{"message"=>msg}, ERROR=>data[ERROR]},
-            @clientdoc.get_delete_dockey => {'2'=>@product2},
-            @s.document.get_delete_dockey => [@c.id.to_s])
+            @c.docname(:delete) => {'2'=>@product2},
+            @s.docname(:delete) => [@c.id.to_s])
       end
     end
     
@@ -186,16 +183,16 @@ describe "SourceSync" do
     def verify_read_operation(operation)
       expected = {'1'=>@product1,'2'=>@product2}
       set_test_data('test_db_storage',expected)
-      @s.app.store.put_data(@s.document.get_source_errors_dockey,
+      Store.put_data(@s.docname(:errors),
                             {"#{operation}-error"=>{'message'=>'failed'}},true)
       if operation == 'query'
         @ss.read.should == true
-        verify_result(@s.document.get_key => expected, 
-          @s.document.get_source_errors_dockey => {})
+        verify_result(@s.docname(:md) => expected, 
+          @s.docname(:errors) => {})
       else
         @ss.search(@c.id).should == true  
-        verify_result(@clientdoc.get_search_dockey => expected,
-          @clientdoc.get_search_errors_dockey => {})
+        verify_result(@c.docname(:search) => expected,
+          @c.docname(:search_errors) => {})
       end
     end
     
@@ -205,12 +202,12 @@ describe "SourceSync" do
       set_test_data('test_db_storage',{},msg,"#{operation} error")
       if operation == 'query'
         @ss.read.should == true
-        verify_result(@s.document.get_key => {},
-          @s.document.get_source_errors_dockey => {'query-error'=>{'message'=>msg}})
+        verify_result(@s.docname(:md) => {},
+          @s.docname(:errors) => {'query-error'=>{'message'=>msg}})
       else
         @ss.search(@c.id).should == true
-        verify_result(@clientdoc.get_search_dockey => {}, 
-          @clientdoc.get_search_errors_dockey => {'search-error'=>{'message'=>msg}})
+        verify_result(@c.docname(:search) => {}, 
+          @c.docname(:search_errors) => {'search-error'=>{'message'=>msg}})
       end
     end
   end

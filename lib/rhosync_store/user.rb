@@ -38,7 +38,7 @@ module RhosyncStore
     
     def delete
       clients.members.each do |client_id|
-        Client.with_key(client_id).delete
+        Client.load(client_id,'*').delete
       end
       super
     end

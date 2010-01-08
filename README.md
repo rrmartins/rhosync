@@ -8,7 +8,7 @@ INSTALL
 -------------------------------------------------------------
 1. Make sure you have the following gems installed:
 
-	* rspec faker redis sinatra rack-test rubyzip uuidtools
+	* rspec faker redis redis-namespace sinatra rack-test rubyzip uuidtools resque 
 	* gem install relevance-rcov --source http://gems.github.com (make sure to uninstall rcov first)
 	
 2. Install and start a redis server (see <http://code.google.com/p/redis/wiki/QuickStart>)

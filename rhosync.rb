@@ -42,6 +42,14 @@ end
   end
 end
 
+get '/' do
+  out = "<html><head><title>Resque Demo</title></head>"
+  out << "<body>Rhosync Server v#{RhosyncStore::VERSION} running..."
+  out << "<p><a href=\"/resque/\">Resque</a></p></body>"
+  out << "</html>"
+  out
+end
+
 # Collection routes
 post '/login' do
   logout

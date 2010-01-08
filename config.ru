@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'sinatra'
+require 'resque/server'
 
 disable :run, :clean_trace
 set :environment, :production
@@ -17,4 +18,7 @@ end
 # $stdout.reopen(log)
 # $stderr.reopen(log)
 
-run Sinatra::Application
+run Rack::URLMap.new \
+	"/" => Sinatra::Application,
+	"/resque" => Resque::Server.new
+

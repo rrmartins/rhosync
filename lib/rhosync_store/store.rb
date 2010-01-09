@@ -107,31 +107,18 @@ module RhosyncStore
         @@db.sismember(setkey,item)
       end
     
-      def get_lock(dockey,timeout=0,name="")
+      def get_lock(dockey,timeout=0)
         lock_key = _lock_key(dockey)
-        puts "#{name}: before snx"
-        loop do
-          v0 = @@db.get(lock_key)
-          snx = @@db.setnx(lock_key,1)
-          v1 = @@db.get(lock_key)
-          puts "#{name}: snx = #{snx.inspect},#{v0},#{v1}"
-          unless snx
-            puts "#{name}: sleep for a second"
-            sleep(1)
-          else
-            break  
-          end 
+        until @@db.setnx(lock_key,1) do 
+          sleep(1) 
         end
-        puts "#{name}: set expire for #{timeout+1} sec"
         @@db.expire(lock_key,timeout+1)
-        puts "#{name}: return #{Time.now.to_i+timeout+1}"
         Time.now.to_i+timeout+1
       end
       
-      def release_lock(dockey,lock,name='')
+      def release_lock(dockey,lock)
         if (lock >= Time.now.to_i)
           @@db.del(_lock_key(dockey))
-          puts "#{name}: relesed lock"
         end
       end
       

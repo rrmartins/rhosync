@@ -91,18 +91,18 @@ describe "RhosyncStore" do
     
     it "should lock document" do
       doc = "locked_data"
-      m_lock = Store.get_lock(doc,1,"M")
+      m_lock = Store.get_lock(doc)
       th = Thread.new do 
-        t_lock = Store.get_lock(doc,1,"T")
+        t_lock = Store.get_lock(doc)
         Store.put_data(doc,{'1'=>@product1},true)
-        Store.release_lock(doc,t_lock,"T") 
+        Store.release_lock(doc,t_lock) 
       end
       Store.put_data(doc,{'2'=>@product2},true)
       Store.get_data(doc).should == {'2'=>@product2}
       th.alive?.should == true
-      Store.release_lock(doc,m_lock,"M")
+      Store.release_lock(doc,m_lock)
       sleep(1)
-      m_lock = Store.get_lock(doc,1,"M")
+      m_lock = Store.get_lock(doc)
       Store.get_data(doc).should == {'1'=>@product1,'2'=>@product2}
       th.alive?.should == false
     end

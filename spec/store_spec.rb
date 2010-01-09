@@ -90,6 +90,7 @@ describe "RhosyncStore" do
     end
     
     it "should lock document" do
+      pending
       doc = "locked_data"
       m_lock = Store.get_lock(doc)
       th = Thread.new do 

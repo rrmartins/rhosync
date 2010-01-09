@@ -4,10 +4,10 @@ module RhosyncStore
     @@db = nil
     
     class << self
-      def db; @@db ||= Redis.new end
+      def db; @@db ||= _get_redis end
       
       def create
-        @@db ||= Redis.new
+        @@db ||= _get_redis
         raise "Error connecting to Redis store." unless @@db and @@db.is_a?(Redis)
       end
   
@@ -107,7 +107,30 @@ module RhosyncStore
         @@db.sismember(setkey,item)
       end
     
-      private  
+      def get_lock(dockey,timeout=0)
+        lock_key = _lock_key(dockey)
+        until @@db.setnx(lock_key,1) do 
+          sleep(1) 
+        end
+        @@db.expire(lock_key,timeout+1)
+        Time.now.to_i+timeout+1
+      end
+      
+      def release_lock(dockey,lock)
+        if (lock >= Time.now.to_i)
+          @@db.del(_lock_key(dockey))
+        end
+      end
+      
+      private
+      def _get_redis
+         Redis.new(:thread_safe=>true)
+      end
+      
+      def _lock_key(dockey)
+        "#{dockey}:lock"
+      end
+          
       def _is_reserved?(attrib,value) #:nodoc:
         RESERVED_ATTRIB_NAMES.include? attrib
       end

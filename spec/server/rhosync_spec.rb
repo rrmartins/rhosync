@@ -27,12 +27,8 @@ describe "Rhosync" do
   end
   
   it "should show status page" do
-    index = "<html><head><title>Resque Demo</title></head>"
-    index << "<body>Rhosync Server v#{RhosyncStore::VERSION} running..."
-    index << "<p><a href=\"/resque/\">Resque</a></p></body>"
-    index << "</html>"
     get '/'
-    last_response.body.should == index
+    last_response.body.match(RhosyncStore::VERSION)[0].should == RhosyncStore::VERSION
   end
   
   it "should login without app_name" do

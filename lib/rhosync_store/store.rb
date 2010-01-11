@@ -107,6 +107,7 @@ module RhosyncStore
         @@db.sismember(setkey,item)
       end
       
+      # Lock a given key and release when provided block is finished
       def lock(dockey,timeout=0)
         m_lock = get_lock(dockey,timeout)
         yield

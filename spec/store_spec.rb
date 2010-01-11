@@ -108,5 +108,13 @@ describe "RhosyncStore" do
       th.alive?.should == false
     end
     
+    it "should lock document in block" do
+      doc = "locked_data"
+      Store.lock(doc,0) do
+        Store.put_data(doc,{'2'=>@product2})
+        Store.get_data(doc).should == {'2'=>@product2}
+      end
+    end
+    
   end
 end

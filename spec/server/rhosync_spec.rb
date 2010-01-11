@@ -26,6 +26,15 @@ describe "Rhosync" do
     @app ||= Sinatra::Application
   end
   
+  it "should show status page" do
+    index = "<html><head><title>Resque Demo</title></head>"
+    index << "<body>Rhosync Server v#{RhosyncStore::VERSION} running..."
+    index << "<p><a href=\"/resque/\">Resque</a></p></body>"
+    index << "</html>"
+    get '/'
+    last_response.body.should == index
+  end
+  
   it "should login without app_name" do
     post "/login", "login" => 'admin', "password" => ''
     last_response.should be_ok

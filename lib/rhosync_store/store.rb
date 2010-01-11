@@ -106,6 +106,12 @@ module RhosyncStore
       def ismember?(setkey,item)
         @@db.sismember(setkey,item)
       end
+      
+      def lock(dockey,timeout=0)
+        m_lock = get_lock(dockey,timeout)
+        yield
+        release_lock(dockey,m_lock)
+      end
     
       def get_lock(dockey,timeout=0)
         lock_key = _lock_key(dockey)

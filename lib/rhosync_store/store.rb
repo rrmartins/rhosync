@@ -116,17 +116,32 @@ module RhosyncStore
     
       def get_lock(dockey,timeout=0)
         lock_key = _lock_key(dockey)
-        until @@db.setnx(lock_key,1) do 
-          sleep(1) 
+        current_time = Time.now.to_i
+        if not @@db.setnx(lock_key,current_time+timeout+1)
+          loop do
+            if @@db.get(lock_key).to_i <= current_time and 
+                @@db.getset(lock_key,current_time+timeout+1).to_i <= current_time
+              break
+            end
+            sleep(1)
+            current_time = Time.now.to_i
+          end
         end
-        @@db.expire(lock_key,timeout+1)
-        Time.now.to_i+timeout+1
+        current_time+timeout+1
       end
       
+      # Due to redis bug #140, setnx always returns true so this doesn't work
+      # def get_lock(dockey,timeout=0)
+      #   lock_key = _lock_key(dockey)
+      #   until @@db.setnx(lock_key,1) do 
+      #     sleep(1) 
+      #   end
+      #   @@db.expire(lock_key,timeout+1)
+      #   Time.now.to_i+timeout+1
+      # end
+      
       def release_lock(dockey,lock)
-        if (lock >= Time.now.to_i)
-          @@db.del(_lock_key(dockey))
-        end
+        @@db.del(_lock_key(dockey)) if (lock >= Time.now.to_i)
       end
       
       private

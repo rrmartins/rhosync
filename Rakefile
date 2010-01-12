@@ -12,6 +12,7 @@ TYPES = { :spec   => 'spec/*_spec.rb',
           :perf   => 'spec/perf/*_spec.rb',
           :server => 'spec/server/*_spec.rb',
           :api    => 'spec/api/*_spec.rb',
+          :bulk   => 'spec/bulk_data/*_spec.rb',
           :doc    => 'spec/doc/*_spec.rb',
           :all    => 'spec/**/*_spec.rb' } 
  

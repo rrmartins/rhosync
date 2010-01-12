@@ -19,7 +19,8 @@ describe "Rhosync" do
   it_should_behave_like "SourceAdapterHelper"
   
   before(:each) do
-    RhosyncStore.bootstrap(File.join(File.dirname(__FILE__),'..','apps'))
+    basedir = File.join(File.dirname(__FILE__),'..')
+    RhosyncStore.bootstrap(File.join(basedir,'apps'),File.join(basedir,'data'))
   end
 
   def app

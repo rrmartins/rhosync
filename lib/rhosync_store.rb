@@ -14,6 +14,7 @@ require 'rhosync_store/client'
 require 'rhosync_store/client_sync'
 require 'rhosync_store/source_adapter'
 require 'rhosync_store/source_sync'
+require 'rhosync_store/bulk_data'
   
 # Various module utilities for the store
 module RhosyncStore
@@ -24,13 +25,14 @@ module RhosyncStore
   VERSION = '1.5.0'
   
   class << self
-    attr_accessor :app_directory
+    attr_accessor :app_directory, :data_directory
   end
 
   # Server hook to initialize RhosyncStore
-  def bootstrap(appdir)
+  def bootstrap(appdir,datadir)
     Store.create
     RhosyncStore.app_directory = appdir
+    RhosyncStore.data_directory = datadir
     # Add appdir and sources subdirectory
     # to load path if appdir exists
     if File.exist?(appdir)

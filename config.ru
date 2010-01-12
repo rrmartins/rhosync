@@ -10,7 +10,7 @@ set :secret, '<changeme>'
 require 'rhosync.rb'
 
 configure :development,:production do 
-  RhosyncStore.bootstrap(File.join('apps'))
+  RhosyncStore.bootstrap(File.join('apps'),File.join('data'))
 end
 
 # FileUtils.mkdir_p 'log' unless File.exists?('log')

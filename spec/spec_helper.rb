@@ -158,6 +158,7 @@ end
 
 describe "SpecBootstrapHelper", :shared => true do
   before(:all) do
-    RhosyncStore.bootstrap(File.join(File.dirname(__FILE__),'apps'))
+    basedir = File.dirname(__FILE__)
+    RhosyncStore.bootstrap(File.join(basedir,'apps'),File.join(basedir,'data'))
   end
 end

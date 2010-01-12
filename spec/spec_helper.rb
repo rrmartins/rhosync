@@ -115,6 +115,10 @@ describe "SourceAdapterHelper", :shared => true do
     data.merge!({ERROR=>error})
     data
   end
+  
+  def delete_data_directory
+    FileUtils.rm_rf(RhosyncStore.data_directory)
+  end
       
   def set_state(state)
     state.each do |dockey,data|

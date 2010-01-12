@@ -5,23 +5,27 @@ describe "BulkData" do
   it_should_behave_like "SourceAdapterHelper"
   
   after(:each) do
-    FileUtils.rm_rf(RhosyncStore.data_directory)
+    delete_data_directory
   end
   
-  it "should get_name of bulk data for client" do
-    BulkData.get_name(@c.id).should == File.join(@a.name,@u.id.to_s,@c.id.to_s+'.data')
+  it "should docname of bulk data for client" do
+    BulkData.docname(@c.id).should == File.join(@a.name,@u.id.to_s,@c.id.to_s+'.data')
   end
   
   it "should return true if bulk data exists" do
     create_datafile(File.join(@a.name,@u.id.to_s),@c.id.to_s)
-    BulkData.create(:name=>BulkData.get_name(@c.id),:state=>:completed)
+    BulkData.create(:name => BulkData.docname(@c.id),
+      :state => :completed,
+      :sources => [@s_fields[:name]])
     BulkData.exists?({:dbtype => :sqlite, 
       :client_id => @c.id,
       :sources => [@s_fields[:name]]}).should == true
   end
   
   it "should return false if bulk data doesn't exist" do
-    BulkData.create(:name=>BulkData.get_name(@c.id),:state=>:inprogress)
+    BulkData.create(:name=>BulkData.docname(@c.id),
+      :state => :inprogress,
+      :sources => [@s_fields[:name]])
     BulkData.exists?({:dbtype => :sqlite, 
       :client_id => @c.id,
       :sources => [@s_fields[:name]]}).should == false

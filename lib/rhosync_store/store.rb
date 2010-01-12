@@ -19,16 +19,20 @@ module RhosyncStore
           flash_data(dockey) unless append
           # Inserts a hash or array
           if data.is_a?(Hash)
-            data.each do |key,value|
-              value.each do |attrib,value|
-                unless _is_reserved?(attrib,value)
-                  @@db.sadd(dockey,setelement(key,attrib,value))
+            @@db.pipelined do |pipeline|
+              data.each do |key,value|
+                value.each do |attrib,value|
+                  unless _is_reserved?(attrib,value)
+                    pipeline.sadd(dockey,setelement(key,attrib,value))
+                  end
                 end
               end
             end
           else
-            data.each do |value|
-              @@db.sadd(dockey,value)
+            @@db.pipelined do |pipeline|
+              data.each do |value|
+                pipeline.sadd(dockey,value)
+              end
             end
           end
         end
@@ -81,9 +85,11 @@ module RhosyncStore
       # Deletes data from a given doctype,source,user
       def delete_data(dockey,data={})
         if dockey
-          data.each do |key,value|
-            value.each do |attrib,val|
-              @@db.srem(dockey,setelement(key,attrib,val))
+          @@db.pipelined do |pipeline|
+            data.each do |key,value|
+              value.each do |attrib,val|
+                pipeline.srem(dockey,setelement(key,attrib,val))
+              end
             end
           end
         end

@@ -4,7 +4,7 @@ require 'rcov/rcovtask'
 
 task :default => :all
 
-OPTS = { :spec_opts => %w(-fs --color), 
+OPTS = { :spec_opts => ['-fs', '--color'], 
          :rcov      => true,
          :rcov_opts => ['--exclude', 'spec/*,gems/*,apps/*'] }
          

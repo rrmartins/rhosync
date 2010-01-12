@@ -45,6 +45,7 @@ module RhosyncStore
     create_admin_user
   end
   
+  # Generate admin user on first load
   def create_admin_user
     unless User.is_exist?('admin','login')
       admin = User.create({:login => 'admin', :admin => 1})
@@ -53,6 +54,7 @@ module RhosyncStore
     end
   end
   
+  # Sets up load path with ruby source for apps, sources, and vendor gems
   def set_load_path(appdir)
     check_and_add(appdir)
     check_and_add(File.join(appdir,'sources'))
@@ -77,6 +79,8 @@ module RhosyncStore
     [res[0], res[1], Base64.decode64(res[2].to_s)]
   end
   
+  # Generates new token (64-bit integer) based on # of 
+  # microseconds since Jan 1 2009
   def get_token
     ((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i
   end
@@ -114,6 +118,7 @@ module RhosyncStore
       Logger.error "*"*60
     end
   end
+  
   
   def unzip_file(file_dir,params)
     uploaded_file = File.join(file_dir, params[:filename])

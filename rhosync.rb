@@ -82,12 +82,12 @@ get '/apps/:app_name' do
   content_type :json
   cs = ClientSync.new(current_source,current_client,params[:p_size])
   res = cs.send_cud(params[:token],params[:query]).to_json
-  puts "send_cud results: #{res.inspect}"
+  #puts "send_cud results: #{res.inspect}"
   res
 end
 
 post '/apps/:app_name' do
-  puts "receive_cud params: #{params.inspect}"
+  #puts "receive_cud params: #{params.inspect}"
   cs = ClientSync.new(current_source,current_client,params[:p_size]) 
   cs.receive_cud(params)
   status 200

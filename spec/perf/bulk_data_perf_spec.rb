@@ -19,8 +19,8 @@ describe "BulkData Performance" do
     data = BulkData.create(:name => BulkData.docname(@c.id),
       :state => :inprogress,
       :sources => [@s_fields[:name]])
-    SqliteData.perform(:data_name => data.name)
-    lap_timer('SqliteData.perform duration',start)
+    BulkDataJob.perform(:data_name => data.name)
+    lap_timer('BulkDataJob.perform duration',start)
   end
   
 end

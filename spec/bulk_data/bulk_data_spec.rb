@@ -17,8 +17,7 @@ describe "BulkData" do
     BulkData.create(:name => BulkData.docname(@c.id),
       :state => :completed,
       :sources => [@s_fields[:name]])
-    BulkData.exists?({:dbtype => :sqlite, 
-      :client_id => @c.id,
+    BulkData.exists?({:client_id => @c.id,
       :sources => [@s_fields[:name]]}).should == true
   end
   
@@ -26,19 +25,14 @@ describe "BulkData" do
     BulkData.create(:name=>BulkData.docname(@c.id),
       :state => :inprogress,
       :sources => [@s_fields[:name]])
-    BulkData.exists?({:dbtype => :sqlite, 
-      :client_id => @c.id,
+    BulkData.exists?({:client_id => @c.id,
       :sources => [@s_fields[:name]]}).should == false
   end
   
-  it "should raise error on unsupported dbtype" do
-    lambda { BulkData.enqueue(:dbtype => :mysql) }.should raise_error(UnsupportedDbType, 'Unsupported DB Type')
-  end
-  
   it "should enqueue sqlite db type" do
-    BulkData.enqueue(:dbtype => :sqlite)
-    Resque.peek(:bulk_data).should == {"args"=>[{"dbtype"=>"sqlite"}], 
-      "class"=>"RhosyncStore::SqliteData"}
+    BulkData.enqueue
+    Resque.peek(:bulk_data).should == {"args"=>[{}], 
+      "class"=>"RhosyncStore::BulkDataJob"}
   end
 end
 

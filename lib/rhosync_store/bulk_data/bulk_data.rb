@@ -1,11 +1,8 @@
 require 'resque'
 $:.unshift File.join(File.dirname(__FILE__))
-require 'sqlite_data'
-require 'hsql_data'
+require 'bulk_data_job'
 
 module RhosyncStore
-  class UnsupportedDbType < RuntimeError; end
-  
   class BulkData < Model
     field :name, :string
     field :state, :string
@@ -33,12 +30,8 @@ module RhosyncStore
         false
       end
       
-      def enqueue(params)
-        case params[:dbtype]
-        when :sqlite then Resque.enqueue(SqliteData,params)
-        when :hsql then Resque.enqueue(HsqlData,params)
-        else raise UnsupportedDbType.new('Unsupported DB Type')
-        end
+      def enqueue(params={})
+        Resque.enqueue(BulkDataJob,params)
       end
     
       def docname(client_id)

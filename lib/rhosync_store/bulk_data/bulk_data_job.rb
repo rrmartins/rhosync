@@ -43,7 +43,7 @@ module RhosyncStore
       schema,index,dbfile = get_file_args(bulk_data.name)
       hsql_file = dbfile + ".hsqldb"
       system('java','-cp',
-        File.join(File.dirname(__FILE__),'hsqldata.jar'),
+        File.join(File.dirname(__FILE__),'..','..','..','vendor','hsqldata.jar'),
         'com.rhomobile.hsqldata.HsqlData',
         dbfile, hsql_file, schema, index)
     end

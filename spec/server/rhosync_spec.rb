@@ -91,8 +91,10 @@ describe "Rhosync" do
       get "/apps/#{@a.name}/clientcreate"
       last_response.should be_ok
       last_response.content_type.should == 'application/json'
-      last_response.body.should == { "client" => { "client_id" => "2" } }.to_json
-      Client.load(2,{:source_name => '*'}).user_id.should == 'testuser'
+      id = JSON.parse(last_response.body)['client']['client_id']
+      id.length.should == 32
+      last_response.body.should == { "client" => { "client_id" => id } }.to_json
+      Client.load(id,{:source_name => '*'}).user_id.should == 'testuser'
     end
     
     it "should respond to clientregister" do
@@ -100,7 +102,7 @@ describe "Rhosync" do
       last_response.should be_ok
       last_response.body.should == ''
       @c.device_type.should == 'iPhone'
-      @c.id.should == 1
+      @c.id.length.should == 32
     end
     
     it "should respond to clientreset" do

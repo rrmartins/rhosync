@@ -11,6 +11,7 @@ module RhosyncStore
     include Document
     
     def self.create(fields,params={})
+      fields[:id] = get_random_uuid
       super(fields,params) 
     end
     

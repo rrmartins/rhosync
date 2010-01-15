@@ -72,6 +72,12 @@ describe RhosyncStore::Model do
       @x.id.should == 'test'
     end
     
+    it "should create with auto-increment id" do
+      @x = TestType.create
+      @x1 = TestType.create
+      @x1.id.should == @x.id + 1
+    end
+    
     it "should raise ArgumentError on create with duplicate id" do
       @x = TestType.create(:id => 'test1')
       lambda { TestType.create(:id => 'test1') }.should 

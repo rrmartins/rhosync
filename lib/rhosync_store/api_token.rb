@@ -6,7 +6,7 @@ module RhosyncStore
     validates_presence_of :user_id
     
     def self.create(fields)
-      fields[:value] = UUIDTools::UUID.random_create.to_s.gsub(/\-/,'')
+      fields[:value] = get_random_uuid
       fields[:id] = fields[:value]
       object = super(fields)
     end

@@ -5,6 +5,10 @@ describe "RhosyncStore" do
   it_should_behave_like "SourceAdapterHelper"
   
   describe "store methods" do
+    it "should create db class method" do
+      Store.db.class.should == Redis
+    end
+    
     it "should add simple data to new set" do
       Store.put_data(@s.docname(:md),@data).should == true
       Store.get_data(@s.docname(:md)).should == @data

@@ -79,6 +79,11 @@ module RhosyncStore
     [res[0], res[1], Base64.decode64(res[2].to_s)]
   end
   
+  # Get random UUID string
+  def get_random_uuid
+    UUIDTools::UUID.random_create.to_s.gsub(/\-/,'')
+  end
+  
   # Generates new token (64-bit integer) based on # of 
   # microseconds since Jan 1 2009
   def get_token

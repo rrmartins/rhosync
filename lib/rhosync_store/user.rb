@@ -19,7 +19,7 @@ module RhosyncStore
       end
     
       def authenticate(login,password)
-        return unless is_exist?(login,'login')
+        return unless is_exist?(login)
         current_user = with_key(login)
         return if current_user.nil?
         return current_user if User.encrypt(password, current_user.salt) == current_user.hashed_password
@@ -38,20 +38,21 @@ module RhosyncStore
     
     def delete
       clients.members.each do |client_id|
-        Client.load(client_id,'*').delete
+        Client.load(client_id,{:source_name => '*'}).delete
       end
+      self.token.delete if self.token
       super
     end
     
     def create_token
-      if self.token_id && ApiToken.is_exist?(self.token_id,'value')
-        ApiToken.with_key(self.token_id).delete 
+      if self.token_id && ApiToken.is_exist?(self.token_id)
+        ApiToken.load(self.token_id).delete 
       end
       self.token_id = ApiToken.create(:user_id => self.login).id
     end
     
     def token
-      ApiToken.with_key(self.token_id)
+      ApiToken.load(self.token_id)
     end
     
     def update(fields)

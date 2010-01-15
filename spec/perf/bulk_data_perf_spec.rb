@@ -16,8 +16,10 @@ describe "BulkData Performance" do
     start = lap_timer('generate data',start)
     set_state(@s.docname(:md) => @data)
     start = lap_timer('set_state masterdoc',start)
-    data = BulkData.create(:name => BulkData.docname(@c.id),
+    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id,@c.id),
       :state => :inprogress,
+      :app_id => @a.id,
+      :user_id => @u.id,
       :sources => [@s_fields[:name]])
     BulkDataJob.perform(:data_name => data.name)
     lap_timer('BulkDataJob.perform duration',start)

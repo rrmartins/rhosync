@@ -188,7 +188,7 @@ describe "Rhosync Protocol" do
   
   it "should get multiple source search results" do
     @s_fields[:name] = 'SimpleAdapter'
-    @s1 = Source.create(@s_fields)
+    @s1 = Source.create(@s_fields,@s_params)
     Store.put_data('test_db_storage',@data)
     sources = ['SimpleAdapter','SampleAdapter']
     params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},

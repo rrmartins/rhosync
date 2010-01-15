@@ -6,7 +6,6 @@ module RhosyncStore
     
     def initialize(source,client,p_size=nil)
       @source,@client,@p_size = source,client,p_size ? p_size.to_i : 500
-      @client.source_name = @source.name
       @source_sync = SourceSync.new(@source)
     end
     
@@ -96,7 +95,9 @@ module RhosyncStore
         return [] unless params[:sources]
         res = []
         params[:sources].each do |source|
-          s = Source.with_key(source)
+          s = Source.load(source,{:app_id => client.app_id,
+            :user_id => client.user_id})
+          client.source_name = source
           cs = ClientSync.new(s,client,params[:p_size])
           search_res = cs.search(params)
           res << search_res if search_res

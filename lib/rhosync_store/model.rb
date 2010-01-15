@@ -47,10 +47,10 @@ module RhosyncStore
       redis.incr "sequence:#{self.prefix}:id"
     end
   
-    def self.is_exist?(id,attrib_name)
-      !redis.get(self._field_key(self._prefix,id,attrib_name)).nil?
+    def self.is_exist?(id)
+      !redis.get(self._field_key(self._prefix,id,'rho__id')).nil?
     end
-      
+    
   protected
     def prefix #:nodoc:
       @prefix ||= self.class.prefix || self.class.class_prefix(self.class)
@@ -59,7 +59,8 @@ module RhosyncStore
     class << self
       # Defaults to model_name.dasherize
       attr_accessor :prefix
-    
+      attr_accessor :validates_presence
+      
       def _prefix
         class_prefix(self)
       end
@@ -78,10 +79,37 @@ module RhosyncStore
   
       # Creates new model instance with new uniqid
       # NOTE: "sequence:model_name:id" key is used
-      def create(fields = {})
+      def create(params = {}, attributes = {})
+        raise ArgumentError.new("Record already exists for '#{params[:id]}'") if self.is_exist?(params[:id])
+        if self.validates_presence
+          self.validates_presence.each do |field|
+            raise ArgumentError.new("Missing required field '#{field}'") unless params[field]
+          end
+        end
         o = self.new
-        o.id = fields[:id].nil? ? o.next_id : fields[:id]
-        populate_model(o,fields)
+        o.id = params[:id].nil? ? o.next_id : params[:id]
+        params[:rho__id] = params[:id]
+        populate_model(o,params)
+        populate_attributes(o,attributes)
+      end
+      
+      def load(id, params={})
+        return unless self.is_exist?(id)
+        populate_attributes(self.with_key(id),params)
+      end
+      
+      def populate_attributes(obj,attribs)
+        attribs.each do |attrib,value|
+          obj.send "#{attrib.to_s}=".to_sym, value
+        end
+        obj
+      end
+      
+      def validates_presence_of(*names)
+        self.validates_presence ||= []
+        names.each do |name|
+          self.validates_presence << name
+        end
       end
   
       # Creates new model instance with given id
@@ -90,6 +118,10 @@ module RhosyncStore
   
       # Defines marshaled rw accessor for redis string value
       def field(name, type = :string)
+        if @fields.nil?
+          @fields = []
+          field :rho__id, :string
+        end        
         type = type.to_sym
         type = :integer if type == :int
       
@@ -105,7 +137,7 @@ module RhosyncStore
         end
       end
       alias_method :value, :field
-  
+        
       # Defines accessor for redis list
       def list(name, type = :string)
         class_name = marshal_class_name(name, type)
@@ -130,7 +162,7 @@ module RhosyncStore
   
       # Redefine this to change connection options
       def redis
-        @@redis ||= Redis.new
+        @@redis ||= Store.db
       end
     
       def fields #:nodoc:

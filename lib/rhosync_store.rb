@@ -47,7 +47,7 @@ module RhosyncStore
   
   # Generate admin user on first load
   def create_admin_user
-    unless User.is_exist?('admin','login')
+    unless User.is_exist?('admin')
       admin = User.create({:login => 'admin', :admin => 1})
       admin.password = ''
       admin.create_token

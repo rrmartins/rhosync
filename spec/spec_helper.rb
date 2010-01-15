@@ -67,19 +67,24 @@ describe "SourceAdapterHelper", :shared => true do
       :url => 'http://example.com',
       :login => 'testuser',
       :password => 'testpass',
+    }
+    @s_params = {
       :user_id => @u.id,
       :app_id => @a.id
     }
-    @c = Client.create(@c_fields)
-    @c.source_name = @s_fields[:name]
+    @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
     @u.clients << @c.id
-    @s = Source.create(@s_fields)
+    @s = Source.create(@s_fields,@s_params)
     @a.sources << @s.id
     @a.users << @u.id
   end
   
   def do_post(url,params)
     post url, params.to_json, {'CONTENT_TYPE'=>'application/json'}
+  end
+  
+  def bulk_data_docname(app_id,user_id,client_id)
+    File.join(app_id,user_id,client_id.to_s+'.data')
   end
   
   def dump_db_data(store)

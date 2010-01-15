@@ -123,9 +123,8 @@ describe "ClientSync" do
   describe "search" do
     before(:each) do
       @s_fields[:name] = 'SimpleAdapter'
-      @c1 = Client.create(@c_fields)
-      @c1.source_name = @s_fields[:name]
-      @s1 = Source.create(@s_fields)
+      @c1 = Client.create(@c_fields,{:source_name => @s_fields[:name]})
+      @s1 = Source.create(@s_fields,@s_params)
       @cs1 = ClientSync.new(@s1,@c1,2)
     end
     

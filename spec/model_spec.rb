@@ -45,7 +45,17 @@ describe RhosyncStore::Model do
       field :foo_float,  :float
       
       list  :list_date,  :datetime
-      set   :set_date,   :datetime
+      set   :set_date,   :datetime      
+    end
+    
+    class TestValidateType < RhosyncStore::Model
+      field :v_field, :string
+      validates_presence_of :v_field
+    end
+    
+    class TestLoadType < RhosyncStore::Model
+      field :something, :string
+      attr_accessor :foo
     end
   
     before(:each) do
@@ -60,6 +70,23 @@ describe RhosyncStore::Model do
     it "should create with string id" do
       @x = TestType.create(:id => 'test')
       @x.id.should == 'test'
+    end
+    
+    it "should raise ArgumentError on create with duplicate id" do
+      @x = TestType.create(:id => 'test1')
+      lambda { TestType.create(:id => 'test1') }.should 
+        raise_error(ArgumentError, "Record already exists for 'test1'")
+    end
+    
+    it "should validate_presence_of v_field" do
+      lambda { TestValidateType.create(:id => 'test2') }.should
+        raise_error(ArgumentError, "Missing required field 'v_field'")
+    end
+    
+    it "should load with attributes set" do
+      TestLoadType.create(:id => 'test2')
+      @x = TestLoadType.load('test2',{:foo => 'bar'})
+      @x.foo.should == 'bar'
     end
   
     it "should save string as is" do
@@ -227,6 +254,7 @@ describe RhosyncStore::Model do
     
     it "should delete all field" do
       @redisMock.should_receive(:delete).with('test_commands:1:foo')
+      @redisMock.should_receive(:delete).with('test_commands:1:rho__id')
       @redisMock.should_receive(:delete).with('test_commands:1:bar')
       @redisMock.should_receive(:delete).with('test_commands:1:sloppy')
       @x.delete

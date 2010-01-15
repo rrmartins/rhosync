@@ -4,6 +4,7 @@ module RhosyncStore
     set   :users, :string
     set   :sources, :string
     attr_reader :delegate
+    validates_presence_of :name
     
     class << self
       def create(fields={})
@@ -13,7 +14,7 @@ module RhosyncStore
         rescue Exception; end
         super(fields)
       end
-    
+          
       def appdir(name)
         File.join(RhosyncStore.app_directory,name)
       end
@@ -25,7 +26,7 @@ module RhosyncStore
 
     def authenticate(login, password, session)
       if self.delegate && self.delegate.authenticate(login, password, session)
-        user = User.with_key(login) if User.is_exist?(login,'login')
+        user = User.load(login) if User.is_exist?(login)
         if not user
           user = User.create(:login => login)
           self.users << user.id
@@ -36,10 +37,11 @@ module RhosyncStore
     
     def delete
       sources.members.each do |source_name|
-        Source.with_key(source_name).delete
+        Source.load(source_name,{:app_id => self.name,
+          :user_id => '*'}).delete
       end
       users.members.each do |user_name|
-        User.with_key(user_name).delete
+        User.load(user_name).delete
       end
       super
     end

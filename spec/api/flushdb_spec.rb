@@ -6,7 +6,7 @@ describe "RhosyncApiUploadFile" do
   it "should flushdb and re-create admin user" do
     upload_test_apps
     post "/api/flushdb", :api_token => @api_token
-    App.is_exist?(@appname,'name').should == false
+    App.is_exist?(@appname).should == false
     User.authenticate('admin','').should_not be_nil
   end
   

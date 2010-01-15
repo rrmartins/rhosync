@@ -79,23 +79,29 @@ end
 
 # Member routes
 get '/apps/:app_name' do
-  content_type :json
-  cs = ClientSync.new(current_source,current_client,params[:p_size])
-  res = cs.send_cud(params[:token],params[:query]).to_json
-  #puts "send_cud results: #{res.inspect}"
-  res
+  catch_all do
+    content_type :json
+    cs = ClientSync.new(current_source,current_client,params[:p_size])
+    res = cs.send_cud(params[:token],params[:query]).to_json
+    #puts "send_cud results: #{res.inspect}"
+    res
+  end
 end
 
 post '/apps/:app_name' do
-  #puts "receive_cud params: #{params.inspect}"
-  cs = ClientSync.new(current_source,current_client,params[:p_size]) 
-  cs.receive_cud(params)
-  status 200
+  catch_all do
+    #puts "receive_cud params: #{params.inspect}"
+    cs = ClientSync.new(current_source,current_client,params[:p_size]) 
+    cs.receive_cud(params)
+    status 200
+  end
 end
 
 get '/apps/:app_name/search' do
-  content_type :json
-  ClientSync.search_all(current_client,params).to_json
+  catch_all do
+    content_type :json
+    ClientSync.search_all(current_client,params).to_json
+  end
 end
 
 # Management routes

@@ -52,6 +52,17 @@ describe "Rhosync" do
     Logger.should_receive(:error).any_number_of_times.with(any_args())
     check_default_secret!
   end
+  
+  describe "helpers" do 
+    before(:each) do
+      do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
+    end
+    
+    it "should return nil if params[:source_name] is missing" do
+      get "/apps/#{@a.name}"
+      last_response.status.should == 500
+    end
+  end
 
   describe "auth routes" do
     it "should login user with correct username,password" do
@@ -66,7 +77,7 @@ describe "Rhosync" do
     
     it "should create unknown user through delegated authentication" do
       do_post "/apps/#{@a.name}/clientlogin", "login" => 'newuser', "password" => 'testpass'
-      User.is_exist?('newuser','login').should == true
+      User.is_exist?('newuser').should == true
       @a.users.members.sort.should == ['newuser','testuser']
     end
   end
@@ -81,7 +92,7 @@ describe "Rhosync" do
       last_response.should be_ok
       last_response.content_type.should == 'application/json'
       last_response.body.should == { "client" => { "client_id" => "2" } }.to_json
-      Client.with_key(2).user_id.should == 'testuser'
+      Client.load(2,{:source_name => '*'}).user_id.should == 'testuser'
     end
     
     it "should respond to clientregister" do
@@ -214,7 +225,7 @@ describe "Rhosync" do
     
     it "should get multiple source search results" do
       @s_fields[:name] = 'SimpleAdapter'
-      @s1 = Source.create(@s_fields)
+      @s1 = Source.create(@s_fields,@s_params)
       Store.put_data('test_db_storage',@data)
       sources = ['SimpleAdapter','SampleAdapter']
       params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},

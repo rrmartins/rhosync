@@ -11,11 +11,13 @@ describe "BulkDataJob" do
   
   it "should create sqlite data file from master document" do
     set_state(@s.docname(:md) => @data)
-    data = BulkData.create(:name => BulkData.docname(@c.id),
+    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id,@c.id),
       :state => :inprogress,
+      :app_id => @a.id,
+      :user_id => @u.id,
       :sources => [@s_fields[:name]])
     BulkDataJob.perform(:data_name => data.name)
-    BulkData.exists?({:client_id => @c.id,
+    BulkData.exists?({:name => bulk_data_docname(@a.id,@u.id,@c.id),
       :sources => [@s_fields[:name]]}).should == true
     validate_db(data.name,@data).should == true
     File.exists?(get_db_filename(data.name)+'.hsqldb.script').should == true

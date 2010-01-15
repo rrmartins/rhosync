@@ -14,24 +14,20 @@ describe "Client" do
     @c.user_id.should == @c_fields[:user_id] 
   end
   
-  it "should raise exception if user_id is not specified" do
-    lambda { Client.create() }.should raise_error(InvalidClientUserIdError, 'Invalid User Id Argument')    
-  end
-
-  it "should raise exception if app_id is not specified" do
-    lambda { Client.create(:user_id => 'testuser') }.should raise_error(InvalidClientAppIdError, 'Invalid App Id Argument')    
-  end
-  
   it "should raise exception if source_name is nil" do
     @c.source_name = nil
     lambda { @c.doc_suffix('foo') }.should raise_error(InvalidSourceNameError, 'Invalid Source Name For Client')
   end
+  
+  it "should raise ArgumentError if source_name is not provided" do
+    lambda { Client.create(@c_fields,{}) }.should
+      raise_error(ArgumentError, "Missing required field 'source_name'")
+  end
 
   it "should delete client and all associated documents" do
-    set_state(@c.docname(:cd) => @data)    
-    
+    docname = @c.docname(:cd)
+    set_state(docname => @data)    
     @c.delete
-    
-    verify_result(@c.docname(:cd) => {})
+    verify_result(docname => {})
   end
 end

@@ -6,7 +6,7 @@ describe "User" do
   
   it "should create user with fields" do
     @u.id.should == @u_fields[:login]
-    @u1 = User.with_key(@u_fields[:login])
+    @u1 = User.load(@u_fields[:login])
     @u1.id.should == @u.id
     @u1.login.should == @u_fields[:login]
     @u1.email.should == @u_fields[:email]
@@ -15,7 +15,7 @@ describe "User" do
   it "should create token for user" do
     token = @u.create_token
     token.length.should == 32
-    ApiToken.with_key(token).user_id.should == @u.id
+    ApiToken.load(token).user_id.should == @u.id
   end
   
   it "should get token for user" do
@@ -26,9 +26,9 @@ describe "User" do
   
   it "should maintain only one token for user" do
     token = @u.create_token
-    ApiToken.is_exist?(token,'value').should == true
+    ApiToken.is_exist?(token).should == true
     @u.create_token
-    ApiToken.is_exist?(token,'value').should == false
+    ApiToken.is_exist?(token).should == false
   end
   
   it "should authenticate with proper credentials" do
@@ -50,9 +50,14 @@ describe "User" do
     @c.put_data(:cd,@data)
     cid = @c.id    
     @u.delete
-    User.is_exist?(@u_fields[:login],'login').should == false
-    Client.is_exist?(cid,'device_type').should == false
+    User.is_exist?(@u_fields[:login]).should == false
+    Client.is_exist?(cid).should == false
     @c.get_data(:cd).should == {}
   end
   
+  it "should delete token for user" do
+    token = @u.create_token
+    @u.delete
+    ApiToken.is_exist?(token).should == false
+  end
 end

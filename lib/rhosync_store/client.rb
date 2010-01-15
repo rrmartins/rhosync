@@ -1,6 +1,4 @@
 module RhosyncStore  
-  class InvalidClientUserIdError < RuntimeError; end
-  class InvalidClientAppIdError < RuntimeError; end
   class InvalidSourceNameError < RuntimeError; end
   
   class Client < Model
@@ -8,27 +6,25 @@ module RhosyncStore
     field :user_id,:string
     field :app_id,:string
     attr_accessor :source_name
+    validates_presence_of :app_id, :user_id
     
     include Document
     
-    def self.create(fields={})
-      raise InvalidClientUserIdError.new('Invalid User Id Argument') unless fields[:user_id]
-      raise InvalidClientAppIdError.new('Invalid App Id Argument') unless fields[:app_id]
-      super(fields) 
+    def self.create(fields,params={})
+      super(fields,params) 
     end
     
-    def self.load(key,source_name)
-      c = Client.with_key(key)
-      c.source_name = source_name
-      c
+    def self.load(id,params)
+      validate_attributes(params)
+      super(id,params)
     end
     
     def doc_suffix(doctype)
       doctype = doctype.to_s
-      if self.source_name
-        "#{self.id}:#{self.source_name}:#{doctype}"
-      elsif doctype == '*'
+      if doctype == '*'
         "#{self.id}:*"
+      elsif self.source_name 
+        "#{self.id}:#{self.source_name}:#{doctype}"
       else
         raise InvalidSourceNameError.new('Invalid Source Name For Client')   
       end          
@@ -37,6 +33,11 @@ module RhosyncStore
     def delete
       flash_data('*')
       super
+    end
+    
+    private
+    def self.validate_attributes(params)
+      raise ArgumentError.new('Missing required attribute source_name') unless params[:source_name]
     end
   end
 end

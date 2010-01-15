@@ -3,7 +3,7 @@ api :list_apps do |params,user|
   res = []
   keys.each do |key|
     key = key.split(':')[1]
-    app = App.with_key key if App.is_exist? key, 'name'
+    app = App.load key if App.is_exist?(key)
     res << { :name => app.name,
       :sources => app.sources.members,
       :users => app.users.members

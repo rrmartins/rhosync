@@ -5,13 +5,13 @@ describe "RhosyncApiDeleteApp" do
   
   it "should delete aplication" do
     upload_test_apps
-    sources = App.with_key(@appname).sources.members
+    sources = App.load(@appname).sources.members
 
     post "/api/delete_app", :app_name => @appname, :api_token => @api_token
     
-    App.is_exist?(@appname,'name').should == false
+    App.is_exist?(@appname).should == false
     sources.each do |source|    
-      Source.is_exist?(source,'name').should == false
+      Source.is_exist?(source).should == false
     end
     File.exists?(File.join(File.dirname(__FILE__),'..','..','apps',@appname)).should == false
   end

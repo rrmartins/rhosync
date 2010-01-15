@@ -4,7 +4,7 @@ describe "Source" do
   it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
-  it "should create source with @s_fields" do
+  it "should create and load source with @s_fields and @s_params" do
     @s.name.should == @s_fields[:name]
     @s.url.should == @s_fields[:url]
     @s.login.should == @s_fields[:login]
@@ -13,9 +13,11 @@ describe "Source" do
     @s.priority.should == 3
     @s.callback_url.should be_nil
     (@s.refresh_time + 1).should >= Time.now.to_i
-    @s.refresh_time.should <= Time.now.to_i + 1 
+    @s.refresh_time.should <= Time.now.to_i + 1
+    @s.app_id.should == @s_params[:app_id]
+    @s.user_id.should == @s_params[:user_id]
 
-    @s1 = Source.with_key(@s.id)
+    @s1 = Source.load(@s.id,@s_params)
     @s1.name.should == @s_fields[:name]
     @s1.url.should == @s_fields[:url]
     @s1.login.should == @s_fields[:login]
@@ -23,6 +25,8 @@ describe "Source" do
     @s1.poll_interval.should == 300
     @s1.priority.should == 3
     @s1.callback_url.should be_nil
+    @s1.app_id.should == @s_params[:app_id]
+    @s1.user_id.should == @s_params[:user_id]
   end
   
   it "should create source with user" do
@@ -36,7 +40,7 @@ describe "Source" do
   
   it "should delete source" do
     @s.delete
-    Source.is_exist?(@s_fields[:name],'name').should == false
+    Source.is_exist?(@s_fields[:name]).should == false
   end
   
   it "should delete master and all documents associated with source" do

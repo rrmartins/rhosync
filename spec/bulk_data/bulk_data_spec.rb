@@ -8,24 +8,24 @@ describe "BulkData" do
     delete_data_directory
   end
   
-  it "should docname of bulk data for client" do
-    BulkData.docname(@c.id).should == File.join(@a.name,@u.id.to_s,@c.id.to_s+'.data')
-  end
-  
   it "should return true if bulk data exists" do
     create_datafile(File.join(@a.name,@u.id.to_s),@c.id.to_s)
-    BulkData.create(:name => BulkData.docname(@c.id),
+    BulkData.create(:name => bulk_data_docname(@a.id,@u.id,@c.id),
       :state => :completed,
+      :app_id => @a.id,
+      :user_id => @u.id,
       :sources => [@s_fields[:name]])
-    BulkData.exists?({:client_id => @c.id,
+    BulkData.exists?({:name => bulk_data_docname(@a.id,@u.id,@c.id),
       :sources => [@s_fields[:name]]}).should == true
   end
   
   it "should return false if bulk data doesn't exist" do
-    BulkData.create(:name=>BulkData.docname(@c.id),
+    BulkData.create(:name => bulk_data_docname(@a.id,@u.id,@c.id),
       :state => :inprogress,
+      :app_id => @a.id,
+      :user_id => @u.id,
       :sources => [@s_fields[:name]])
-    BulkData.exists?({:client_id => @c.id,
+    BulkData.exists?({:name => bulk_data_docname(@a.id,@u.id,@c.id),
       :sources => [@s_fields[:name]]}).should == false
   end
   

@@ -5,7 +5,7 @@ module RhosyncStore
     @queue = :bulk_data
     
     def self.perform(params)
-      bulk_data = BulkData.with_key(params[:data_name]) if BulkData.is_exist?(params[:data_name],'name')
+      bulk_data = BulkData.with_key(params[:data_name]) if BulkData.is_exist?(params[:data_name])
       if bulk_data
         create_sqlite_data_file(bulk_data)
         create_hsql_data_file(bulk_data)
@@ -33,7 +33,8 @@ module RhosyncStore
       db = SQLite3::Database.new(dbfile)
       db.execute(File.open(schema,'r').read)
       bulk_data.sources.members.each do |source_name|
-        data = Source.with_key(source_name).get_data(:md)
+        data = Source.load(source_name,{:app_id => bulk_data.app_id,
+          :user_id => bulk_data.user_id}).get_data(:md)
         import_data_to_db(db,source_name,data)
       end
       db.execute(File.open(index,'r').read)

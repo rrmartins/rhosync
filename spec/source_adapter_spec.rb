@@ -21,7 +21,7 @@ describe "SourceAdapter" do
   
   it "should fail to create SourceAdapter" do
     @s_fields[:name] = 'Broken'
-    broken_source = Source.create(@s_fields)
+    broken_source = Source.create(@s_fields,@s_params)
     lambda { SourceAdapter.create(broken_source) }.should raise_error(Exception)
   end
   

@@ -34,6 +34,6 @@ describe "RhosyncApiUpdateUser" do
     user = User.authenticate('admin','123')
     user.login.should == 'admin'
     user.admin.should == 1
-    User.is_exist?('admin1','login').should == false
+    User.is_exist?('admin1').should == false
   end
 end

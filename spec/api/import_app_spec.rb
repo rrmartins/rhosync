@@ -13,11 +13,11 @@ describe "RhosyncApiImportApp" do
   it "should upload zipfile and import app and sources" do   
     upload_test_apps
     
-    App.is_exist?(@appname,'name').should == true
-    sources = App.with_key(@appname).sources.members.sort
+    App.is_exist?(@appname).should == true
+    sources = App.load(@appname).sources.members.sort
     sources.should == ["SampleAdapter", "SimpleAdapter"]
     sources.each do |source|    
-      Source.is_exist?(source,'name').should == true
+      Source.is_exist?(source).should == true
     end
     target = File.join(File.dirname(__FILE__),'..','..','apps',@appname)
     entries = Dir.entries(target)
@@ -40,6 +40,7 @@ describe "RhosyncApiImportApp" do
     upload_test_apps
     lambda { SourceAdapter.create(@s,nil).hello }.should raise_error(Exception)
     FileUtils.rm_rf File.join(File.dirname(__FILE__),'..','..','apps')
+    @a.delete
     @appname = 'testapptwo'
     target = File.join(File.dirname(__FILE__),'..','apps',@appname)
     FileUtils.cp_r File.join(File.dirname(__FILE__),'..','testdata',@appname), target

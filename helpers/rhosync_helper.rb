@@ -5,7 +5,7 @@ helpers do
   
   def check_api_token
     request_action == 'get_api_token' or 
-      (params[:api_token] and ApiToken.is_exist?(params[:api_token],'value'))
+      (params[:api_token] and ApiToken.is_exist?(params[:api_token]))
   end
   
   def do_login
@@ -40,26 +40,47 @@ helpers do
   end
   
   def current_user
-    if User.is_exist?(session[:login],'login') 
-      user = User.with_key(session[:login])
-      return user if user.admin == 1 || session[:app_name] == params[:app_name]
+    if @user.nil? and User.is_exist?(session[:login]) 
+      @user = User.load(session[:login])
     end
-    nil
+    if @user and (@user.admin == 1 || session[:app_name] == params[:app_name])
+      @user
+    else  
+      nil
+    end  
   end
   
   def api_user
-    request_action == 'get_api_token' ? current_user : ApiToken.with_key(params[:api_token]).user
+    request_action == 'get_api_token' ? current_user : ApiToken.load(params[:api_token]).user
   end
   
   def current_app
-    App.with_key(params[:app_name]) if params[:app_name]
+    App.load(params[:app_name]) if params[:app_name]
   end
   
   def current_source
-    Source.with_key(params[:source_name]) if params[:source_name]
+    return @source if @source 
+    user = current_user
+    if params[:source_name] and params[:app_name] and user
+      @source = Source.load(params[:source_name],
+        {:user_id => user.login,:app_id => params[:app_name]}) 
+    else
+      nil
+    end
   end
   
   def current_client
-    Client.with_key(params[:client_id].to_s) if params[:client_id]
+    if @client.nil? and params[:client_id]
+      @client = Client.load(params[:client_id].to_s,
+        params[:source_name] ? {:source_name => current_source.name} : {:source_name => '*'}) 
+    end  
+  end
+  
+  def catch_all
+    begin
+      yield
+    rescue Exception => e
+      throw :halt, [500, e.message]
+    end
   end
 end

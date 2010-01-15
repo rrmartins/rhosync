@@ -8,13 +8,13 @@ module RhosyncStore
     field :refresh_time,:integer
     field :priority,:integer
     field :callback_url,:string
-    field :user_id,:string
-    field :app_id,:string
+    attr_accessor :app_id, :user_id
+    validates_presence_of :name
     
     include Document
     
-    def self.create(fields={})
-      fields[:name] ||= self.class.name
+    def self.create(fields,params)
+      validate_attributes(params)
       fields[:id] = fields[:name]
       fields[:url] ||= ''
       fields[:login] ||= ''
@@ -22,17 +22,22 @@ module RhosyncStore
       fields[:priority] ||= 3
       fields[:poll_interval] ||= 300
       fields[:refresh_time] ||= Time.now.to_i
-      super(fields)
+      super(fields,params)
+    end
+    
+    def self.load(id,params)
+      validate_attributes(params)
+      super(id,params)
     end
     
     # Return the user associated with a source
     def user
-      User.with_key(self.user_id)
+      @user ||= User.load(self.user_id)
     end
     
     # Return the app the source belongs to
     def app
-      App.with_key(self.app_id)
+      @app ||= App.load(self.app_id)
     end
     
     def doc_suffix(doctype)
@@ -42,6 +47,12 @@ module RhosyncStore
     def delete
       flash_data('*')
       super
+    end
+    
+    private
+    def self.validate_attributes(params)
+      raise ArgumentError.new('Missing required attribute user_id') unless params[:user_id]
+      raise ArgumentError.new('Missing required attribute app_id') unless params[:app_id]
     end
   end
 end

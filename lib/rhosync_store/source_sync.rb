@@ -52,7 +52,7 @@ module RhosyncStore
     private
     def _auth_op(operation,client_id=-1)
       edockey = client_id == -1 ? @source.docname(:errors) :
-        Client.load(client_id,@source.name).docname(:search_errors)
+        Client.load(client_id,{:source_name => @source.name}).docname(:search_errors)
       begin
         Store.flash_data(edockey) if operation == 'login'
         @adapter.send operation
@@ -98,7 +98,7 @@ module RhosyncStore
     
     def _process_client_cud(client_id,operation)
       errors,links,deletes,creates,dels = {},{},{},{},{}
-      client = Client.load(client_id,@source.name)
+      client = Client.load(client_id,{:source_name => @source.name})
       modified = client.get_data(operation)
       # Process operation queue, one object at a time
       modified.each do |key,value|
@@ -170,7 +170,7 @@ module RhosyncStore
       errordoc = nil
       begin
         if operation == 'search'
-          client = Client.load(client_id,@source.name)
+          client = Client.load(client_id,{:source_name => @source.name})
           errordoc = client.docname(:search_errors)
           compute_token client.docname(:search_token)
           @adapter.search params

@@ -18,7 +18,7 @@ describe "App" do
     @a1.sources.members.sort.should == ["SampleAdapter", "SimpleAdapter"]
   end
   
-  it "should delete app and associated users and sources and clients" do   
+  it "should delete app and associated users and sources and clients and read_statees" do
     @a.delete
     Store.db.keys('*').should == []
   end

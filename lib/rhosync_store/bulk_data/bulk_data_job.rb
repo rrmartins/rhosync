@@ -9,6 +9,8 @@ module RhosyncStore
       if bulk_data
         create_sqlite_data_file(bulk_data)
         create_hsql_data_file(bulk_data)
+        # if bulk_data.incremental
+        #          # update client doc
         bulk_data.state = :completed
       end
     end

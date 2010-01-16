@@ -5,11 +5,11 @@ describe "Document" do
   it_should_behave_like "SourceAdapterHelper"
   
   it "should generate client docname" do
-    @c.docname(:foo).should == "client:#{@a.id}:#{@u.id}:#{@c.doc_suffix(:foo)}"
+    @c.docname(:foo).should == "client:#{@a.id}:#{@u.id}:#{@c.id}:#{@s_fields[:name]}:foo"
   end
   
   it "should generate source docname" do
-    @s.docname(:foo).should == "source:#{@a.id}:#{@u.id}:#{@s.doc_suffix(:foo)}"
+    @s.docname(:foo).should == "source:#{@a.id}:#{@u.id}:#{@s_fields[:name]}:foo"
   end
   
   it "should flash_data for docname" do

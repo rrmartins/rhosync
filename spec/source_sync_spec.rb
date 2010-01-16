@@ -44,7 +44,7 @@ describe "SourceSync" do
   
   it "should read on every subsequent call of process" do
     expected = {'2'=>@product2}
-    @s.poll_interval = 0
+    @s.get_read_state.poll_interval = 0
     Store.put_data('test_db_storage',{'1'=>@product1})
     @ss.process
     Store.put_data('test_db_storage',expected)
@@ -53,7 +53,7 @@ describe "SourceSync" do
   end
 
   it "should never call read on any call of process" do
-    @s.poll_interval = -1
+    @s.get_read_state.poll_interval = -1
     Store.put_data('test_db_storage',{'1'=>@product1})
     @ss.process
     verify_result(@s.docname(:md) => {})
@@ -63,7 +63,7 @@ describe "SourceSync" do
     
     it "should process source adapter" do
       expected = {'1'=>@product1,'2'=>@product2}
-      Store.put_data('test_db_storage',expected)
+      set_state('test_db_storage' => expected)
       @ss.process
       verify_result(@s.docname(:md) => expected)
     end
@@ -180,11 +180,27 @@ describe "SourceSync" do
       end
     end
     
+    describe "app-level partitioning" do
+      it "should create app-level masterdoc with '__shared__' docname" do
+        @s1 = Source.load(@s_fields[:name],@s_params)
+        @s1.partition = :app
+        @ss1 = SourceSync.new(@s1)
+        expected = {'1'=>@product1,'2'=>@product2}
+        set_state('test_db_storage' => expected)
+        @ss1.process
+        verify_result("source:#{@a_fields[:name]}:__shared__:#{@s_fields[:name]}:md" => expected)
+        Store.db.keys("read_state:#{@a_fields[:name]}:__shared__*").sort.should ==
+          ["read_state:rhotestapp:__shared__:SampleAdapter:poll_interval", 
+            "read_state:rhotestapp:__shared__:SampleAdapter:refresh_time",
+            "read_state:rhotestapp:__shared__:SampleAdapter:rho__id"]
+      end
+    end
+    
     def verify_read_operation(operation)
       expected = {'1'=>@product1,'2'=>@product2}
       set_test_data('test_db_storage',expected)
       Store.put_data(@s.docname(:errors),
-                            {"#{operation}-error"=>{'message'=>'failed'}},true)
+        {"#{operation}-error"=>{'message'=>'failed'}},true)
       if operation == 'query'
         @ss.read.should == true
         verify_result(@s.docname(:md) => expected, 

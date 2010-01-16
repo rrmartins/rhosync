@@ -23,9 +23,9 @@ module RhosyncStore
     def doc_suffix(doctype)
       doctype = doctype.to_s
       if doctype == '*'
-        "#{self.id}:*"
+        "#{self.user_id}:#{self.id}:*"
       elsif self.source_name 
-        "#{self.id}:#{self.source_name}:#{doctype}"
+        "#{self.user_id}:#{self.id}:#{self.source_name}:#{doctype}"
       else
         raise InvalidSourceNameError.new('Invalid Source Name For Client')   
       end          

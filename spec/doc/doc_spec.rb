@@ -148,7 +148,7 @@ describe "Rhosync Protocol" do
     get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
     token = Store.get_value(@c.docname(:page_token))
     Store.flash_data('test_db_storage')
-    @s.refresh_time = Time.now.to_i
+    @s.get_read_state.refresh_time = Time.now.to_i
     get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
       :version => ClientSync::VERSION
     @title,@description = 'delete objects', 'send delete objects'
@@ -161,7 +161,7 @@ describe "Rhosync Protocol" do
     get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
     token = Store.get_value(@c.docname(:page_token))
     set_test_data('test_db_storage',{'1'=>@product1,'3'=>@product3})
-    @s.refresh_time = Time.now.to_i
+    @s.get_read_state.refresh_time = Time.now.to_i
     get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
       :version => ClientSync::VERSION
     @title,@description = 'insert-delete objects', 'send insert and delete objects'

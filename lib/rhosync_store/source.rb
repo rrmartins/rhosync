@@ -4,10 +4,9 @@ module RhosyncStore
     field :url,:string
     field :login,:string
     field :password,:string
-    field :poll_interval,:integer
-    field :refresh_time,:integer
     field :priority,:integer
     field :callback_url,:string
+    field :partition_flag,:string
     attr_accessor :app_id, :user_id
     validates_presence_of :name
     
@@ -20,8 +19,7 @@ module RhosyncStore
       fields[:login] ||= ''
       fields[:password] ||= ''
       fields[:priority] ||= 3
-      fields[:poll_interval] ||= 300
-      fields[:refresh_time] ||= Time.now.to_i
+      fields[:partition_flag] ||= :user
       super(fields,params)
     end
     
@@ -40,13 +38,32 @@ module RhosyncStore
       @app ||= App.load(self.app_id)
     end
     
+    def get_read_state
+      id = {:app_id => self.app_id,:user_id => user_by_partition,
+        :source_name => self.name}
+      @read_state ||= ReadState.load(id)
+      @read_state ||= ReadState.create(id)   
+    end
+    
     def doc_suffix(doctype)
-      "#{self.name}:#{doctype.to_s}"
+      "#{user_by_partition}:#{self.name}:#{doctype.to_s}"
     end
     
     def delete
       flash_data('*')
       super
+    end
+    
+    def partition
+      self.partition_flag.to_sym
+    end
+    
+    def partition=(value)
+      self.partition_flag = value
+    end
+    
+    def user_by_partition
+      self.partition.to_sym == :user ? self.user_id : '__shared__'
     end
     
     private

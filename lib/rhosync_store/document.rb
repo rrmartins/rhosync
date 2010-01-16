@@ -27,7 +27,7 @@ module Document
   
   # Generate the fully-qualified docname
   def docname(doctype)
-    "#{self.class.class_prefix(self.class)}:#{self.app_id}:#{self.user_id}:#{self.doc_suffix(doctype)}"
+    "#{self.class.class_prefix(self.class)}:#{self.app_id}:#{self.doc_suffix(doctype)}"
   end
   
   # Update count for a given document

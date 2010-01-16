@@ -39,11 +39,11 @@ module RhosyncStore
       self.create
       self.update
       self.delete
-      
-      if @source.poll_interval == 0 or 
-        (@source.poll_interval != -1 and @source.refresh_time <= Time.now.to_i)
+            
+      if @source.get_read_state.poll_interval == 0 or 
+        (@source.get_read_state.poll_interval != -1 and @source.get_read_state.refresh_time <= Time.now.to_i)
         self.read(client_id,params)
-        @source.refresh_time = Time.now.to_i + @source.poll_interval
+        @source.get_read_state.refresh_time = Time.now.to_i + @source.get_read_state.poll_interval
       end
       
       _auth_op('logoff')

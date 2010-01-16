@@ -9,11 +9,8 @@ describe "Source" do
     @s.url.should == @s_fields[:url]
     @s.login.should == @s_fields[:login]
     @s.app.name.should == @a_fields[:name]
-    @s.poll_interval.should == 300
     @s.priority.should == 3
     @s.callback_url.should be_nil
-    (@s.refresh_time + 1).should >= Time.now.to_i
-    @s.refresh_time.should <= Time.now.to_i + 1
     @s.app_id.should == @s_params[:app_id]
     @s.user_id.should == @s_params[:user_id]
 
@@ -22,7 +19,6 @@ describe "Source" do
     @s1.url.should == @s_fields[:url]
     @s1.login.should == @s_fields[:login]
     @s1.app.name.should == @a_fields[:name]
-    @s1.poll_interval.should == 300
     @s1.priority.should == 3
     @s1.callback_url.should be_nil
     @s1.app_id.should == @s_params[:app_id]
@@ -37,7 +33,7 @@ describe "Source" do
     @s.app.name.should == @a_fields[:name]
     @s.docname(:md).should == "source:#{@s.app.id}:#{@u.id}:#{@s_fields[:name]}:md"
   end
-  
+    
   it "should delete source" do
     @s.delete
     Source.is_exist?(@s_fields[:name]).should == false
@@ -48,5 +44,15 @@ describe "Source" do
     @s.delete
     verify_result(@s.docname(:md) => {})
     Store.db.keys(@s.docname('*')).should == []
+  end
+  
+  it "should create source with default partition user" do
+    @s1 = Source.load(@s_fields[:name],{:app_id => @a.id,:user_id => '*'})
+    @s1.partition.should == :user
+  end
+  
+  it "should create correct docname based on partition scheme" do
+    @s.partition = :app
+    @s.docname(:md).should == "source:#{@s.app.id}:__shared__:#{@s_fields[:name]}:md"
   end
 end

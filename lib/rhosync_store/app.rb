@@ -43,6 +43,7 @@ module RhosyncStore
       users.members.each do |user_name|
         User.load(user_name).delete
       end
+      ReadState.delete(self.name)
       super
     end
     

@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'resque/tasks'
 require 'spec/rake/spectask'
 require 'rcov/rcovtask'
 

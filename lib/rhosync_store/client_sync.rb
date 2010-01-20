@@ -121,7 +121,6 @@ module RhosyncStore
         end
         if data and data.completed? 
           client.update_clientdoc(sources[:names])
-          data.url
           {:result => :url, :url => data.url}
         elsif data
           {:result => :wait}

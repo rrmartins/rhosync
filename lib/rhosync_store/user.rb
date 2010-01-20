@@ -20,7 +20,7 @@ module RhosyncStore
     
       def authenticate(login,password)
         return unless is_exist?(login)
-        current_user = with_key(login)
+        current_user = load(login)
         return if current_user.nil?
         return current_user if User.encrypt(password, current_user.salt) == current_user.hashed_password
       end

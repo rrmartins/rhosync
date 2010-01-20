@@ -295,4 +295,41 @@ describe "ClientSync" do
       pending
     end
   end
+  
+  describe "bulk data" do
+    after(:each) do
+      delete_data_directory
+    end
+    
+    it "should create bulk data job user parition if none exists" do
+      ClientSync.bulk_data(:user,@c).should == :wait
+      Resque.peek(:bulk_data).should == {"args"=>
+        [{"data_name"=>File.join(@a_fields[:name],@u_fields[:login],@c.id)}], 
+          "class"=>"RhosyncStore::BulkDataJob"}
+    end
+    
+    it "should create bulk data job app partition if none exists and no parition sources" do
+      ClientSync.bulk_data(:app,@c).should == :nop
+      Resque.peek(:bulk_data).should == nil
+    end
+    
+    it "should create bulk data job app partition with partition sources" do
+      @s.partition = :app
+      ClientSync.bulk_data(:app,@c).should == :wait
+      Resque.peek(:bulk_data).should == {"args"=>
+        [{"data_name"=>File.join(@a_fields[:name],@a_fields[:name])}], 
+          "class"=>"RhosyncStore::BulkDataJob"}
+    end
+    
+    it "should return bulk data url for completed bulk data" do
+      set_state('test_db_storage' => @data)
+      ClientSync.bulk_data(:user,@c)
+      BulkDataJob.perform(:data_name => bulk_data_docname(@a.id,@u.id,@c.id))
+      ClientSync.bulk_data(:user,@c).should == 
+        BulkData.load(bulk_data_docname(@a.id,@u.id,@c.id)).dbfile
+      verify_result(@c.docname(:cd) => @data,
+        @s.docname(:md) => @data,
+        @s.docname(:md_copy) => @data)
+    end
+  end
 end

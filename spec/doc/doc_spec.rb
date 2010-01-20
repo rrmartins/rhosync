@@ -6,7 +6,6 @@ require 'spec'
 require 'spec/autorun'
 require 'spec/interop/test'
 require 'pp'
-require 'maruku'
 
 set :environment, :test
 set :run, false

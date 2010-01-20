@@ -88,7 +88,7 @@ module RhosyncStore
     class << self
       # Resets the store for a given app,client
       def reset(client)
-        client.flash_data('*')
+        client.flash_data('*') if client
       end
     
       def search_all(client,params=nil)
@@ -103,6 +103,31 @@ module RhosyncStore
           res << search_res if search_res
         end
         res
+      end
+      
+      def bulk_data(partition,client)
+        name = BulkData.get_name(partition,client)
+        data = BulkData.load(name)
+        sources = client.app.partition_sources(partition,client.user_id)
+        if (data.nil? or sources[:need_refresh] == true) and sources[:names].length > 0 
+          data.delete if data
+          data = BulkData.create(:name => name,
+            :app_id => client.app_id,
+            :user_id => client.user_id,
+            :sources => sources[:names])
+          BulkData.enqueue(:data_name => name)
+        end
+        # if data
+        #           if data.completed?
+        #             client.update_clientdoc(sources[:names])
+        #             data.url
+        #           else
+        #             :wait
+        #           end
+        #         else
+        #           :nop
+        #         end
+       data ? (data.completed? ? (client.update_clientdoc(sources[:names]); data.url) : :wait) : :nop
       end
     end
     

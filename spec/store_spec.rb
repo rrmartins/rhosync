@@ -118,5 +118,11 @@ describe "RhosyncStore" do
         Store.get_data(doc).should == {'2'=>@product2}
       end
     end
+    
+    it "should create clone of set" do
+      set_state('abc' => @data)
+      Store.clone('abc','def')
+      verify_result('abc' => @data,'def' => @data)
+    end
   end
 end

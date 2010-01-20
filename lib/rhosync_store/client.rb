@@ -20,6 +20,10 @@ module RhosyncStore
       super(id,params)
     end
     
+    def app
+      @app ||= App.load(app_id)
+    end
+    
     def doc_suffix(doctype)
       doctype = doctype.to_s
       if doctype == '*'
@@ -34,6 +38,13 @@ module RhosyncStore
     def delete
       flash_data('*')
       super
+    end
+    
+    def update_clientdoc(sources)
+      sources.each do |source|
+        s = Source.load(source,{:app_id => app_id,:user_id => user_id})
+        Store.clone(s.docname(:md_copy),self.docname(:cd))
+      end
     end
     
     private

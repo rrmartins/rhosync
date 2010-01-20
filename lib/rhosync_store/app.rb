@@ -29,7 +29,7 @@ module RhosyncStore
         user = User.load(login) if User.is_exist?(login)
         if not user
           user = User.create(:login => login)
-          self.users << user.id
+          users << user.id
         end
         return user
       end
@@ -49,6 +49,20 @@ module RhosyncStore
     
     def delegate
       @delegate.nil? ? Object.const_get(camelize(self.name)) : @delegate
+    end
+    
+    def partition_sources(partition,user_id)
+      names = []
+      need_refresh = false
+      sources.members.each do |source|
+        s = Source.load(source,{:app_id => self.name,
+          :user_id => user_id})
+        if s.partition == partition
+          names << s.name
+          need_refresh = true if !need_refresh and s.check_refresh_time  
+        end
+      end
+      {:names => names,:need_refresh => need_refresh}
     end
   end
 end

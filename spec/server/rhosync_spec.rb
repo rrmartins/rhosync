@@ -244,4 +244,50 @@ describe "Rhosync" do
          {"count"=>1}, {"insert"=>{'1'=>@product1}}]]
     end
   end
+    
+  describe "bulk data routes" do
+    before(:each) do
+      do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
+    end
+    
+    after(:each) do
+      delete_data_directory
+    end
+  
+    it "should make initial bulk data request and receive wait" do
+      set_state('test_db_storage' => @data)
+      get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
+      last_response.should be_ok
+      last_response.body.should == ''
+    end
+  
+    it "should receive redirect when bulk data is available" do
+      set_state('test_db_storage' => @data)
+      get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
+      BulkDataJob.perform(:data_name => bulk_data_docname(@a.id,@u.id,@c.id))
+      get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
+      last_response.status.should == 302
+      last_response.body.should == ''
+      last_response.headers['Location'].should == '/data/' +
+        BulkData.load(bulk_data_docname(@a.id,@u.id,@c.id)).dbfile
+    end
+    
+    it "should receive redirect when bulk data is available" do
+      pending
+      set_state('test_db_storage' => @data)
+      get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
+      BulkDataJob.perform(:data_name => bulk_data_docname(@a.id,@u.id,@c.id))
+      get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
+      follow_redirect!
+      last_response.status.should == 200
+      #puts "last_response: #{last_response.inspect}"
+    end
+  
+    it "should receive nop when no sources are available for partition" do
+      set_state('test_db_storage' => @data)
+      get "/apps/#{@a.name}/bulk_data", :partition => :app, :client_id => @c.id
+      last_response.status.should == 404
+      last_response.body.should == ''
+    end
+  end
 end

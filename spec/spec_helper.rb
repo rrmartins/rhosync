@@ -63,6 +63,7 @@ describe "SourceAdapterHelper", :shared => true do
       :app_id => @a.id 
     }
     @s_fields = {
+      :source_id => 1,
       :name => 'SampleAdapter',
       :url => 'http://example.com',
       :login => 'testuser',
@@ -85,7 +86,7 @@ describe "SourceAdapterHelper", :shared => true do
   end
   
   def bulk_data_docname(app_id,user_id,client_id)
-    File.join(app_id,user_id,client_id.to_s+'.data')
+    File.join(app_id,user_id,client_id.to_s)
   end
   
   def dump_db_data(store)

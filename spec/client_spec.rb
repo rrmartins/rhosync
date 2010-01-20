@@ -16,7 +16,9 @@ describe "Client" do
   
   it "should raise exception if source_name is nil" do
     @c.source_name = nil
-    lambda { @c.doc_suffix('foo') }.should raise_error(InvalidSourceNameError, 'Invalid Source Name For Client')
+    lambda { 
+      @c.doc_suffix('foo') 
+        }.should raise_error(InvalidSourceNameError, 'Invalid Source Name For Client')
   end
   
   it "should raise ArgumentError if source_name is not provided" do
@@ -29,5 +31,13 @@ describe "Client" do
     set_state(docname => @data)    
     @c.delete
     verify_result(docname => {})
+  end
+  
+  it "should create cd as masterdoc clone" do
+    set_state(@s.docname(:md_copy) => @data,
+      @c.docname(:cd) => {'foo' => {'bar' => 'abc'}})
+    @c.update_clientdoc([@s_fields[:name]])
+    verify_result(@c.docname(:cd) => @data,
+      @s.docname(:md_copy) => @data)
   end
 end

@@ -1,6 +1,6 @@
 module RhosyncStore
   class Store
-    RESERVED_ATTRIB_NAMES = ["attrib_type", "id"] 
+    RESERVED_ATTRIB_NAMES = ["attrib_type", "id"] unless defined? RESERVED_ATTRIB_NAMES
     @@db = nil
     
     class << self
@@ -148,6 +148,11 @@ module RhosyncStore
       
       def release_lock(dockey,lock)
         @@db.del(_lock_key(dockey)) if (lock >= Time.now.to_i)
+      end
+      
+      # Create a copy of srckey in dstkey
+      def clone(srckey,dstkey)
+        @@db.sdiffstore(dstkey,srckey,'')
       end
       
       private

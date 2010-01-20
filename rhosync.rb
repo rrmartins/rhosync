@@ -97,6 +97,25 @@ post '/apps/:app_name' do
   end
 end
 
+get '/data/*.*' do
+  puts "file: #{params[:splat].inspect}"
+  send_file params[:splat].join('.')
+end
+
+get '/apps/:app_name/bulk_data' do
+  catch_all do
+    content_type :json
+    bd = ClientSync.bulk_data(params[:partition].to_sym,current_client)
+    if bd == :wait 
+      status 200
+    elsif bd == :nop 
+      status 404
+    elsif bd.is_a?(String)
+      redirect '/data/' + bd
+    end
+  end
+end
+
 get '/apps/:app_name/search' do
   catch_all do
     content_type :json

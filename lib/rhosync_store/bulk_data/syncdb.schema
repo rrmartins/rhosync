@@ -1,5 +1,5 @@
 CREATE TABLE object_values (
- source_id varchar(255) default NULL,
+ source_id int default NULL,
  attrib varchar(255) default NULL,
  object varchar(255) default NULL,
  value varchar default NULL,

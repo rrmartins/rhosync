@@ -10,32 +10,30 @@ describe "BulkDataJob" do
   end
   
   it "should create sqlite data file from master document" do
-    set_state(@s.docname(:md) => @data)
-    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id,@c.id),
+    set_state('test_db_storage' => @data)
+    docname = bulk_data_docname(@a.id,@u.id,@c.id)
+    data = BulkData.create(:name => docname,
       :state => :inprogress,
       :app_id => @a.id,
       :user_id => @u.id,
       :sources => [@s_fields[:name]])
     BulkDataJob.perform(:data_name => data.name)
-    BulkData.exists?({:name => bulk_data_docname(@a.id,@u.id,@c.id),
-      :sources => [@s_fields[:name]]}).should == true
-    validate_db(data.name,@data).should == true
-    File.exists?(get_db_filename(data.name)+'.hsqldb.script').should == true
-    File.exists?(get_db_filename(data.name)+'.hsqldb.properties').should == true
+    data = BulkData.load(docname)
+    data.completed?.should == true
+    verify_result(@s.docname(:md) => @data,@s.docname(:md_copy) => @data)
+    validate_db(data,@data).should == true
+    File.exists?(data.dbfile+'.hsqldb.script').should == true
+    File.exists?(data.dbfile+'.hsqldb.properties').should == true
   end
   
-  def validate_db(dbname,data)
-    db = SQLite3::Database.new(get_db_filename(dbname))
+  def validate_db(bulk_data,data)
+    db = SQLite3::Database.new(bulk_data.dbfile)
     db.execute("select * from object_values").each do |row|
       object = data[row[2]]
-      return false if object.nil? or object[row[1]] != row[3]
+      return false if object.nil? or object[row[1]] != row[3] or row[0] != @s.source_id.to_s
       object.delete(row[1])
       data.delete(row[2]) if object.empty?
     end  
     data.empty?
-  end
-  
-  def get_db_filename(dbname)
-    File.join(RhosyncStore.data_directory,dbname)
   end
 end

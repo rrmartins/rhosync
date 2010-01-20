@@ -13,6 +13,8 @@ describe "Source" do
     @s.callback_url.should be_nil
     @s.app_id.should == @s_params[:app_id]
     @s.user_id.should == @s_params[:user_id]
+    @s.sync_type.should == :incremental
+    @s.partition_type.should == :user
 
     @s1 = Source.load(@s.id,@s_params)
     @s1.name.should == @s_fields[:name]

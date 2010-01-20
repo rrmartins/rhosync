@@ -4,6 +4,11 @@ describe "ClientSync" do
   it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
+  it "should raise Argument error if no client or source is provided" do
+    lambda { ClientSync.new(@s,nil,2) }.should raise_error(ArgumentError,'Missing required attribute client')
+    lambda { ClientSync.new(nil,@c,2) }.should raise_error(ArgumentError,'Missing required attribute source')
+  end
+  
   before(:each) do
     @cs = ClientSync.new(@s,@c,2)
   end
@@ -302,20 +307,20 @@ describe "ClientSync" do
     end
     
     it "should create bulk data job user parition if none exists" do
-      ClientSync.bulk_data(:user,@c).should == :wait
+      ClientSync.bulk_data(:user,@c).should == {:result => :wait}
       Resque.peek(:bulk_data).should == {"args"=>
         [{"data_name"=>File.join(@a_fields[:name],@u_fields[:login],@c.id)}], 
           "class"=>"RhosyncStore::BulkDataJob"}
     end
     
     it "should create bulk data job app partition if none exists and no parition sources" do
-      ClientSync.bulk_data(:app,@c).should == :nop
+      ClientSync.bulk_data(:app,@c).should == {:result => :nop}
       Resque.peek(:bulk_data).should == nil
     end
     
     it "should create bulk data job app partition with partition sources" do
       @s.partition = :app
-      ClientSync.bulk_data(:app,@c).should == :wait
+      ClientSync.bulk_data(:app,@c).should == {:result => :wait}
       Resque.peek(:bulk_data).should == {"args"=>
         [{"data_name"=>File.join(@a_fields[:name],@a_fields[:name])}], 
           "class"=>"RhosyncStore::BulkDataJob"}
@@ -325,8 +330,8 @@ describe "ClientSync" do
       set_state('test_db_storage' => @data)
       ClientSync.bulk_data(:user,@c)
       BulkDataJob.perform(:data_name => bulk_data_docname(@a.id,@u.id,@c.id))
-      ClientSync.bulk_data(:user,@c).should == 
-        BulkData.load(bulk_data_docname(@a.id,@u.id,@c.id)).dbfile
+      ClientSync.bulk_data(:user,@c).should == {:result => :url,
+        :url => BulkData.load(bulk_data_docname(@a.id,@u.id,@c.id)).dbfile}
       verify_result(@c.docname(:cd) => @data,
         @s.docname(:md) => @data,
         @s.docname(:md_copy) => @data)

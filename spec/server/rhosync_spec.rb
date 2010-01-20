@@ -258,7 +258,7 @@ describe "Rhosync" do
       set_state('test_db_storage' => @data)
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
       last_response.should be_ok
-      last_response.body.should == ''
+      last_response.body.should == {:result => :wait}.to_json
     end
   
     it "should receive redirect when bulk data is available" do
@@ -266,10 +266,9 @@ describe "Rhosync" do
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
       BulkDataJob.perform(:data_name => bulk_data_docname(@a.id,@u.id,@c.id))
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
-      last_response.status.should == 302
-      last_response.body.should == ''
-      last_response.headers['Location'].should == '/data/' +
-        BulkData.load(bulk_data_docname(@a.id,@u.id,@c.id)).dbfile
+      last_response.should be_ok
+      last_response.body.should == {:result => :url, 
+        :url => "/data/#{BulkData.load(bulk_data_docname(@a.id,@u.id,@c.id)).dbfile}"}.to_json
     end
     
     it "should receive redirect when bulk data is available" do
@@ -278,16 +277,15 @@ describe "Rhosync" do
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
       BulkDataJob.perform(:data_name => bulk_data_docname(@a.id,@u.id,@c.id))
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
-      follow_redirect!
-      last_response.status.should == 200
+      last_response.should be_ok
       #puts "last_response: #{last_response.inspect}"
     end
   
     it "should receive nop when no sources are available for partition" do
       set_state('test_db_storage' => @data)
       get "/apps/#{@a.name}/bulk_data", :partition => :app, :client_id => @c.id
-      last_response.status.should == 404
-      last_response.body.should == ''
+      last_response.should be_ok
+      last_response.body.should == {:result => :nop}.to_json
     end
   end
 end

@@ -80,6 +80,7 @@ helpers do
     begin
       yield
     rescue Exception => e
+      #puts e.message + e.backtrace.join("\n")
       throw :halt, [500, e.message]
     end
   end

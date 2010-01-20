@@ -5,6 +5,8 @@ module RhosyncStore
     VERSION = 3
     
     def initialize(source,client,p_size=nil)
+      raise ArgumentError.new('Missing required attribute client') unless client
+      raise ArgumentError.new('Missing required attribute source') unless source
       @source,@client,@p_size = source,client,p_size ? p_size.to_i : 500
       @source_sync = SourceSync.new(@source)
     end
@@ -117,17 +119,16 @@ module RhosyncStore
             :sources => sources[:names])
           BulkData.enqueue(:data_name => name)
         end
-        # if data
-        #           if data.completed?
-        #             client.update_clientdoc(sources[:names])
-        #             data.url
-        #           else
-        #             :wait
-        #           end
-        #         else
-        #           :nop
-        #         end
-       data ? (data.completed? ? (client.update_clientdoc(sources[:names]); data.url) : :wait) : :nop
+        if data and data.completed? 
+          client.update_clientdoc(sources[:names])
+          data.url
+          {:result => :url, :url => data.url}
+        elsif data
+          {:result => :wait}
+        else
+          {:result => :nop}
+        end
+       # data ? (data.completed? ? (client.update_clientdoc(sources[:names]); {:result => :url, :url => data.url}) : :wait) : :nop
       end
     end
     

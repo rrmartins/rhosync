@@ -5,12 +5,20 @@ module RhosyncStore
     @queue = :bulk_data
     
     def self.perform(params)
-      bulk_data = BulkData.load(params["data_name"]) if BulkData.is_exist?(params["data_name"])
-      if bulk_data
-        bulk_data.process_sources
-        create_sqlite_data_file(bulk_data)
-        create_hsql_data_file(bulk_data)
-        bulk_data.state = :completed
+      bulk_data = nil
+      begin
+        bulk_data = BulkData.load(params["data_name"]) if BulkData.is_exist?(params["data_name"])
+        if bulk_data
+          bulk_data.process_sources
+          create_sqlite_data_file(bulk_data)
+          create_hsql_data_file(bulk_data) if RhosyncStore.blackberry_bulk_sync
+          bulk_data.state = :completed
+        else
+          raise Exception.new("No bulk data found for #{params["data_name"]}")
+        end
+      rescue Exception => e
+        bulk_data.delete if bulk_data
+        raise e
       end
     end
     

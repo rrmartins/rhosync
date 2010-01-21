@@ -42,5 +42,5 @@ end
 
 task "resque:setup" do
   include RhosyncStore
-  RhosyncStore.bootstrap(File.join('apps'),File.join('data'))
+  RhosyncStore.bootstrap
 end

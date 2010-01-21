@@ -22,7 +22,11 @@ describe "Rhosync" do
   
   before(:each) do
     basedir = File.join(File.dirname(__FILE__),'..')
-    RhosyncStore.bootstrap(File.join(basedir,'apps'),File.join(basedir,'data'))
+    RhosyncStore.bootstrap do |rhosync|
+      rhosync.app_directory = File.join(basedir,'apps')
+      rhosync.data_directory = File.join(basedir,'data')
+      rhosync.vendor_directory = File.join(basedir,'..','vendor')
+    end
   end
 
   def app
@@ -53,6 +57,12 @@ describe "Rhosync" do
     Sinatra::Application.secret.should == "<changeme>"
     Logger.should_receive(:error).any_number_of_times.with(any_args())
     check_default_secret!
+  end
+  
+  it "should complain about hsqldata.jar missing" do
+    RhosyncStore.vendor_directory = 'missing'
+    Logger.should_receive(:error).any_number_of_times.with(any_args())
+    check_hsql_lib!
   end
   
   describe "helpers" do 

@@ -10,7 +10,11 @@ set :secret, '<changeme>'
 require 'rhosync.rb'
 
 configure :development,:production do 
-  RhosyncStore.bootstrap(File.join('apps'),File.join('data'))
+  RhosyncStore.bootstrap do |rhosync|
+	rhosync.app_directory = File.join('apps')
+	rhosync.data_directory = File.join('data')
+	rhosync.blackberry_bulk_sync = true # defaults to false
+  end
 end
 
 # FileUtils.mkdir_p 'log' unless File.exists?('log')

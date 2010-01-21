@@ -27,7 +27,11 @@ describe "ApiHelper", :shared => true do
   before(:each) do
     @appname = @a_fields[:name]
     basedir = File.join(File.dirname(__FILE__),'..','..')
-    RhosyncStore.bootstrap(File.join(basedir,'apps'),File.join(basedir,'data'))
+    RhosyncStore.bootstrap do |rhosync|
+      rhosync.app_directory = File.join(basedir,'apps')
+      rhosync.data_directory = File.join(basedir,'data')
+      rhosync.vendor_directory = File.join(basedir,'vendor')
+    end
     @api_token = User.load('admin').token_id
   end
   

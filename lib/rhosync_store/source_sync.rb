@@ -5,6 +5,7 @@ module RhosyncStore
     def initialize(source)
       @source = source
       raise InvalidArgumentError.new('Invalid source') if @source.nil?
+      raise InvalidArgumentError.new('Invalid app for source') unless @source.app
       @adapter = SourceAdapter.create(@source)
     end
     

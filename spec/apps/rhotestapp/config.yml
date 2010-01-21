@@ -11,3 +11,4 @@ sources:
     login: testuser1
     password: testpass1
     poll_interval: 600
+    partition_type: app

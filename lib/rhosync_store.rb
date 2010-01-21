@@ -16,6 +16,7 @@ require 'rhosync_store/client_sync'
 require 'rhosync_store/source_adapter'
 require 'rhosync_store/source_sync'
 require 'rhosync_store/bulk_data'
+require 'rhosync_store/indifferent_access'
   
 # Various module utilities for the store
 module RhosyncStore

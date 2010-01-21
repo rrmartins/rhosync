@@ -10,11 +10,12 @@ module RhosyncStore
     field :partition_type,:string
     field :sync_type,:string
     attr_accessor :app_id, :user_id
-    validates_presence_of :name
+    validates_presence_of :name #, :source_id
     
     include Document
     
     def self.create(fields,params)
+      fields = fields.with_indifferent_access # so we can access hash keys as symbols
       validate_attributes(params)
       fields[:id] = fields[:name]
       fields[:url] ||= ''

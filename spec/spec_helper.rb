@@ -167,13 +167,26 @@ describe "SourceAdapterHelper", :shared => true do
   
   def validate_db_by_name(name,data)
     db = SQLite3::Database.new(name)
+    db.execute("select * from sources").each do |row|
+      return false if row.last != get_attrib_counter(data)
+    end
     db.execute("select * from object_values").each do |row|
       object = data[row[2]]
       return false if object.nil? or object[row[1]] != row[3] or row[0] != @s.source_id.to_s
       object.delete(row[1])
       data.delete(row[2]) if object.empty?
-    end  
+    end 
     data.empty?
+  end
+  
+  def get_attrib_counter(data)
+    counter = {}
+    data.each do |object_name,object|
+      object.each do |attrib,value|
+        counter[attrib] = counter[attrib] ? counter[attrib] + 1 : 1
+      end
+    end
+    BulkDataJob.refs_to_s(counter)
   end
 end
 

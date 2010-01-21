@@ -26,6 +26,7 @@ module RhosyncStore
         s = Source.load(source,{:app_id => app_id, :user_id => user_id})
         Store.flash_data(s.docname(:md_copy)) if s
       end
+      super
     end
     
     def process_sources
@@ -33,7 +34,7 @@ module RhosyncStore
         s = Source.load(source,{:app_id => app_id, :user_id => user_id})
         if s
           SourceSync.new(s).refresh_source
-          s.clone(:md,:md_copy)
+          s.clone(:md,:md_copy) unless s.sync_type.to_sym == :bulk_sync_only
         end
       end
     end

@@ -326,15 +326,42 @@ describe "ClientSync" do
           "class"=>"RhosyncStore::BulkDataJob"}
     end
     
-    it "should return bulk data url for completed bulk data" do
+    it "should return bulk data url for completed bulk data user partition" do
       set_state('test_db_storage' => @data)
       ClientSync.bulk_data(:user,@c)
-      BulkDataJob.perform(:data_name => bulk_data_docname(@a.id,@u.id,@c.id))
+      BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id,@c.id))
       ClientSync.bulk_data(:user,@c).should == {:result => :url,
         :url => BulkData.load(bulk_data_docname(@a.id,@u.id,@c.id)).dbfile}
-      verify_result(@c.docname(:cd) => @data,
-        @s.docname(:md) => @data,
-        @s.docname(:md_copy) => @data)
+      verify_result(
+        "client:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@c.id}:#{@s_fields[:name]}:cd" => @data,
+        "source:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@s_fields[:name]}:md" => @data,
+        "source:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@s_fields[:name]}:md_copy" => @data)
+    end
+    
+    it "should return bulk data url for completed bulk data app partition" do
+      set_state('test_db_storage' => @data)
+      @s.partition = :app
+      ClientSync.bulk_data(:app,@c)
+      BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,"*",@c.id))
+      ClientSync.bulk_data(:app,@c).should == {:result => :url,
+        :url => BulkData.load(bulk_data_docname(@a.id,"*",@c.id)).dbfile}
+      verify_result(
+        "client:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@c.id}:#{@s_fields[:name]}:cd" => @data,
+        "source:#{@a_fields[:name]}:__shared__:#{@s_fields[:name]}:md" => @data,
+        "source:#{@a_fields[:name]}:__shared__:#{@s_fields[:name]}:md_copy" => @data)
+    end
+    
+    it "should return bulk data url for completed bulk data with bulk_sync_only source" do
+      set_state('test_db_storage' => @data)
+      @s.sync_type = :bulk_sync_only
+      ClientSync.bulk_data(:user,@c)
+      BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id,@c.id))
+      ClientSync.bulk_data(:user,@c).should == {:result => :url,
+        :url => BulkData.load(bulk_data_docname(@a.id,@u.id,@c.id)).dbfile}
+      verify_result(
+        "client:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@c.id}:#{@s_fields[:name]}:cd" => {},
+        "source:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@s_fields[:name]}:md" => @data,
+        "source:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@s_fields[:name]}:md_copy" => {})
     end
   end
 end

@@ -11,7 +11,8 @@ describe "Client" do
   
   it "should create client with user_id" do
     @c.id.length.should == 32
-    @c.user_id.should == @c_fields[:user_id] 
+    @c.user_id.should == @c_fields[:user_id]
+    @u.clients.members.should == [@c.id]
   end
   
   it "should raise exception if source_name is nil" do

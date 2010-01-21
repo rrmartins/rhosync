@@ -10,6 +10,8 @@ set :environment, :test
 set :run, false
 set :secret, "secure!"
 
+use Rack::Static, :urls => ["/spec/data"]
+
 require File.join(File.dirname(__FILE__),'..','..','rhosync.rb')
 
 describe "Rhosync" do
@@ -261,24 +263,26 @@ describe "Rhosync" do
       last_response.body.should == {:result => :wait}.to_json
     end
   
-    it "should receive redirect when bulk data is available" do
+    it "should receive url when bulk data is available" do
       set_state('test_db_storage' => @data)
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
-      BulkDataJob.perform(:data_name => bulk_data_docname(@a.id,@u.id,@c.id))
+      BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id,@c.id))
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
       last_response.should be_ok
       last_response.body.should == {:result => :url, 
         :url => "/data/#{BulkData.load(bulk_data_docname(@a.id,@u.id,@c.id)).dbfile}"}.to_json
+      validate_db_by_name(JSON.parse(last_response.body)["url"].sub(/\/data\//,''),@data)
     end
     
-    it "should receive redirect when bulk data is available" do
-      pending
+    it "should download bulk data file" do
       set_state('test_db_storage' => @data)
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
-      BulkDataJob.perform(:data_name => bulk_data_docname(@a.id,@u.id,@c.id))
+      BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id,@c.id))
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
-      last_response.should be_ok
-      #puts "last_response: #{last_response.inspect}"
+      get "/spec/data/#{@a.name}/#{@u.id}/#{JSON.parse(last_response.body)["url"].split('/').last}"
+      File.open('test.data','wb') {|f| f.puts last_response.body}
+      validate_db_by_name('test.data',@data)
+      File.delete('test.data')
     end
   
     it "should receive nop when no sources are available for partition" do

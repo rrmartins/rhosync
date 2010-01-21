@@ -12,7 +12,10 @@ module RhosyncStore
     
     def self.create(fields,params={})
       fields[:id] = get_random_uuid
-      super(fields,params) 
+      res = super(fields,params)
+      user = User.load(fields[:user_id])
+      user.clients << res.id
+      res
     end
     
     def self.load(id,params)
@@ -43,7 +46,10 @@ module RhosyncStore
     def update_clientdoc(sources)
       sources.each do |source|
         s = Source.load(source,{:app_id => app_id,:user_id => user_id})
-        Store.clone(s.docname(:md_copy),self.docname(:cd))
+        unless s.sync_type.to_sym == :bulk_sync_only
+          self.source_name = source
+          Store.clone(s.docname(:md_copy),self.docname(:cd))
+        end
       end
     end
     

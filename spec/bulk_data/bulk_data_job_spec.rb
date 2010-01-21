@@ -17,7 +17,7 @@ describe "BulkDataJob" do
       :app_id => @a.id,
       :user_id => @u.id,
       :sources => [@s_fields[:name]])
-    BulkDataJob.perform(:data_name => data.name)
+    BulkDataJob.perform("data_name" => data.name)
     data = BulkData.load(docname)
     data.completed?.should == true
     verify_result(@s.docname(:md) => @data,@s.docname(:md_copy) => @data)
@@ -26,14 +26,12 @@ describe "BulkDataJob" do
     File.exists?(data.dbfile+'.hsqldb.properties').should == true
   end
   
-  def validate_db(bulk_data,data)
-    db = SQLite3::Database.new(bulk_data.dbfile)
-    db.execute("select * from object_values").each do |row|
-      object = data[row[2]]
-      return false if object.nil? or object[row[1]] != row[3] or row[0] != @s.source_id.to_s
-      object.delete(row[1])
-      data.delete(row[2]) if object.empty?
-    end  
-    data.empty?
+  it "should raise exception if hsqldata fails" do
+    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id,@c.id),
+      :state => :inprogress,
+      :app_id => @a.id,
+      :user_id => @u.id,
+      :sources => [@s_fields[:name]])
+    lambda { BulkDataJob.create_hsql_data_file(data) }.should raise_error(Exception,"Error running hsqldata")
   end
 end

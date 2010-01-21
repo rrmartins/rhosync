@@ -117,7 +117,7 @@ module RhosyncStore
             :app_id => client.app_id,
             :user_id => client.user_id,
             :sources => sources[:names])
-          BulkData.enqueue(:data_name => name)
+          BulkData.enqueue("data_name" => name)
         end
         if data and data.completed? 
           client.update_clientdoc(sources[:names])

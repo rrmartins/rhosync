@@ -74,7 +74,6 @@ describe "SourceAdapterHelper", :shared => true do
       :app_id => @a.id
     }
     @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
-    @u.clients << @c.id
     @s = Source.create(@s_fields,@s_params)
     @r = @s.get_read_state
     @a.sources << @s.id
@@ -86,7 +85,11 @@ describe "SourceAdapterHelper", :shared => true do
   end
   
   def bulk_data_docname(app_id,user_id,client_id)
-    File.join(app_id,user_id,client_id.to_s)
+    if user_id == "*"
+      File.join(app_id,app_id)
+    else
+      File.join(app_id,user_id,client_id.to_s)
+    end
   end
   
   def dump_db_data(store)
@@ -156,6 +159,21 @@ describe "SourceAdapterHelper", :shared => true do
         Store.get_value(dockey).should == expected
       end
     end
+  end
+  
+  def validate_db(bulk_data,data)
+    validate_db_by_name(bulk_data.dbfile,data)
+  end
+  
+  def validate_db_by_name(name,data)
+    db = SQLite3::Database.new(name)
+    db.execute("select * from object_values").each do |row|
+      object = data[row[2]]
+      return false if object.nil? or object[row[1]] != row[3] or row[0] != @s.source_id.to_s
+      object.delete(row[1])
+      data.delete(row[2]) if object.empty?
+    end  
+    data.empty?
   end
 end
 

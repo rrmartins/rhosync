@@ -21,7 +21,7 @@ describe "BulkData Performance" do
       :app_id => @a.id,
       :user_id => @u.id,
       :sources => [@s_fields[:name]])
-    BulkDataJob.perform(:data_name => data.name)
+    BulkDataJob.perform("data_name" => data.name)
     lap_timer('BulkDataJob.perform duration',start)
   end
   

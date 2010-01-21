@@ -3,6 +3,9 @@ require 'resque/tasks'
 require 'spec/rake/spectask'
 require 'rcov/rcovtask'
 
+$:.unshift File.join(File.dirname(__FILE__),'lib')
+require 'rhosync_store'
+
 task :default => :all
 
 OPTS = { :spec_opts => ['-fs', '--color'], 
@@ -35,4 +38,9 @@ end
 desc "Start server using config.ru"
 task :start do
   sh "rackup config.ru"
+end
+
+task "resque:setup" do
+  include RhosyncStore
+  RhosyncStore.bootstrap(File.join('apps'),File.join('data'))
 end

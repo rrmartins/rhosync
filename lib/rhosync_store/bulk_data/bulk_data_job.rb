@@ -1,16 +1,11 @@
 require 'sqlite3'
-$:.unshift File.join(File.dirname(__FILE__),'..','..','..','lib')
-require 'rhosync_store'
 
 module RhosyncStore
-  
   module BulkDataJob
     @queue = :bulk_data
     
     def self.perform(params)
-      RhosyncStore.bootstrap(File.join(File.dirname(__FILE__),'..','..','..','apps'),
-        File.join(File.dirname(__FILE__),'..','..','..','data'))
-      bulk_data = BulkData.load(params[:data_name]) if BulkData.is_exist?(params[:data_name])
+      bulk_data = BulkData.load(params["data_name"]) if BulkData.is_exist?(params["data_name"])
       if bulk_data
         bulk_data.process_sources
         create_sqlite_data_file(bulk_data)
@@ -49,10 +44,9 @@ module RhosyncStore
     def self.create_hsql_data_file(bulk_data)
       schema,index,dbfile = get_file_args(bulk_data.name)
       hsql_file = dbfile + ".hsqldb"
-      system('java','-cp',
-        File.join(File.dirname(__FILE__),'..','..','..','vendor','hsqldata.jar'),
-        'com.rhomobile.hsqldata.HsqlData',
-        dbfile, hsql_file, schema, index)
+      raise Exception.new("Error running hsqldata") unless 
+        system('java','-cp', File.join(File.dirname(__FILE__),'..','..','..','vendor','hsqldata.jar'),
+        'com.rhomobile.hsqldata.HsqlData', dbfile, hsql_file, schema, index)
     end
     
     def self.get_file_args(bulk_data_name)

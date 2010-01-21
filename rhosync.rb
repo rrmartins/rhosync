@@ -11,6 +11,10 @@ require 'helpers/rhosync_helper'
 enable :raise_errors
 set :secret, '<changeme>' unless defined? Sinatra::Application.secret
 
+# Setup route and mimetype for bulk data downloads
+mime :data, 'application/octet-stream'
+use Rack::Static, :urls => ["/data"]
+
 include RhosyncStore
 
 use Rack::Session::Cookie, :key => 'rhosync_session',
@@ -95,11 +99,6 @@ post '/apps/:app_name' do
     cs.receive_cud(params)
     status 200
   end
-end
-
-get '/data/*.*' do
-  puts "file: #{params[:splat].inspect}"
-  send_file params[:splat].join('.')
 end
 
 get '/apps/:app_name/bulk_data' do

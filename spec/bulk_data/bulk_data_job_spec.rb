@@ -26,6 +26,7 @@ describe "BulkDataJob" do
     data.completed?.should == true
     verify_result(@s.docname(:md) => @data,@s.docname(:md_copy) => @data)
     validate_db(data,@data).should == true
+    File.exists?(data.dbfile+'.hsqldb.data').should == true
     File.exists?(data.dbfile+'.hsqldb.script').should == true
     File.exists?(data.dbfile+'.hsqldb.properties').should == true
   end

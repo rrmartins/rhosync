@@ -42,5 +42,7 @@ end
 
 task "resque:setup" do
   include RhosyncStore
-  RhosyncStore.bootstrap
+  RhosyncStore.bootstrap do |rhosync|
+    rhosync.blackberry_bulk_sync = true
+  end
 end

@@ -55,7 +55,8 @@ describe "BulkDataJob" do
       :app_id => @a.id,
       :user_id => @u.id,
       :sources => [@s_fields[:name]])
-    lambda { BulkDataJob.create_hsql_data_file(data) }.should raise_error(Exception,"Error running hsqldata")
+    lambda { BulkDataJob.create_hsql_data_file(data,Time.now.to_i.to_s) 
+      }.should raise_error(Exception,"Error running hsqldata")
   end
   
   it "should delete bulk data if exception is raised" do

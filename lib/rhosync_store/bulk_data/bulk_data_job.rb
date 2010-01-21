@@ -10,8 +10,9 @@ module RhosyncStore
         bulk_data = BulkData.load(params["data_name"]) if BulkData.is_exist?(params["data_name"])
         if bulk_data
           bulk_data.process_sources
-          create_sqlite_data_file(bulk_data)
-          create_hsql_data_file(bulk_data) if RhosyncStore.blackberry_bulk_sync
+          ts = Time.now.to_i.to_s
+          create_sqlite_data_file(bulk_data,ts)
+          create_hsql_data_file(bulk_data,ts) if RhosyncStore.blackberry_bulk_sync
           bulk_data.state = :completed
         else
           raise Exception.new("No bulk data found for #{params["data_name"]}")
@@ -62,9 +63,9 @@ module RhosyncStore
       end
     end  
     
-    def self.create_sqlite_data_file(bulk_data)
+    def self.create_sqlite_data_file(bulk_data,ts)
       sources_refs = {}
-      schema,index,bulk_data.dbfile = get_file_args(bulk_data.name)
+      schema,index,bulk_data.dbfile = get_file_args(bulk_data.name,ts)
       FileUtils.mkdir_p(File.dirname(bulk_data.dbfile))
       db = SQLite3::Database.new(bulk_data.dbfile)
       db.execute_batch(File.open(schema,'r').read)
@@ -79,18 +80,18 @@ module RhosyncStore
       db.execute_batch(File.open(index,'r').read)
     end
     
-    def self.create_hsql_data_file(bulk_data)
-      schema,index,dbfile = get_file_args(bulk_data.name)
+    def self.create_hsql_data_file(bulk_data,ts)
+      schema,index,dbfile = get_file_args(bulk_data.name,ts)
       hsql_file = dbfile + ".hsqldb"
       raise Exception.new("Error running hsqldata") unless 
         system('java','-cp', File.join(File.dirname(__FILE__),'..','..','..','vendor','hsqldata.jar'),
         'com.rhomobile.hsqldata.HsqlData', dbfile, hsql_file, schema, index)
     end
     
-    def self.get_file_args(bulk_data_name)
+    def self.get_file_args(bulk_data_name,ts)
       schema = File.join(File.dirname(__FILE__),'syncdb.schema')
       index = File.join(File.dirname(__FILE__),'syncdb.index.schema')
-      dbfile = File.join(RhosyncStore.data_directory,bulk_data_name+'_'+Time.now.to_i.to_s+'.data')
+      dbfile = File.join(RhosyncStore.data_directory,bulk_data_name+'_'+ts+'.data')
       [schema,index,dbfile]
     end
   end

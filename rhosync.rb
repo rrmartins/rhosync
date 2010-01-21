@@ -105,7 +105,6 @@ get '/apps/:app_name/bulk_data' do
   catch_all do
     content_type :json
     data = ClientSync.bulk_data(params[:partition].to_sym,current_client)
-    data[:url] = '/data/' + data[:url] if data[:url]
     data.to_json
   end
 end

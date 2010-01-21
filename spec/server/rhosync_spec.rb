@@ -280,8 +280,8 @@ describe "Rhosync" do
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
       last_response.should be_ok
       last_response.body.should == {:result => :url, 
-        :url => "/data/#{BulkData.load(bulk_data_docname(@a.id,@u.id,@c.id)).dbfile}"}.to_json
-      validate_db_by_name(JSON.parse(last_response.body)["url"].sub(/\/data\//,''),@data)
+        :url => BulkData.load(bulk_data_docname(@a.id,@u.id,@c.id)).dbfile}.to_json
+      validate_db_by_name(JSON.parse(last_response.body)["url"],@data)
     end
     
     it "should download bulk data file" do

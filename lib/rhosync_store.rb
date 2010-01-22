@@ -161,7 +161,8 @@ module RhosyncStore
     timenow
   end
   
-  def start_timer
+  def start_timer(msg='starting')
+    puts "#{msg}"
     timenow
   end
   

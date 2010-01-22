@@ -9,7 +9,7 @@ module RhosyncStore
       begin
         bulk_data = BulkData.load(params["data_name"]) if BulkData.is_exist?(params["data_name"])
         if bulk_data
-          timer = start_timer
+          timer = start_timer('starting bulk data process')
           bulk_data.process_sources
           timer = lap_timer('process_sources',timer)
           ts = Time.now.to_i.to_s

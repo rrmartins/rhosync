@@ -15,6 +15,7 @@ describe "Source" do
     @s.user_id.should == @s_params[:user_id]
     @s.sync_type.should == :incremental
     @s.partition_type.should == :user
+    @s.poll_interval.should == 300
 
     @s1 = Source.load(@s.id,@s_params)
     @s1.name.should == @s_fields[:name]
@@ -23,6 +24,7 @@ describe "Source" do
     @s1.app.name.should == @a_fields[:name]
     @s1.priority.should == 3
     @s1.callback_url.should be_nil
+    @s1.poll_interval.should == 300
     @s1.app_id.should == @s_params[:app_id]
     @s1.user_id.should == @s_params[:user_id]
   end

@@ -1,6 +1,5 @@
 module RhosyncStore  
   class ReadState < Model
-    field :poll_interval,:integer
     field :refresh_time,:integer
   
     def self.create(fields)
@@ -8,7 +7,6 @@ module RhosyncStore
       fields.delete(:app_id)
       fields.delete(:user_id)
       fields.delete(:source_name)
-      fields[:poll_interval] ||= 300
       fields[:refresh_time] ||= Time.now.to_i
       super(fields,{})
     end

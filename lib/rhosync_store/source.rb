@@ -7,6 +7,7 @@ module RhosyncStore
     field :password,:string
     field :priority,:integer
     field :callback_url,:string
+    field :poll_interval,:integer
     field :partition_type,:string
     field :sync_type,:string
     attr_accessor :app_id, :user_id
@@ -23,6 +24,7 @@ module RhosyncStore
       fields[:password] ||= ''
       fields[:priority] ||= 3
       fields[:partition_type] ||= :user
+      fields[:poll_interval] ||= 300
       fields[:sync_type] ||= :incremental
       super(fields,params)
     end
@@ -75,14 +77,14 @@ module RhosyncStore
     end
   
     def check_refresh_time
-      self.get_read_state.poll_interval == 0 or 
-      (self.get_read_state.poll_interval != -1 and self.get_read_state.refresh_time <= Time.now.to_i)
+      self.poll_interval == 0 or 
+      (self.poll_interval != -1 and self.get_read_state.refresh_time <= Time.now.to_i)
     end
         
     def if_need_refresh(client_id=nil,params=nil)
       if check_refresh_time
         yield client_id,params
-        self.get_read_state.refresh_time = Time.now.to_i + self.get_read_state.poll_interval
+        self.get_read_state.refresh_time = Time.now.to_i + self.poll_interval
       end
     end
     

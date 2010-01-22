@@ -9,14 +9,12 @@ describe "ReadState" do
   end
   
   it "should create refresh with default fields" do
-    @r.poll_interval.should == 300
     @r.refresh_time.should <= Time.now.to_i
   end
   
   it "should load refresh with params" do
     @r1 = ReadState.load(:app_id => @a_fields[:name],
       :user_id => @u_fields[:login],:source_name => @s_fields[:name])
-    @r1.poll_interval.should == 300
     @r1.refresh_time.should <= Time.now.to_i
   end
   

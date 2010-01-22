@@ -44,7 +44,7 @@ describe "SourceSync" do
   
   it "should read on every subsequent call of process" do
     expected = {'2'=>@product2}
-    @s.get_read_state.poll_interval = 0
+    @s.poll_interval = 0
     Store.put_data('test_db_storage',{'1'=>@product1})
     @ss.process
     Store.put_data('test_db_storage',expected)
@@ -53,7 +53,7 @@ describe "SourceSync" do
   end
 
   it "should never call read on any call of process" do
-    @s.get_read_state.poll_interval = -1
+    @s.poll_interval = -1
     Store.put_data('test_db_storage',{'1'=>@product1})
     @ss.process
     verify_result(@s.docname(:md) => {})
@@ -190,8 +190,7 @@ describe "SourceSync" do
         @ss1.process
         verify_result("source:#{@a_fields[:name]}:__shared__:#{@s_fields[:name]}:md" => expected)
         Store.db.keys("read_state:#{@a_fields[:name]}:__shared__*").sort.should ==
-          ["read_state:rhotestapp:__shared__:SampleAdapter:poll_interval", 
-            "read_state:rhotestapp:__shared__:SampleAdapter:refresh_time",
+          [ "read_state:rhotestapp:__shared__:SampleAdapter:refresh_time",
             "read_state:rhotestapp:__shared__:SampleAdapter:rho__id"]
       end
     end

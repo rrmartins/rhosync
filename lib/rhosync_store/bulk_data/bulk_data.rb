@@ -57,7 +57,7 @@ module RhosyncStore
       
       def get_name(partition,client)
         if partition == :user
-          File.join(client.app_id,client.user_id,client.id)
+          File.join(client.app_id,client.user_id,client.user_id)
         else
           File.join(client.app_id,client.app_id)
         end

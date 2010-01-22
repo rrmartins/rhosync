@@ -9,8 +9,8 @@ describe "BulkData" do
   end
   
   it "should return true if bulk data is completed" do
-    dbfile = create_datafile(File.join(@a.name,@u.id.to_s),@c.id.to_s)
-    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id,@c.id),
+    dbfile = create_datafile(File.join(@a.name,@u.id.to_s),@u.id.to_s)
+    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id),
       :state => :completed,
       :app_id => @a.id,
       :user_id => @u.id,
@@ -20,7 +20,7 @@ describe "BulkData" do
   end
   
   it "should return false if bulk data isn't completed" do
-    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id,@c.id),
+    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id),
       :state => :inprogress,
       :app_id => @a.id,
       :user_id => @u.id,
@@ -35,8 +35,7 @@ describe "BulkData" do
   end
   
   it "should generate correct bulk data name for user partition" do
-    BulkData.get_name(:user,@c).should == File.join(@a_fields[:name],
-      @u_fields[:login],@c.id)
+    BulkData.get_name(:user,@c).should == File.join(@a_fields[:name],@u_fields[:login],@u_fields[:login])
   end
   
   it "should generate correct bulk data name for app partition" do
@@ -47,7 +46,7 @@ describe "BulkData" do
   it "should process_sources for bulk data" do
     current = Time.now.to_i
     @s.get_read_state.refresh_time = current
-    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id,@c.id),
+    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id),
       :state => :inprogress,
       :app_id => @a.id,
       :user_id => @u.id,
@@ -58,7 +57,7 @@ describe "BulkData" do
   
   it "should delete source masterdoc copy on delete" do
     set_state('test_db_storage' => @data)
-    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id,@c.id),
+    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id),
       :state => :inprogress,
       :app_id => @a.id,
       :user_id => @u.id,

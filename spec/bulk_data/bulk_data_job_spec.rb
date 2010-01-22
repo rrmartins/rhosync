@@ -15,7 +15,7 @@ describe "BulkDataJob" do
   
   it "should create sqlite data file from master document" do
     set_state('test_db_storage' => @data)
-    docname = bulk_data_docname(@a.id,@u.id,@c.id)
+    docname = bulk_data_docname(@a.id,@u.id)
     data = BulkData.create(:name => docname,
       :state => :inprogress,
       :app_id => @a.id,
@@ -34,7 +34,7 @@ describe "BulkDataJob" do
   it "should not create hsql db files if blackberry_bulk_sync is disabled" do
     RhosyncStore.blackberry_bulk_sync = false
     set_state('test_db_storage' => @data)
-    docname = bulk_data_docname(@a.id,@u.id,@c.id)
+    docname = bulk_data_docname(@a.id,@u.id)
     data = BulkData.create(:name => docname,
       :state => :inprogress,
       :app_id => @a.id,
@@ -50,7 +50,7 @@ describe "BulkDataJob" do
   end
   
   it "should raise exception if hsqldata fails" do
-    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id,@c.id),
+    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id),
       :state => :inprogress,
       :app_id => @a.id,
       :user_id => @u.id,
@@ -65,7 +65,7 @@ describe "BulkDataJob" do
   end
   
   it "should delete bulk data if exception is raised" do
-    data = BulkData.create(:name => bulk_data_docname('broken',@u.id,@c.id),
+    data = BulkData.create(:name => bulk_data_docname('broken',@u.id),
       :state => :inprogress,
       :app_id => 'broken',
       :user_id => @u.id,

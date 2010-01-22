@@ -84,11 +84,11 @@ describe "SourceAdapterHelper", :shared => true do
     post url, params.to_json, {'CONTENT_TYPE'=>'application/json'}
   end
   
-  def bulk_data_docname(app_id,user_id,client_id)
+  def bulk_data_docname(app_id,user_id)
     if user_id == "*"
       File.join(app_id,app_id)
     else
-      File.join(app_id,user_id,client_id.to_s)
+      File.join(app_id,user_id,user_id)
     end
   end
   

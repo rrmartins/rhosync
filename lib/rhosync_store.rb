@@ -154,6 +154,20 @@ module RhosyncStore
     end
     FileUtils.rm_f(uploaded_file)
   end
+  
+  def lap_timer(msg,start)
+    duration = timenow - start
+    puts "#{msg}: #{duration}"
+    timenow
+  end
+  
+  def start_timer
+    timenow
+  end
+  
+  def timenow
+    (Time.now.to_f * 1000)
+  end
     
   # TODO: replace with real logger
   class Logger

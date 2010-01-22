@@ -9,16 +9,19 @@ module RhosyncStore
       begin
         bulk_data = BulkData.load(params["data_name"]) if BulkData.is_exist?(params["data_name"])
         if bulk_data
+          timer = start_timer
           bulk_data.process_sources
+          timer = lap_timer('process_sources',timer)
           ts = Time.now.to_i.to_s
           create_sqlite_data_file(bulk_data,ts)
+          timer = lap_timer('create_sqlite_data_file',timer)
           create_hsql_data_file(bulk_data,ts) if RhosyncStore.blackberry_bulk_sync
+          timer = lap_timer('create_hsql_data_file',timer)
           bulk_data.state = :completed
         else
           raise Exception.new("No bulk data found for #{params["data_name"]}")
         end
       rescue Exception => e
-        
         bulk_data.delete if bulk_data
         raise e
       end

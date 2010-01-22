@@ -16,16 +16,6 @@ describe "PerfSpecHelper", :shared => true do
     data
   end
   
-  def lap_timer(msg,start)
-    duration = timenow - start
-    puts "#{msg}: #{duration}"
-    timenow
-  end
-  
-  def start_timer
-    timenow
-  end
-  
   private
 
   PREFIX = ["Account", "Administrative", "Advertising", "Assistant", "Banking", "Business Systems", 
@@ -57,9 +47,5 @@ describe "PerfSpecHelper", :shared => true do
       }
     end
     res
-  end
-  
-  def timenow
-    (Time.now.to_f * 1000)
   end
 end

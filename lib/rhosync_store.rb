@@ -45,7 +45,6 @@ module RhosyncStore
         unless name == '..' || name == '.'
           appdir = File.join(RhosyncStore.app_directory,name)
           app_file = underscore(File.join(appdir,name+'.rb'))
-          puts "loading: #{appdir}, #{app_file}"
           set_load_path(appdir)
           load app_file if File.exists?(app_file)
         end

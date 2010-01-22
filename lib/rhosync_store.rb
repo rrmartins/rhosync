@@ -41,9 +41,13 @@ module RhosyncStore
     # Add appdir and sources subdirectory
     # to load path if appdir exists
     if File.exist?(RhosyncStore.app_directory)
-      Dir.entries(RhosyncStore.app_directory).each do |dir|
-        unless dir == '..' || dir == '.'
-          set_load_path(File.join(RhosyncStore.app_directory,dir))
+      Dir.entries(RhosyncStore.app_directory).each do |name|
+        unless name == '..' || name == '.'
+          appdir = File.join(RhosyncStore.app_directory,name)
+          app_file = underscore(File.join(appdir,name+'.rb'))
+          puts "loading: #{appdir}, #{app_file}"
+          set_load_path(appdir)
+          load app_file if File.exists?(app_file)
         end
       end
     end

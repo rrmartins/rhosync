@@ -117,6 +117,7 @@ module RhosyncStore
             :app_id => client.app_id,
             :user_id => client.user_id,
             :sources => sources[:names])
+          puts "#{Time.now.to_i.to_s} queue is: #{BulkData.peek(:bulk_data,0,100).inspect}, name: #{name}"
           BulkData.enqueue("data_name" => name)
         end
         if data and data.completed? 

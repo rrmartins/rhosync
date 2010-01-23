@@ -31,7 +31,7 @@ describe "BulkData" do
   it "should enqueue sqlite db type" do
     BulkData.enqueue
     Resque.peek(:bulk_data).should == {"args"=>[{}], 
-      "class"=>"RhosyncStore::BulkDataJob"}
+      "class"=>"Rhosync::BulkDataJob"}
   end
   
   it "should generate correct bulk data name for user partition" do
@@ -71,7 +71,7 @@ describe "BulkData" do
 end
 
 def create_datafile(dir,name)
-  dir = File.join(RhosyncStore.data_directory,dir)
+  dir = File.join(Rhosync.data_directory,dir)
   FileUtils.mkdir_p(dir)
   fname = File.join(dir,name+'.data')
   File.open(fname,'wb') {|f| f.puts ''}

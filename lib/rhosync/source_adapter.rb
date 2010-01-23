@@ -1,4 +1,4 @@
-module RhosyncStore
+module Rhosync
   class SourceAdapterException < RuntimeError; end
 
   # raise this to cause client to be logged out during a sync

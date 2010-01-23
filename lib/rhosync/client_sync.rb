@@ -1,4 +1,4 @@
-module RhosyncStore
+module Rhosync
   class ClientSync
     attr_accessor :source,:client,:p_size,:source_sync
     

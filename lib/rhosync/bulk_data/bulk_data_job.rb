@@ -1,6 +1,6 @@
 require 'sqlite3'
 
-module RhosyncStore
+module Rhosync
   module BulkDataJob
     @queue = :bulk_data
     
@@ -15,7 +15,7 @@ module RhosyncStore
           ts = Time.now.to_i.to_s
           create_sqlite_data_file(bulk_data,ts)
           timer = lap_timer('create_sqlite_data_file',timer)
-          create_hsql_data_file(bulk_data,ts) if RhosyncStore.blackberry_bulk_sync
+          create_hsql_data_file(bulk_data,ts) if Rhosync.blackberry_bulk_sync
           timer = lap_timer('create_hsql_data_file',timer)
           bulk_data.state = :completed
         else
@@ -94,7 +94,7 @@ module RhosyncStore
     def self.get_file_args(bulk_data_name,ts)
       schema = File.join(File.dirname(__FILE__),'syncdb.schema')
       index = File.join(File.dirname(__FILE__),'syncdb.index.schema')
-      dbfile = File.join(RhosyncStore.data_directory,bulk_data_name+'_'+ts+'.data')
+      dbfile = File.join(Rhosync.data_directory,bulk_data_name+'_'+ts+'.data')
       [schema,index,dbfile]
     end
   end

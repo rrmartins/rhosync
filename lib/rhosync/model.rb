@@ -1,4 +1,4 @@
-module RhosyncStore
+module Rhosync
   # Taken from http://github.com/voloko/redis-model
   #
   # Simple models for redis-rb.

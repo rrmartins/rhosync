@@ -1,16 +1,16 @@
 $:.unshift File.join(__FILE__,'..','lib')
-require 'rhosync_store'
-include RhosyncStore
+require 'rhosync'
+include Rhosync
 
-describe "RhosyncStoreHelper", :shared => true do
+describe "RhosyncHelper", :shared => true do
   before(:each) do
     Store.create
     Store.db.flushdb
   end
 end
 
-describe "RhosyncStoreDataHelper", :shared => true do
-  it_should_behave_like "RhosyncStoreHelper"
+describe "RhosyncDataHelper", :shared => true do
+  it_should_behave_like "RhosyncHelper"
   
   before(:each) do
     @source = 'Product'
@@ -47,7 +47,7 @@ describe "RhosyncStoreDataHelper", :shared => true do
 end  
 
 describe "SourceAdapterHelper", :shared => true do
-  it_should_behave_like "RhosyncStoreDataHelper"
+  it_should_behave_like "RhosyncDataHelper"
   
   ERROR = '0_broken_object_id' unless defined? ERROR
   
@@ -127,7 +127,7 @@ describe "SourceAdapterHelper", :shared => true do
   end
   
   def delete_data_directory
-    FileUtils.rm_rf(RhosyncStore.data_directory)
+    FileUtils.rm_rf(Rhosync.data_directory)
   end
       
   def set_state(state)
@@ -201,7 +201,7 @@ end
 describe "SpecBootstrapHelper", :shared => true do
   before(:all) do
     basedir = File.dirname(__FILE__)
-    RhosyncStore.bootstrap do |rhosync|
+    Rhosync.bootstrap do |rhosync|
       rhosync.app_directory = File.join(basedir,'apps')
       rhosync.data_directory = File.join(basedir,'data')
       rhosync.vendor_directory = File.join(basedir,'..','vendor')

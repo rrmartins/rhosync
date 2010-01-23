@@ -1,4 +1,4 @@
-module RhosyncStore
+module Rhosync
   class Credential
     attr_accessor :login,:password,:token,:url
     

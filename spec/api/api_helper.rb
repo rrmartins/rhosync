@@ -6,8 +6,8 @@ require 'rack/test'
 require 'spec'
 require 'spec/autorun'
 require 'spec/interop/test'
-require 'rhosync_store'
-include RhosyncStore
+require 'rhosync'
+include Rhosync
 
 set :environment, :test
 set :run, false
@@ -27,7 +27,7 @@ describe "ApiHelper", :shared => true do
   before(:each) do
     @appname = @a_fields[:name]
     basedir = File.join(File.dirname(__FILE__),'..','..')
-    RhosyncStore.bootstrap do |rhosync|
+    Rhosync.bootstrap do |rhosync|
       rhosync.app_directory = File.join(basedir,'apps')
       rhosync.data_directory = File.join(basedir,'data')
       rhosync.vendor_directory = File.join(basedir,'vendor')

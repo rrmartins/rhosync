@@ -4,7 +4,7 @@ require 'spec/rake/spectask'
 require 'rcov/rcovtask'
 
 $:.unshift File.join(File.dirname(__FILE__),'lib')
-require 'rhosync_store'
+require 'rhosync'
 
 task :default => :all
 
@@ -41,8 +41,8 @@ task :start do
 end
 
 task "resque:setup" do
-  include RhosyncStore
-  RhosyncStore.bootstrap do |rhosync|
+  include Rhosync
+  Rhosync.bootstrap do |rhosync|
     rhosync.blackberry_bulk_sync = true
   end
 end

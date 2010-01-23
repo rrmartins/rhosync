@@ -1,5 +1,5 @@
 require 'uuidtools'
-module RhosyncStore
+module Rhosync
   class ApiToken < Model
     field :value,:string
     field :user_id,:string

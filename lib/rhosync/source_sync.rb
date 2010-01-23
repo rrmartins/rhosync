@@ -1,4 +1,4 @@
-module RhosyncStore
+module Rhosync
   class SourceSync
     attr_reader :adapter
     

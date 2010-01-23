@@ -310,7 +310,7 @@ describe "ClientSync" do
       ClientSync.bulk_data(:user,@c).should == {:result => :wait}
       Resque.peek(:bulk_data).should == {"args"=>
         [{"data_name"=>File.join(@a_fields[:name],@u_fields[:login],@u_fields[:login])}], 
-          "class"=>"RhosyncStore::BulkDataJob"}
+          "class"=>"Rhosync::BulkDataJob"}
     end
     
     it "should create bulk data job app partition if none exists and no parition sources" do
@@ -323,7 +323,7 @@ describe "ClientSync" do
       ClientSync.bulk_data(:app,@c).should == {:result => :wait}
       Resque.peek(:bulk_data).should == {"args"=>
         [{"data_name"=>File.join(@a_fields[:name],@a_fields[:name])}], 
-          "class"=>"RhosyncStore::BulkDataJob"}
+          "class"=>"Rhosync::BulkDataJob"}
     end
     
     it "should return bulk data url for completed bulk data user partition" do

@@ -2,7 +2,7 @@ require 'resque'
 $:.unshift File.join(File.dirname(__FILE__))
 require 'bulk_data_job'
 
-module RhosyncStore
+module Rhosync
   class BulkData < Model
     field :name, :string
     field :state, :string

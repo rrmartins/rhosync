@@ -1,10 +1,10 @@
 # Taken from http://github.com/voloko/redis-model
 require File.join(File.dirname(__FILE__),'spec_helper')
 
-describe RhosyncStore::Model do
+describe Rhosync::Model do
   
   context "DSL" do
-    class TestDSL < RhosyncStore::Model
+    class TestDSL < Rhosync::Model
       field :foo
       list  :bar
       set   :sloppy
@@ -29,7 +29,7 @@ describe RhosyncStore::Model do
   
     it "should raise error on invalid type" do
       lambda do
-        class TestInvalidType < RhosyncStore::Model
+        class TestInvalidType < Rhosync::Model
           field :invalid, :invalid_type
         end
       end.should raise_error(ArgumentError, 'Unknown type invalid_type for field invalid')
@@ -37,7 +37,7 @@ describe RhosyncStore::Model do
   end
   
   context "field type cast" do
-    class TestType < RhosyncStore::Model
+    class TestType < Rhosync::Model
       field :foo_string, :string
       field :foo_json,   :json
       field :foo_date,   :datetime
@@ -48,12 +48,12 @@ describe RhosyncStore::Model do
       set   :set_date,   :datetime      
     end
     
-    class TestValidateType < RhosyncStore::Model
+    class TestValidateType < Rhosync::Model
       field :v_field, :string
       validates_presence_of :v_field
     end
     
-    class TestLoadType < RhosyncStore::Model
+    class TestLoadType < Rhosync::Model
       field :something, :string
       attr_accessor :foo
     end
@@ -190,7 +190,7 @@ describe RhosyncStore::Model do
   end
   
   context "increment/decrement" do
-    class TestIncrements < RhosyncStore::Model
+    class TestIncrements < Rhosync::Model
       field :foo, :integer
       field :bar, :string
       field :baz, :float
@@ -221,7 +221,7 @@ describe RhosyncStore::Model do
   end
   
   context "redis commands" do
-    class TestCommands < RhosyncStore::Model
+    class TestCommands < Rhosync::Model
       field :foo
       list  :bar
       set   :sloppy

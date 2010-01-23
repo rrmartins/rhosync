@@ -5,7 +5,7 @@ require 'erb'
 require 'json'
 require 'fileutils'
 
-require 'rhosync_store'
+require 'rhosync'
 require 'helpers/rhosync_helper'
 
 enable :raise_errors
@@ -15,7 +15,7 @@ set :secret, '<changeme>' unless defined? Sinatra::Application.secret
 mime :data, 'application/octet-stream'
 use Rack::Static, :urls => ["/data"]
 
-include RhosyncStore
+include Rhosync
 
 use Rack::Session::Cookie, :key => 'rhosync_session',
                            :path => '/',
@@ -25,7 +25,7 @@ use Rack::Session::Cookie, :key => 'rhosync_session',
 # Whine about the default session secret
 check_default_secret!
 
-Logger.info "Rhosync Server v#{RhosyncStore::VERSION} started..."
+Logger.info "Rhosync Server v#{Rhosync::VERSION} started..."
 
 before do
   if request.env['CONTENT_TYPE'] == 'application/json'
@@ -48,7 +48,7 @@ end
 
 get '/' do
   out = "<html><head><title>Resque Demo</title></head>"
-  out << "<body>Rhosync Server v#{RhosyncStore::VERSION} running..."
+  out << "<body>Rhosync Server v#{Rhosync::VERSION} running..."
   out << "<p><a href=\"/resque/\">Resque</a></p></body>"
   out << "</html>"
   out
@@ -132,4 +132,4 @@ def api(name)
   end
 end
 
-Dir["#{File.dirname(__FILE__)}/lib/rhosync_store/api/**/*.rb"].each { |api| load api }
+Dir["#{File.dirname(__FILE__)}/lib/rhosync/api/**/*.rb"].each { |api| load api }

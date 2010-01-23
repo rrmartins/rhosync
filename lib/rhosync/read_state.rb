@@ -1,4 +1,4 @@
-module RhosyncStore  
+module Rhosync  
   class ReadState < Model
     field :refresh_time,:integer
   

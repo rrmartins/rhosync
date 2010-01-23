@@ -16,13 +16,13 @@ require File.join(File.dirname(__FILE__),'..','..','rhosync.rb')
 
 describe "Rhosync" do
   include Rack::Test::Methods
-  include RhosyncStore
+  include Rhosync
   
   it_should_behave_like "SourceAdapterHelper"
   
   before(:each) do
     basedir = File.join(File.dirname(__FILE__),'..')
-    RhosyncStore.bootstrap do |rhosync|
+    Rhosync.bootstrap do |rhosync|
       rhosync.app_directory = File.join(basedir,'apps')
       rhosync.data_directory = File.join(basedir,'data')
       rhosync.vendor_directory = File.join(basedir,'..','vendor')
@@ -35,7 +35,7 @@ describe "Rhosync" do
   
   it "should show status page" do
     get '/'
-    last_response.body.match(RhosyncStore::VERSION)[0].should == RhosyncStore::VERSION
+    last_response.body.match(Rhosync::VERSION)[0].should == Rhosync::VERSION
   end
   
   it "should login without app_name" do
@@ -60,7 +60,7 @@ describe "Rhosync" do
   end
   
   it "should complain about hsqldata.jar missing" do
-    RhosyncStore.vendor_directory = 'missing'
+    Rhosync.vendor_directory = 'missing'
     Logger.should_receive(:error).any_number_of_times.with(any_args())
     check_hsql_lib!
   end

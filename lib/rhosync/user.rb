@@ -1,6 +1,6 @@
 require 'digest/sha1'
 
-module RhosyncStore
+module Rhosync
   # Inspired by sinatra-authentication
   # Password uses simple sha1 digest for hashing
   class User < Model

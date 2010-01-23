@@ -6,7 +6,7 @@ describe "BulkDataJob" do
   it_should_behave_like "SourceAdapterHelper"
   
   before(:each) do
-    RhosyncStore.blackberry_bulk_sync = true
+    Rhosync.blackberry_bulk_sync = true
   end
   
   after(:each) do
@@ -32,7 +32,7 @@ describe "BulkDataJob" do
   end
   
   it "should not create hsql db files if blackberry_bulk_sync is disabled" do
-    RhosyncStore.blackberry_bulk_sync = false
+    Rhosync.blackberry_bulk_sync = false
     set_state('test_db_storage' => @data)
     docname = bulk_data_docname(@a.id,@u.id)
     data = BulkData.create(:name => docname,

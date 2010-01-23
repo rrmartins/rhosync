@@ -3,23 +3,23 @@ require 'redis'
 require 'json'
 require 'base64'
 require 'zip/zip'
-require 'rhosync_store/document'
-require 'rhosync_store/model'
-require 'rhosync_store/source'
-require 'rhosync_store/user'
-require 'rhosync_store/api_token'
-require 'rhosync_store/app'
-require 'rhosync_store/store'
-require 'rhosync_store/client'
-require 'rhosync_store/read_state'
-require 'rhosync_store/client_sync'
-require 'rhosync_store/source_adapter'
-require 'rhosync_store/source_sync'
-require 'rhosync_store/bulk_data'
-require 'rhosync_store/indifferent_access'
+require 'rhosync/document'
+require 'rhosync/model'
+require 'rhosync/source'
+require 'rhosync/user'
+require 'rhosync/api_token'
+require 'rhosync/app'
+require 'rhosync/store'
+require 'rhosync/client'
+require 'rhosync/read_state'
+require 'rhosync/client_sync'
+require 'rhosync/source_adapter'
+require 'rhosync/source_sync'
+require 'rhosync/bulk_data'
+require 'rhosync/indifferent_access'
   
 # Various module utilities for the store
-module RhosyncStore
+module Rhosync
   class InvalidArgumentError < RuntimeError; end
   
   class RhosyncServerError < RuntimeError; end
@@ -30,20 +30,20 @@ module RhosyncStore
     attr_accessor :app_directory, :data_directory, :vendor_directory, :blackberry_bulk_sync
   end
 
-  # Server hook to initialize RhosyncStore
+  # Server hook to initialize Rhosync
   def bootstrap
     yield self
     Store.create
-    RhosyncStore.app_directory ||= 'apps'
-    RhosyncStore.data_directory ||= 'data'
-    RhosyncStore.vendor_directory ||= 'vendor'
-    RhosyncStore.blackberry_bulk_sync ||= false
+    Rhosync.app_directory ||= 'apps'
+    Rhosync.data_directory ||= 'data'
+    Rhosync.vendor_directory ||= 'vendor'
+    Rhosync.blackberry_bulk_sync ||= false
     # Add appdir and sources subdirectory
     # to load path if appdir exists
-    if File.exist?(RhosyncStore.app_directory)
-      Dir.entries(RhosyncStore.app_directory).each do |name|
+    if File.exist?(Rhosync.app_directory)
+      Dir.entries(Rhosync.app_directory).each do |name|
         unless name == '..' || name == '.'
-          appdir = File.join(RhosyncStore.app_directory,name)
+          appdir = File.join(Rhosync.app_directory,name)
           app_file = underscore(File.join(appdir,name+'.rb'))
           set_load_path(appdir)
           load app_file if File.exists?(app_file)
@@ -51,7 +51,7 @@ module RhosyncStore
       end
     end
     create_admin_user
-    check_hsql_lib! if RhosyncStore.blackberry_bulk_sync
+    check_hsql_lib! if Rhosync.blackberry_bulk_sync
   end
   
   # Generate admin user on first load
@@ -134,7 +134,7 @@ module RhosyncStore
   end
   
   def check_hsql_lib!
-    unless File.exists?(File.join(RhosyncStore.vendor_directory,'hsqldata.jar'))
+    unless File.exists?(File.join(Rhosync.vendor_directory,'hsqldata.jar'))
       Logger.error "*"*60
       Logger.error ""
       Logger.error "WARNING: Missing vendor/hsqldata.jar, please install it for BlackBerry bulk sync support."

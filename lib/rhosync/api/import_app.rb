@@ -2,7 +2,7 @@ api :import_app do |params,user|
   app_name = params[:app_name]
   upload_file(app_name,params[:upload_file]) if params[:upload_file]
   App.load(app_name).delete if App.is_exist?(app_name)
-  config = YAML.load File.read(File.join(RhosyncStore.app_directory,app_name,'config.yml'))
+  config = YAML.load File.read(File.join(Rhosync.app_directory,app_name,'config.yml'))
   if config and config['sources']
     app = App.create(:name => app_name)
     appdir = App.appdir(app_name)

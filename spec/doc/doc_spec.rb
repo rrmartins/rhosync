@@ -15,7 +15,7 @@ require File.join(File.dirname(__FILE__),'..','..','rhosync.rb')
 
 describe "Rhosync Protocol" do
   include Rack::Test::Methods
-  include RhosyncStore
+  include Rhosync
   
   Logger.enabled = false
   

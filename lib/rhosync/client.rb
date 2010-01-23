@@ -1,4 +1,4 @@
-module RhosyncStore  
+module Rhosync  
   class InvalidSourceNameError < RuntimeError; end
   
   class Client < Model

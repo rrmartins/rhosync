@@ -1,4 +1,4 @@
-module RhosyncStore
+module Rhosync
   class App < Model
     field :name, :string
     set   :users, :string
@@ -16,7 +16,7 @@ module RhosyncStore
       end
           
       def appdir(name)
-        File.join(RhosyncStore.app_directory,name)
+        File.join(Rhosync.app_directory,name)
       end
     end
     

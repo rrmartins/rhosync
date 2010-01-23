@@ -1,4 +1,4 @@
-module RhosyncStore
+module Rhosync
   class Source < Model
     field :source_id,:integer
     field :name,:string

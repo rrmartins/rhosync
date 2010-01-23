@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
 
-class RhosyncStore::SourceAdapter 
+class Rhosync::SourceAdapter 
   def inject_result(result) 
     @result = result
   end

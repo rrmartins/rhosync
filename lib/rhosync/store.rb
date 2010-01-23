@@ -1,4 +1,4 @@
-module RhosyncStore
+module Rhosync
   class Store
     RESERVED_ATTRIB_NAMES = ["attrib_type", "id"] unless defined? RESERVED_ATTRIB_NAMES
     @@db = nil

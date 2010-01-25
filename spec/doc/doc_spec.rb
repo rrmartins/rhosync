@@ -11,7 +11,7 @@ set :environment, :test
 set :run, false
 set :secret, 'secure!'
 
-require File.join(File.dirname(__FILE__),'..','..','rhosync.rb')
+require File.join(File.dirname(__FILE__),'..','..','app.rb')
 
 describe "Rhosync Protocol" do
   include Rack::Test::Methods

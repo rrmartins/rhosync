@@ -12,7 +12,7 @@ set :secret, "secure!"
 
 use Rack::Static, :urls => ["/spec/data"]
 
-require File.join(File.dirname(__FILE__),'..','..','rhosync.rb')
+require File.join(File.dirname(__FILE__),'..','..','app.rb')
 
 describe "Rhosync" do
   include Rack::Test::Methods

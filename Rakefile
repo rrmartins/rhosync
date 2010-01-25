@@ -32,7 +32,7 @@ end
 
 desc "Load console environment"
 task :console do
-  sh "irb -rubygems -r rhosync.rb"
+  sh "irb -rubygems -r app.rb"
 end
 
 desc "Start server using config.ru"

@@ -7,7 +7,7 @@ set :environment, :production
 enable :raise_errors
 set :secret, '<changeme>'
 
-require 'rhosync.rb'
+require 'app.rb'
 
 configure :development,:production do 
   Rhosync.bootstrap do |rhosync|

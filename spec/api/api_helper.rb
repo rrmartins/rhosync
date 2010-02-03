@@ -13,7 +13,7 @@ set :environment, :test
 set :run, false
 set :secret, 'secure!'
 
-require File.join(File.dirname(__FILE__),'..','..','app.rb')
+require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
 describe "ApiHelper", :shared => true do
   include Rack::Test::Methods
@@ -21,7 +21,7 @@ describe "ApiHelper", :shared => true do
   it_should_behave_like "SourceAdapterHelper"
   
   def app
-    @app ||= Sinatra::Application
+    @app ||= Rhosync::Server.new
   end
   
   before(:each) do

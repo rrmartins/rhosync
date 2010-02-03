@@ -1,8 +1,8 @@
-require 'rubygems'
 require 'redis'
 require 'json'
 require 'base64'
 require 'zip/zip'
+require 'rhosync/version'
 require 'rhosync/document'
 require 'rhosync/model'
 require 'rhosync/source'
@@ -24,19 +24,17 @@ module Rhosync
   
   class RhosyncServerError < RuntimeError; end
   
-  VERSION = '1.5.0'
-  
   class << self
-    attr_accessor :app_directory, :data_directory, :vendor_directory, :blackberry_bulk_sync
+    attr_accessor :base_directory, :app_directory, :data_directory, :vendor_directory, :blackberry_bulk_sync
   end
-
-  # Server hook to initialize Rhosync
+    # Server hook to initialize Rhosync
   def bootstrap
-    yield self
+    yield self if block_given?
     Store.create
-    Rhosync.app_directory ||= 'apps'
-    Rhosync.data_directory ||= 'data'
-    Rhosync.vendor_directory ||= 'vendor'
+    Rhosync.base_directory ||= File.join(File.dirname(__FILE__),'..')
+    Rhosync.app_directory ||= File.join(Rhosync.base_directory,'apps')
+    Rhosync.data_directory ||= File.join(Rhosync.base_directory,'data')
+    Rhosync.vendor_directory ||= File.join(Rhosync.base_directory,'vendor')
     Rhosync.blackberry_bulk_sync ||= false
     # Add appdir and sources subdirectory
     # to load path if appdir exists
@@ -62,7 +60,7 @@ module Rhosync
       admin.create_token
     end
   end
-  
+
   # Sets up load path with ruby source for apps, sources, and vendor gems
   def set_load_path(appdir)
     check_and_add(appdir)
@@ -71,41 +69,41 @@ module Rhosync
       check_and_add(File.join(dir,'lib'))
     end
   end
-  
+
   # Add path to load_path unless it has been added already
   def check_and_add(path)
     $:.unshift path unless $:.include?(path) 
   end
-  
+
   # Serializes oav to set element
   def setelement(obj,attrib,value)
     "#{obj}:#{attrib}:#{Base64.encode64(value.to_s)}"
   end
-  
+
   # De-serializes oav from set element
   def getelement(element)
     res = element.split(':')
     [res[0], res[1], Base64.decode64(res[2].to_s)]
   end
-  
+
   # Get random UUID string
   def get_random_uuid
     UUIDTools::UUID.random_create.to_s.gsub(/\-/,'')
   end
-  
+
   # Generates new token (64-bit integer) based on # of 
   # microseconds since Jan 1 2009
   def get_token
     ((Time.now.to_f - Time.mktime(2009,"jan",1,0,0,0,0).to_f) * 10**6).to_i
   end
-  
+
   # Computes token for a single client request
   def compute_token(doc_key)
     token = get_token
     Store.put_value(doc_key,token)
     token.to_s
   end
-  
+
   # Returns require-friendly filename for a class
   def underscore(camel_cased_word)
     camel_cased_word.to_s.gsub(/::/, '/').
@@ -114,25 +112,14 @@ module Rhosync
     tr("-", "_").
     downcase
   end
-  
+
   # Taken from rails inflector
   def camelize(lower_case_and_underscored_word, first_letter_in_uppercase = true)
     if first_letter_in_uppercase
       lower_case_and_underscored_word.to_s.gsub(/\/(.?)/) { "::#{$1.upcase}" }.gsub(/(?:^|_)(.)/) { $1.upcase }
     end
   end
-  
-  def check_default_secret!
-    if Sinatra::Application.secret == '<changeme>'                        
-      Logger.error "*"*60
-      Logger.error ""
-      Logger.error "WARNING: Change the session secret in config.ru from <changeme> to something secure."
-      Logger.error "  i.e. running `rake secret` in a rails app will generate a secret you could use."
-      Logger.error ""
-      Logger.error "*"*60
-    end
-  end
-  
+
   def check_hsql_lib!
     unless File.exists?(File.join(Rhosync.vendor_directory,'hsqldata.jar'))
       Logger.error "*"*60
@@ -142,7 +129,7 @@ module Rhosync
       Logger.error "*"*60
     end
   end
-  
+
   def unzip_file(file_dir,params)
     uploaded_file = File.join(file_dir, params[:filename])
     File.open(uploaded_file, 'wb') do |file|
@@ -157,18 +144,18 @@ module Rhosync
     end
     FileUtils.rm_f(uploaded_file)
   end
-  
+
   def lap_timer(msg,start)
     duration = timenow - start
     puts "#{msg}: #{duration}"
     timenow
   end
-  
+
   def start_timer(msg='starting')
     puts "#{msg}"
     timenow
   end
-  
+
   def timenow
     (Time.now.to_f * 1000)
   end
@@ -190,5 +177,3 @@ module Rhosync
     end
   end
 end
-
-

@@ -1,4 +1,4 @@
-api :list_apps do |params,user|
+Rhosync::Server.api :list_apps do |params,user|
   keys = App.redis.keys "app:*:name"
   res = []
   keys.each do |key|

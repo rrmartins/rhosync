@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__),'..','spec_helper')
+require File.join(File.dirname(__FILE__),'spec_helper')
 require 'rubygems'
 require 'sinatra'
 require 'rack/test'
@@ -10,27 +10,23 @@ set :environment, :test
 set :run, false
 set :secret, "secure!"
 
-use Rack::Static, :urls => ["/spec/data"]
+Rhosync.bootstrap do |rhosync|
+  rhosync.base_directory = File.dirname(__FILE__)
+  rhosync.vendor_directory = File.join(File.dirname(__FILE__),'..','vendor')
+end
 
-require File.join(File.dirname(__FILE__),'..','..','app.rb')
+require File.join(File.dirname(__FILE__),'..','lib','rhosync','server.rb')
+
+Rhosync::Server.use Rack::Static, :urls => ["/data"], :root => Rhosync.base_directory
 
 describe "Rhosync" do
   include Rack::Test::Methods
   include Rhosync
   
   it_should_behave_like "SourceAdapterHelper"
-  
-  before(:each) do
-    basedir = File.join(File.dirname(__FILE__),'..')
-    Rhosync.bootstrap do |rhosync|
-      rhosync.app_directory = File.join(basedir,'apps')
-      rhosync.data_directory = File.join(basedir,'data')
-      rhosync.vendor_directory = File.join(basedir,'..','vendor')
-    end
-  end
 
   def app
-    @app ||= Sinatra::Application
+    @app ||= Rhosync::Server.new
   end
   
   it "should show status page" do
@@ -56,7 +52,7 @@ describe "Rhosync" do
     set :secret, "<changeme>"
     Sinatra::Application.secret.should == "<changeme>"
     Logger.should_receive(:error).any_number_of_times.with(any_args())
-    check_default_secret!
+    Rhosync::Server.check_default_secret!
   end
   
   it "should complain about hsqldata.jar missing" do
@@ -272,7 +268,7 @@ describe "Rhosync" do
       last_response.should be_ok
       last_response.body.should == {:result => :wait}.to_json
     end
-  
+      
     it "should receive url when bulk data is available" do
       set_state('test_db_storage' => @data)
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id

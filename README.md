@@ -1,8 +1,7 @@
 Rhosync Data Cache
 -------------------------------------------------------------
 
-Redis-powered rhosync with built-in sinatra application. See app.rb and "rake doc"
-for information about required routes.
+Redis-powered rhosync with built-in sinatra application.
 
 INSTALL
 -------------------------------------------------------------

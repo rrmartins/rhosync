@@ -200,11 +200,8 @@ end
 
 describe "SpecBootstrapHelper", :shared => true do
   before(:all) do
-    basedir = File.dirname(__FILE__)
     Rhosync.bootstrap do |rhosync|
-      rhosync.app_directory = File.join(basedir,'apps')
-      rhosync.data_directory = File.join(basedir,'data')
-      rhosync.vendor_directory = File.join(basedir,'..','vendor')
+      rhosync.base_directory = File.join(File.dirname(__FILE__))
     end
   end
 end

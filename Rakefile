@@ -1,4 +1,3 @@
-require 'rubygems'
 require 'resque/tasks'
 require 'spec/rake/spectask'
 require 'rcov/rcovtask'
@@ -32,7 +31,7 @@ end
 
 desc "Load console environment"
 task :console do
-  sh "irb -rubygems -r app.rb"
+  sh "irb -rubygems -r #{File.join(File.dirname(__FILE__),'lib','rhosync','server.rb')}"
 end
 
 desc "Start server using config.ru"
@@ -42,7 +41,4 @@ end
 
 task "resque:setup" do
   include Rhosync
-  Rhosync.bootstrap do |rhosync|
-    rhosync.blackberry_bulk_sync = true
-  end
 end

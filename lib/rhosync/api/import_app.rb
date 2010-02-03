@@ -1,4 +1,4 @@
-api :import_app do |params,user|
+Rhosync::Server.api :import_app do |params,user|
   app_name = params[:app_name]
   upload_file(app_name,params[:upload_file]) if params[:upload_file]
   App.load(app_name).delete if App.is_exist?(app_name)

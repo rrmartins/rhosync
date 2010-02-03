@@ -111,19 +111,13 @@ module Rhosync
         name = BulkData.get_name(partition,client)
         data = BulkData.load(name)
         sources = client.app.partition_sources(partition,client.user_id)
-        puts "before condition, need_refresh: #{sources[:need_refresh].inspect}"
-        puts "data: #{data.nil?.inspect}, name: #{name.inspect}"
-        puts "data completed: #{data.completed?.inspect}" if data
         if (data.nil? or (data.completed? and sources[:need_refresh] == true)) and 
           sources[:names].length > 0 
-          puts "inside condition"
-          puts "state before delete: #{data.state.inspect}" if data
           data.delete if data
           data = BulkData.create(:name => name,
             :app_id => client.app_id,
             :user_id => client.user_id,
             :sources => sources[:names])
-          puts "queue is: #{Resque.peek(:bulk_data,0,100).inspect}, name: #{name}"
           BulkData.enqueue("data_name" => name)
         end
         if data and data.completed? 
@@ -134,7 +128,6 @@ module Rhosync
         else
           {:result => :nop}
         end
-       # data ? (data.completed? ? (client.update_clientdoc(sources[:names]); {:result => :url, :url => data.url}) : :wait) : :nop
       end
     end
     

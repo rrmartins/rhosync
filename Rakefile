@@ -16,8 +16,8 @@ TYPES = { :spec   => 'spec/*_spec.rb',
           :server => 'spec/server/*_spec.rb',
           :api    => 'spec/api/*_spec.rb',
           :bulk   => 'spec/bulk_data/*_spec.rb',
-          :doc    => 'spec/doc/*_spec.rb',
-          :all    => 'spec/**/*_spec.rb' } 
+          :doc    => 'spec/doc/*_spec.rb'}
+        #  :all    => 'spec/**/*_spec.rb' } 
  
 TYPES.each do |type,files|
   desc "Run #{type} specs"
@@ -27,6 +27,14 @@ TYPES.each do |type,files|
     t.rcov = OPTS[:rcov]
     t.rcov_opts = OPTS[:rcov_opts]
   end
+end
+
+desc "Run all specs"
+Spec::Rake::SpecTask.new(:all) do |t|
+  t.spec_files = FileList[TYPES.values]
+  t.spec_opts = OPTS[:spec_opts]
+  t.rcov = OPTS[:rcov]
+  t.rcov_opts = OPTS[:rcov_opts]
 end
 
 desc "Load console environment"

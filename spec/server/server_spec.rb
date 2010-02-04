@@ -1,32 +1,28 @@
-require File.join(File.dirname(__FILE__),'spec_helper')
+require File.join(File.dirname(__FILE__),'..','spec_helper')
 require 'rubygems'
-require 'sinatra'
 require 'rack/test'
 require 'spec'
 require 'spec/autorun'
 require 'spec/interop/test'
 
-set :environment, :test
-set :run, false
-set :secret, "secure!"
+require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
-Rhosync.bootstrap do |rhosync|
-  rhosync.base_directory = File.dirname(__FILE__)
-  rhosync.vendor_directory = File.join(File.dirname(__FILE__),'..','vendor')
-end
-
-require File.join(File.dirname(__FILE__),'..','lib','rhosync','server.rb')
-
-Rhosync::Server.use Rack::Static, :urls => ["/data"], :root => Rhosync.base_directory
-
-describe "Rhosync" do
+describe "Server" do
+  it_should_behave_like "SpecBootstrapHelper"
+  it_should_behave_like "SourceAdapterHelper"
+  
   include Rack::Test::Methods
   include Rhosync
   
-  it_should_behave_like "SourceAdapterHelper"
+  before(:all) do
+    Server.set :environment, :test
+    Server.set :run, false
+    Server.set :secret, "secure!"
+    Server.use Rack::Static, :urls => ["/data"], :root => File.dirname(__FILE__)
+  end
 
   def app
-    @app ||= Rhosync::Server.new
+    @app ||= Server.new
   end
   
   it "should show status page" do
@@ -36,6 +32,7 @@ describe "Rhosync" do
   
   it "should login without app_name" do
     post "/login", "login" => 'admin', "password" => ''
+    puts "resp: #{last_response.inspect}"
     last_response.should be_ok
   end
   
@@ -45,14 +42,15 @@ describe "Rhosync" do
   end
   
   it "should have default session secret" do
-    Sinatra::Application.secret.should == "secure!"
+    Server.secret.should == "secure!"
   end
   
   it "should update session secret to default" do
-    set :secret, "<changeme>"
-    Sinatra::Application.secret.should == "<changeme>"
+    Server.set :secret, "<changeme>"
+    Server.secret.should == "<changeme>"
     Logger.should_receive(:error).any_number_of_times.with(any_args())
-    Rhosync::Server.check_default_secret!
+    check_default_secret!("<changeme>")
+    Server.set :secret, "secure!"
   end
   
   it "should complain about hsqldata.jar missing" do
@@ -259,7 +257,7 @@ describe "Rhosync" do
     end
     
     after(:each) do
-      delete_data_directory
+     delete_data_directory
     end
   
     it "should make initial bulk data request and receive wait" do
@@ -268,7 +266,7 @@ describe "Rhosync" do
       last_response.should be_ok
       last_response.body.should == {:result => :wait}.to_json
     end
-      
+    
     it "should receive url when bulk data is available" do
       set_state('test_db_storage' => @data)
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
@@ -285,6 +283,7 @@ describe "Rhosync" do
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
+      puts "url: /spec/data/#{@a.name}/#{@u.id}/#{JSON.parse(last_response.body)["url"].split('/').last}"
       get "/spec/data/#{@a.name}/#{@u.id}/#{JSON.parse(last_response.body)["url"].split('/').last}"
       File.open('test.data','wb') {|f| f.puts last_response.body}
       validate_db_by_name('test.data',@data)

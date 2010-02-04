@@ -1,3 +1,4 @@
+$:.unshift File.join(File.dirname(__FILE__),'..')
 require 'sinatra/base'
 require 'erb'
 require 'json'
@@ -6,8 +7,21 @@ require 'rhosync'
 
 module Rhosync
   class Server < Sinatra::Base
+    libdir = File.dirname(File.expand_path(__FILE__))
+    set :views,  "#{libdir}/server/views"
+    set :public, "#{libdir}/server/public"
+    set :static, true
+    
     set :secret, '<changeme>' unless defined? Server.secret
     
+    use Rack::Session::Cookie, :key => 'rhosync_session',
+                               :expire_after => 31536000,
+                               :secret => Server.secret
+                               
+    # Setup route and mimetype for bulk data downloads
+    # TODO: Figure out why "mime :data, 'application/octet-stream'" doesn't work
+    Rack::Mime::MIME_TYPES['.data'] = 'application/octet-stream'   
+     
     include Rhosync
                                                               
     helpers do
@@ -19,17 +33,6 @@ module Rhosync
         request_action == 'get_api_token' or 
           (params[:api_token] and ApiToken.is_exist?(params[:api_token]))
       end
-      
-      # def check_default_secret!
-      #   if self.secret == '<changeme>'                        
-      #     Logger.error "*"*60
-      #     Logger.error ""
-      #     Logger.error "WARNING: Change the session secret in config.ru from <changeme> to something secure."
-      #     Logger.error "  i.e. running `rake secret` in a rails app will generate a secret you could use."
-      #     Logger.error ""
-      #     Logger.error "*"*60
-      #   end
-      # end
 
       def do_login
         if login
@@ -47,6 +50,7 @@ module Rhosync
         if current_app and current_app.can_authenticate?
           user = current_app.authenticate(params[:login], params[:password], session)
         else
+          puts "params: #{params.inspect}"
           user = User.authenticate(params[:login], params[:password])
         end
         if user
@@ -109,9 +113,13 @@ module Rhosync
       end
     end
     
-    # check_default_secret!
-
     Logger.info "Rhosync Server v#{Rhosync::VERSION} started..."
+    
+    def initialize
+      # Whine about default session secret
+      check_default_secret!(Server.secret)
+      super
+    end
 
     before do
       if request.env['CONTENT_TYPE'] == 'application/json'
@@ -133,11 +141,7 @@ module Rhosync
     end
 
     get '/' do
-      out = "<html><head><title>Resque Demo</title></head>"
-      out << "<body>Rhosync Server v#{Rhosync::VERSION} running..."
-      out << "<p><a href=\"/resque/\">Resque</a></p></body>"
-      out << "</html>"
-      out
+      erb :index
     end
 
     # Collection routes

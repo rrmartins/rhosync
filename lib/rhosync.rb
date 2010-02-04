@@ -21,13 +21,13 @@ require 'rhosync/indifferent_access'
 # Various module utilities for the store
 module Rhosync
   class InvalidArgumentError < RuntimeError; end
-  
   class RhosyncServerError < RuntimeError; end
   
   class << self
     attr_accessor :base_directory, :app_directory, :data_directory, :vendor_directory, :blackberry_bulk_sync
   end
-    # Server hook to initialize Rhosync
+  
+  # Server hook to initialize Rhosync
   def bootstrap
     yield self if block_given?
     Store.create
@@ -73,6 +73,15 @@ module Rhosync
   # Add path to load_path unless it has been added already
   def check_and_add(path)
     $:.unshift path unless $:.include?(path) 
+  end
+  
+  def check_default_secret!(secret)
+    if secret == '<changeme>'                        
+      Logger.error "*"*60+"\n\n"
+      Logger.error "WARNING: Change the session secret in config.ru from <changeme> to something secure."
+      Logger.error "  i.e. running `rake secret` in a rails app will generate a secret you could use."
+      Logger.error "\n\n"+"*"*60
+    end
   end
 
   # Serializes oav to set element

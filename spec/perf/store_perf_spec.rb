@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__),'perf_spec_helper')
 
 describe "Rhosync Performance" do
-  it_should_behave_like "RhosyncDataHelper"
+  it_should_behave_like "SourceAdapterHelper"
   it_should_behave_like "PerfSpecHelper"
 
   it "should process get/put for 1000 records (6000 elements)" do

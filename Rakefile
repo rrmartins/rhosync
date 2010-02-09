@@ -17,7 +17,6 @@ TYPES = { :spec   => 'spec/*_spec.rb',
           :api    => 'spec/api/*_spec.rb',
           :bulk   => 'spec/bulk_data/*_spec.rb',
           :doc    => 'spec/doc/*_spec.rb'}
-        #  :all    => 'spec/**/*_spec.rb' } 
  
 TYPES.each do |type,files|
   desc "Run #{type} specs"

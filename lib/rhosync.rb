@@ -29,6 +29,11 @@ module Rhosync
   
   # Server hook to initialize Rhosync
   def bootstrap
+    Rhosync.base_directory = nil
+    Rhosync.app_directory = nil
+    Rhosync.data_directory = nil
+    Rhosync.vendor_directory = nil
+    Rhosync.blackberry_bulk_sync = false
     yield self if block_given?
     Store.create
     Rhosync.base_directory ||= File.join(File.dirname(__FILE__),'..')

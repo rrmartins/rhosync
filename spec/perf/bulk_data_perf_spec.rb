@@ -2,9 +2,16 @@ require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__),'perf_spec_helper')
 
 describe "BulkData Performance" do
-  it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   it_should_behave_like "PerfSpecHelper"
+  
+  before(:each) do
+    basedir = File.join(File.dirname(__FILE__),'..')
+    Rhosync.bootstrap do |rhosync|
+      rhosync.base_directory = basedir
+      rhosync.vendor_directory = File.join(basedir,'..','vendor')
+    end
+  end
   
   after(:each) do
     delete_data_directory
@@ -24,5 +31,4 @@ describe "BulkData Performance" do
     BulkDataJob.perform("data_name" => data.name)
     lap_timer('BulkDataJob.perform duration',start)
   end
-  
 end

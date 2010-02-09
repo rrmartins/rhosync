@@ -8,17 +8,23 @@ require 'spec/interop/test'
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
 describe "Server" do
-  it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
   include Rack::Test::Methods
   include Rhosync
   
-  before(:all) do
-    Server.set :environment, :test
-    Server.set :run, false
-    Server.set :secret, "secure!"
-    Server.use Rack::Static, :urls => ["/data"], :root => File.dirname(__FILE__)
+  before(:each) do
+    basedir = File.join(File.dirname(__FILE__),'..')
+    Rhosync.bootstrap do |rhosync|
+      rhosync.base_directory = basedir
+      rhosync.vendor_directory = File.join(basedir,'..','vendor')
+    end
+    Server.set( 
+      :environment => :test,
+      :run => false,
+      :secret => "secure!"
+    )
+    Server.use Rack::Static, :urls => ["/data"], :root => basedir
   end
 
   def app
@@ -31,8 +37,7 @@ describe "Server" do
   end
   
   it "should login without app_name" do
-    post "/login", "login" => 'admin', "password" => ''
-    puts "resp: #{last_response.inspect}"
+    post "/login", "login" => @u_fields[:login], "password" => 'testpass'
     last_response.should be_ok
   end
   

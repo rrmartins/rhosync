@@ -12,7 +12,6 @@ describe "RhosyncApiImportApp" do
   
   it "should upload zipfile and import app and sources" do   
     upload_test_apps
-    
     App.is_exist?(@appname).should == true
     sources = App.load(@appname).sources.members.sort
     sources.should == ["SampleAdapter", "SimpleAdapter"]

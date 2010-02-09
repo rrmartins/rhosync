@@ -7,10 +7,6 @@ require 'spec/autorun'
 require 'spec/interop/test'
 require 'pp'
 
-set :environment, :test
-set :run, false
-set :secret, 'secure!'
-
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
 describe "Rhosync Protocol" do
@@ -18,18 +14,24 @@ describe "Rhosync Protocol" do
   include Rhosync
   
   Logger.enabled = false
-  
-  it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
 
   def app
-    @app ||= Rhosync::Server.new
+    @app ||= Server.new
   end
   
-  before(:all) do
+  before(:each) do
     $rand_id ||= 0
     $content_table ||= []
     $content ||= []
+    Rhosync.bootstrap do |rhosync|
+      rhosync.base_directory = File.join(File.dirname(__FILE__),'..','..')
+    end
+    Server.set( 
+      :environment => :test,
+      :run => false,
+      :secret => "secure!"
+    )
   end
   
   before(:each) do

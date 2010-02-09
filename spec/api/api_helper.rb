@@ -9,10 +9,6 @@ require 'spec/interop/test'
 require 'rhosync'
 include Rhosync
 
-set :environment, :test
-set :run, false
-set :secret, 'secure!'
-
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
 describe "ApiHelper", :shared => true do
@@ -20,33 +16,42 @@ describe "ApiHelper", :shared => true do
   
   it_should_behave_like "SourceAdapterHelper"
   
-  def app
-    @app ||= Rhosync::Server.new
-  end
-  
   before(:each) do
     @appname = @a_fields[:name]
+    delete_app_directory
     basedir = File.join(File.dirname(__FILE__),'..','..')
     Rhosync.bootstrap do |rhosync|
-      rhosync.app_directory = File.join(basedir,'apps')
-      rhosync.data_directory = File.join(basedir,'data')
-      rhosync.vendor_directory = File.join(basedir,'vendor')
+      rhosync.base_directory = basedir
     end
+    Server.set( 
+      :environment => :test,
+      :run => false,
+      :secret => "secure!"
+    )
     @api_token = User.load('admin').token_id
   end
   
   after(:each) do
+    delete_app_directory
+  end
+  
+  def delete_app_directory
     FileUtils.rm_rf File.join(File.dirname(__FILE__),'..','..','apps')
+  end
+  
+  def app
+    @app ||= Server.new
   end
 end
 
 def upload_test_apps
   file = File.join(File.dirname(__FILE__),'..','apps',@appname)
+  puts "uploading #{file}"
   compress(file)
   zipfile = File.join(file,"#{@appname}.zip")
   post "/api/import_app", :app_name => @appname, :api_token => @api_token, 
     :upload_file => Rack::Test::UploadedFile.new(zipfile, "application/octet-stream")
-  FileUtils.rm zipfile
+  FileUtils.rm_f zipfile
 end
 
 def compress(path)

@@ -46,7 +46,6 @@ end
 
 def upload_test_apps
   file = File.join(File.dirname(__FILE__),'..','apps',@appname)
-  puts "uploading #{file}"
   compress(file)
   zipfile = File.join(file,"#{@appname}.zip")
   post "/api/import_app", :app_name => @appname, :api_token => @api_token, 

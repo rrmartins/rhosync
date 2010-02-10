@@ -50,7 +50,6 @@ module Rhosync
         if current_app and current_app.can_authenticate?
           user = current_app.authenticate(params[:login], params[:password], session)
         else
-          puts "params: #{params.inspect}"
           user = User.authenticate(params[:login], params[:password])
         end
         if user

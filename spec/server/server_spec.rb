@@ -24,7 +24,7 @@ describe "Server" do
       :run => false,
       :secret => "secure!"
     )
-    Server.use Rack::Static, :urls => ["/data"], :root => basedir
+    Server.use Rack::Static, :urls => ["/spec/data"], :root => File.join(basedir,'..')
   end
 
   def app
@@ -288,8 +288,8 @@ describe "Server" do
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
-      puts "url: /spec/data/#{@a.name}/#{@u.id}/#{JSON.parse(last_response.body)["url"].split('/').last}"
       get "/spec/data/#{@a.name}/#{@u.id}/#{JSON.parse(last_response.body)["url"].split('/').last}"
+      last_response.should be_ok
       File.open('test.data','wb') {|f| f.puts last_response.body}
       validate_db_by_name('test.data',@data)
       File.delete('test.data')

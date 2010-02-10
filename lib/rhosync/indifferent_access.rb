@@ -7,8 +7,8 @@ class HashWithIndifferentAccess < Hash
     if constructor.is_a?(Hash)
       super()
       update(constructor)
-    else
-      super(constructor)
+    # else
+    #   super(constructor)
     end
   end
 
@@ -65,9 +65,9 @@ class HashWithIndifferentAccess < Hash
   alias_method :member?, :key?
 
   # Fetches the value for the specified key, same as doing hash[key]
-  def fetch(key, *extras)
-    super(convert_key(key), *extras)
-  end
+  # def fetch(key, *extras)
+  #   super(convert_key(key), *extras)
+  # end
 
   # Returns an array of the values at the specified indices:
   #
@@ -76,34 +76,34 @@ class HashWithIndifferentAccess < Hash
   #   hash[:b] = "y"
   #   hash.values_at("a", "b") # => ["x", "y"]
   #
-  def values_at(*indices)
-    indices.collect {|key| self[convert_key(key)]}
-  end
+  # def values_at(*indices)
+  #   indices.collect {|key| self[convert_key(key)]}
+  # end
 
   # Returns an exact copy of the hash.
-  def dup
-    HashWithIndifferentAccess.new(self)
-  end
+  # def dup
+  #   HashWithIndifferentAccess.new(self)
+  # end
 
   # Merges the instantized and the specified hashes together, giving precedence to the values from the second hash
   # Does not overwrite the existing hash.
-  def merge(hash)
-    self.dup.update(hash)
-  end
+  # def merge(hash)
+  #   self.dup.update(hash)
+  # end
 
   # Removes a specified key from the hash.
-  def delete(key)
-    super(convert_key(key))
-  end
+  # def delete(key)
+  #   super(convert_key(key))
+  # end
 
   def stringify_keys!; self end
   def symbolize_keys!; self end
   def to_options!; self end
 
   # Convert to a Hash with String keys.
-  def to_hash
-    Hash.new(default).merge(self)
-  end
+  # def to_hash
+  #   Hash.new(default).merge(self)
+  # end
 
   protected
     def convert_key(key)
@@ -111,14 +111,14 @@ class HashWithIndifferentAccess < Hash
     end
 
     def convert_value(value)
-      case value
-      when Hash
-        value.with_indifferent_access
-      when Array
-        value.collect { |e| e.is_a?(Hash) ? e.with_indifferent_access : e }
-      else
+      # case value
+      # when Hash
+      #   value.with_indifferent_access
+      # when Array
+      #   value.collect { |e| e.is_a?(Hash) ? e.with_indifferent_access : e }
+      # else
         value
-      end
+      # end
     end
 end
 

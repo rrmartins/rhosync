@@ -1,4 +1,4 @@
-Rhosync Data Cache
+Rhosync
 -------------------------------------------------------------
 
 Redis-powered rhosync with built-in sinatra application.

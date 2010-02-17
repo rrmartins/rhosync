@@ -62,7 +62,7 @@ describe "SourceSync" do
   describe "methods" do
     
     it "should process source adapter" do
-      mock_metadata_method do
+      mock_metadata_method([SampleAdapter, SimpleAdapter]) do
         expected = {'1'=>@product1,'2'=>@product2}
         set_state('test_db_storage' => expected)
         @ss.process
@@ -73,7 +73,7 @@ describe "SourceSync" do
     end
     
     it "should call methods in source adapter" do
-      mock_metadata_method do
+      mock_metadata_method([SampleAdapter, SimpleAdapter]) do
         expected = {'1'=>@product1,'2'=>@product2}
         metadata = "{\"foo\":\"bar\"}"
         @ss.adapter.should_receive(:login).once.with(no_args()).and_return(true)

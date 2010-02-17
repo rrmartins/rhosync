@@ -15,29 +15,32 @@ describe "Rhosync Protocol" do
   
   Logger.enabled = false
   it_should_behave_like "SourceAdapterHelper"
-
-  def app
-    @app ||= Server.new
-  end
   
   before(:each) do
     $rand_id ||= 0
     $content_table ||= []
     $content ||= []
+    basedir = File.join(File.dirname(__FILE__),'..')
     Rhosync.bootstrap do |rhosync|
-      rhosync.base_directory = File.join(File.dirname(__FILE__),'..','..')
+      rhosync.base_directory = basedir
+      rhosync.vendor_directory = File.join(basedir,'..','vendor')
     end
     Server.set( 
       :environment => :test,
       :run => false,
       :secret => "secure!"
     )
+    Server.use Rack::Static, :urls => ["/spec/data"], :root => File.join(basedir,'..')
   end
   
   before(:each) do
     do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
     @title,@description = nil,nil
     $rand_id += 1
+  end
+  
+  def app
+    @app ||= Server.new
   end
   
   after(:each) do
@@ -140,6 +143,15 @@ describe "Rhosync Protocol" do
     set_test_data('test_db_storage',data)
     get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
     @title,@description = 'insert objects', 'send insert objects'
+  end
+  
+  it "server send metadata to client" do
+    mock_metadata_method([SampleAdapter]) do
+      cs = ClientSync.new(@s,@c,1)
+      set_test_data('test_db_storage',@data)
+      get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+    end
+    @title,@description = 'metadata', 'send metadata'
   end
   
   it "server send delete objects to client" do 

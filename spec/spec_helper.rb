@@ -189,12 +189,12 @@ describe "SourceAdapterHelper", :shared => true do
     BulkDataJob.refs_to_s(counter)
   end
   
-  def mock_metadata_method(&block)
-    [SampleAdapter, SimpleAdapter].each do |klass|
+  def mock_metadata_method(adapters, &block)
+    adapters.each do |klass|
       klass.class_eval "def metadata; {'foo'=>'bar'}.to_json; end"
     end
     yield
-    [SampleAdapter, SimpleAdapter].each do |klass|
+    adapters.each do |klass|
       klass.class_eval "def metadata; end"
     end
   end

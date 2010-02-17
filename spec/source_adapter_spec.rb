@@ -96,7 +96,7 @@ describe "SourceAdapter" do
     describe "SourceAdapter metadata method" do
       
       it "should execute SourceAdapter metadata method" do
-        mock_metadata_method do
+        mock_metadata_method([SimpleAdapter]) do
           @sa.metadata.should == "{\"foo\":\"bar\"}"
         end
       end

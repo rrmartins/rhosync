@@ -232,14 +232,12 @@ module Rhosync
       progress_count = @client.get_value(:cd_size).to_i
       token = res['token']
       res.delete('token')
-      result = [ {'version'=>VERSION},
+      [ {'version'=>VERSION},
         {'token'=>(token ? token : '')},
         {'count'=>count},
         {'progress_count'=>progress_count},
         {'total_count'=>total_count},
         res ]
-      result.insert(1,'metadata'=>res['metadata']) if res['metadata']
-      result
     end
   end
 end

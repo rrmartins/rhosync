@@ -92,5 +92,14 @@ describe "SourceAdapter" do
       @sa.inject_result nil
       @sa.sync
     end
+    
+    describe "SourceAdapter metadata method" do
+      
+      it "should execute SourceAdapter metadata method" do
+        mock_metadata_method do
+          @sa.metadata.should == "{\"foo\":\"bar\"}"
+        end
+      end
+    end
   end
 end

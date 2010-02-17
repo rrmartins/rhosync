@@ -62,19 +62,27 @@ describe "SourceSync" do
   describe "methods" do
     
     it "should process source adapter" do
-      expected = {'1'=>@product1,'2'=>@product2}
-      set_state('test_db_storage' => expected)
-      @ss.process
-      verify_result(@s.docname(:md) => expected)
+      mock_metadata_method do
+        expected = {'1'=>@product1,'2'=>@product2}
+        set_state('test_db_storage' => expected)
+        @ss.process
+        verify_result(@s.docname(:md) => expected,
+          @s.docname(:metadata) => "{\"foo\":\"bar\"}",
+          @s.docname(:metadata_sha1) => "a5e744d0164540d33b1d7ea616c28f2fa97e754a")
+      end
     end
     
     it "should call methods in source adapter" do
-      expected = {'1'=>@product1,'2'=>@product2}
-      @ss.adapter.should_receive(:login).once.with(no_args()).and_return(true)
-      @ss.adapter.should_receive(:query).once.with(no_args()).and_return(expected)
-      @ss.adapter.should_receive(:sync).once.with(no_args()).and_return(true)
-      @ss.adapter.should_receive(:logoff).once.with(no_args()).and_return(nil)
-      @ss.process
+      mock_metadata_method do
+        expected = {'1'=>@product1,'2'=>@product2}
+        metadata = "{\"foo\":\"bar\"}"
+        @ss.adapter.should_receive(:login).once.with(no_args()).and_return(true)
+        @ss.adapter.should_receive(:metadata).once.with(no_args()).and_return(metadata)
+        @ss.adapter.should_receive(:query).once.with(no_args()).and_return(expected)
+        @ss.adapter.should_receive(:sync).once.with(no_args()).and_return(true)
+        @ss.adapter.should_receive(:logoff).once.with(no_args()).and_return(nil)
+        @ss.process
+      end
     end
     
     describe "create" do

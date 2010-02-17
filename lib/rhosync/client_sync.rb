@@ -27,6 +27,7 @@ module Rhosync
       res['delete'] = compute_deleted_page
       @client.put_data(:cd,res['insert'],true)      
       @client.delete_data(:cd,res['delete'])
+      res['metadata'] = compute_metadata
       res.reject! {|key,value| value.nil? or value.empty?}
       res['token'] = compute_token(@client.docname(:page_token)) unless res.empty?
       res.merge!(_send_errors)
@@ -48,11 +49,21 @@ module Rhosync
         res['insert'] = @client.get_data(:page)
         res['links'] = @client.get_data(:create_links)
         res['delete'] = @client.get_data(:delete_page)
+        res['metadata'] = compute_metadata
         res.reject! {|key,value| value.nil? or value.empty?}
         res['token'] = @client.get_value(:page_token) unless res.empty?
         res.merge!(_send_errors)
       end
       res
+    end
+    
+    # Computes the metadata sha1 and returns metadata if client's sha1 doesn't 
+    # match source's sha1
+    def compute_metadata
+      source_sha1 = @source.get_value(:metadata_sha1)
+      return if @client.get_value(:metadata_sha1) == source_sha1
+      @client.put_value(:metadata_sha1,source_sha1)
+      @source.get_value(:metadata)
     end
     
     # Computes diffs between master doc and client doc, trims it to page size, 
@@ -221,12 +232,14 @@ module Rhosync
       progress_count = @client.get_value(:cd_size).to_i
       token = res['token']
       res.delete('token')
-      [ {'version'=>VERSION},
+      result = [ {'version'=>VERSION},
         {'token'=>(token ? token : '')},
         {'count'=>count},
         {'progress_count'=>progress_count},
         {'total_count'=>total_count},
         res ]
+      result.insert(1,'metadata'=>res['metadata']) if res['metadata']
+      result
     end
   end
 end

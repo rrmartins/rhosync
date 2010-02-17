@@ -172,6 +172,17 @@ module Rhosync
       end
     end
     
+    # Metadata Operation; source adapter returns json
+    def _get_metadata
+      if @adapter.respond_to?(:metadata)
+        metadata = @adapter.metadata 
+        if metadata
+          @source.put_value(:metadata,metadata)
+          @source.put_value(:metadata_sha1,Digest::SHA1.hexdigest(metadata))
+        end
+      end
+    end
+    
     # Read Operation; params are query arguments
     def _read(operation,client_id,params=nil)
       errordoc = nil
@@ -184,6 +195,7 @@ module Rhosync
           @adapter.save client.docname(:search)
         else
           errordoc = @source.docname(:errors)
+          _get_metadata
           params ? @adapter.query(params) : @adapter.query
           @adapter.sync
         end

@@ -7,9 +7,7 @@ INSTALL
 -------------------------------------------------------------
 1. Make sure you have the following gems installed:
 
-	* gem install rspec json sqlite3-ruby faker redis redis-namespace sinatra rack-test rubyzip uuidtools resque
-	* gem uninstall rcov
-	* gem install relevance-rcov
+	* gem install rspec rcov json sqlite3-ruby faker redis redis-namespace sinatra rack-test rubyzip uuidtools resque
 	
 2. Install and start a redis server (see <http://code.google.com/p/redis/wiki/QuickStart>)
 
@@ -19,7 +17,7 @@ INSTALL
 Windows Notes: when run any spec task error message box (ruby.exe - Unable to locate component) will appear. Just press 'OK'. 
 This is problem with relevance-rcov.
 
-5. Checkout the API documentation: <http://rdoc.info/projects/rhomobile/rhosync-datacache>
+5. Checkout the API documentation: <http://rdoc.info/projects/rhomobile/rhosync>
 
 DOCS
 -------------------------------------------------------------

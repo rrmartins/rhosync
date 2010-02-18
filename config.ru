@@ -10,11 +10,9 @@ Rhosync::Server.set     :environment, :production
 Rhosync::Server.set     :secret,      '<changeme>'
 Rhosync::Server.set     :root,        File.dirname(__FILE__)
 
-proc do |env|
-  Rhosync.bootstrap do |rhosync|
-    rhosync.base_directory = File.dirname(__FILE__)
-    rhosync.blackberry_bulk_sync = true # defaults to false
-  end
+Rhosync.bootstrap do |rhosync|
+  rhosync.base_directory = File.dirname(__FILE__)
+  rhosync.blackberry_bulk_sync = true # defaults to false
 end
 
 Rhosync::Server.use Rack::Static, :urls => ["/data"], :root => Rhosync.base_directory

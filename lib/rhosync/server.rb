@@ -211,7 +211,7 @@ module Rhosync
           begin
             yield params,api_user
           rescue Exception => e
-            puts e.message + "\n" + e.backtrace.join("\n")
+            #puts e.message + "\n" + e.backtrace.join("\n")
             throw :halt, [500, e.message]
           end
         else

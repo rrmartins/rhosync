@@ -41,7 +41,6 @@ module Rhosync
     Rhosync.data_directory ||= File.join(Rhosync.base_directory,'data')
     Rhosync.vendor_directory ||= File.join(Rhosync.base_directory,'vendor')
     Rhosync.blackberry_bulk_sync ||= false
-    puts "app dir: #{Rhosync.app_directory.inspect}"
     # Add appdir and sources subdirectory
     # to load path if appdir exists
     if File.exist?(Rhosync.app_directory)

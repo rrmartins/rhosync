@@ -5,8 +5,10 @@ require 'json'
 $:.unshift File.dirname(__FILE__)
 require 'trunner/timer'
 require 'trunner/logging'
+require 'trunner/result'
 require 'trunner/session'
 require 'trunner/runner'
+require 'trunner/statistics'
 require 'trunner/cli'
 
 # Inspired by Trample: http://github.com/jamesgolick/trample
@@ -19,7 +21,6 @@ module Trunner
     
     def config
       yield self
-      puts "after yield: #{@concurrency.inspect}"
     end
   
     def test(&block)

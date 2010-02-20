@@ -2,49 +2,44 @@ module Trunner
   class Session
     include Logging
     include Timer
-    attr_accessor :cookies, :last_response, :test_var
+    attr_accessor :cookies, :last_result, :results
     
-    def initialize(tv)
+    def initialize(thread_id,iteration)
       @cookies = {}
-      @response_times = []
-    end
-    
-    def test
-      yield self
+      @results = []
+      @thread_id,@iteration = thread_id,iteration
     end
       
-    def post(url,headers={})
+    def post(marker,url,headers={})
       @body = yield
-      _request(:_post,url,headers)
+      _request(marker,:_post,url,headers)
     end
     
-    def get(url,headers={})
+    def get(marker,url,headers={})
       params = yield if block_given?
       url << "?" + _url_params(params) if params
-      _request(:_get,url,headers)          
-    end
-    
-    def verify(expected,actual)
-      expected,actual = JSON.parse(expected),JSON.parse(actual)
-      if expected != actual
-        puts "Verify error at: " + caller(1)[0].to_s
-        puts "expected:\n#{expected.inspect}\n but got:\n#{actual.inspect}" 
-      end
+      _request(marker,:_get,url,headers)          
     end
     
     protected
-    def _request(verb,url,headers)
-      @response_times << time do
-        headers.merge!(:cookies => @cookies)
-        begin
-          @last_response = send(verb,url,headers)  
-        rescue RestClient::Exception => e
-          logger.error "#{e.http_code.to_s} #{e.message}\n"
+    def _request(marker,verb,url,headers)
+      result = Result.new(marker,verb,url,@thread_id,@iteration)
+      @results << result
+      begin
+        result.time = time do
+          headers.merge!(:cookies => @cookies)
+            result.last_response = send(verb,url,headers)
+            @last_result = result  
         end
+        logger.info "#{log_prefix} #{verb.to_s.upcase.gsub(/_/,'')} #{url} #{@last_result.code} #{result.time}"      
+      rescue RestClient::Exception => e
+        result.error = e
+        logger.info "#{log_prefix} #{verb.to_s.upcase.gsub(/_/,'')} #{url}"      
+        logger.error "#{log_prefix} #{e.http_code.to_s} #{e.message}\n"
+        raise e
       end
-      logger.info "#{verb.to_s.upcase.gsub(/_/,'')} #{url} #{@last_response.code} #{@response_times.last}"      
-      @cookies = @cookies.merge(@last_response.cookies)
-      @last_response
+      @cookies = @cookies.merge(@last_result.cookies)
+      @last_result
     end
     
     def _get(url,headers)

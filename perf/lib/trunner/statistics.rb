@@ -2,11 +2,12 @@ module Trunner
   class Statistics
     include Logging
     
-    def initialize(total_time,sessions)
+    def initialize(concurrency,iterations,total_time,sessions)
       @sessions = sessions
       @rows = {} # row key is result.marker;
       @total_count = 0
       @total_time = total_time
+      @concurrency,@iterations = concurrency,iterations
     end
     
     def process
@@ -39,9 +40,12 @@ module Trunner
       @rows.each do |marker,row|
         logger.info "Request %-15s: min: %0.4f, max: %0.4f, avg: %0.4f, err: %d" % [marker, row[:min], row[:max], average(row), row[:errors]]
       end
-      logger.info "Total Count      : #{@total_count}"
-      logger.info "Total Time       : #{@total_time}"
-      logger.info "Throughput(req/s): #{@total_count / @total_time}"
+      logger.info "Concurrency        : #{@concurrency}"
+      logger.info "Iterations         : #{@iterations}"
+      logger.info "Total Count        : #{@total_count}"
+      logger.info "Total Time         : #{@total_time}"
+      logger.info "Throughput(req/s)  : #{@total_count / @total_time}"
+      logger.info "Throughput(req/min): #{(@total_count / @total_time) * 60.0}"
     end
   end
 end

@@ -13,6 +13,7 @@ module Trunner
       thread_id = 0
       total_time = time do
         concurrency.times do
+          sleep rand(2)
           thread = Thread.new(block) do |t|
             tid, iteration = thread_id,0
             iterations.times do
@@ -35,7 +36,7 @@ module Trunner
         end
       end
       logger.info "Trunner completed..."
-      Statistics.new(total_time,@sessions).process.print_stats
+      Statistics.new(concurrency,iterations,total_time,@sessions).process.print_stats
         # 
         # stats = Statistics.new(log_file)
         # stats.produce_statistics

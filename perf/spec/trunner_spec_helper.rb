@@ -3,7 +3,7 @@ require 'trunner/logging'
 require 'trunner/mock_client'
 include Trunner
 
-describe "PerfSpecHelper", :shared => true do
+describe "TrunnerSpecHelper", :shared => true do
   before(:each) do
     Store.create
     Store.db.flushdb

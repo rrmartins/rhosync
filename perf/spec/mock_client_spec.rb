@@ -1,8 +1,8 @@
 $:.unshift File.join(File.dirname(__FILE__))
-require 'perf_spec_helper'
+require 'trunner_spec_helper'
 
 describe "MockClient" do
-  it_should_behave_like "PerfSpecHelper" 
+  it_should_behave_like "TrunnerSpecHelper" 
   
   before(:each) do
     @mc = MockClient.new(1,2,123)

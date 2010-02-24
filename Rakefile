@@ -9,7 +9,7 @@ task :default => :all
 
 OPTS = { :spec_opts => ['-fs', '--color'], 
          :rcov      => true,
-         :rcov_opts => ['--exclude', 'spec/*,gems/*,apps/*'] }
+         :rcov_opts => ['--exclude', 'spec/*,gems/*,apps/*,perf/spec/*'] }
          
 TYPES = { :spec   => 'spec/*_spec.rb',
           :perf   => 'spec/perf/*_spec.rb',

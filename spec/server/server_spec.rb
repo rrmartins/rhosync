@@ -202,7 +202,7 @@ describe "Server" do
         {"count"=>2}, {"progress_count"=>0}, {"total_count"=>2},{'insert'=>data}]
       
       Store.flash_data('test_db_storage')
-      @s.get_read_state.refresh_time = Time.now.to_i      
+      @s.read_state.refresh_time = Time.now.to_i      
       
       get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
         :version => ClientSync::VERSION

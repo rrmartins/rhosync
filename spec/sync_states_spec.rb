@@ -46,7 +46,7 @@ describe "Sync Server States" do
       backend_data = {'backend_id'=>@product1}
       set_state(@cs.client.docname(:cd_size) => 0,
         @s.docname(:md_size) => 0)
-      @s.get_read_state.refresh_time = Time.now.to_i + 3600
+      @s.read_state.refresh_time = Time.now.to_i + 3600
       @cs.receive_cud(params)
       verify_result(@c.docname(:create) => {},
         @c.docname(:cd_size) => "1",
@@ -67,7 +67,7 @@ describe "Sync Server States" do
         @cs.client.docname(:cd_size) => data.size,
         @s.docname(:md) => data,
         @s.docname(:md_size) => data.size)
-      @s.get_read_state.refresh_time = Time.now.to_i + 3600
+      @s.read_state.refresh_time = Time.now.to_i + 3600
       @cs.receive_cud(params)
       verify_result(@cs.client.docname(:delete) => {},
         @cs.client.docname(:cd) => expected,

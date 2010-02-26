@@ -45,14 +45,14 @@ describe "BulkData" do
   
   it "should process_sources for bulk data" do
     current = Time.now.to_i
-    @s.get_read_state.refresh_time = current
+    @s.read_state.refresh_time = current
     data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id),
       :state => :inprogress,
       :app_id => @a.id,
       :user_id => @u.id,
       :sources => [@s_fields[:name]])
     data.process_sources
-    @s.get_read_state.refresh_time.should >= current + @s_fields[:poll_interval].to_i
+    @s.read_state.refresh_time.should >= current + @s_fields[:poll_interval].to_i
   end
   
   it "should delete source masterdoc copy on delete" do

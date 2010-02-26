@@ -75,7 +75,7 @@ describe "SourceAdapterHelper", :shared => true do
     }
     @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
     @s = Source.create(@s_fields,@s_params)
-    @r = @s.get_read_state
+    @r = @s.read_state
     @a.sources << @s.id
     @a.users << @u.id
   end

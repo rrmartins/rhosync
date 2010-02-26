@@ -48,7 +48,7 @@ module Rhosync
       @app ||= App.load(self.app_id)
     end
     
-    def get_read_state
+    def read_state
       id = {:app_id => self.app_id,:user_id => user_by_partition,
         :source_name => self.name}
       @read_state ||= ReadState.load(id)
@@ -78,13 +78,13 @@ module Rhosync
   
     def check_refresh_time
       self.poll_interval == 0 or 
-      (self.poll_interval != -1 and self.get_read_state.refresh_time <= Time.now.to_i)
+      (self.poll_interval != -1 and self.read_state.refresh_time <= Time.now.to_i)
     end
         
     def if_need_refresh(client_id=nil,params=nil)
       if check_refresh_time
         yield client_id,params
-        self.get_read_state.refresh_time = Time.now.to_i + self.poll_interval
+        self.read_state.refresh_time = Time.now.to_i + self.poll_interval
       end
     end
     

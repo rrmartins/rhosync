@@ -1,6 +1,6 @@
 $:.unshift File.join(File.dirname(__FILE__))
 require 'trunner_spec_helper'
-require 'sources/mock_adapter'
+require 'trunnerapp/rhosync/sources/mock_adapter'
 
 describe "MockAdapter" do
   it_should_behave_like "TrunnerSpecHelper" 

@@ -20,7 +20,7 @@ module Trunner
               s = Session.new(tid,iteration)
               @sessions << s
               begin
-                yield s
+                yield Trunner,s
               rescue
               end    
               iteration += 1
@@ -34,6 +34,7 @@ module Trunner
         rescue RestClient::RequestTimeout => e
           logger.info "Request timed out #{e}"
         end
+        Session.verify(@sessions)
       end
       logger.info "Trunner completed..."
       Statistics.new(concurrency,iterations,total_time,@sessions).process.print_stats

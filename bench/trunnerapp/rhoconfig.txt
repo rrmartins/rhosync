@@ -1,0 +1,1 @@
+syncserver = 'http://rhosyncnew.staging.rhohub.com/apps/trunnerapp/'

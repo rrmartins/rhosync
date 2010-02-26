@@ -9,7 +9,7 @@ task :default => :all
 
 OPTS = { :spec_opts => ['-fs', '--color'], 
          :rcov      => true,
-         :rcov_opts => ['--exclude', 'spec/*,gems/*,apps/*,perf/spec/*'] }
+         :rcov_opts => ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*'] }
          
 TYPES = { :spec   => 'spec/*_spec.rb',
           :perf   => 'spec/perf/*_spec.rb',
@@ -17,7 +17,7 @@ TYPES = { :spec   => 'spec/*_spec.rb',
           :api    => 'spec/api/*_spec.rb',
           :bulk   => 'spec/bulk_data/*_spec.rb',
           :doc    => 'spec/doc/*_spec.rb', 
-          :trunner_spec => 'perf/spec/*_spec.rb'}
+          :bench_spec => 'bench/spec/*_spec.rb'}
  
 TYPES.each do |type,files|
   desc "Run #{type} specs"
@@ -47,6 +47,21 @@ task :start do
   sh "rackup config.ru"
 end
 
+desc "Run benchmark scripts"
+task :bench do
+  login = ask "login: "
+  password = ask "password: "
+  file_list = FileList['bench/*_script.rb']
+  file_list.each do |script|
+    sh "bench/trunner start #{script} #{login} #{password}"
+  end
+end
+
 task "resque:setup" do
   include Rhosync
+end
+
+def ask(msg)
+  print msg
+  STDIN.gets.chomp
 end

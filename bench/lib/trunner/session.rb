@@ -21,6 +21,9 @@ module Trunner
       _request(marker,:_get,url,headers)          
     end
     
+    def self.verify(sessions)
+    end
+    
     protected
     def _request(marker,verb,url,headers)
       result = Result.new(marker,verb,url,@thread_id,@iteration)

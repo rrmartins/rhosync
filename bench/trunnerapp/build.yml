@@ -1,0 +1,12 @@
+--- 
+name: trunnerapp
+bbver: 4.6
+sdk: /Users/lars/Dev/code/rhomobile/rhodes
+applog: rholog.txt
+version: 1.0
+vendor: rhomobile
+iphone: 
+  sdk: iphonesimulator3.0
+  entitlements: 
+  codesignidentity: 
+  configuration: Debug

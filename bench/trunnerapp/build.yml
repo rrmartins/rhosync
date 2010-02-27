@@ -7,6 +7,6 @@ version: 1.0
 vendor: rhomobile
 iphone: 
   sdk: iphonesimulator3.0
-  entitlements: 
   codesignidentity: 
+  entitlements: 
   configuration: Debug

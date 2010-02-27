@@ -21,7 +21,8 @@ module Trunner
               @sessions << s
               begin
                 yield Trunner,s
-              rescue
+              rescue Exception => e
+                puts "error running script: #{e.inspect}"
               end    
               iteration += 1
             end

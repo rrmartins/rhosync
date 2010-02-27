@@ -45,7 +45,7 @@ module Rhosync
     # Resend token for a client, also sends exceptions
     def resend_page(token=nil)
       res = {}
-      if not _ack_token(token)     
+      if not _ack_token(token)   
         res['insert'] = @client.get_data(:page)
         res['links'] = @client.get_data(:create_links)
         res['delete'] = @client.get_data(:delete_page)

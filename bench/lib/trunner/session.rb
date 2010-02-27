@@ -17,8 +17,9 @@ module Trunner
     
     def get(marker,url,headers={})
       params = yield if block_given?
-      url << "?" + _url_params(params) if params
-      _request(marker,:_get,url,headers)          
+      url_params = url.clone
+      url_params << "?" + _url_params(params) if params
+      _request(marker,:_get,url_params,headers)          
     end
     
     def self.verify(sessions)

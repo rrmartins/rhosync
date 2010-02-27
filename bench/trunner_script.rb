@@ -5,13 +5,13 @@
 
 Trunner.config do |config|
   config.concurrency = 25
-  config.iterations  = 5
-  config.user_name = "lars"
+  config.iterations  = 2
+  config.user_name = "benchuser"
   config.password = "password"
   config.app_name = "trunnerapp"
-  config.host = "http://localhost:9292"
+  config.host = "http://rhosyncnew.staging.rhohub.com"
   config.base_url = "#{config.host}/apps/#{config.app_name}"
-  config.set_server_state('test_db_storage:trunnerapp:lars',@expected)
+  config.set_server_state("test_db_storage:trunnerapp:#{config.user_name}",@expected)
   config.reset_refresh_time('MockAdapter')
 end
 

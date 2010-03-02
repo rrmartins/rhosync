@@ -37,11 +37,12 @@ module Trunner
         {:api_token => token, :doc => doc, :data => data}.to_json, :content_type => :json)
     end
     
-    def reset_refresh_time(source_name)
+    def reset_refresh_time(source_name,poll_interval=nil)
       token = get_token
       RestClient.post("#{@host}/api/set_refresh_time",
         {:api_token => token, :source_name => source_name,
-          :app_name => @app_name, :user_name => @user_name}.to_json, 
+          :app_name => @app_name, :user_name => @user_name, 
+          :poll_interval => poll_interval}.to_json, 
           :content_type => :json)
     end
     

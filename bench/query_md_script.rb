@@ -1,18 +1,20 @@
+# Run sync session, forces source adapter query on every sync request
+
 @datasize = 1000
 @expected = Trunner.get_test_data(@datasize)
 @all_objects = "[{\"version\":3},{\"token\":\"%s\"},{\"count\":%i},{\"progress_count\":0},{\"total_count\":%i},{\"insert\":""}]"
 @ack_token = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":%i},{\"total_count\":%i},{}]"
 
 Trunner.config do |config|
-  config.concurrency = 25
-  config.iterations  = 2
+  config.concurrency = 5
+  config.iterations  = 1
   config.user_name = "benchuser"
   config.password = "password"
   config.app_name = "trunnerapp"
   config.host = "http://rhosyncnew.staging.rhohub.com"
   config.base_url = "#{config.host}/apps/#{config.app_name}"
   config.set_server_state("test_db_storage:trunnerapp:#{config.user_name}",@expected)
-  config.reset_refresh_time('MockAdapter')
+  config.reset_refresh_time('MockAdapter',0)
 end
 
 Trunner.test do |config,session|

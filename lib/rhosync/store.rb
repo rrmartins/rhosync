@@ -4,10 +4,14 @@ module Rhosync
     @@db = nil
     
     class << self
-      def db; @@db ||= _get_redis end
+      def db; @@db end
       
-      def create
-        @@db ||= _get_redis
+      def db=(server=nil)
+        @@db = _get_redis(server)
+      end
+      
+      def create(server=nil)
+        @@db ||= _get_redis(server)
         raise "Error connecting to Redis store." unless @@db and @@db.is_a?(Redis)
       end
   
@@ -156,8 +160,14 @@ module Rhosync
       end
       
       private
-      def _get_redis
-         Redis.new(:thread_safe=>true)
+      def _get_redis(server)
+        if server and server.is_a?(String)
+          host,port,db,password = server.split(':')
+          Redis.new(:thread_safe => true, :host => host,
+            :port => port, :db => db, :password => password)
+        else
+          Redis.new(:thread_safe => true)
+        end
       end
       
       def _lock_key(dockey)

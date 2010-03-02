@@ -24,18 +24,21 @@ module Rhosync
   class RhosyncServerError < RuntimeError; end
   
   class << self
-    attr_accessor :base_directory, :app_directory, :data_directory, :vendor_directory, :blackberry_bulk_sync
+    attr_accessor :base_directory, :app_directory, :data_directory, 
+      :vendor_directory, :blackberry_bulk_sync, :redis
   end
   
   # Server hook to initialize Rhosync
   def bootstrap
+    # Initialize Rhosync and Resque
     Rhosync.base_directory = nil
     Rhosync.app_directory = nil
     Rhosync.data_directory = nil
     Rhosync.vendor_directory = nil
     Rhosync.blackberry_bulk_sync = false
     yield self if block_given?
-    Store.create
+    Store.create(Rhosync.redis)
+    Resque.redis = Store.db
     Rhosync.base_directory ||= File.join(File.dirname(__FILE__),'..')
     Rhosync.app_directory ||= File.join(Rhosync.base_directory,'apps')
     Rhosync.data_directory ||= File.join(Rhosync.base_directory,'data')

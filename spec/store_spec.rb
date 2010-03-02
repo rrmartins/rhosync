@@ -9,6 +9,15 @@ describe "Rhosync" do
       Store.db.class.should == Redis
     end
     
+    it "should set redis connection" do
+      begin
+        Store.db = 'localhost:5555'
+        Store.db.server.should == 'localhost:5555'
+      ensure
+        Store.db = ''
+      end
+    end
+    
     it "should add simple data to new set" do
       Store.put_data(@s.docname(:md),@data).should == true
       Store.get_data(@s.docname(:md)).should == @data

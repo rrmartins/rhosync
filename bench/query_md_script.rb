@@ -1,13 +1,13 @@
 # Run sync session, forces source adapter query on every sync request
 
-@datasize = 1000
+@datasize = 500
 @expected = Trunner.get_test_data(@datasize)
 @all_objects = "[{\"version\":3},{\"token\":\"%s\"},{\"count\":%i},{\"progress_count\":0},{\"total_count\":%i},{\"insert\":""}]"
 @ack_token = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":%i},{\"total_count\":%i},{}]"
 
 Trunner.config do |config|
-  config.concurrency = 5
-  config.iterations  = 1
+  config.concurrency = 10
+  config.iterations  = 5
   config.user_name = "benchuser"
   config.password = "password"
   config.app_name = "trunnerapp"

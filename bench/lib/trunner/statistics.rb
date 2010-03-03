@@ -20,11 +20,13 @@ module Trunner
           row[:count] ||= 0
           row[:total_time] ||= 0.0
           row[:errors] ||= 0
+          row[:verification_errors] ||= 0
           row[:min] = result.time if result.time < row[:min] || row[:min] == 0
           row[:max] = result.time if result.time > row[:max]
           row[:count] += 1.0
           row[:total_time] += result.time            
           row[:errors] += 1 if result.error
+          row[:verification_errors] += 1 if result.verification_error
           @total_count += 1
         end
       end
@@ -38,7 +40,7 @@ module Trunner
     def print_stats
       logger.info "Statistics:"
       @rows.each do |marker,row|
-        logger.info "Request %-15s: min: %0.4f, max: %0.4f, avg: %0.4f, err: %d" % [marker, row[:min], row[:max], average(row), row[:errors]]
+        logger.info "Request %-15s: min: %0.4f, max: %0.4f, avg: %0.4f, err: %d, verification err: %d" % [marker, row[:min], row[:max], average(row), row[:errors], row[:verification_errors]]
       end
       logger.info "Concurrency        : #{@concurrency}"
       logger.info "Iterations         : #{@iterations}"

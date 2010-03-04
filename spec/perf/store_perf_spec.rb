@@ -22,7 +22,7 @@ describe "Rhosync Performance" do
     Store.put_data('mdoc',@data).should == true
     Store.put_data('cdoc',@data1).should == true
     start = start_timer
-    Store.get_diff_data('mdoc','cdoc').should == expected
+    Store.get_diff_data('mdoc','cdoc').should == [expected,1]
     lap_timer('get_diff_data duration', start)
   end
 end

@@ -25,6 +25,10 @@ module Document
     Store.flash_data(docname(doctype))
   end
   
+  def rename(srcdoctype,dstdoctype)
+    Store.rename(docname(srcdoctype),docname(dstdoctype))
+  end
+  
   # Generate the fully-qualified docname
   def docname(doctype)
     "#{self.class.class_prefix(self.class)}:#{self.app_id}:#{self.doc_suffix(doctype)}"

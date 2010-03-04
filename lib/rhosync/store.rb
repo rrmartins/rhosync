@@ -19,7 +19,7 @@ module Rhosync
       # if it exists or appends data to the existing set
       # if append flag set to true
       def put_data(dockey,data={},append=false)
-        if dockey
+        if dockey and data
           flash_data(dockey) unless append
           # Inserts a hash or array
           if data.is_a?(Hash)
@@ -74,7 +74,7 @@ module Rhosync
       end
   
       # Retrieves diff data hash between two sets
-      def get_diff_data(src_dockey,dst_dockey)
+      def get_diff_data(src_dockey,dst_dockey,p_size=nil)
         res = {}
         if src_dockey and dst_dockey
           @@db.sdiff(dst_dockey,src_dockey).each do |element|
@@ -83,12 +83,23 @@ module Rhosync
             res[key].merge!({attrib => value})
           end
         end
-        res
+        if p_size
+          diff = {}
+          page_size = p_size
+          res.each do |key,item|
+            diff[key] = item
+            page_size -= 1
+            break if page_size <= 0         
+          end
+          [diff,res.size]
+        else  
+          [res,res.size]
+        end
       end
-    
+
       # Deletes data from a given doctype,source,user
       def delete_data(dockey,data={})
-        if dockey
+        if dockey and data
           @@db.pipelined do |pipeline|
             data.each do |key,value|
               value.each do |attrib,val|
@@ -120,8 +131,9 @@ module Rhosync
       # Lock a given key and release when provided block is finished
       def lock(dockey,timeout=0)
         m_lock = get_lock(dockey,timeout)
-        yield
+        res = yield
         release_lock(dockey,m_lock)
+        res
       end
     
       def get_lock(dockey,timeout=0)
@@ -157,6 +169,11 @@ module Rhosync
       # Create a copy of srckey in dstkey
       def clone(srckey,dstkey)
         @@db.sdiffstore(dstkey,srckey,'')
+      end
+      
+      # Rename srckey to dstkey
+      def rename(srckey,dstkey)
+        @@db.rename(srckey,dstkey) if @@db.exists(srckey)
       end
       
       private

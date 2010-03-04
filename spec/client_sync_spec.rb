@@ -83,6 +83,19 @@ describe "ClientSync" do
           {"delete-error"=>{"#{ERROR}-error"=>{"message"=>msg},ERROR=>error_objs[ERROR]}}]      
       end
       
+      it "should send cud errors only once" do
+        msg = "Error delete record"
+        error_objs = add_error_object({},"Error delete record")
+        op_data = {'delete'=>error_objs}
+        @cs.receive_cud(op_data)
+        @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
+          {"token"=>""}, {"count"=>0}, {"progress_count"=>0}, {"total_count"=>0},
+          {"delete-error"=>{"#{ERROR}-error"=>{"message"=>msg},ERROR=>error_objs[ERROR]}}]
+        verify_result(@c.docname(:delete_errors) => {})
+        @cs.send_cud.should ==   [{"version"=>ClientSync::VERSION},
+          {"token"=>""}, {"count"=>0}, {"progress_count"=>0}, {"total_count"=>0},{}]
+      end
+      
       def receive_and_send_cud(operation)
         msg = "Error #{operation} record"
         op_data = {operation=>{ERROR=>{'an_attribute'=>msg,'name'=>'wrongname'}}}
@@ -240,7 +253,8 @@ describe "ClientSync" do
       Store.get_data(@s.docname(:md)).should == @data
       Store.put_value(@s.docname(:md_size),@data.size)
       @expected = {'1'=>@product1,'2'=>@product2}
-      @cs.compute_page.should == @expected
+      puts "cd is: #{@c.get_data(:cd).inspect}"
+      @cs.compute_page.should == [0,3,@expected]
       Store.get_value(@cs.client.docname(:cd_size)).to_i.should == 0
       Store.get_data(@cs.client.docname(:page)).should == @expected      
     end

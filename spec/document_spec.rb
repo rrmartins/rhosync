@@ -18,4 +18,10 @@ describe "Document" do
     @c.flash_data('*')
     Store.db.keys(@c.docname(:foo)).should == []
   end
+  
+  it "should rename doc" do
+    set_state(@c.docname(:key1) => @data)
+    @c.rename(:key1,:key2)
+    verify_result(@c.docname(:key1) => {}, @c.docname(:key2) => @data)
+  end
 end

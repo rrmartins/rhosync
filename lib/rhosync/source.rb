@@ -14,6 +14,7 @@ module Rhosync
     validates_presence_of :name #, :source_id
     
     include Document
+    include SourceOps
     
     def self.create(fields,params)
       fields = fields.with_indifferent_access # so we can access hash keys as symbols

@@ -58,7 +58,7 @@ describe "Rhosync" do
     
       Store.put_data(@c.docname(:cd),@data1)
       Store.get_data(@c.docname(:cd)).should == @data1
-      Store.get_diff_data(@s.docname(:md),@c.docname(:cd)).should == expected
+      Store.get_diff_data(@s.docname(:md),@c.docname(:cd)).should == [expected,1]
     end
   
     it "should return attributes modified and missed in doc2" do
@@ -71,7 +71,7 @@ describe "Rhosync" do
     
       Store.put_data(@c.docname(:cd),@data1)
       Store.get_data(@c.docname(:cd)).should == @data1
-      Store.get_diff_data(@c.docname(:cd),@s.docname(:md)).should == expected
+      Store.get_diff_data(@c.docname(:cd),@s.docname(:md)).should == [expected,2]
     end  
   
     it "should ignore reserved attributes" do
@@ -132,6 +132,18 @@ describe "Rhosync" do
       set_state('abc' => @data)
       Store.clone('abc','def')
       verify_result('abc' => @data,'def' => @data)
+    end
+    
+    it "should rename a key" do
+      set_state('key1' => @data)
+      Store.rename('key1','key2')
+      verify_result('key1' => {}, 'key2' => @data)
+    end
+    
+    it "should not fail to rename if key doesn't exist" do
+      Store.rename('key1','key2')
+      Store.db.exists('key1').should be_false
+      Store.db.exists('key2').should be_false      
     end
   end
 end

@@ -19,19 +19,14 @@ module Rhosync
     end
     
     def send_cud(token=nil,query_params=nil)
-      res = resend_page(token)
-      return _format_result(res) unless res.empty?
-      @source_sync.process(@client.id,query_params)
-      res['insert'] = compute_page
-      res['links'] = @client.get_data(:create_links)
-      res['delete'] = compute_deleted_page
-      @client.put_data(:cd,res['insert'],true)      
-      @client.delete_data(:cd,res['delete'])
-      res['metadata'] = compute_metadata
-      res.reject! {|key,value| value.nil? or value.empty?}
-      res['token'] = compute_token(@client.docname(:page_token)) unless res.empty?
-      res.merge!(_send_errors)
-      _format_result(res)
+      res = []
+      if not _ack_token(token)
+        res = resend_page(token)
+      else
+        @source_sync.process(@client.id,query_params)
+        res = send_new_page
+      end
+      _format_result(res[0],res[1],res[2],res[3])
     end
     
     def search(params)
@@ -42,52 +37,81 @@ module Rhosync
       res
     end
     
+    def build_page
+      res = {}
+      yield res
+      res.reject! {|key,value| value.nil? or value.empty?}
+      res.merge!(_send_errors)
+      res
+    end
+    
+    def send_new_page
+      compute_errors_page
+      token,progress_count,total_count = '',0,0
+      res = build_page do |r|
+        progress_count,total_count,r['insert'] = compute_page
+        r['delete'] = compute_deleted_page
+        r['links'] = compute_links_page
+        r['metadata'] = compute_metadata
+      end
+      if res['insert'] or res['delete'] or res['links']
+        token = compute_token(@client.docname(:page_token))
+      else
+        _delete_errors_page 
+      end    
+      @client.put_data(:cd,res['insert'],true)      
+      @client.delete_data(:cd,res['delete'])
+      [token,progress_count,total_count,res]
+    end
+    
     # Resend token for a client, also sends exceptions
     def resend_page(token=nil)
-      res = {}
-      if not _ack_token(token)   
-        res['insert'] = @client.get_data(:page)
-        res['links'] = @client.get_data(:create_links)
-        res['delete'] = @client.get_data(:delete_page)
-        res['metadata'] = compute_metadata
-        res.reject! {|key,value| value.nil? or value.empty?}
-        res['token'] = @client.get_value(:page_token) unless res.empty?
-        res.merge!(_send_errors)
+      token,progress_count,total_count = '',0,0
+      res = build_page do |r|
+        r['insert'] = @client.get_data(:page)
+        r['delete'] = @client.get_data(:delete_page)
+        r['links'] = @client.get_data(:create_links_page)
+        r['metadata'] = compute_metadata
+        progress_count = @client.get_value(:cd_size).to_i
+        total_count = @client.get_value(:total_count_page).to_i
       end
-      res
+      token = @client.get_value(:page_token)
+      [token,progress_count,total_count,res]
     end
     
     # Computes the metadata sha1 and returns metadata if client's sha1 doesn't 
     # match source's sha1
     def compute_metadata
-      source_sha1 = @source.get_value(:metadata_sha1)
-      return if @client.get_value(:metadata_sha1) == source_sha1
-      @client.put_value(:metadata_sha1,source_sha1)
-      @source.get_value(:metadata)
+      metadata_sha1,metadata = @source.get_metadata
+      return if @client.get_value(:metadata_sha1) == metadata_sha1
+      @client.put_value(:metadata_sha1,metadata_sha1)
+      metadata
     end
     
     # Computes diffs between master doc and client doc, trims it to page size, 
     # stores page, and returns page as hash  
     def compute_page
-      res,diffsize = _compute_diff(@client.docname(:cd),@source.docname(:md))
+      res,diffsize = Store.get_diff_data(@client.docname(:cd),@source.docname(:md),@p_size)
+      total_count = @source.get_value(:md_size).to_i
       @client.put_data(:page,res)
-      progress_count = @source.get_value(:md_size).to_i - diffsize
+      progress_count = total_count - diffsize
       @client.put_value(:cd_size,progress_count)
-      res
+      @client.put_value(:total_count_page,total_count)
+      [progress_count,total_count,res]
     end
     
     # Computes search hash
     def compute_search
-      _compute_diff(@client.docname(:cd),@client.docname(:search))
+      Store.get_diff_data(@client.docname(:cd),@client.docname(:search),@p_size)
     end
     
     # Computes deleted objects (down to individual attributes) 
-    # in the client documet, trims it to page size, stores page, and returns page as hash      
+    # in the client document, trims it to page size, stores page, and returns page as hash      
     def compute_deleted_page
       res = {}
       delete_page_doc = @client.docname(:delete_page)
       page_size = @p_size
-      Store.get_diff_data(@source.docname(:md),@client.docname(:cd)).each do |key,value|
+      Store.get_diff_data(@source.docname(:md),@client.docname(:cd))[0].each do |key,value|
         res[key] = value
         value.each do |attrib,val|
           Store.db.sadd(delete_page_doc,setelement(key,attrib,val))
@@ -96,6 +120,19 @@ module Rhosync
         break if page_size <= 0          
       end
       res
+    end
+    
+    # Computes errors for client and stores a copy as errors page
+    def compute_errors_page
+      ['create','update','delete'].each do |operation|
+        @client.rename("#{operation}_errors","#{operation}_errors_page")
+      end
+    end
+    
+    # Computes create links for a client and stores a copy as links page
+    def compute_links_page
+      @client.rename(:create_links,:create_links_page)
+      @client.get_data(:create_links_page)
     end
         
     class << self
@@ -168,7 +205,7 @@ module Rhosync
       else  
         search_token = @client.get_value(:search_token)
         search_token ||= ''
-        res,search_size = compute_search 
+        res,diffsize = compute_search 
         return [] if res.empty?
         [ {'version'=>VERSION},
           {'search_token' => search_token},
@@ -178,24 +215,10 @@ module Rhosync
        end
     end
     
-    def _compute_diff(srckey,dstkey)
-      res = {}
-      page_size = @p_size
-      diff = Store.get_diff_data(srckey,dstkey)
-      diff.each do |key,item|
-        res[key] = item
-        page_size -= 1
-        break if page_size <= 0         
-      end
-      [res,diff.size]
-    end
-    
     def _receive_cud(operation,params)
       return if not ['create','update','delete'].include?(operation)
       @client.put_data(operation,params,true)
-      unless Store.ismember?(@source.docname(operation),@client.id)
-        @source.put_data(operation,[@client.id],true)
-      end
+      @source.update_cud_bucket(operation,@client)
     end
     
     def _ack_token(token)
@@ -203,9 +226,10 @@ module Rhosync
       if stored_token 
         if token and stored_token == token
           @client.put_value(:page_token,nil)
-          @client.flash_data(:create_links)
+          @client.flash_data(:create_links_page)
           @client.flash_data(:page)
           @client.flash_data(:delete_page)
+          _delete_errors_page
           return true
         end
       else
@@ -214,24 +238,26 @@ module Rhosync
       false
     end
     
+    def _delete_errors_page
+      ['create','update','delete'].each do |operation|
+        @client.flash_data("#{operation}_errors_page")
+      end
+    end
+    
     def _send_errors
       res = {}
       ['create','update','delete'].each do |operation|
-        res["#{operation}-error"] = @client.get_data("#{operation}_errors")
+        res["#{operation}-error"] = @client.get_data("#{operation}_errors_page")
       end
       res["source-error"] = @source.get_data(:errors)
       res.reject! {|key,value| value.nil? or value.empty?}
       res
     end
     
-    def _format_result(res)
+    def _format_result(token,progress_count,total_count,res)
       count = 0
       count += res['insert'].length if res['insert']
       count += res['delete'].length if res['delete']
-      total_count = @source.get_value(:md_size).to_i
-      progress_count = @client.get_value(:cd_size).to_i
-      token = res['token']
-      res.delete('token')
       [ {'version'=>VERSION},
         {'token'=>(token ? token : '')},
         {'count'=>count},

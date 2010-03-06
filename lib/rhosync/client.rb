@@ -9,6 +9,8 @@ module Rhosync
     validates_presence_of :app_id, :user_id
     
     include Document
+    include LockOps
+    include ClientLocks
     
     def self.create(fields,params={})
       fields[:id] = get_random_uuid

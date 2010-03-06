@@ -82,7 +82,7 @@ module Rhosync
     # Computes the metadata sha1 and returns metadata if client's sha1 doesn't 
     # match source's sha1
     def compute_metadata
-      metadata_sha1,metadata = @source.get_metadata
+      metadata_sha1,metadata = @source.lock(:metadata) { |s| s.get_metadata }
       return if @client.get_value(:metadata_sha1) == metadata_sha1
       @client.put_value(:metadata_sha1,metadata_sha1)
       metadata
@@ -91,8 +91,7 @@ module Rhosync
     # Computes diffs between master doc and client doc, trims it to page size, 
     # stores page, and returns page as hash  
     def compute_page
-      res,diffsize = Store.get_diff_data(@client.docname(:cd),@source.docname(:md),@p_size)
-      total_count = @source.get_value(:md_size).to_i
+      res,diffsize,total_count = @source.lock(:md) { |s| s.get_client_diff_page(@client,@p_size) }
       @client.put_data(:page,res)
       progress_count = total_count - diffsize
       @client.put_value(:cd_size,progress_count)
@@ -111,7 +110,8 @@ module Rhosync
       res = {}
       delete_page_doc = @client.docname(:delete_page)
       page_size = @p_size
-      Store.get_diff_data(@source.docname(:md),@client.docname(:cd))[0].each do |key,value|
+      diff = @source.lock(:md) { |s| s.get_client_diff_delete_page(@client) }
+      diff.each do |key,value|
         res[key] = value
         value.each do |attrib,val|
           Store.db.sadd(delete_page_doc,setelement(key,attrib,val))
@@ -125,14 +125,13 @@ module Rhosync
     # Computes errors for client and stores a copy as errors page
     def compute_errors_page
       ['create','update','delete'].each do |operation|
-        @client.rename("#{operation}_errors","#{operation}_errors_page")
+        @client.lock("#{operation}_errors") { |c| c.get_client_errors_page(operation) }
       end
     end
     
     # Computes create links for a client and stores a copy as links page
     def compute_links_page
-      @client.rename(:create_links,:create_links_page)
-      @client.get_data(:create_links_page)
+      @client.lock(:create_links) { |c| c.get_client_links_page }
     end
         
     class << self
@@ -217,8 +216,7 @@ module Rhosync
     
     def _receive_cud(operation,params)
       return if not ['create','update','delete'].include?(operation)
-      @client.put_data(operation,params,true)
-      @source.update_cud_bucket(operation,@client)
+      @source.lock(operation) { |s| s.update_cud_bucket(operation,params,@client) }
     end
     
     def _ack_token(token)
@@ -249,7 +247,7 @@ module Rhosync
       ['create','update','delete'].each do |operation|
         res["#{operation}-error"] = @client.get_data("#{operation}_errors_page")
       end
-      res["source-error"] = @source.get_data(:errors)
+      res["source-error"] = @source.lock(:errors) { |s| s.get_source_errors }
       res.reject! {|key,value| value.nil? or value.empty?}
       res
     end

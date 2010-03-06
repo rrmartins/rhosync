@@ -14,7 +14,8 @@ module Rhosync
     validates_presence_of :name #, :source_id
     
     include Document
-    include SourceOps
+    include LockOps
+    include SourceLocks
     
     def self.create(fields,params)
       fields = fields.with_indifferent_access # so we can access hash keys as symbols
@@ -83,10 +84,12 @@ module Rhosync
     end
         
     def if_need_refresh(client_id=nil,params=nil)
-      if check_refresh_time
-        yield client_id,params
-        self.read_state.refresh_time = Time.now.to_i + self.poll_interval
+      need_refresh = lock(:md) do |s|
+        check = check_refresh_time
+        s.read_state.refresh_time = Time.now.to_i + s.poll_interval if check
+        check
       end
+      yield client_id,params if need_refresh
     end
     
     private

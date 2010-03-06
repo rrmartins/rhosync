@@ -41,7 +41,20 @@ module Rhosync
     def search(params=nil); end
     
     def sync
-      save(@source.docname(:md))
+      return if _result_nil?
+      if @result.empty?
+        @source.lock(:md) do |s|
+          s.flash_data(:md)
+          s.put_value(:md_size,0)
+        end
+      else
+        tmp_docname = @source.docname(:md) + get_random_uuid
+        Store.put_data(tmp_docname,@result)
+        @source.lock(:md) do |s|
+          Store.rename(tmp_docname,s.docname(:md))
+          s.put_value(:md_size,@result.size)
+        end
+      end
     end
   
     def create(name_value_list); end
@@ -61,7 +74,6 @@ module Rhosync
       else
         Store.put_data(docname,@result)
       end
-      @source.put_value(:md_size,@result.size)
     end
   
     # only implement this if you want RhoSync to install a callback into your backend

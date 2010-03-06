@@ -7,7 +7,7 @@ require 'rhosync'
 
 task :default => :all
 
-OPTS = { :spec_opts => ['-fs', '--color'], 
+OPTS = { :spec_opts => ['-fs', '--color', '-b'], 
          :rcov      => true,
          :rcov_opts => ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*'] }
          

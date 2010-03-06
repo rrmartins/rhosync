@@ -19,6 +19,15 @@ describe "SourceAdapter" do
     @sa.class.name.should == @s.name
   end
   
+  it "should create and execute SubAdapter that extends BaseAdapter" do
+    @s.name = 'SubAdapter'
+    @sa = SourceAdapter.create(@s,nil)
+    @sa.class.name.should == 'SubAdapter'
+    expected = {'1'=>@product1,'2'=>@product2}
+    @sa.inject_result expected
+    @sa.query.should == expected
+  end
+  
   it "should fail to create SourceAdapter" do
     @s_fields[:name] = 'Broken'
     broken_source = Source.create(@s_fields,@s_params)

@@ -137,16 +137,14 @@ module Rhosync
       end
       unless operation != 'create' and creates.empty?
         client.put_data(:cd,creates,true)
-        @source.put_data(:md,creates,true)
         client.update_count(:cd_size,creates.size)
-        @source.update_count(:md_size,creates.size)
+        @source.lock(:md) { |s| s.put_creates_to_md(creates) }
       end
       if operation == 'delete'
         # Clean up deleted objects from master document and corresponding client document
         client.delete_data(:cd,dels)
-        @source.delete_data(:md,dels)
         client.update_count(:cd_size,-dels.size)
-        @source.update_count(:md_size,-dels.size)
+        @source.lock(:md) { |s| s.delete_from_md(dels) }
       end
       # Record rest of queue (if something in the middle failed)
       if modified.empty?
@@ -159,12 +157,14 @@ module Rhosync
     
     def _process_cud(operation)
       # Pull client ids from modified queue and process them
+      # clients = @source.lock(operation) { |s| s.get_client_cud_list(operation) }
       clients = @source.get_data(operation,Array)
       clients.each do |client_id|
         if _process_client_cud(client_id,operation) == 0
-          clients.delete(client_id)
+          clients.delete(client_id)  
         end
       end
+      # @source.lock(operation) { |s| s.finalize_cud_list(operation,clients) }
       if clients.empty?
         @source.flash_data(operation)
       else
@@ -200,11 +200,15 @@ module Rhosync
           @adapter.sync
         end
         # operation,sync succeeded, remove errors
-        Store.flash_data(errordoc)
+        Store.lock(errordoc) do
+          Store.flash_data(errordoc)
+        end
       rescue Exception => e
         # store sync,operation exceptions to be sent to all clients for this source/user
         Logger.error "SourceAdapter raised #{operation} exception: #{e}"
-        Store.put_data(errordoc,{"#{operation}-error"=>{'message'=>e.message}},true)
+        Store.lock(errordoc) do
+          Store.put_data(errordoc,{"#{operation}-error"=>{'message'=>e.message}},true)
+        end
       end
       true
     end

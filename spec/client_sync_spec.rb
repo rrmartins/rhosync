@@ -253,7 +253,6 @@ describe "ClientSync" do
       Store.get_data(@s.docname(:md)).should == @data
       Store.put_value(@s.docname(:md_size),@data.size)
       @expected = {'1'=>@product1,'2'=>@product2}
-      puts "cd is: #{@c.get_data(:cd).inspect}"
       @cs.compute_page.should == [0,3,@expected]
       Store.get_value(@cs.client.docname(:cd_size)).to_i.should == 0
       Store.get_data(@cs.client.docname(:page)).should == @expected      

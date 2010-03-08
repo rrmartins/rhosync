@@ -15,7 +15,6 @@ module Rhosync
     
     include Document
     include LockOps
-    include SourceLocks
     
     def self.create(fields,params)
       fields = fields.with_indifferent_access # so we can access hash keys as symbols

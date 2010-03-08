@@ -21,7 +21,7 @@ describe "SourceSync" do
     Logger.should_receive(:error).with("SourceAdapter raised login exception: #{msg}")
     @u.login = nil
     @ss = SourceSync.new(@s)
-    @ss.process
+    @ss.process(@c.id)
     verify_result(@s.docname(:errors) => {'login-error'=>{'message'=>msg}})
   end
   
@@ -29,16 +29,16 @@ describe "SourceSync" do
     msg = "Error logging off"
     Logger.should_receive(:error).with("SourceAdapter raised logoff exception: #{msg}")
     set_test_data('test_db_storage',{},msg,'logoff error')
-    @ss.process
+    @ss.process(@c.id)
     verify_result(@s.docname(:errors) => {'logoff-error'=>{'message'=>msg}})
   end
   
   it "should hold on read on subsequent call of process" do
     expected = {'1'=>@product1}
     Store.put_data('test_db_storage',expected)
-    @ss.process
+    @ss.process(@c.id)
     Store.put_data('test_db_storage',{'2'=>@product2})
-    @ss.process
+    @ss.process(@c.id)
     verify_result(@s.docname(:md) => expected)   
   end
   
@@ -46,16 +46,16 @@ describe "SourceSync" do
     expected = {'2'=>@product2}
     @s.poll_interval = 0
     Store.put_data('test_db_storage',{'1'=>@product1})
-    @ss.process
+    @ss.process(@c.id)
     Store.put_data('test_db_storage',expected)
-    @ss.process
+    @ss.process(@c.id)
     verify_result(@s.docname(:md) => expected)    
   end
 
   it "should never call read on any call of process" do
     @s.poll_interval = -1
     Store.put_data('test_db_storage',{'1'=>@product1})
-    @ss.process
+    @ss.process(@c.id)
     verify_result(@s.docname(:md) => {})
   end
     
@@ -65,7 +65,7 @@ describe "SourceSync" do
       mock_metadata_method([SampleAdapter, SimpleAdapter]) do
         expected = {'1'=>@product1,'2'=>@product2}
         set_state('test_db_storage' => expected)
-        @ss.process
+        @ss.process(@c.id)
         verify_result(@s.docname(:md) => expected,
           @s.docname(:metadata) => "{\"foo\":\"bar\"}",
           @s.docname(:metadata_sha1) => "a5e744d0164540d33b1d7ea616c28f2fa97e754a")
@@ -81,15 +81,14 @@ describe "SourceSync" do
         @ss.adapter.should_receive(:query).once.with(no_args()).and_return(expected)
         @ss.adapter.should_receive(:sync).once.with(no_args()).and_return(true)
         @ss.adapter.should_receive(:logoff).once.with(no_args()).and_return(nil)
-        @ss.process
+        @ss.process(@c.id)
       end
     end
     
     describe "create" do
       it "should do create where adapter.create returns nil" do
-        set_state(@c.docname(:create) => {'2'=>@product2},
-          @s.docname(:create) => [@c.id])
-        @ss.create
+        set_state(@c.docname(:create) => {'2'=>@product2})
+        @ss.create(@c.id)
         verify_result(@s.docname(:create) => [],
           @c.docname(:create_errors) => {},
           @c.docname(:create_links) => {},
@@ -98,9 +97,8 @@ describe "SourceSync" do
     
       it "should do create where adapter.create returns object link" do
         @product4['link'] = 'test link'
-        set_state(@c.docname(:create) => {'4'=>@product4},
-          @s.docname(:create) => [@c.id])
-        @ss.create
+        set_state(@c.docname(:create) => {'4'=>@product4})
+        @ss.create(@c.id)
         verify_result(@c.docname(:create_errors) => {},
           @c.docname(:create_links) => {'4'=>{'l'=>'backend_id'}},
           @c.docname(:create) => {},
@@ -110,9 +108,8 @@ describe "SourceSync" do
       it "should raise exception on adapter.create" do
         msg = "Error creating record"
         data = add_error_object({'4'=>@product4,'2'=>@product2},msg)
-        set_state({@c.docname(:create) => data,
-          @s.docname(:create) => [@c.id]})
-        @ss.create
+        set_state(@c.docname(:create) => data)
+        @ss.create(@c.id)
         verify_result(@c.docname(:create_errors) => 
           {"#{ERROR}-error"=>{"message"=>msg},ERROR=>data[ERROR]})
       end
@@ -120,9 +117,8 @@ describe "SourceSync" do
     
     describe "update" do
       it "should do update with no errors" do
-        set_state(@c.docname(:update) => {'4'=> { 'price' => '199.99' }},
-          @s.docname(:update) => [@c.id])
-        @ss.update
+        set_state(@c.docname(:update) => {'4'=> { 'price' => '199.99' }})
+        @ss.update(@c.id)
         verify_result(@s.docname(:update) => [],
           @c.docname(:update_errors) => {},
           @c.docname(:update) => {})
@@ -131,25 +127,21 @@ describe "SourceSync" do
       it "should do update with errors" do
         msg = "Error updating record"
         data = add_error_object({'4'=> { 'price' => '199.99' }},msg)
-        set_state(@c.docname(:update) => data,
-          @s.docname(:update) => [@c.id])
-        @ss.update
+        set_state(@c.docname(:update) => data)
+        @ss.update(@c.id)
         verify_result(@c.docname(:update_errors) =>
           {"#{ERROR}-error"=>{"message"=>msg}, ERROR=>data[ERROR]},
-            @c.docname(:update) => {'4'=> { 'price' => '199.99'}},
-          @s.docname(:update) => [@c.id.to_s])
+            @c.docname(:update) => {'4'=> { 'price' => '199.99'}})
       end
     end
     
     describe "delete" do
       it "should do delete with no errors" do
         set_state(@c.docname(:delete) => {'4'=>@product4},
-          @s.docname(:delete) => [@c.id],
           @s.docname(:md) => {'4'=>@product4,'3'=>@product3},
           @c.docname(:cd) => {'4'=>@product4,'3'=>@product3})
-        @ss.delete
+        @ss.delete(@c.id)
         verify_result(@c.docname(:delete_errors) => {},
-          @s.docname(:delete) => [],
           @s.docname(:md) => {'3'=>@product3},
           @c.docname(:cd) => {'3'=>@product3},
           @c.docname(:delete) => {})
@@ -158,13 +150,11 @@ describe "SourceSync" do
       it "should do delete with errors" do
         msg = "Error delete record"
         data = add_error_object({'2'=>@product2},msg)
-        set_state(@c.docname(:delete) => data,
-          @s.docname(:delete) => [@c.id])
-        @ss.delete
+        set_state(@c.docname(:delete) => data)
+        @ss.delete(@c.id)
         verify_result(@c.docname(:delete_errors) => 
           {"#{ERROR}-error"=>{"message"=>msg}, ERROR=>data[ERROR]},
-            @c.docname(:delete) => {'2'=>@product2},
-            @s.docname(:delete) => [@c.id.to_s])
+            @c.docname(:delete) => {'2'=>@product2})
       end
     end
     
@@ -195,7 +185,7 @@ describe "SourceSync" do
         @ss1 = SourceSync.new(@s1)
         expected = {'1'=>@product1,'2'=>@product2}
         set_state('test_db_storage' => expected)
-        @ss1.process
+        @ss1.process(@c.id)
         verify_result("source:#{@a_fields[:name]}:__shared__:#{@s_fields[:name]}:md" => expected)
         Store.db.keys("read_state:#{@a_fields[:name]}:__shared__*").sort.should ==
           [ "read_state:rhotestapp:__shared__:SampleAdapter:refresh_time",

@@ -10,7 +10,6 @@ module Rhosync
     
     include Document
     include LockOps
-    include ClientLocks
     
     def self.create(fields,params={})
       fields[:id] = get_random_uuid

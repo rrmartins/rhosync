@@ -10,16 +10,16 @@ module Rhosync
     end
     
     # CUD Operations
-    def create
-      _process_cud('create')
+    def create(client_id)
+      _process_cud('create',client_id)
     end
     
-    def update
-      _process_cud('update')
+    def update(client_id)
+      _process_cud('update',client_id)
     end
     
-    def delete
-      _process_cud('delete')
+    def delete(client_id)
+      _process_cud('delete',client_id)
     end
     
     # Read Operation; params are query arguments
@@ -34,12 +34,12 @@ module Rhosync
       res
     end
     
-    def process(client_id=nil,params=nil)
+    def process(client_id,params=nil)
       return if _auth_op('login') == false
       
-      self.create
-      self.update
-      self.delete
+      self.create(client_id)
+      self.update(client_id)
+      self.delete(client_id)
             
       @source.if_need_refresh(client_id,params) do
         self.read(client_id,params)
@@ -103,7 +103,7 @@ module Rhosync
       dels[key] = value
     end
     
-    def _process_client_cud(client_id,operation)
+    def _process_cud(operation,client_id)
       errors,links,deletes,creates,dels = {},{},{},{},{}
       client = Client.load(client_id,{:source_name => @source.name})
       modified = client.get_data(operation)
@@ -138,13 +138,19 @@ module Rhosync
       unless operation != 'create' and creates.empty?
         client.put_data(:cd,creates,true)
         client.update_count(:cd_size,creates.size)
-        @source.lock(:md) { |s| s.put_creates_to_md(creates) }
+        @source.lock(:md) do |s| 
+          s.put_data(:md,creates,true)
+          s.update_count(:md_size,creates.size)
+        end
       end
       if operation == 'delete'
         # Clean up deleted objects from master document and corresponding client document
         client.delete_data(:cd,dels)
         client.update_count(:cd_size,-dels.size)
-        @source.lock(:md) { |s| s.delete_from_md(dels) }
+        @source.lock(:md) do |s| 
+          s.delete_data(:md,dels)
+          s.update_count(:md_size,-dels.size)
+        end
       end
       # Record rest of queue (if something in the middle failed)
       if modified.empty?
@@ -153,23 +159,6 @@ module Rhosync
         client.put_data(operation,modified)
       end
       modified.size
-    end
-    
-    def _process_cud(operation)
-      # Pull client ids from modified queue and process them
-      # clients = @source.lock(operation) { |s| s.get_client_cud_list(operation) }
-      clients = @source.get_data(operation,Array)
-      clients.each do |client_id|
-        if _process_client_cud(client_id,operation) == 0
-          clients.delete(client_id)  
-        end
-      end
-      # @source.lock(operation) { |s| s.finalize_cud_list(operation,clients) }
-      if clients.empty?
-        @source.flash_data(operation)
-      else
-        @source.put_data(operation,clients)
-      end
     end
     
     # Metadata Operation; source adapter returns json
@@ -190,9 +179,9 @@ module Rhosync
         if operation == 'search'
           client = Client.load(client_id,{:source_name => @source.name})
           errordoc = client.docname(:search_errors)
-          compute_token client.docname(:search_token)
-          @adapter.search params
-          @adapter.save client.docname(:search)
+          compute_token(client.docname(:search_token))
+          @adapter.search(params)
+          @adapter.save(client.docname(:search))
         else
           errordoc = @source.docname(:errors)
           _get_metadata

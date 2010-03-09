@@ -51,8 +51,10 @@ desc "Run benchmark scripts"
 task :bench do
   login = ask "login: "
   password = ask "password: "
-  list = ask "scripts(default is 'bench/*_script.rb'): "
-  file_list = list.empty? ? FileList['bench/*_script.rb'] : FileList[list]
+  prefix = 'bench/scripts/'
+  suffix = '_script.rb'
+  list = ask "scripts(default is '*'): "
+  file_list = list.empty? ? FileList[prefix+'*'+suffix] : FileList[prefix+list+suffix]
   file_list.each do |script|
     sh "bench/trunner start #{script} #{login} #{password}"
   end

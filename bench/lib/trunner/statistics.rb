@@ -12,7 +12,7 @@ module Trunner
     
     def process
       @sessions.each do |session|
-        session.results.each do |result|
+        session.results.each do |marker,result|
           @rows[result.marker] ||= {}
           row = @rows[result.marker]
           row[:min] ||= 0.0
@@ -42,6 +42,7 @@ module Trunner
       @rows.each do |marker,row|
         logger.info "Request %-15s: min: %0.4f, max: %0.4f, avg: %0.4f, err: %d, verification err: %d" % [marker, row[:min], row[:max], average(row), row[:errors], row[:verification_errors]]
       end
+      logger.info "Verify Error       : #{Trunner.verify_error}"
       logger.info "Concurrency        : #{@concurrency}"
       logger.info "Iterations         : #{@iterations}"
       logger.info "Total Count        : #{@total_count}"

@@ -4,6 +4,7 @@ require 'rest_client'
 
 describe "ResultSpec" do
   it_should_behave_like "TrunnerSpecHelper"
+  include Utils
 
   before(:each) do
     @s1 = [{"foo" => {"bar" => "cake"}}]
@@ -38,7 +39,7 @@ describe "ResultSpec" do
   end
   
   it "should compare two array/hash structures" do
-    Result.compare(:expected,@s1,:actual,@s2).should == [{:expected=>"cake", 
+    compare(:expected,@s1,:actual,@s2).should == [{:expected=>"cake", 
       :path=>[0, "foo", "bar"], :actual=>"cake1"}, 
       {:expected=>nil, :path=>[1], :actual=>{"hello"=>"world"}}]
   end

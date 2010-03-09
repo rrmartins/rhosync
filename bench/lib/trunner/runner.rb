@@ -35,13 +35,9 @@ module Trunner
         rescue RestClient::RequestTimeout => e
           logger.info "Request timed out #{e}"
         end
-        Session.verify(@sessions)
       end
-      logger.info "Trunner completed..."
-      Statistics.new(concurrency,iterations,total_time,@sessions).process.print_stats
-        # 
-        # stats = Statistics.new(log_file)
-        # stats.produce_statistics
+      Trunner.sessions = @sessions
+      Trunner.total_time = total_time
     end    
   end
 end  

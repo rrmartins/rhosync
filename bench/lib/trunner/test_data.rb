@@ -38,6 +38,7 @@ module Trunner
       res = {}
       num.times do |n|
         res[n.to_s] = {
+          "mock_id" => n.to_s,
           "FirstName" => Faker::Name.first_name,
           "LastName" => Faker::Name.last_name,
           "Email" =>  Faker::Internet.free_email,

@@ -3,6 +3,7 @@ $:.unshift File.join(File.dirname(__FILE__),'..')
 $:.unshift File.join(File.dirname(__FILE__),'..','lib')
 require 'trunner/logging'
 require 'trunner/mock_client'
+require 'trunner/utils'
 require 'trunner/result'
 include Trunner
 

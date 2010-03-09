@@ -2,11 +2,11 @@ module Trunner
   class Session
     include Logging
     include Timer
-    attr_accessor :cookies, :last_result, :results
+    attr_accessor :cookies, :last_result, :results, :thread_id, :iteration, :client_id
     
     def initialize(thread_id,iteration)
       @cookies = {}
-      @results = []
+      @results = {}
       @thread_id,@iteration = thread_id,iteration
     end
       
@@ -22,13 +22,10 @@ module Trunner
       _request(marker,:_get,url_params,headers)          
     end
     
-    def self.verify(sessions)
-    end
-    
     protected
     def _request(marker,verb,url,headers)
       result = Result.new(marker,verb,url,@thread_id,@iteration)
-      @results << result
+      @results[result.marker] = result
       begin
         result.time = time do
           headers.merge!(:cookies => @cookies)

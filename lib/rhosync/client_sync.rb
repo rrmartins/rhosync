@@ -131,9 +131,9 @@ module Rhosync
     # Computes errors for client and stores a copy as errors page
     def compute_errors_page
       ['create','update','delete'].each do |operation|
-        @client.lock("#{operation}_errors") { |c| 
+        @client.lock("#{operation}_errors") do |c| 
           c.rename("#{operation}_errors","#{operation}_errors_page")
-        }
+        end
       end
     end
     

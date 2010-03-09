@@ -6,8 +6,4 @@ class BaseAdapter < SourceAdapter
   def query(params=nil)
     @result
   end
- 
-  def sync
-    super
-  end
 end

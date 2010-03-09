@@ -1,5 +1,5 @@
 .DS_Store
-apps
+/apps
 coverage
 tmp
 log

@@ -12,22 +12,24 @@ module Trunner
     
     def process
       @sessions.each do |session|
-        session.results.each do |marker,result|
-          @rows[result.marker] ||= {}
-          row = @rows[result.marker]
-          row[:min] ||= 0.0
-          row[:max] ||= 0.0
-          row[:count] ||= 0
-          row[:total_time] ||= 0.0
-          row[:errors] ||= 0
-          row[:verification_errors] ||= 0
-          row[:min] = result.time if result.time < row[:min] || row[:min] == 0
-          row[:max] = result.time if result.time > row[:max]
-          row[:count] += 1.0
-          row[:total_time] += result.time            
-          row[:errors] += 1 if result.error
-          row[:verification_errors] += 1 if result.verification_error
-          @total_count += 1
+        session.results.each do |marker,results|
+          results.each do |result|
+            @rows[result.marker] ||= {}
+            row = @rows[result.marker]
+            row[:min] ||= 0.0
+            row[:max] ||= 0.0
+            row[:count] ||= 0
+            row[:total_time] ||= 0.0
+            row[:errors] ||= 0
+            row[:verification_errors] ||= 0
+            row[:min] = result.time if result.time < row[:min] || row[:min] == 0
+            row[:max] = result.time if result.time > row[:max]
+            row[:count] += 1.0
+            row[:total_time] += result.time            
+            row[:errors] += 1 if result.error
+            row[:verification_errors] += result.verification_error
+            @total_count += 1
+          end
         end
       end
       self

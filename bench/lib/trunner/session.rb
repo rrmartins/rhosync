@@ -25,7 +25,8 @@ module Trunner
     protected
     def _request(marker,verb,url,headers)
       result = Result.new(marker,verb,url,@thread_id,@iteration)
-      @results[result.marker] = result
+      @results[result.marker] ||= []
+      @results[result.marker] << result
       begin
         result.time = time do
           headers.merge!(:cookies => @cookies)

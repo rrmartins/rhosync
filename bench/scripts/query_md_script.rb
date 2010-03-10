@@ -1,6 +1,6 @@
 # Run sync session, forces source adapter query on every sync request
 
-@datasize = 100
+@datasize = 500
 @expected = Trunner.get_test_data(@datasize)
 @all_objects = "[{\"version\":3},{\"token\":\"%s\"},{\"count\":%i},{\"progress_count\":0},{\"total_count\":%i},{\"insert\":""}]"
 @ack_token = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":%i},{\"total_count\":%i},{}]"

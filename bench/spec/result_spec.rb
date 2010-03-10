@@ -47,13 +47,13 @@ describe "ResultSpec" do
   it "should verify body" do
     @result.logger.should_receive(:error).exactly(8).times
     @result.verify_body(@s2.to_json)
-    @result.verification_error.should == true
+    @result.verification_error.should == 1
   end  
 
   it "should verify code" do
     @result.logger.should_receive(:error).exactly(4).times
     @result.verify_code(500)
-    @result.verification_error.should == true
+    @result.verification_error.should == 1
   end
       
 end

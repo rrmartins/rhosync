@@ -38,9 +38,9 @@ module Trunner
           logger.error "#{log_prefix} Expected: #{diff[:expected].inspect}"
           logger.error "#{log_prefix} Actual: #{diff[:actual].inspect}"
         end
-        true
+        1
       else
-        false
+        0
       end
     end
   end

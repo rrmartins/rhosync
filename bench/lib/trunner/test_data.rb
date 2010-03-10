@@ -1,11 +1,12 @@
 require 'faker'
+require 'uuidtools'
 
 module Trunner
   module TestData
-    def get_test_data(num=1000)
+    def get_test_data(num=1000,generate=false)
       file = File.join(File.dirname(__FILE__),'..',"testdata","#{num}-data.txt")
       data = nil
-      if File.exists?(file)
+      if File.exists?(file) and not generate
         data = open(file, 'r') {|f| Marshal.load(f)}
       else
         data = generate_fake_data(num)
@@ -37,8 +38,9 @@ module Trunner
     def generate_fake_data(num=1000)
       res = {}
       num.times do |n|
-        res[n.to_s] = {
-          "mock_id" => n.to_s,
+        mock_id = UUIDTools::UUID.random_create.to_s.gsub(/\-/,'')
+        res[mock_id] = {
+          "mock_id" => mock_id,
           "FirstName" => Faker::Name.first_name,
           "LastName" => Faker::Name.last_name,
           "Email" =>  Faker::Internet.free_email,

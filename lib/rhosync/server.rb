@@ -35,11 +35,7 @@ module Rhosync
       end
 
       def do_login
-        if login
-          status 200
-        else
-          status 401
-        end
+        login ? status(200) : status(401)
       end
 
       def login_required

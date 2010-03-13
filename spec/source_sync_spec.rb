@@ -21,7 +21,7 @@ describe "SourceSync" do
     Logger.should_receive(:error).with("SourceAdapter raised login exception: #{msg}")
     @u.login = nil
     @ss = SourceSync.new(@s)
-    @ss.process(@c.id)
+    @ss.process_query
     verify_result(@s.docname(:errors) => {'login-error'=>{'message'=>msg}})
   end
   
@@ -29,16 +29,16 @@ describe "SourceSync" do
     msg = "Error logging off"
     Logger.should_receive(:error).with("SourceAdapter raised logoff exception: #{msg}")
     set_test_data('test_db_storage',{},msg,'logoff error')
-    @ss.process(@c.id)
+    @ss.process_query
     verify_result(@s.docname(:errors) => {'logoff-error'=>{'message'=>msg}})
   end
   
   it "should hold on read on subsequent call of process" do
     expected = {'1'=>@product1}
     Store.put_data('test_db_storage',expected)
-    @ss.process(@c.id)
+    @ss.process_query
     Store.put_data('test_db_storage',{'2'=>@product2})
-    @ss.process(@c.id)
+    @ss.process_query
     verify_result(@s.docname(:md) => expected)   
   end
   
@@ -46,16 +46,16 @@ describe "SourceSync" do
     expected = {'2'=>@product2}
     @s.poll_interval = 0
     Store.put_data('test_db_storage',{'1'=>@product1})
-    @ss.process(@c.id)
+    @ss.process_query
     Store.put_data('test_db_storage',expected)
-    @ss.process(@c.id)
+    @ss.process_query
     verify_result(@s.docname(:md) => expected)    
   end
 
   it "should never call read on any call of process" do
     @s.poll_interval = -1
     Store.put_data('test_db_storage',{'1'=>@product1})
-    @ss.process(@c.id)
+    @ss.process_query
     verify_result(@s.docname(:md) => {})
   end
     
@@ -65,7 +65,7 @@ describe "SourceSync" do
       mock_metadata_method([SampleAdapter, SimpleAdapter]) do
         expected = {'1'=>@product1,'2'=>@product2}
         set_state('test_db_storage' => expected)
-        @ss.process(@c.id)
+        @ss.process_query
         verify_result(@s.docname(:md) => expected,
           @s.docname(:metadata) => "{\"foo\":\"bar\"}",
           @s.docname(:metadata_sha1) => "a5e744d0164540d33b1d7ea616c28f2fa97e754a")
@@ -81,7 +81,7 @@ describe "SourceSync" do
         @ss.adapter.should_receive(:query).once.with(no_args()).and_return(expected)
         @ss.adapter.should_receive(:sync).once.with(no_args()).and_return(true)
         @ss.adapter.should_receive(:logoff).once.with(no_args()).and_return(nil)
-        @ss.process(@c.id)
+        @ss.process_query
       end
     end
     
@@ -89,8 +89,7 @@ describe "SourceSync" do
       it "should do create where adapter.create returns nil" do
         set_state(@c.docname(:create) => {'2'=>@product2})
         @ss.create(@c.id)
-        verify_result(@s.docname(:create) => [],
-          @c.docname(:create_errors) => {},
+        verify_result(@c.docname(:create_errors) => {},
           @c.docname(:create_links) => {},
           @c.docname(:create) => {})
       end
@@ -101,8 +100,7 @@ describe "SourceSync" do
         @ss.create(@c.id)
         verify_result(@c.docname(:create_errors) => {},
           @c.docname(:create_links) => {'4'=>{'l'=>'backend_id'}},
-          @c.docname(:create) => {},
-          @s.docname(:create) => [])
+          @c.docname(:create) => {})
       end
     
       it "should raise exception on adapter.create" do
@@ -119,8 +117,7 @@ describe "SourceSync" do
       it "should do update with no errors" do
         set_state(@c.docname(:update) => {'4'=> { 'price' => '199.99' }})
         @ss.update(@c.id)
-        verify_result(@s.docname(:update) => [],
-          @c.docname(:update_errors) => {},
+        verify_result(@c.docname(:update_errors) => {},
           @c.docname(:update) => {})
       end
       
@@ -158,6 +155,16 @@ describe "SourceSync" do
       end
     end
     
+    describe "cud" do
+      it "should do process_cud" do
+        @ss.should_receive(:_auth_op).twice.and_return(true)
+        @ss.should_receive(:create).once.with(@c.id)
+        @ss.should_receive(:update).once.with(@c.id)
+        @ss.should_receive(:delete).once.with(@c.id)
+        @ss.process_cud(@c.id)
+      end
+    end
+    
     describe "query" do
       it "should do query with no exception" do
         verify_read_operation('query')
@@ -185,7 +192,7 @@ describe "SourceSync" do
         @ss1 = SourceSync.new(@s1)
         expected = {'1'=>@product1,'2'=>@product2}
         set_state('test_db_storage' => expected)
-        @ss1.process(@c.id)
+        @ss1.process_query
         verify_result("source:#{@a_fields[:name]}:__shared__:#{@s_fields[:name]}:md" => expected)
         Store.db.keys("read_state:#{@a_fields[:name]}:__shared__*").sort.should ==
           [ "read_state:rhotestapp:__shared__:SampleAdapter:refresh_time",
@@ -223,5 +230,19 @@ describe "SourceSync" do
           @c.docname(:search_errors) => {'search-error'=>{'message'=>msg}})
       end
     end
+  end
+  
+  it "should enqueue process_cud SourceJob" do
+    @s.cud_queue = :cud
+    @ss.process_cud(@c.id)
+    Resque.peek(:cud).should == {"args"=>
+      ["cud", @s.name, @a.name, @u.login, @c.id, nil], "class"=>"Rhosync::SourceJob"}
+  end
+  
+  it "should enqueue process_query SourceJob" do
+    @s.query_queue = :abc
+    @ss.process_query({'foo'=>'bar'})
+    Resque.peek(:abc).should == {"args"=>
+      ["query", @s.name, @a.name, @u.login, nil, {'foo'=>'bar'}], "class"=>"Rhosync::SourceJob"}
   end
 end

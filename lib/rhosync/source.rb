@@ -10,6 +10,9 @@ module Rhosync
     field :poll_interval,:integer
     field :partition_type,:string
     field :sync_type,:string
+    field :queue,:string
+    field :query_queue,:string
+    field :cud_queue,:string
     attr_accessor :app_id, :user_id
     validates_presence_of :name #, :source_id
     

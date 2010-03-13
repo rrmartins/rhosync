@@ -15,7 +15,7 @@ module Rhosync
       cud_params.each do |key,value|
         _receive_cud(key,value)
       end
-      @source_sync.process(@client.id,query_params)
+      @source_sync.process_cud(@client.id) if cud_params.size > 0
     end
     
     def send_cud(token=nil,query_params=nil)
@@ -23,7 +23,7 @@ module Rhosync
       if not _ack_token(token)
         res = resend_page(token)
       else
-        @source_sync.process(@client.id,query_params)
+        @source_sync.process_query(query_params)
         res = send_new_page
       end
       _format_result(res[0],res[1],res[2],res[3])

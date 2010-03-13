@@ -38,7 +38,7 @@ describe "SourceAdapter" do
     @s.name = 'SimpleAdapter '
     SourceAdapter.create(@s,nil).is_a?(SimpleAdapter).should be_true
   end
-  
+    
   describe "SourceAdapter methods" do
     it "should execute SourceAdapter login method with source vars" do
       @sa.login.should == true

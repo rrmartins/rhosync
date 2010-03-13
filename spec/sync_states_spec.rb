@@ -52,7 +52,6 @@ describe "Sync Server States" do
         @c.docname(:cd_size) => "1",
         @s.docname(:md_size) => "1",
         @c.docname(:cd) => backend_data,
-        @s.docname(:create) => [],
         @c.docname(:create_links) => {'1'=>{'l'=>'backend_id'}},
         @s.docname(:md) => backend_data)
     end
@@ -69,7 +68,6 @@ describe "Sync Server States" do
         @c.docname(:cd_size) => "1",
         @s.docname(:md_size) => "1",
         @c.docname(:cd) => backend_data,
-        @s.docname(:create) => [],
         @c.docname(:create_links) => {'1'=>{'l'=>'backend_id'}},
         @s.docname(:md) => backend_data)
       res = @cs.send_cud
@@ -93,7 +91,6 @@ describe "Sync Server States" do
       @cs.receive_cud(params)
       verify_result(@cs.client.docname(:delete) => {},
         @cs.client.docname(:cd) => expected,
-        @s.docname(:delete) => [],
         @s.docname(:md) => expected,
         @cs.client.docname(:delete_page) => {},
         @cs.client.docname(:cd_size) => "2",

@@ -33,27 +33,44 @@ module Rhosync
       _auth_op('logoff',client_id)
       res
     end
+
+    def process_cud(client_id)
+      if @source.cud_queue or @source.queue
+        async(:cud,@source.cud_queue || @source.queue,client_id)
+      else
+        do_cud(client_id)
+      end   
+    end
     
-    def process(client_id,params=nil)
+    def do_cud(client_id)
       return if _auth_op('login') == false
-      
       self.create(client_id)
       self.update(client_id)
       self.delete(client_id)
-            
-      @source.if_need_refresh(client_id,params) do
-        self.read(client_id,params)
-      end
-      
       _auth_op('logoff')
     end
     
-    def refresh_source
+    def process_query(params=nil)
+      if @source.query_queue or @source.queue
+        async(:query,@source.query_queue || @source.queue,nil,params)
+      else
+        do_query(params)
+      end   
+    end
+    
+    def do_query(params=nil)
       @source.if_need_refresh do
         return if _auth_op('login') == false
-        self.read
+        self.read(nil,params)
         _auth_op('logoff')
       end
+    end
+    
+    # Enqueue a job for the source based on job type
+    def async(job_type,queue_name,client_id=nil,params=nil)
+      SourceJob.queue = queue_name
+      Resque.enqueue(SourceJob,job_type,@source.id,
+        @source.app_id,@source.user_id,client_id,params)
     end
     
     private

@@ -17,10 +17,7 @@ describe "ClientSync" do
     it "should handle receive cud" do
       params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
       @cs.receive_cud(params)
-      verify_result(@s.docname(:create) => [],
-        @s.docname(:update) => [],
-        @s.docname(:delete) => [],
-        @cs.client.docname(:create) => {},
+      verify_result(@cs.client.docname(:create) => {},
         @cs.client.docname(:update) => {},
         @cs.client.docname(:delete) => {})
     end
@@ -107,17 +104,16 @@ describe "ClientSync" do
     end
   
     it "should handle receive_cud" do
-      expected = {'1'=>@product1,'2'=>@product2}
-      set_test_data('test_db_storage',expected)
-      params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
+      set_state(@s.docname(:md) => {'3'=>@product3},
+        @c.docname(:cd) => {'3'=>@product3})
+      params = {'create'=>{'1'=>@product1},
+        'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
       @cs.receive_cud(params)
-      verify_result(@s.docname(:create) => [],
-        @s.docname(:update) => [],
-        @s.docname(:delete) => [],
-        @cs.client.docname(:create) => {},
+      verify_result(@cs.client.docname(:create) => {},
         @cs.client.docname(:update) => {},
         @cs.client.docname(:delete) => {},
-        @s.docname(:md) => expected)
+        @s.docname(:md) => {},
+        @c.docname(:cd) => {})
     end
     
     it "should handle send_cud with query_params" do

@@ -16,6 +16,7 @@ require 'rhosync/read_state'
 require 'rhosync/client_sync'
 require 'rhosync/source_adapter'
 require 'rhosync/source_sync'
+require 'rhosync/source_job'
 require 'rhosync/bulk_data'
 require 'rhosync/indifferent_access'
   

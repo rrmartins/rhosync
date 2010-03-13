@@ -33,7 +33,7 @@ module Rhosync
       sources.members.each do |source|
         s = Source.load(source,{:app_id => app_id, :user_id => user_id})
         if s
-          SourceSync.new(s).refresh_source
+          SourceSync.new(s).process_query(nil)
           s.clone(:md,:md_copy) unless s.sync_type.to_sym == :bulk_sync_only
         end
       end

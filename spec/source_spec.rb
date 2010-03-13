@@ -11,6 +11,9 @@ describe "Source" do
     @s.app.name.should == @a_fields[:name]
     @s.priority.should == 3
     @s.callback_url.should be_nil
+    @s.queue.should be_nil
+    @s.query_queue.should be_nil
+    @s.cud_queue.should be_nil
     @s.app_id.should == @s_params[:app_id]
     @s.user_id.should == @s_params[:user_id]
     @s.sync_type.should == :incremental
@@ -58,5 +61,17 @@ describe "Source" do
   it "should create correct docname based on partition scheme" do
     @s.partition = :app
     @s.docname(:md).should == "source:#{@s.app.id}:__shared__:#{@s_fields[:name]}:md"
+  end
+  
+  it "should create source with default read/write queue" do
+    @s.delete
+    @s_fields[:queue] = :default
+    @s_fields[:query_queue] = :query
+    @s_fields[:cud_queue] = :cud
+    Source.create(@s_fields,@s_params)
+    s = Source.load(@s_fields[:name],@s_params)
+    s.queue.should == 'default'
+    s.query_queue.should == 'query'
+    s.cud_queue.should == 'cud'
   end
 end

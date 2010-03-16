@@ -9,6 +9,8 @@ Trunner.config do |config|
   config.app_name = "trunnerapp"
   config.host = "http://rhosyncnew.staging.rhohub.com"
   config.base_url = "#{config.host}/apps/#{config.app_name}"
+  config.import_app
+  config.create_user
   config.reset_refresh_time('MockAdapter',0)
   config.set_server_state("test_db_storage:trunnerapp:#{config.user_name}",{})
   @create_objects = []

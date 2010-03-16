@@ -150,13 +150,19 @@ describe "SourceAdapterHelper", :shared => true do
   end
   
   def verify_result(result)
-    result.each do |dockey,expected|
-      if expected.is_a?(Hash)
-        Store.get_data(dockey).should == expected
-      elsif expected.is_a?(Array)
-        Store.get_data(dockey,Array).should == expected
-      else
-        Store.get_value(dockey).should == expected
+    result.keys.sort.each do |dockey|
+      expected = result[dockey]
+      begin
+        if expected.is_a?(Hash)
+          Store.get_data(dockey).should == expected
+        elsif expected.is_a?(Array)
+          Store.get_data(dockey,Array).should == expected
+        else
+          Store.get_value(dockey).should == expected
+        end
+      rescue Spec::Expectations::ExpectationNotMetError => e
+        message = "\nVerifying `#{dockey}`\n\n" + e.to_s
+        Kernel::raise(Spec::Expectations::ExpectationNotMetError.new(message))
       end
     end
   end

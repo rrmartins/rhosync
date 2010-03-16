@@ -2,6 +2,8 @@
 require 'rest_client'
 require 'log4r'
 require 'json'
+require 'mechanize'
+require 'zip/zip'
 $:.unshift File.dirname(__FILE__)
 require 'trunner/timer'
 require 'trunner/logging'
@@ -43,6 +45,36 @@ module Trunner
       @body = RestClient.post("#{@host}/api/get_db_doc",
         {:api_token => token, :doc => doc}.to_json, :content_type => :json)
       JSON.parse(@body)
+    end
+    
+    def import_app
+      token = get_token
+      file = File.join(File.dirname(__FILE__),'..',@app_name,'rhosync')
+      zipfile = compress(file)
+      Mechanize.new.post("#{@host}/api/import_app",
+        :app_name => @app_name, :api_token => token,
+        :upload_file =>  File.new(zipfile, "rb"))
+      FileUtils.rm zipfile, :force => true
+    end
+    
+    def create_user
+      token = get_token
+      RestClient.post("#{@host}/api/create_user",
+        {:api_token => token, :app_name => @app_name,
+         :attributes => {:login => @user_name, :password => @password}}.to_json, 
+         :content_type => :json)
+    end
+
+    def compress(path)
+      path.sub!(%r[/$],'')
+      archive = File.join(path,File.basename(path))+'.zip'
+      FileUtils.rm archive, :force=>true
+      Zip::ZipFile.open(archive, 'w') do |zipfile|
+        Dir["#{path}/**/**"].reject{|f|f==archive}.each do |file|
+          zipfile.add(file.sub(path+'/',''),file)
+        end
+      end
+      archive
     end
     
     def set_server_state(doc,data)

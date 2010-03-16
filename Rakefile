@@ -98,6 +98,7 @@ task "resque:setup" do
   config = YAML.load_file('config.yml')
   rho_env = ENV['RHO_ENV'] || 'development'
   Rhosync.redis = config['redis'][rho_env]
+  Rhosync::Store.db = Rhosync.redis
 end
 
 def ask(msg)

@@ -1,3 +1,4 @@
+require 'yaml'
 require 'resque/tasks'
 require 'spec/rake/spectask'
 require 'rcov/rcovtask'
@@ -94,6 +95,9 @@ end
 
 task "resque:setup" do
   include Rhosync
+  config = YAML.load_file('config.yml')
+  rho_env = ENV['RHO_ENV'] || 'development'
+  Rhosync.redis = config['redis'][rho_env]
 end
 
 def ask(msg)

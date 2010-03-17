@@ -4,7 +4,7 @@ module Rhosync
     @@db = nil
     
     class << self
-      def db; @@db end
+      def db; @@db || @@db = _get_redis end
       
       def db=(server=nil)
         @@db = _get_redis(server)
@@ -177,7 +177,7 @@ module Rhosync
       end
       
       private
-      def _get_redis(server)
+      def _get_redis(server=nil)
         if server and server.is_a?(String)
           host,port,db,password = server.split(':')
           Redis.new(:thread_safe => true, :host => host,

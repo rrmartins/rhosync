@@ -13,7 +13,7 @@ module TrunnerHelpers
   def verify_presence_of_keys(expected,actual,session,caller)
     verification_error = 0
     expected.each do |key,object|
-      if !actual.include?(key) or actual[key]['l'] != key 
+      if !actual or !actual.include?(key) or actual[key]['l'] != key 
         logger.error "#{session.log_prefix} Verify error at: " + caller
         logger.error "#{session.log_prefix} Unexpected id for object #{key}"
         verification_error += 1
@@ -56,20 +56,24 @@ module TrunnerHelpers
     end
   end  
     
-  def get_all_objects(config,session,expected_md,create_objs=nil,timeout=10)
+  def current_line
+    caller(1)[0].to_s
+  end  
+      
+  def get_all_objects(caller,config,session,expected_md,create_objs=nil,timeout=10)
     session.get "get-cud", config.base_url do
       {'source_name' => 'MockAdapter', 'client_id' => session.client_id, 'p_size' => @datasize}
     end
     sleep rand(timeout)
     token = JSON.parse(session.last_result.body)[1]['token']
     progress_count = JSON.parse(session.last_result.body)[3]['progress_count']
-    verify_count(session,caller(1)[0].to_s)
+    verify_count(session,caller+"\n"+current_line)
     verify_objects(expected_md,JSON.parse(session.last_result.body)[5]['insert'],
-      session,"get-cud",caller(1)[0].to_s)
+      session,"get-cud",caller+"\n"+current_line)
     if create_objs
       links = JSON.parse(session.last_result.body)[5]['links']
       session.last_result.verification_error += 
-        verify_presence_of_keys(create_objs,links,session,caller(1)[0].to_s)
+        verify_presence_of_keys(create_objs,links,session,caller+"\n"+current_line)
     end
 
     while token != '' do
@@ -79,9 +83,9 @@ module TrunnerHelpers
           'client_id' => session.client_id,
           'token' => token}
       end
-      verify_count(session,caller(1)[0].to_s)
+      verify_count(session,caller+"\n"+current_line)
       verify_objects(expected_md,JSON.parse(session.last_result.body)[5]['insert'],
-        session,"ack-cud",caller(1)[0].to_s)
+        session,"ack-cud",caller+"\n"+current_line)
       session.last_result.verify_code(200)
       token = JSON.parse(session.last_result.body)[1]['token']
       progress_count = JSON.parse(session.last_result.body)[3]['progress_count']

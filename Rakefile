@@ -94,11 +94,7 @@ task :bench do
 end
 
 task "resque:setup" do
-  include Rhosync
-  config = YAML.load_file('config.yml')
-  rho_env = ENV['RHO_ENV'] || 'development'
-  Rhosync.redis = config['redis'][rho_env]
-  Rhosync::Store.db = Rhosync.redis
+  require 'init'
 end
 
 def ask(msg)

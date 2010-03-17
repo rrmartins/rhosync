@@ -2,13 +2,12 @@
 include TrunnerHelpers
 
 Trunner.config do |config|
-  config.concurrency = 25
+  config.concurrency = 1
   config.iterations  = 1
   config.user_name = "benchuser"
   config.password = "password"
   config.app_name = "trunnerapp"
-  config.host = "http://rhosyncnew.staging.rhohub.com"
-  config.base_url = "#{config.host}/apps/#{config.app_name}"
+  config.get_test_server
   config.import_app
   config.create_user
   config.reset_refresh_time('MockAdapter',0)
@@ -46,7 +45,7 @@ Trunner.test do |config,session|
   session.last_result.verify_code(200)
   sleep rand(10)
   logger.info "#{session.log_prefix} Loop to get all objects..."
-  get_all_objects(config,session,@expected_md,create_objs)
+  get_all_objects(current_line,config,session,@expected_md,create_objs)
   logger.info "#{session.log_prefix} Got all objects..."
 end  
 
@@ -54,7 +53,9 @@ Trunner.verify do |config,sessions|
   sessions.each do |session|
     logger.info "#{session.log_prefix} Loop to load all objects..."
     session.results['create-object'][0].verification_error += 
-      verify_numbers(@datasize,get_all_objects(config,session,@expected_md,nil,0),session,caller(1)[0].to_s)
+      verify_numbers(
+        @datasize,get_all_objects(
+          caller(0)[0].to_s,config,session,@expected_md,nil,0),session,current_line)
     logger.info "#{session.log_prefix} Loaded all objects..."
   end
   
@@ -65,12 +66,12 @@ Trunner.verify do |config,sessions|
                      session.client_id,
                      'MockAdapter',:cd))
     session.results['create-object'][0].verification_error += 
-      Trunner.compare_and_log(@expected_md,actual,caller(1)[0].to_s)
+      Trunner.compare_and_log(@expected_md,actual,current_line)
   end
   
   master_doc = config.get_server_state(
     source_docname(config.app_name,
                    config.user_name,
                    'MockAdapter',:md))
-  Trunner.verify_error = Trunner.compare_and_log(@expected_md,master_doc,caller(1)[0].to_s)
+  Trunner.verify_error = Trunner.compare_and_log(@expected_md,master_doc,current_line)
 end

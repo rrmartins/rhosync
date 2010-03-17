@@ -1,1 +1,1 @@
-syncserver = 'http://rhosyncnew.staging.rhohub.com/apps/trunnerapp/'
+syncserver = 'http://localhost:9292/apps/trunnerapp/'

@@ -27,7 +27,7 @@ module Rhosync
   
   class << self
     attr_accessor :base_directory, :app_directory, :data_directory, 
-      :vendor_directory, :blackberry_bulk_sync, :redis
+      :vendor_directory, :blackberry_bulk_sync, :redis, :environment
   end
   
   # Server hook to initialize Rhosync
@@ -46,6 +46,7 @@ module Rhosync
     Rhosync.data_directory ||= File.join(Rhosync.base_directory,'data')
     Rhosync.vendor_directory ||= File.join(Rhosync.base_directory,'vendor')
     Rhosync.blackberry_bulk_sync ||= false
+    Rhosync.environment ||= :development
     # Add appdir and sources subdirectory
     # to load path if appdir exists
     if File.exist?(Rhosync.app_directory)

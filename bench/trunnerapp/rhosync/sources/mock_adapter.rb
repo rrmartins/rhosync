@@ -15,7 +15,7 @@ class MockAdapter < SourceAdapter
   end
   
   def create(name_value_list,blob=nil)
-    id = name_value_list.delete('id')
+    id = name_value_list['mock_id']
     Store.lock(lock_name,1) do
       Store.put_data(db_name,{id=>name_value_list},true) if id
     end

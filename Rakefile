@@ -64,6 +64,7 @@ begin
     gemspec.add_development_dependency "rcov", ">=0.9.8"
     gemspec.add_development_dependency "faker", ">=0.3.1"
     gemspec.add_development_dependency "rack-test", ">=0.5.3"
+    gemspec.add_development_dependency "mechanize", ">=1.0.0"
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: "

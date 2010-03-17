@@ -2,8 +2,8 @@
 include TrunnerHelpers
 
 Trunner.config do |config|
-  config.concurrency = 1
-  config.iterations  = 1
+  config.concurrency = 5
+  config.iterations  = 5
   config.user_name = "benchuser"
   config.password = "password"
   config.app_name = "trunnerapp"
@@ -44,9 +44,9 @@ Trunner.test do |config,session|
   end
   session.last_result.verify_code(200)
   sleep rand(10)
-  logger.info "#{session.log_prefix} Loop to get all objects..."
-  get_all_objects(current_line,config,session,@expected_md,create_objs)
-  logger.info "#{session.log_prefix} Got all objects..."
+  logger.info "#{session.log_prefix} Loop to get available objects..."
+  count = get_all_objects(current_line,config,session,@expected_md,create_objs)
+  logger.info "#{session.log_prefix} Got #{count} available objects..."
 end  
 
 Trunner.verify do |config,sessions|

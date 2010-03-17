@@ -55,6 +55,12 @@ module TrunnerHelpers
       end
     end
   end  
+  
+  def verify_links(session,create_objs,caller)
+    links = JSON.parse(session.last_result.body)[5]['links']
+    session.last_result.verification_error += 
+      verify_presence_of_keys(create_objs,links,session,caller) if links
+  end
     
   def current_line
     caller(1)[0].to_s
@@ -67,14 +73,12 @@ module TrunnerHelpers
     sleep rand(timeout)
     token = JSON.parse(session.last_result.body)[1]['token']
     progress_count = JSON.parse(session.last_result.body)[3]['progress_count']
+    return progress_count if token == ''
+    
     verify_count(session,caller+"\n"+current_line)
     verify_objects(expected_md,JSON.parse(session.last_result.body)[5]['insert'],
       session,"get-cud",caller+"\n"+current_line)
-    if create_objs
-      links = JSON.parse(session.last_result.body)[5]['links']
-      session.last_result.verification_error += 
-        verify_presence_of_keys(create_objs,links,session,caller+"\n"+current_line)
-    end
+    verify_links(session,create_objs,caller+"\n"+current_line) if create_objs
 
     while token != '' do
       sleep rand(timeout)
@@ -83,10 +87,12 @@ module TrunnerHelpers
           'client_id' => session.client_id,
           'token' => token}
       end
+      session.last_result.verify_code(200)
       verify_count(session,caller+"\n"+current_line)
       verify_objects(expected_md,JSON.parse(session.last_result.body)[5]['insert'],
         session,"ack-cud",caller+"\n"+current_line)
-      session.last_result.verify_code(200)
+      verify_links(session,create_objs,caller+"\n"+current_line) if create_objs
+      
       token = JSON.parse(session.last_result.body)[1]['token']
       progress_count = JSON.parse(session.last_result.body)[3]['progress_count']
     end

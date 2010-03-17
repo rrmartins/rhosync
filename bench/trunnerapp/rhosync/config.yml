@@ -2,4 +2,4 @@ sources:
   MockAdapter:
     source_id: 1
     poll_interval: 300
-    #queue: rhosync-query
+    queue: abc

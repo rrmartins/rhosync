@@ -1,0 +1,9 @@
+{
+"%fcf11a05297244fdbfa1e8b9916c0537{"LastName"Wisoky"JobTitle"Electronics Director"FirstName"Loraine"Phone1"(447)466-9593"Company"Turner and Sons"mock_id"%fcf11a05297244fdbfa1e8b9916c0537"
+Email"triston@hotmail.com"%12eeb4045fef4cb893bffb79bcdb80a5{@"Jacobs@
+"Chief Mechanic@"	Skye@"(929)683-4001 x72699@"Grant, Olson and Hoeger@"%12eeb4045fef4cb893bffb79bcdb80a5@"sven@yahoo.com"%b4e55064c3fc4f2eb095178aab11f8eb{@"Schinner@
+"Electronics Planner@"
+Alysa@"(992)578-6150 x84011@"Becker Inc@"%b4e55064c3fc4f2eb095178aab11f8eb@"maverick@yahoo.com"%b7dda732dd2b4c2290bca105da9bc03b{@"Renner@
+"Assistant Accountant@"Carlotta@"623.517.7035@"Grant-Pouros@"%b7dda732dd2b4c2290bca105da9bc03b@"leone@hotmail.com"%8ab2b4e0a9c74c5cb8a2cc329f4ae500{@"
+Ratke@
+"Head Technician@"	Lacy@"1-420-946-6010 x638@"Rempel Inc@"%8ab2b4e0a9c74c5cb8a2cc329f4ae500@"emmanuel@hotmail.com

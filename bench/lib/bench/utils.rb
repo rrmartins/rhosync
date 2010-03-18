@@ -1,5 +1,7 @@
 module Bench
   module Utils
+    include Logging
+    
     def compare(name1,s1,name2,s2)
       r1 = diff([],name1,s1,name2,s2)
       r2 = diff([],name2,s2,name1,s1)

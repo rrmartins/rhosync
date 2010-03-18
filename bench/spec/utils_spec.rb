@@ -22,7 +22,7 @@ describe "UtilsSpec" do
   it "should compare_and_log two identical hashes" do
     h1 = {'key1' => {'key2' => 'value2'}}
     h2 = {'key1' => {'key2' => 'value2'}}
-    Logger.should_not_receive(:error)
+    logger.should_not_receive(:error)
     compare_and_log(h1,h2,'the caller').should == 0
   end
   

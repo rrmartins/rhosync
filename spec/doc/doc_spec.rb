@@ -211,33 +211,6 @@ describe "Rhosync Protocol" do
   end  
   
   private
-  # def _print_messages
-  #   method = last_request.env['REQUEST_METHOD']
-  #   query_string = last_request.env['QUERY_STRING'].empty? ? '' : "?#{last_request.env['QUERY_STRING']}"
-  #   body = last_request.body.read
-  #   last_request.body.rewind
-  #   response_body = last_response.body
-  #   puts '-'*25 + 'REQUEST' + '-'*25
-  #   puts "METHOD URL: #{method} #{last_request.env['PATH_INFO']}#{query_string}"
-  #   puts '-'*57
-  #   puts "Request Headers: "
-  #   puts ' "Content-Type"=>' + last_request.env['CONTENT_TYPE'].inspect unless method == 'GET'
-  #   puts ' "Content-Length"=>' + last_request.env['CONTENT_LENGTH'].inspect unless method == 'GET'
-  #   puts ' "Cookie"=>' + last_request.env['HTTP_COOKIE'].inspect
-  #   if not body.empty?
-  #     puts "Request Body:"
-  #     puts body
-  #   end
-  #   puts '-'*25 + 'RESPONSE' + '-'*24
-  #   puts "Response Headers: "
-  #   pp last_response.headers
-  #   puts "Response Status: " + last_response.status.to_s
-  #   if not response_body.empty?
-  #     puts "Response body: "
-  #     puts response_body
-  #   end
-  # end
-  
   def _print_markdown
     $content_table << {$rand_id => "#{@title} - #{@description}"}
     data = {

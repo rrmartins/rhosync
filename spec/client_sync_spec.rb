@@ -304,10 +304,6 @@ describe "ClientSync" do
       Store.get_data(@cs.client.docname(:page)).should == {}              
       @c.get_value(:page_token).should be_nil
     end
-    
-    it "should remove page and delete page when token is acknowledged" do
-      pending
-    end
   end
   
   describe "bulk data" do

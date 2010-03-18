@@ -172,12 +172,12 @@ module Rhosync
 
   def lap_timer(msg,start)
     duration = timenow - start
-    puts "#{msg}: #{duration}"
+    Logger.info "#{msg}: #{duration}"
     timenow
   end
 
   def start_timer(msg='starting')
-    puts "#{msg}"
+    Logger.info "#{msg}"
     timenow
   end
 

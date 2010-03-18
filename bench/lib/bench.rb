@@ -5,21 +5,21 @@ require 'json'
 require 'mechanize'
 require 'zip/zip'
 $:.unshift File.dirname(__FILE__)
-require 'trunner/timer'
-require 'trunner/logging'
-require 'trunner/utils'
-require 'trunner/result'
-require 'trunner/session'
-require 'trunner/runner'
-require 'trunner/statistics'
-require 'trunner/cli'
-require 'trunner/test_data'
+require 'bench/timer'
+require 'bench/logging'
+require 'bench/utils'
+require 'bench/result'
+require 'bench/session'
+require 'bench/runner'
+require 'bench/statistics'
+require 'bench/cli'
+require 'bench/test_data'
 $:.unshift File.join(File.dirname(__FILE__),'..')
 require 'scripts/helpers'
 
 # Inspired by Trample: http://github.com/jamesgolick/trample
 
-module Trunner
+module Bench
   class << self
     include Logging
     include TestData

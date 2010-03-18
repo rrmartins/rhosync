@@ -90,7 +90,7 @@ task :bench do
   list = ask "scripts(default is '*'): "
   file_list = list.empty? ? FileList[prefix+'*'+suffix] : FileList[prefix+list+suffix]
   file_list.each do |script|
-    sh "bench/trunner start #{script} #{login} #{password}"
+    sh "bench/bench start #{script} #{login} #{password}"
   end
 end
 

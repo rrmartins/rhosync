@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
 
-describe "Rhosync" do
+describe "Store" do
   
   it_should_behave_like "SourceAdapterHelper"
   

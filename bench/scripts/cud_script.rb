@@ -1,23 +1,23 @@
 # Simulate creating multiple objects
-include TrunnerHelpers
+include BenchHelpers
 
-Trunner.config do |config|
+Bench.config do |config|
   config.concurrency = 5
   config.iterations  = 5
   config.user_name = "benchuser"
   config.password = "password"
-  config.app_name = "trunnerapp"
+  config.app_name = "benchapp"
   config.get_test_server
   config.import_app
   config.create_user
   config.reset_refresh_time('MockAdapter',0)
-  config.set_server_state("test_db_storage:trunnerapp:#{config.user_name}",{})
+  config.set_server_state("test_db_storage:benchapp:#{config.user_name}",{})
   @create_objects = []
   @create_count = 5
   config.concurrency.times do |i|
     @create_objects << []
     config.iterations.times do
-      @create_objects[i] << Trunner.get_test_data(@create_count,true)
+      @create_objects[i] << Bench.get_test_data(@create_count,true)
     end
   end
   @datasize = config.concurrency * config.iterations * @create_count
@@ -29,7 +29,7 @@ Trunner.config do |config|
   end
 end
 
-Trunner.test do |config,session|
+Bench.test do |config,session|
   sleep rand(10)
   session.post "clientlogin", "#{config.base_url}/clientlogin", :content_type => :json do
     {:login => config.user_name, :password => config.password}.to_json
@@ -49,7 +49,7 @@ Trunner.test do |config,session|
   logger.info "#{session.log_prefix} Got #{count} available objects..."
 end  
 
-Trunner.verify do |config,sessions|
+Bench.verify do |config,sessions|
   sessions.each do |session|
     logger.info "#{session.log_prefix} Loop to load all objects..."
     session.results['create-object'][0].verification_error += 
@@ -66,12 +66,12 @@ Trunner.verify do |config,sessions|
                      session.client_id,
                      'MockAdapter',:cd))
     session.results['create-object'][0].verification_error += 
-      Trunner.compare_and_log(@expected_md,actual,current_line)
+      Bench.compare_and_log(@expected_md,actual,current_line)
   end
   
   master_doc = config.get_server_state(
     source_docname(config.app_name,
                    config.user_name,
                    'MockAdapter',:md))
-  Trunner.verify_error = Trunner.compare_and_log(@expected_md,master_doc,current_line)
+  Bench.verify_error = Bench.compare_and_log(@expected_md,master_doc,current_line)
 end

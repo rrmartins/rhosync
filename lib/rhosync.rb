@@ -29,15 +29,21 @@ module Rhosync
     attr_accessor :base_directory, :app_directory, :data_directory, 
       :vendor_directory, :blackberry_bulk_sync, :redis, :environment
   end
-  
+    
   # Server hook to initialize Rhosync
-  def bootstrap
+  def bootstrap(basedir=nil)
+    #Load settings
+    settings_file = File.join(basedir,'settings','settings.yml') if basedir
+    config = YAML.parse_file(settings_file) if settings_file and File.exist?(settings_file)
+    #Load environment
+    environment = (ENV['RHO_ENV'] || :development).to_sym     
     # Initialize Rhosync and Resque
-    Rhosync.base_directory = nil
-    Rhosync.app_directory = nil
-    Rhosync.data_directory = nil
-    Rhosync.vendor_directory = nil
-    Rhosync.blackberry_bulk_sync = false
+    Rhosync.base_directory = basedir
+    Rhosync.app_directory = get_setting(config,environment,:app_directory)
+    Rhosync.data_directory = get_setting(config,environment,:data_directory)
+    Rhosync.vendor_directory = get_setting(config,environment,:vendor_directory)
+    Rhosync.blackberry_bulk_sync = get_setting(config,environment,:blackberry_bulk_sync,false)
+    Rhosync.environment = environment
     yield self if block_given?
     Store.create(Rhosync.redis)
     Resque.redis = Store.db
@@ -46,7 +52,6 @@ module Rhosync
     Rhosync.data_directory ||= File.join(Rhosync.base_directory,'data')
     Rhosync.vendor_directory ||= File.join(Rhosync.base_directory,'vendor')
     Rhosync.blackberry_bulk_sync ||= false
-    Rhosync.environment ||= :development
     # Add appdir and sources subdirectory
     # to load path if appdir exists
     if File.exist?(Rhosync.app_directory)
@@ -179,7 +184,7 @@ module Rhosync
   def timenow
     (Time.now.to_f * 1000)
   end
-    
+  
   # TODO: replace with real logger
   class Logger
     @@enabled = true
@@ -195,5 +200,12 @@ module Rhosync
         puts args.join unless args.nil? or @@enabled == false
       end
     end
+  end
+  
+  protected
+  def get_setting(config,environment,setting,default=nil)
+    res = nil
+    res = config[environment][setting] if config and environment 
+    res || default
   end
 end

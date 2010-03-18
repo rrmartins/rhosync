@@ -1,4 +1,4 @@
-class Trunnerapp
+class Benchapp
   class << self
     def authenticate(username,password,session)
       session[:auth] = "delegated"

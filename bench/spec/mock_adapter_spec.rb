@@ -1,9 +1,9 @@
 $:.unshift File.join(File.dirname(__FILE__))
-require 'trunner_spec_helper'
-require 'trunnerapp/rhosync/sources/mock_adapter'
+require 'bench_spec_helper'
+require 'benchapp/rhosync/sources/mock_adapter'
 
 describe "MockAdapter" do
-  it_should_behave_like "TrunnerSpecHelper" 
+  it_should_behave_like "BenchSpecHelper" 
   
   before(:each) do
     @s_fields = {
@@ -39,8 +39,8 @@ describe "MockAdapter" do
   end
        
   it "should create object in the db" do
-    new_object = {}.merge!(@product1).merge!('id'=>'1')
-    @ma.create(new_object).should == '1'
+    @product1.merge!('mock_id'=>'1')
+    @ma.create(@product1).should == '1'
     verify_result(@ma.db_name => {'1' => @product1})
   end     
   

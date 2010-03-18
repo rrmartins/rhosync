@@ -1,8 +1,8 @@
 $:.unshift File.join(File.dirname(__FILE__))
-require 'trunner_spec_helper'
+require 'bench_spec_helper'
 
 describe "UtilsSpec" do
-  it_should_behave_like "TrunnerSpecHelper"
+  it_should_behave_like "BenchSpecHelper"
   include Utils
   include Logging
   

@@ -1,6 +1,6 @@
-module TrunnerHelpers
-  include Trunner::Logging
-  include Trunner::Utils
+module BenchHelpers
+  include Bench::Logging
+  include Bench::Utils
   
   def client_docname(app_id,user_id,client_id,source_name,doctype)
     "client:#{app_id}:#{user_id}:#{client_id}:#{source_name}:#{doctype}"

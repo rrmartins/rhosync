@@ -1,7 +1,7 @@
 require 'faker'
 require 'uuidtools'
 
-module Trunner
+module Bench
   module TestData
     def get_test_data(num=1000,generate=false)
       file = File.join(File.dirname(__FILE__),'..',"testdata","#{num}-data.txt")

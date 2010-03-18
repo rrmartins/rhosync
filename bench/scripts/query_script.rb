@@ -1,24 +1,24 @@
 # Runs simple login,clientcreate,sync session and validates response
 
 @datasize = 100
-@expected = Trunner.get_test_data(@datasize)
+@expected = Bench.get_test_data(@datasize)
 @all_objects = "[{\"version\":3},{\"token\":\"%s\"},{\"count\":%i},{\"progress_count\":0},{\"total_count\":%i},{\"insert\":""}]"
 @ack_token = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":%i},{\"total_count\":%i},{}]"
 
-Trunner.config do |config|
+Bench.config do |config|
   config.concurrency = 5
   config.iterations  = 5
   config.user_name = "benchuser"
   config.password = "password"
-  config.app_name = "trunnerapp"
+  config.app_name = "benchapp"
   config.get_test_server
   config.import_app
   config.create_user
-  config.set_server_state("test_db_storage:trunnerapp:#{config.user_name}",@expected)
+  config.set_server_state("test_db_storage:benchapp:#{config.user_name}",@expected)
   config.reset_refresh_time('MockAdapter')
 end
 
-Trunner.test do |config,session|
+Bench.test do |config,session|
   sleep rand(10)
   session.post "clientlogin", "#{config.base_url}/clientlogin", :content_type => :json do
     {:login => config.user_name, :password => config.password}.to_json

@@ -1,4 +1,4 @@
-module Trunner
+module Bench
   module Timer
     def time
       start = Time.now

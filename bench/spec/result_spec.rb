@@ -1,9 +1,9 @@
 $:.unshift File.join(File.dirname(__FILE__))
-require 'trunner_spec_helper'
+require 'bench_spec_helper'
 require 'rest_client'
 
 describe "ResultSpec" do
-  it_should_behave_like "TrunnerSpecHelper"
+  it_should_behave_like "BenchSpecHelper"
   include Utils
 
   before(:each) do

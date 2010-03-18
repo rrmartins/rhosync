@@ -1,5 +1,5 @@
 --- 
-name: trunnerapp
+name: benchapp
 bbver: 4.6
 sdk: /Users/lars/Dev/code/rhomobile/rhodes
 applog: rholog.txt

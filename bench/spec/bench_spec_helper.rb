@@ -1,13 +1,13 @@
 require 'log4r'
 $:.unshift File.join(File.dirname(__FILE__),'..')
 $:.unshift File.join(File.dirname(__FILE__),'..','lib')
-require 'trunner/logging'
-require 'trunner/mock_client'
-require 'trunner/utils'
-require 'trunner/result'
-include Trunner
+require 'bench/logging'
+require 'bench/mock_client'
+require 'bench/utils'
+require 'bench/result'
+include Bench
 
-describe "TrunnerSpecHelper", :shared => true do
+describe "BenchSpecHelper", :shared => true do
   before(:each) do
     Store.create
     Store.db.flushdb

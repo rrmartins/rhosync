@@ -3,7 +3,7 @@ $:.unshift File.join(File.dirname(__FILE__),'..','..','..','lib')
 require 'rhosync'
 include Rhosync
   
-module Trunner
+module Bench
   class MockClient
     include Logging
         

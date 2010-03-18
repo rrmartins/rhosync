@@ -1,4 +1,4 @@
-module Trunner
+module Bench
   class Runner
     include Logging
     include Timer
@@ -20,7 +20,7 @@ module Trunner
               s = Session.new(tid,iteration)
               @sessions << s
               begin
-                yield Trunner,s
+                yield Bench,s
               rescue Exception => e
                 puts "error running script: #{e.inspect}"
               end    
@@ -36,8 +36,8 @@ module Trunner
           logger.info "Request timed out #{e}"
         end
       end
-      Trunner.sessions = @sessions
-      Trunner.total_time = total_time
+      Bench.sessions = @sessions
+      Bench.total_time = total_time
     end    
   end
 end  

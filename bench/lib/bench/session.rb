@@ -1,4 +1,4 @@
-module Trunner
+module Bench
   class Session
     include Logging
     include Timer

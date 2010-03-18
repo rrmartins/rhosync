@@ -1,6 +1,6 @@
 require 'set'
 
-module Trunner
+module Bench
   class Result
     attr_accessor :last_response,:time,:marker,:url,:verb,:error,:verification_error
     include Logging

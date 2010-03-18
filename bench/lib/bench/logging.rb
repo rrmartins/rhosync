@@ -1,4 +1,4 @@
-module Trunner
+module Bench
   module Logging
     def logger
       init_logger if Log4r::Logger['main'].nil?

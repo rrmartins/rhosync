@@ -1,0 +1,30 @@
+sources: &sources
+  SampleAdapter:
+    source_id: 1
+    url: http://example.com
+    login: testuser
+    password: testpass
+    poll_interval: 300
+  SimpleAdapter:
+    source_id: 2
+    url: http://foo.com
+    login: testuser1
+    password: testpass1
+    poll_interval: 600
+    partition_type: app
+    
+:development:
+  :sources:
+    <<: *sources
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/apps/benchapp/
+:test: 
+  :sources:
+    <<: *sources
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/apps/benchapp/
+:production: 
+  :sources:
+    <<: *sources
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/apps/benchapp/

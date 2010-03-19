@@ -21,7 +21,8 @@ describe "RhosyncApiImportApp" do
     target = File.join(File.dirname(__FILE__),'..','..','apps',@appname)
     entries = Dir.entries(target)
     entries.reject! {|entry| entry == '.' || entry == '..'}
-    entries.sort.should == ["config.yml", "rhotestapp.rb", "sources", "vendor"]
+    entries.sort.should == ["Rakefile", "config.ru", 
+      "rhotestapp.rb", "settings", "sources", "vendor"]
   end
   
   it "should add vendor libs to load path" do

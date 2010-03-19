@@ -90,8 +90,8 @@ module Bench
     end
     
     def get_test_server
-      process_rhoconfig(File.join(File.dirname(__FILE__),'..',@app_name,'rhoconfig.txt'))
-      @base_url = $rhoconfig['syncserver'].gsub(/\/$/,'')
+      load_settings(File.join(File.dirname(__FILE__),'..',@app_name,'settings','settings.yml'))
+      @base_url = $settings[:development][:syncserver].gsub(/\/$/,'')
       uri = URI.parse(@base_url)
       port = (uri.port and uri.port != 80) ? ":"+uri.port.to_s : "" 
       @host = "#{uri.scheme}://#{uri.host}#{port}"
@@ -121,24 +121,13 @@ module Bench
     end
     
     # TODO: Share this code with the framework Rho class
-    def process_rhoconfig(file)
+    def load_settings(file)
       begin
-        $rhoconfig = {}
-        File.open(file).each do |line|
-          # Skip empty or commented out lines
-          next if line =~ /^\s*(#|$)/
-          parts = line.chomp.split('=')
-          key = parts[0]
-          value = parts[1] if parts[1]
-          if key and value
-            val = value.strip.gsub(/\'|\"/,'')
-            val = val == 'nil' ? nil : val
-            $rhoconfig[key.strip] = val
-          end  
-        end
+        $settings = YAML.load_file(file)
       rescue Exception => e
-        puts "Error opening rhoconfig.txt: #{e}, using defaults."
+        puts "Error opening settings file #{file}: #{e}."
         puts e.backtrace.join("\n")
+        raise e
       end
     end
   end

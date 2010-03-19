@@ -34,7 +34,7 @@ module Rhosync
   def bootstrap(basedir=nil)
     #Load settings
     settings_file = File.join(basedir,'settings','settings.yml') if basedir
-    config = YAML.parse_file(settings_file) if settings_file and File.exist?(settings_file)
+    config = YAML.load_file(settings_file) if settings_file and File.exist?(settings_file)
     #Load environment
     environment = (ENV['RHO_ENV'] || :development).to_sym     
     # Initialize Rhosync and Resque

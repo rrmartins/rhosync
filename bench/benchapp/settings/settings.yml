@@ -1,0 +1,18 @@
+sources: &sources
+  MockAdapter:
+    source_id: 1
+    poll_interval: 300
+    queue: abc
+
+:development:
+  <<: *sources
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/apps/benchapp/
+:test: 
+  <<: *sources
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/apps/benchapp/
+:production: 
+  <<: *sources
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/apps/benchapp/    

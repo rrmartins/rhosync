@@ -1,9 +1,8 @@
 {
-"%fcf11a05297244fdbfa1e8b9916c0537{"LastName"Wisoky"JobTitle"Electronics Director"FirstName"Loraine"Phone1"(447)466-9593"Company"Turner and Sons"mock_id"%fcf11a05297244fdbfa1e8b9916c0537"
-Email"triston@hotmail.com"%12eeb4045fef4cb893bffb79bcdb80a5{@"Jacobs@
-"Chief Mechanic@"	Skye@"(929)683-4001 x72699@"Grant, Olson and Hoeger@"%12eeb4045fef4cb893bffb79bcdb80a5@"sven@yahoo.com"%b4e55064c3fc4f2eb095178aab11f8eb{@"Schinner@
-"Electronics Planner@"
-Alysa@"(992)578-6150 x84011@"Becker Inc@"%b4e55064c3fc4f2eb095178aab11f8eb@"maverick@yahoo.com"%b7dda732dd2b4c2290bca105da9bc03b{@"Renner@
-"Assistant Accountant@"Carlotta@"623.517.7035@"Grant-Pouros@"%b7dda732dd2b4c2290bca105da9bc03b@"leone@hotmail.com"%8ab2b4e0a9c74c5cb8a2cc329f4ae500{@"
-Ratke@
-"Head Technician@"	Lacy@"1-420-946-6010 x638@"Rempel Inc@"%8ab2b4e0a9c74c5cb8a2cc329f4ae500@"emmanuel@hotmail.com
+"%81c3916ed2fc41e7bbba794df5929071{"LastName"Toy"JobTitle"Chief Director"FirstName"Gregory"Phone1"178.503.6261 x9112"Company"#Heller, Hermann and Hodkiewicz"mock_id"%81c3916ed2fc41e7bbba794df5929071"
+Email"hayley@hotmail.com"%68500c9dcfbc4ba99e34b2298126e149{@"Reichert@
+"Quality Assurance Clerk@"Nickolas@"(248)261-4520 x9771@"Casper Inc@"%68500c9dcfbc4ba99e34b2298126e149@"alfredo.turner@yahoo.com"%f19a7335712a4835a797ade8cbc49efb{@"	Hane@
+"Banking Scientist@"Gustave@"187.885.9027@"Purdy LLC@"%f19a7335712a4835a797ade8cbc49efb@""adalberto_effertz@hotmail.com"%af616b4c7db44ed7a35808046bfaed98{@"Franecki@
+"Administrative Recruiter@"
+Brock@"1-261-291-3815@"Hirthe-Mertz@"%af616b4c7db44ed7a35808046bfaed98@"erling_pouros@gmail.com"%57b119f486c04b6ba8162013f286bbe0{@"Beahan@
+"Laboratory Mechanic@"Horacio@"(322)918-5619 x53402@"Ratke, Grady and Stark@"%57b119f486c04b6ba8162013f286bbe0@"libbie@gmail.com

@@ -6,7 +6,7 @@ describe "BulkData Performance" do
   it_should_behave_like "PerfSpecHelper"
   
   before(:each) do
-    basedir = File.join(File.dirname(__FILE__),'..')
+    basedir = File.join(File.dirname(__FILE__),'..','apps','rhotestapp')
     Rhosync.bootstrap(basedir) do |rhosync|
       rhosync.vendor_directory = File.join(basedir,'..','vendor')
     end

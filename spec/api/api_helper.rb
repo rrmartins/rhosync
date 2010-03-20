@@ -14,14 +14,14 @@ require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 describe "ApiHelper", :shared => true do
   include Rack::Test::Methods
   
+  it_should_behave_like "TestappHelper"
   it_should_behave_like "SourceAdapterHelper"
   
   before(:each) do
     @appname = @a_fields[:name]
-    delete_app_directory
-    basedir = File.join(File.dirname(__FILE__),'..','..')
-    Rhosync.bootstrap do |rhosync|
-      rhosync.base_directory = basedir
+    require File.join(get_testapp_path,@test_app_name)
+    Rhosync.bootstrap(get_testapp_path) do |rhosync|
+      rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')
     end
     Server.set( 
       :environment => :test,
@@ -31,26 +31,9 @@ describe "ApiHelper", :shared => true do
     @api_token = User.load('admin').token_id
   end
   
-  after(:each) do
-    delete_app_directory
-  end
-  
-  def delete_app_directory
-    FileUtils.rm_rf File.join(File.dirname(__FILE__),'..','..','apps')
-  end
-  
   def app
     @app ||= Server.new
   end
-end
-
-def upload_test_apps
-  file = File.join(File.dirname(__FILE__),'..','apps',@appname)
-  compress(file)
-  zipfile = File.join(file,"#{@appname}.zip")
-  post "/api/import_app", :app_name => @appname, :api_token => @api_token, 
-    :upload_file => Rack::Test::UploadedFile.new(zipfile, "application/octet-stream")
-  FileUtils.rm_f zipfile
 end
 
 def compress(path)

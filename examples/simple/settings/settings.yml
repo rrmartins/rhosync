@@ -1,6 +1,16 @@
+sources: &sources
+  SimpleAdapter:
+    poll_interval: 300
+
 :development:
+  <<: *sources
   :redis: localhost:6379
+  :syncserver: http://localhost:9292/apps/simple/
 :test: 
+  <<: *sources
   :redis: localhost:6379
+  :syncserver: http://localhost:9292/apps/simple/
 :production: 
+  <<: *sources
   :redis: localhost:6379
+  :syncserver: http://localhost:9292/apps/simple/

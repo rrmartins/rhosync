@@ -21,7 +21,7 @@ module Rhosync
     
     def self.create(fields,params)
       fields = fields.with_indifferent_access # so we can access hash keys as symbols
-      validate_attributes(params)
+      # validate_attributes(params)
       fields[:id] = fields[:name]
       fields[:url] ||= ''
       fields[:login] ||= ''

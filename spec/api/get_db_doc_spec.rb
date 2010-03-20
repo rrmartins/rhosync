@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__),'api_helper')
 
-describe "GetDbDocSpec" do
+describe "RhosyncApiGetDbDoc" do
   it_should_behave_like "ApiHelper"
   
   it "should return db document by name" do

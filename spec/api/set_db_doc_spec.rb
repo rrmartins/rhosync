@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__),'api_helper')
 
-describe "SetDbDocSpec" do
+describe "RhosyncApiSetDbDoc" do
   it_should_behave_like "ApiHelper"
   
   it "should set db document by doc name and data" do

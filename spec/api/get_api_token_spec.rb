@@ -9,4 +9,10 @@ describe "RhosyncApiGetApiToken" do
     last_response.body.should == @api_token
   end
   
+  it "should return 422 if no token provided" do
+    params = {:app_name => @appname, :attributes => 
+      {:login => 'testuser1', :password => 'testpass1'}}
+    post "/api/create_user", params
+    last_response.status.should == 422
+  end
 end

@@ -14,10 +14,6 @@ module Rhosync
         rescue Exception; end
         super(fields)
       end
-          
-      def appdir(name)
-        File.join(Rhosync.app_directory,name)
-      end
     end
     
     def can_authenticate?

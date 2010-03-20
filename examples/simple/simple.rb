@@ -12,11 +12,10 @@ class Simple
       end
       require 'rhosync'
       require 'rhosync/server'
+      # Bootstrap Rhosync system
+      Rhosync.bootstrap(File.dirname(__FILE__))
     end
   end
 end
 
 Simple.initializer
-
-# Bootstrap Rhosync system
-Rhosync.bootstrap(File.dirname(__FILE__))

@@ -29,12 +29,11 @@ module Rhosync
     attr_accessor :base_directory, :app_directory, :data_directory, 
       :vendor_directory, :blackberry_bulk_sync, :redis, :environment
   end
-    
+  
+  ### Begin Rhosync setup methods  
   # Server hook to initialize Rhosync
-  def bootstrap(basedir=nil)
-    #Load settings
-    settings_file = File.join(basedir,'settings','settings.yml') if basedir
-    config = YAML.load_file(settings_file) if settings_file and File.exist?(settings_file)
+  def bootstrap(basedir)
+    config = get_config(basedir)
     #Load environment
     environment = (ENV['RHO_ENV'] || :development).to_sym     
     # Initialize Rhosync and Resque
@@ -48,24 +47,36 @@ module Rhosync
     Store.create(Rhosync.redis)
     Resque.redis = Store.db
     Rhosync.base_directory ||= File.join(File.dirname(__FILE__),'..')
-    Rhosync.app_directory ||= File.join(Rhosync.base_directory,'apps')
+    Rhosync.app_directory ||= Rhosync.base_directory
     Rhosync.data_directory ||= File.join(Rhosync.base_directory,'data')
     Rhosync.vendor_directory ||= File.join(Rhosync.base_directory,'vendor')
     Rhosync.blackberry_bulk_sync ||= false
-    # Add appdir and sources subdirectory
-    # to load path if appdir exists
-    if File.exist?(Rhosync.app_directory)
-      Dir.entries(Rhosync.app_directory).each do |name|
-        unless name == '..' || name == '.'
-          appdir = File.join(Rhosync.app_directory,name)
-          app_file = underscore(File.join(appdir,name+'.rb'))
-          set_load_path(appdir)
-          load app_file if File.exists?(app_file)
-        end
-      end
-    end
+    check_and_add(File.join(Rhosync.app_directory,'sources'))
+    start_app(config)
     create_admin_user
     check_hsql_lib! if Rhosync.blackberry_bulk_sync
+  end
+  
+  def start_app(config)
+    if config and config[Rhosync.environment][:sources]
+      app = nil
+      app_name = get_app_name(config)
+      if App.is_exist?(app_name)
+        app = App.load(app_name)
+      else
+        app = App.create(:name => app_name)
+      end
+      config[Rhosync.environment][:sources].each do |source_name,fields|
+        fields[:name] = source_name
+        source = nil
+        unless app.sources.members.include?(source_name) or Source.is_exist?(source_name)
+          source = Source.create(fields,{:app_id => app.name})
+          app.sources << source.name
+        end
+        # load ruby file for source adapter to re-load class
+        load underscore(source_name+'.rb')
+      end
+    end
   end
   
   # Generate admin user on first load
@@ -77,19 +88,24 @@ module Rhosync
     end
   end
 
-  # Sets up load path with ruby source for apps, sources, and vendor gems
-  def set_load_path(appdir)
-    check_and_add(appdir)
-    check_and_add(File.join(appdir,'sources'))
-    Dir["#{appdir}/vendor/*"].each do |dir|
-      check_and_add(File.join(dir,'lib'))
-    end
-  end
-
   # Add path to load_path unless it has been added already
   def check_and_add(path)
     $:.unshift path unless $:.include?(path) 
   end
+  
+  # Return app_name if it is configured, otherwise use directory name
+  def get_app_name(config)
+    config[:app_name] || File.basename(Rhosync.base_directory)
+  end
+  
+  def get_config(basedir)
+    #Load settings
+    settings_file = File.join(basedir,'settings','settings.yml') if basedir
+    config = YAML.load_file(settings_file) if settings_file and File.exist?(settings_file)
+  end
+  ### End Rhosync setup methods  
+  
+  
   
   def check_default_secret!(secret)
     if secret == '<changeme>'                        
@@ -157,15 +173,20 @@ module Rhosync
 
   def unzip_file(file_dir,params)
     uploaded_file = File.join(file_dir, params[:filename])
-    File.open(uploaded_file, 'wb') do |file|
-      file.write(params[:tempfile].read)
-    end
-    Zip::ZipFile.open(uploaded_file) do |zip_file|
-      zip_file.each do |f|
-        f_path = File.join(file_dir,f.name)
-        FileUtils.mkdir_p(File.dirname(f_path))
-        zip_file.extract(f, f_path)
+    begin
+      File.open(uploaded_file, 'wb') do |file|
+        file.write(params[:tempfile].read)
       end
+      Zip::ZipFile.open(uploaded_file) do |zip_file|
+        zip_file.each do |f|
+          f_path = File.join(file_dir,f.name)
+          FileUtils.mkdir_p(File.dirname(f_path))
+          zip_file.extract(f, f_path) { true }
+        end
+      end
+    rescue Exception => e
+      Logger.error "Failed to unzip #{uploaded_file}"
+      raise e
     end
     FileUtils.rm_f(uploaded_file)
   end

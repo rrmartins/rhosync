@@ -9,6 +9,15 @@ describe "RhosyncHelper", :shared => true do
   end
 end
 
+describe "TestappHelper", :shared => true do
+  before(:all) do
+    @test_app_name = 'rhotestapp'
+  end
+  def get_testapp_path
+    File.expand_path(File.join(File.dirname(__FILE__),'apps',@test_app_name))
+  end
+end
+
 describe "RhosyncDataHelper", :shared => true do
   it_should_behave_like "RhosyncHelper"
   
@@ -16,7 +25,6 @@ describe "RhosyncDataHelper", :shared => true do
     @source = 'Product'
     @user_id = 5
     @client_id = 1
-    @app_id = 2
     
     @product1 = {
       'name' => 'iPhone',
@@ -48,12 +56,14 @@ end
 
 describe "SourceAdapterHelper", :shared => true do
   it_should_behave_like "RhosyncDataHelper"
+  it_should_behave_like "TestappHelper"
   
   ERROR = '0_broken_object_id' unless defined? ERROR
   
   before(:each) do
-    @a_fields = { :name => 'rhotestapp' }
-    @a = App.create(@a_fields)
+    @a_fields = { :name => @test_app_name }
+    # @a = App.create(@a_fields)
+    @a = (App.load(@test_app_name) || App.create(@a_fields))
     @u_fields = {:login => 'testuser'}
     @u = User.create(@u_fields) 
     @u.password = 'testpass'
@@ -215,9 +225,9 @@ describe "StorageStateHelper", :shared => true do
 end
 
 describe "SpecBootstrapHelper", :shared => true do
+  it_should_behave_like "TestappHelper"
   before(:all) do
-    Rhosync.bootstrap do |rhosync|
-      rhosync.base_directory = File.dirname(__FILE__)
+    Rhosync.bootstrap(get_testapp_path) do |rhosync|
       rhosync.vendor_directory = File.join(File.dirname(__FILE__),'..','vendor')
     end
   end

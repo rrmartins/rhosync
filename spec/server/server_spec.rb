@@ -9,22 +9,23 @@ require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
 describe "Server" do
   it_should_behave_like "SourceAdapterHelper"
+  it_should_behave_like "TestappHelper"
   
   include Rack::Test::Methods
   include Rhosync
   
   before(:each) do
-    basedir = File.join(File.dirname(__FILE__),'..')
-    Rhosync.bootstrap do |rhosync|
-      rhosync.base_directory = basedir
-      rhosync.vendor_directory = File.join(basedir,'..','vendor')
+    require File.join(get_testapp_path,@test_app_name)
+    Rhosync.bootstrap(get_testapp_path) do |rhosync|
+      rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')
     end
     Server.set( 
       :environment => :test,
       :run => false,
       :secret => "secure!"
     )
-    Server.use Rack::Static, :urls => ["/spec/data"], :root => File.join(basedir,'..')
+    Server.use Rack::Static, :urls => ["/data"], 
+      :root =>  File.join(File.dirname(__FILE__),'..','apps',@test_app_name)
   end
 
   def app
@@ -238,7 +239,7 @@ describe "Server" do
     
     it "should get multiple source search results" do
       @s_fields[:name] = 'SimpleAdapter'
-      @s1 = Source.create(@s_fields,@s_params)
+      @s1 = Source.load(@s_fields,@s_params)
       Store.put_data('test_db_storage',@data)
       sources = ['SimpleAdapter','SampleAdapter']
       params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},
@@ -262,7 +263,7 @@ describe "Server" do
     end
     
     after(:each) do
-     delete_data_directory
+      delete_data_directory
     end
   
     it "should make initial bulk data request and receive wait" do
@@ -288,7 +289,7 @@ describe "Server" do
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
       get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
-      get "/spec/data/#{@a.name}/#{@u.id}/#{JSON.parse(last_response.body)["url"].split('/').last}"
+      get "/data/#{@a.name}/#{@u.id}/#{JSON.parse(last_response.body)["url"].split('/').last}"
       last_response.should be_ok
       File.open('test.data','wb') {|f| f.puts last_response.body}
       validate_db_by_name('test.data',@data)
@@ -297,6 +298,7 @@ describe "Server" do
   
     it "should receive nop when no sources are available for partition" do
       set_state('test_db_storage' => @data)
+      Source.load('SimpleAdapter',@s_params).partition = :user
       get "/apps/#{@a.name}/bulk_data", :partition => :app, :client_id => @c.id
       last_response.should be_ok
       last_response.body.should == {:result => :nop}.to_json

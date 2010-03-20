@@ -21,8 +21,7 @@ describe "Rhosync Protocol" do
     $content_table ||= []
     $content ||= []
     basedir = File.join(File.dirname(__FILE__),'..')
-    Rhosync.bootstrap do |rhosync|
-      rhosync.base_directory = basedir
+    Rhosync.bootstrap(basedir) do |rhosync|
       rhosync.vendor_directory = File.join(basedir,'..','vendor')
     end
     Server.set( 

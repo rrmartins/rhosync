@@ -31,6 +31,14 @@ describe "User" do
     ApiToken.is_exist?(token).should == false
   end
   
+  it "should assign token to existing user" do
+    token = @u.create_token
+    @u.token = 'foo'
+    @u.token.value.should == 'foo'
+    ApiToken.is_exist?('foo').should == true
+    ApiToken.is_exist?(token).should == false
+  end
+  
   it "should authenticate with proper credentials" do
     @u1 = User.authenticate(@u_fields[:login],'testpass')
     @u1.should_not be_nil

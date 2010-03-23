@@ -95,7 +95,7 @@ module Rhosync
   
   # Return app_name if it is configured, otherwise use directory name
   def get_app_name(config)
-    config[:app_name] || File.basename(Rhosync.base_directory)
+    config[:app_name] || File.basename(File.expand_path(Rhosync.base_directory))
   end
   
   def get_config(basedir)
@@ -185,10 +185,11 @@ module Rhosync
         end
       end
     rescue Exception => e
-      Logger.error "Failed to unzip #{uploaded_file}"
+      Logger.error "Failed to unzip `#{uploaded_file}`"
       raise e
+    ensure
+      FileUtils.rm_f(uploaded_file)
     end
-    FileUtils.rm_f(uploaded_file)
   end
 
   def lap_timer(msg,start)

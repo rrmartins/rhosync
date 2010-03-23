@@ -12,7 +12,7 @@ Bench.config do |config|
   config.password = "password"
   config.app_name = "benchapp"
   config.get_test_server
-  config.import_app
+  config.reset_app
   config.create_user
   config.set_server_state("test_db_storage:benchapp:#{config.user_name}",@expected)
   config.reset_refresh_time('MockAdapter')

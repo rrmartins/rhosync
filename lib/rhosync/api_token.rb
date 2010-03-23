@@ -6,7 +6,7 @@ module Rhosync
     validates_presence_of :user_id
     
     def self.create(fields)
-      fields[:value] = get_random_uuid
+      fields[:value] = fields[:value] || get_random_uuid
       fields[:id] = fields[:value]
       object = super(fields)
     end

@@ -1,6 +1,6 @@
 $:.unshift File.join(File.dirname(__FILE__))
 require 'bench_spec_helper'
-require 'benchapp/rhosync/sources/mock_adapter'
+require 'benchapp/sources/mock_adapter'
 
 describe "MockAdapter" do
   it_should_behave_like "BenchSpecHelper" 

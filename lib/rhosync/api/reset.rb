@@ -7,6 +7,8 @@ Rhosync::Server.api :reset do |params,user|
       app_klass.send :initializer 
     else
       Rhosync.bootstrap(Rhosync.base_directory) 
-    end  
+    end
+    # restoring previous token value after flushdb
+    user.token = params[:api_token]
   end
 end

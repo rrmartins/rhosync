@@ -46,13 +46,20 @@ module Rhosync
     
     def create_token
       if self.token_id && ApiToken.is_exist?(self.token_id)
-        ApiToken.load(self.token_id).delete 
+        self.token.delete 
       end
       self.token_id = ApiToken.create(:user_id => self.login).id
     end
     
     def token
       ApiToken.load(self.token_id)
+    end
+    
+    def token=(value)
+      if self.token_id && ApiToken.is_exist?(self.token_id)
+        self.token.delete 
+      end
+      self.token_id = ApiToken.create(:user_id => self.login, :value => value).id
     end
     
     def update(fields)

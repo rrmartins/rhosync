@@ -47,14 +47,8 @@ module Bench
       JSON.parse(@body.to_s)
     end
     
-    def import_app
-      token = get_token
-      file = File.join(File.dirname(__FILE__),'..',@app_name,'rhosync')
-      zipfile = compress(file)
-      Mechanize.new.post("#{@host}/api/import_app",
-        :app_name => @app_name, :api_token => token,
-        :upload_file =>  File.new(zipfile, "rb"))
-      FileUtils.rm zipfile, :force => true
+    def reset_app
+      Mechanize.new.post("#{@host}/api/reset",:api_token => get_token)
     end
     
     def create_user

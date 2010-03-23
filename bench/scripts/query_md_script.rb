@@ -1,6 +1,6 @@
 # Run sync session, forces source adapter query on every sync request
 
-@datasize = 500
+@datasize = 100
 @expected = Bench.get_test_data(@datasize)
 @all_objects = "[{\"version\":3},{\"token\":\"%s\"},{\"count\":%i},{\"progress_count\":0},{\"total_count\":%i},{\"insert\":""}]"
 @ack_token = "[{\"version\":3},{\"token\":\"\"},{\"count\":0},{\"progress_count\":%i},{\"total_count\":%i},{}]"
@@ -12,7 +12,7 @@ Bench.config do |config|
   config.password = "password"
   config.app_name = "benchapp"
   config.get_test_server
-  config.import_app
+  config.reset_app
   config.create_user
   config.set_server_state("test_db_storage:benchapp:#{config.user_name}",@expected)
   config.reset_refresh_time('MockAdapter',0)

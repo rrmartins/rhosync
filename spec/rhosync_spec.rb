@@ -30,4 +30,8 @@ describe "Rhosync" do
     App.should_receive(:load).once.with(@test_app_name).and_return(app)
     Rhosync.bootstrap(get_testapp_path)
   end
+  
+  it "should configure app_name in settings.yml" do
+    Rhosync.get_config(Rhosync.base_directory)[Rhosync.environment][:name].should == @test_app_name
+  end
 end

@@ -95,7 +95,7 @@ module Rhosync
   
   # Return app_name if it is configured, otherwise use directory name
   def get_app_name(config)
-    config[:app_name] || File.basename(File.expand_path(Rhosync.base_directory))
+    config[Rhosync.environment][:app_name] || File.basename(File.expand_path(Rhosync.base_directory))
   end
   
   def get_config(basedir)

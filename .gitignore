@@ -6,4 +6,4 @@ tmp
 log
 .yardoc
 doc/protocol.html
-vendor
+/vendor

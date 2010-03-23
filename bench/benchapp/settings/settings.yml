@@ -1,8 +1,8 @@
 defaults: &defaults
   :sources:
     MockAdapter:
-      source_id: 1
       poll_interval: 300
+    QueueMockAdapter:
       queue: abc
 
 :development:

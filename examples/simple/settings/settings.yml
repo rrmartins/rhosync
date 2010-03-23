@@ -6,12 +6,12 @@ defaults: &defaults
 :development:
   <<: *defaults
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/benchapp/
+  :syncserver: http://localhost:9292/apps/simple/
 :test: 
   <<: *defaults
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/benchapp/
+  :syncserver: http://localhost:9292/apps/simple/
 :production: 
   <<: *defaults
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/benchapp/
+  :syncserver: http://localhost:9292/apps/simple/

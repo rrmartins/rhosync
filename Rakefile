@@ -61,6 +61,7 @@ begin
     gemspec.add_dependency "redis", ">=0.2.0"
     gemspec.add_dependency "resque", ">=1.6.0"
     gemspec.add_dependency "sinatra", ">=0.9.2"
+    gemspec.add_dependency "templater", ">=1.0.0"
     gemspec.add_development_dependency "jeweler", ">=1.4.0"
     gemspec.add_development_dependency "rspec", ">=1.3.0"
     gemspec.add_development_dependency "rcov", ">=0.9.8"

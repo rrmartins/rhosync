@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'templater'
-puts "loaded generator"
 
 module Rhosync
   extend Templater::Manifold

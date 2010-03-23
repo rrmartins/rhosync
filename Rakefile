@@ -18,6 +18,7 @@ TYPES = { :spec   => 'spec/*_spec.rb',
           :api    => 'spec/api/*_spec.rb',
           :bulk   => 'spec/bulk_data/*_spec.rb',
           :doc    => 'spec/doc/*_spec.rb', 
+          :generator => 'spec/generator/*_spec.rb',
           :bench_spec => 'bench/spec/*_spec.rb'}
  
 TYPES.each do |type,files|
@@ -51,6 +52,7 @@ begin
     gemspec.homepage = %q{http://rhomobile.com/products/rhosync}
     gemspec.authors = ["Rhomobile"]
     gemspec.version = Rhosync::VERSION
+    gemspec.files =  FileList["[A-Z]*", "{bench,bin,doc,generators,lib,spec}/**/*"]
 
     gemspec.add_dependency "json", ">=1.2.3"
     gemspec.add_dependency "sqlite3-ruby", ">=1.2.5"

@@ -5,21 +5,30 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rhosync}
-  s.version = "1.6.0"
+  s.version = "2.0.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-03-12}
+  s.date = %q{2010-03-22}
+  s.default_executable = %q{rhosync}
   s.description = %q{Rhosync Server and related command-line utilities for using Rhosync}
+  s.executables = ["rhosync"]
   s.extra_rdoc_files = [
     "LICENSE",
      "README.md"
   ]
   s.files = [
-    ".gitignore",
-     "LICENSE",
+    "LICENSE",
      "README.md",
      "Rakefile",
+     "bench/bench",
+     "bench/benchapp/Rakefile",
+     "bench/benchapp/benchapp.rb",
+     "bench/benchapp/config.ru",
+     "bench/benchapp/settings/settings.yml",
+     "bench/benchapp/sources/mock_adapter.rb",
+     "bench/benchapp/sources/queue_mock_adapter.rb",
+     "bench/benchapp/vendor/rhosync/lib/rhosync.rb",
      "bench/lib/bench.rb",
      "bench/lib/bench/cli.rb",
      "bench/lib/bench/logging.rb",
@@ -31,34 +40,29 @@ Gem::Specification.new do |s|
      "bench/lib/bench/test_data.rb",
      "bench/lib/bench/timer.rb",
      "bench/lib/bench/utils.rb",
+     "bench/lib/testdata/100-data.txt",
+     "bench/lib/testdata/5-data.txt",
      "bench/scripts/cud_script.rb",
      "bench/scripts/helpers.rb",
      "bench/scripts/query_md_script.rb",
      "bench/scripts/query_script.rb",
+     "bench/spec/bench_spec_helper.rb",
      "bench/spec/logging_spec.rb",
      "bench/spec/mock_adapter_spec.rb",
      "bench/spec/mock_client_spec.rb",
      "bench/spec/result_spec.rb",
-     "bench/spec/bench_spec_helper.rb",
-     "bench/bench",
-     "bench/benchapp/Rakefile",
-     "bench/benchapp/build.yml",
-     "bench/benchapp/rhoconfig.txt",
-     "bench/benchapp/rhosync/config.yml",
-     "bench/benchapp/rhosync/sources/mock_adapter.rb",
-     "bench/benchapp/rhosync/benchapp.rb",
-     "config.ru",
+     "bench/spec/utils_spec.rb",
+     "bin/rhosync",
+     "doc/protocol.html",
      "doc/public/css/print.css",
      "doc/public/css/screen.css",
      "doc/public/css/style.css",
+     "generators/rhosync.rb",
      "lib/rhosync.rb",
      "lib/rhosync/api/create_user.rb",
-     "lib/rhosync/api/delete_app.rb",
-     "lib/rhosync/api/flushdb.rb",
      "lib/rhosync/api/get_api_token.rb",
      "lib/rhosync/api/get_db_doc.rb",
-     "lib/rhosync/api/import_app.rb",
-     "lib/rhosync/api/list_apps.rb",
+     "lib/rhosync/api/reset.rb",
      "lib/rhosync/api/set_db_doc.rb",
      "lib/rhosync/api/set_refresh_time.rb",
      "lib/rhosync/api/update_user.rb",
@@ -82,26 +86,26 @@ Gem::Specification.new do |s|
      "lib/rhosync/server/views/index.erb",
      "lib/rhosync/source.rb",
      "lib/rhosync/source_adapter.rb",
+     "lib/rhosync/source_job.rb",
      "lib/rhosync/source_sync.rb",
      "lib/rhosync/store.rb",
      "lib/rhosync/user.rb",
      "lib/rhosync/version.rb",
      "spec/api/api_helper.rb",
      "spec/api/create_user_spec.rb",
-     "spec/api/delete_app_spec.rb",
-     "spec/api/flushdb_spec.rb",
      "spec/api/get_api_token_spec.rb",
      "spec/api/get_db_doc_spec.rb",
-     "spec/api/import_app_spec.rb",
-     "spec/api/list_apps_spec.rb",
+     "spec/api/reset_spec.rb",
      "spec/api/set_db_doc_spec.rb",
      "spec/api/set_refresh_time_spec.rb",
      "spec/api/update_user_spec.rb",
      "spec/api/upload_file_spec.rb",
      "spec/api_token_spec.rb",
      "spec/app_spec.rb",
-     "spec/apps/rhotestapp/config.yml",
+     "spec/apps/rhotestapp/Rakefile",
+     "spec/apps/rhotestapp/config.ru",
      "spec/apps/rhotestapp/rhotestapp.rb",
+     "spec/apps/rhotestapp/settings/settings.yml",
      "spec/apps/rhotestapp/sources/base_adapter.rb",
      "spec/apps/rhotestapp/sources/sample_adapter.rb",
      "spec/apps/rhotestapp/sources/simple_adapter.rb",
@@ -122,17 +126,17 @@ Gem::Specification.new do |s|
      "spec/perf/perf_spec_helper.rb",
      "spec/perf/store_perf_spec.rb",
      "spec/read_state_spec.rb",
+     "spec/rhosync_spec.rb",
      "spec/server/server_spec.rb",
      "spec/source_adapter_spec.rb",
+     "spec/source_job_spec.rb",
      "spec/source_spec.rb",
      "spec/source_sync_spec.rb",
      "spec/spec_helper.rb",
      "spec/store_spec.rb",
      "spec/sync_states_spec.rb",
      "spec/testdata/1000-data.txt",
-     "spec/testdata/compress-data.txt",
-     "spec/testdata/testapptwo/config.yml",
-     "spec/testdata/testapptwo/sources/sample_adapter.rb",
+     "spec/testdata/compressed/compress-data.txt",
      "spec/user_spec.rb"
   ]
   s.homepage = %q{http://rhomobile.com/products/rhosync}
@@ -143,12 +147,9 @@ Gem::Specification.new do |s|
   s.test_files = [
     "spec/api/api_helper.rb",
      "spec/api/create_user_spec.rb",
-     "spec/api/delete_app_spec.rb",
-     "spec/api/flushdb_spec.rb",
      "spec/api/get_api_token_spec.rb",
      "spec/api/get_db_doc_spec.rb",
-     "spec/api/import_app_spec.rb",
-     "spec/api/list_apps_spec.rb",
+     "spec/api/reset_spec.rb",
      "spec/api/set_db_doc_spec.rb",
      "spec/api/set_refresh_time_spec.rb",
      "spec/api/update_user_spec.rb",
@@ -173,15 +174,19 @@ Gem::Specification.new do |s|
      "spec/perf/perf_spec_helper.rb",
      "spec/perf/store_perf_spec.rb",
      "spec/read_state_spec.rb",
+     "spec/rhosync_spec.rb",
      "spec/server/server_spec.rb",
      "spec/source_adapter_spec.rb",
+     "spec/source_job_spec.rb",
      "spec/source_spec.rb",
      "spec/source_sync_spec.rb",
      "spec/spec_helper.rb",
      "spec/store_spec.rb",
      "spec/sync_states_spec.rb",
-     "spec/testdata/testapptwo/sources/sample_adapter.rb",
-     "spec/user_spec.rb"
+     "spec/user_spec.rb",
+     "examples/simple/simple.rb",
+     "examples/simple/sources/simple_adapter.rb",
+     "examples/simple/vendor/rhosync/lib/rhosync.rb"
   ]
 
   if s.respond_to? :specification_version then
@@ -201,6 +206,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rcov>, [">= 0.9.8"])
       s.add_development_dependency(%q<faker>, [">= 0.3.1"])
       s.add_development_dependency(%q<rack-test>, [">= 0.5.3"])
+      s.add_development_dependency(%q<mechanize>, [">= 1.0.0"])
     else
       s.add_dependency(%q<json>, [">= 1.2.3"])
       s.add_dependency(%q<sqlite3-ruby>, [">= 1.2.5"])
@@ -214,6 +220,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rcov>, [">= 0.9.8"])
       s.add_dependency(%q<faker>, [">= 0.3.1"])
       s.add_dependency(%q<rack-test>, [">= 0.5.3"])
+      s.add_dependency(%q<mechanize>, [">= 1.0.0"])
     end
   else
     s.add_dependency(%q<json>, [">= 1.2.3"])
@@ -228,6 +235,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rcov>, [">= 0.9.8"])
     s.add_dependency(%q<faker>, [">= 0.3.1"])
     s.add_dependency(%q<rack-test>, [">= 0.5.3"])
+    s.add_dependency(%q<mechanize>, [">= 1.0.0"])
   end
 end
 

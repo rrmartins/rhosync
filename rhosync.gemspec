@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-03-22}
+  s.date = %q{2010-03-23}
   s.default_executable = %q{rhosync}
   s.description = %q{Rhosync Server and related command-line utilities for using Rhosync}
   s.executables = ["rhosync"]
@@ -58,6 +58,9 @@ Gem::Specification.new do |s|
      "doc/public/css/screen.css",
      "doc/public/css/style.css",
      "generators/rhosync.rb",
+     "generators/templates/application/application.rb",
+     "generators/templates/application/config.ru",
+     "generators/templates/application/settings/settings.yml",
      "lib/rhosync.rb",
      "lib/rhosync/api/create_user.rb",
      "lib/rhosync/api/get_api_token.rb",
@@ -121,6 +124,10 @@ Gem::Specification.new do |s|
      "spec/doc/footer.html",
      "spec/doc/header.html",
      "spec/document_spec.rb",
+     "spec/generator/expected/application/config.ru",
+     "spec/generator/expected/application/mynewapp.rb",
+     "spec/generator/generator_spec.rb",
+     "spec/generator/generator_spec_helper.rb",
      "spec/model_spec.rb",
      "spec/perf/bulk_data_perf_spec.rb",
      "spec/perf/perf_spec_helper.rb",
@@ -169,6 +176,9 @@ Gem::Specification.new do |s|
      "spec/client_sync_spec.rb",
      "spec/doc/doc_spec.rb",
      "spec/document_spec.rb",
+     "spec/generator/expected/application/mynewapp.rb",
+     "spec/generator/generator_spec.rb",
+     "spec/generator/generator_spec_helper.rb",
      "spec/model_spec.rb",
      "spec/perf/bulk_data_perf_spec.rb",
      "spec/perf/perf_spec_helper.rb",
@@ -185,8 +195,7 @@ Gem::Specification.new do |s|
      "spec/sync_states_spec.rb",
      "spec/user_spec.rb",
      "examples/simple/simple.rb",
-     "examples/simple/sources/simple_adapter.rb",
-     "examples/simple/vendor/rhosync/lib/rhosync.rb"
+     "examples/simple/sources/simple_adapter.rb"
   ]
 
   if s.respond_to? :specification_version then
@@ -201,6 +210,7 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<redis>, [">= 0.2.0"])
       s.add_runtime_dependency(%q<resque>, [">= 1.6.0"])
       s.add_runtime_dependency(%q<sinatra>, [">= 0.9.2"])
+      s.add_runtime_dependency(%q<templater>, [">= 1.0.0"])
       s.add_development_dependency(%q<jeweler>, [">= 1.4.0"])
       s.add_development_dependency(%q<rspec>, [">= 1.3.0"])
       s.add_development_dependency(%q<rcov>, [">= 0.9.8"])
@@ -215,6 +225,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<redis>, [">= 0.2.0"])
       s.add_dependency(%q<resque>, [">= 1.6.0"])
       s.add_dependency(%q<sinatra>, [">= 0.9.2"])
+      s.add_dependency(%q<templater>, [">= 1.0.0"])
       s.add_dependency(%q<jeweler>, [">= 1.4.0"])
       s.add_dependency(%q<rspec>, [">= 1.3.0"])
       s.add_dependency(%q<rcov>, [">= 0.9.8"])
@@ -230,6 +241,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<redis>, [">= 0.2.0"])
     s.add_dependency(%q<resque>, [">= 1.6.0"])
     s.add_dependency(%q<sinatra>, [">= 0.9.2"])
+    s.add_dependency(%q<templater>, [">= 1.0.0"])
     s.add_dependency(%q<jeweler>, [">= 1.4.0"])
     s.add_dependency(%q<rspec>, [">= 1.3.0"])
     s.add_dependency(%q<rcov>, [">= 0.9.8"])

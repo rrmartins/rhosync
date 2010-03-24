@@ -1,0 +1,15 @@
+defaults: &defaults
+  :sources:
+
+:development:
+  <<: *defaults
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/apps/<%=name%>/
+:test: 
+  <<: *defaults
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/apps/<%=name%>/
+:production: 
+  <<: *defaults
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/apps/<%=name%>/

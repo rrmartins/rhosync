@@ -1,4 +1,11 @@
 #!/usr/bin/env ruby
+
+# Try to load vendored rhosync, otherwise load the gem
+begin
+  require 'vendor/rhosync/lib/rhosync'
+rescue LoadError
+  require 'rhosync'
+end
 require 'simple'
 require 'resque/server'
 

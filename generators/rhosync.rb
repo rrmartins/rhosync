@@ -3,6 +3,7 @@ require 'templater'
 
 module Rhosync
   extend Templater::Manifold
+  extend Rhosync
   
   desc <<-DESC
     Rhosync generator
@@ -35,6 +36,15 @@ module Rhosync
       template.destination = "#{name}/config.ru"
     end    
     
+    template :settings do |template|
+      template.source = 'settings/settings.yml'
+      template.destination = "#{name}/settings/settings.yml"
+    end
+    
+    template :application do |template|
+      template.source = 'application.rb'
+      template.destination = "#{name}/#{name}.rb"
+    end
   end
   
   add :app, AppGenerator

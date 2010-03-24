@@ -24,6 +24,7 @@ require 'rhosync/indifferent_access'
 module Rhosync
   class InvalidArgumentError < RuntimeError; end
   class RhosyncServerError < RuntimeError; end
+  extend self
   
   class << self
     attr_accessor :base_directory, :app_directory, :data_directory, 
@@ -221,6 +222,21 @@ module Rhosync
       def error(*args)
         puts args.join unless args.nil? or @@enabled == false
       end
+    end
+  end
+  
+  # Base rhosync application class
+  class Application
+    # Add everything in vendor to load path
+    # TODO: Integrate with 3rd party dependency management
+    def self.initializer
+      Dir["vendor/*"].each do |dir|
+        $:.unshift File.join(dir,'lib')
+      end
+      require 'rhosync'
+      require 'rhosync/server'
+      # Bootstrap Rhosync system
+      Rhosync.bootstrap(ENV['PWD'])
     end
   end
   

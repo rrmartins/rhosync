@@ -15,6 +15,13 @@ describe "Generator" do
     end
     
     it "should create new application files" do
+      expected_files = Dir["expected/application/**/*"].sort
+      Dir["/tmp/#{name}/**/*"].sort.each_with_index do |file,i|
+        actual = File.new(file)
+        expected = File.new(expected_files[i])
+        actual.path.should == expected.path
+        actual.read.should == expected.read
+      end
     end
   end
   

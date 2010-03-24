@@ -1,14 +1,5 @@
 #!/usr/bin/env ruby
-
-# Try to load vendor-ed rhosync, otherwise load the gem
-begin
-  require 'vendor/rhosync/lib/rhosync'
-rescue LoadError
-  require 'rhosync'
-end
-require '<%=name%>'
-
-# By default, turn on the resque web console
+require 'mynewapp'
 require 'resque/server'
 
 # Rhosync server flags

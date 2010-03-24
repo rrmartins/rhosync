@@ -34,4 +34,9 @@ describe "Rhosync" do
   it "should configure app_name in settings.yml" do
     Rhosync.get_config(Rhosync.base_directory)[Rhosync.environment][:name].should == @test_app_name
   end
+  
+  it "should load subclass initializer and Rhosync::Application initializer" do
+    Rhosync::Application.should_receive(:initializer).once.with(no_args()).and_return
+    lambda { Testapp.initializer }
+  end
 end

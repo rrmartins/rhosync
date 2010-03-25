@@ -36,8 +36,13 @@ describe "Rhosync" do
   end
   
   it "should load subclass initializer and Rhosync::Application initializer" do
-    pending
-    Rhosync::Application.should_receive(:initializer).once.with(no_args()).and_return
-    lambda { Testapp.initializer }
+    Testapp.initializer
+    Rhosync.base_directory.should == ENV['PWD']
+  end
+  
+  class Testapp < Rhosync::Application
+    def self.initializer
+      super
+    end
   end
 end

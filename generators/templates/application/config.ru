@@ -6,7 +6,7 @@ begin
 rescue LoadError
   require 'rhosync'
 end
-require '<%=name%>'
+require '<%=underscore_name%>'
 
 # By default, turn on the resque web console
 require 'resque/server'

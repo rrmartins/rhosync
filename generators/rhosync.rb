@@ -13,6 +13,10 @@ module Rhosync
     def class_name
       name.gsub('-', '_').camel_case
     end
+    
+    def underscore_name
+      Rhosync.underscore(name)
+    end
 
     alias_method :module_name, :class_name
   end
@@ -43,7 +47,12 @@ module Rhosync
     
     template :application do |template|
       template.source = 'application.rb'
-      template.destination = "#{name}/#{name}.rb"
+      template.destination = "#{name}/#{underscore_name}.rb"
+    end
+    
+    template :rakefile do |template|
+      template.source = 'Rakefile'
+      template.destination = "#{name}/Rakefile"
     end
   end
   

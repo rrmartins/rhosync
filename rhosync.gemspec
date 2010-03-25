@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-03-23}
+  s.date = %q{2010-03-24}
   s.default_executable = %q{rhosync}
   s.description = %q{Rhosync Server and related command-line utilities for using Rhosync}
   s.executables = ["rhosync"]
@@ -58,6 +58,7 @@ Gem::Specification.new do |s|
      "doc/public/css/screen.css",
      "doc/public/css/style.css",
      "generators/rhosync.rb",
+     "generators/templates/application/Rakefile",
      "generators/templates/application/application.rb",
      "generators/templates/application/config.ru",
      "generators/templates/application/settings/settings.yml",
@@ -126,6 +127,7 @@ Gem::Specification.new do |s|
      "spec/document_spec.rb",
      "spec/generator/expected/application/config.ru",
      "spec/generator/expected/application/mynewapp.rb",
+     "spec/generator/expected/application/settings/settings.yml",
      "spec/generator/generator_spec.rb",
      "spec/generator/generator_spec_helper.rb",
      "spec/model_spec.rb",
@@ -149,7 +151,7 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://rhomobile.com/products/rhosync}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.5}
+  s.rubygems_version = %q{1.3.6}
   s.summary = %q{Rhosync Server}
   s.test_files = [
     "spec/api/api_helper.rb",
@@ -195,7 +197,8 @@ Gem::Specification.new do |s|
      "spec/sync_states_spec.rb",
      "spec/user_spec.rb",
      "examples/simple/simple.rb",
-     "examples/simple/sources/simple_adapter.rb"
+     "examples/simple/sources/simple_adapter.rb",
+     "examples/simple/vendor/rhosync/lib/rhosync.rb"
   ]
 
   if s.respond_to? :specification_version then

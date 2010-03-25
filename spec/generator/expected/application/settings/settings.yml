@@ -4,12 +4,12 @@ defaults: &defaults
 :development:
   <<: *defaults
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/<%=underscore_name%>/
+  :syncserver: http://localhost:9292/apps/mynewapp/
 :test: 
   <<: *defaults
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/<%=underscore_name%>/
+  :syncserver: http://localhost:9292/apps/mynewapp/
 :production: 
   <<: *defaults
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/<%=underscore_name%>/
+  :syncserver: http://localhost:9292/apps/mynewapp/

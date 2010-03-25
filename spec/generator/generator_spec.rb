@@ -1,7 +1,12 @@
 require File.join(File.dirname(__FILE__),'generator_spec_helper')
 
 describe "Generator" do
-  name = 'mynewapp'
+  appname = 'mynewapp'
+  path = File.expand_path(File.join(File.dirname(__FILE__)))
+  
+  after(:each) do
+    #FileUtils.rm_rf path
+  end
   
   describe "AppGenerator" do
     it "should complain if no name is specified" do
@@ -10,17 +15,18 @@ describe "Generator" do
       }.should raise_error(Templater::TooFewArgumentsError)
     end
     
-    before do
-      @generator = Rhosync::AppGenerator.new('/tmp',{},name)
+    before(:each) do
+      @generator = Rhosync::AppGenerator.new('/tmp',{},appname)
     end
     
     it "should create new application files" do
-      expected_files = Dir["expected/application/**/*"].sort
-      Dir["/tmp/#{name}/**/*"].sort.each_with_index do |file,i|
-        actual = File.new(file)
-        expected = File.new(expected_files[i])
-        actual.path.should == expected.path
-        actual.read.should == expected.read
+      [ 
+        'config.ru',
+        "#{appname}.rb",
+        'settings/settings.yml',
+        'Rakefile'
+      ].each do |template|
+        @generator.should create("/tmp/#{appname}/#{template}")
       end
     end
   end

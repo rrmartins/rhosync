@@ -1,4 +1,4 @@
-class <%=Rhosync.camelize(name)%> < Rhosync::Application
+class <%=class_name%> < Rhosync::Application
   class << self
     def authenticate(username,password,session)
       true # do some interesting authentication here...
@@ -12,4 +12,4 @@ class <%=Rhosync.camelize(name)%> < Rhosync::Application
   end
 end
 
-<%=Rhosync.camelize(name)%>.initializer
+<%=class_name%>.initializer

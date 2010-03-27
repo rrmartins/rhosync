@@ -9,6 +9,13 @@ describe "RhosyncApiGetApiToken" do
     last_response.body.should == @api_token
   end
   
+  it "should fail to get token if user is not admin" do
+    post "/login", :login => @u_fields[:login],:password => 'testpass'
+    post "/api/get_api_token"
+    last_response.status.should == 422    
+    last_response.body.should == 'Invalid/missing API user'
+  end  
+  
   it "should return 422 if no token provided" do
     params = {:app_name => @appname, :attributes => 
       {:login => 'testuser1', :password => 'testpass1'}}

@@ -1,0 +1,31 @@
+<%if not login_required %>
+    <h1>Application: <%= session[:app_name]%></h1>
+	<a href="<%=url('users')%>" class='nav_button'>Application users</a>
+	<a href="<%=url('documents')%>" class='nav_button'>Application documents</a>
+	<a href="<%=url('logout')%>" class='nav_button'>Logout</a>
+<% else %>
+	<h1>Login</h1>
+	<%=show_errors%>
+	<form action="<%=url('login')%>" method='POST'>
+		<table>
+			<tr>
+				<td>Server:</td>
+				<td><input name='server' value='<%=session[:server] || 'http://localhost:9292'%>' size=64/></td>
+			</tr>
+			<tr>
+				<td>Application:</td>
+				<td><input name='app_name' value='<%=session[:app_name] || ''%>'/></td>
+			</tr>
+			<tr>
+				<td>Login:</td>
+				<td><input name='login' value='<%=session[:login] || ''%>'/></td>
+			</tr>
+			<tr>
+				<td>Password:</td>
+				<td><input name='password' value=''/></td>
+			</tr>
+		</table>
+		<br/>
+		<input type='submit' value='Submit'/>
+	</form>
+<% end %>

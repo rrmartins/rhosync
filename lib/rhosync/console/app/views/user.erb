@@ -1,0 +1,7 @@
+<h1>User: <%=params[:user]%></h1>
+<%=show_errors%>
+<a href="<%=url('users')%>" class='nav_button'>Back</a>
+<a href='<%=url("user/delete?user=#{CGI.escape(params[:user])}")%>' class='nav_button'>Delete user</a>
+
+<h2>Registered Clients</h2>
+

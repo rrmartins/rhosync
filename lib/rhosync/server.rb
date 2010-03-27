@@ -6,6 +6,15 @@ require 'fileutils'
 require 'rhosync'
 
 module Rhosync
+  
+  class ApiException < Exception
+    attr_accessor :error_code
+    def initialize(error_code,message)
+      super(message)
+      @error_code = error_code
+    end  
+  end
+    
   class Server < Sinatra::Base
     libdir = File.dirname(File.expand_path(__FILE__))
     set :views,  "#{libdir}/server/views"
@@ -206,6 +215,8 @@ module Rhosync
         if check_api_token
           begin
             yield params,api_user
+          rescue ApiException => ae
+            throw :halt, [ae.error_code, ae.message]  
           rescue Exception => e
             # puts e.message + "\n" + e.backtrace.join("\n")
             throw :halt, [500, e.message]

@@ -2,6 +2,7 @@ require File.join(File.dirname(__FILE__),'generator_spec_helper')
 
 describe "Generator" do
   appname = 'mynewapp'
+  source = 'mysource'
   path = File.expand_path(File.join(File.dirname(__FILE__)))
   
   after(:each) do
@@ -32,7 +33,20 @@ describe "Generator" do
   end
   
   describe "SourceGenerator" do
+    it "should complain if no name is specified" do
+      lambda {
+        Rhosync::SourceGenerator.new('/tmp',{})
+      }.should raise_error(Templater::TooFewArgumentsError)
+    end
     
+    before(:each) do
+      @generator = Rhosync::SourceGenerator.new('/tmp',{},source)
+    end
+    
+    it "should create new source adapter" do
+      pending
+      @generator.should create("/tmp/sources/#{source}.rb")
+    end
   end
   
 end

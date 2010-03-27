@@ -11,7 +11,7 @@ module RhosyncApi
     
     def list_users(server,app_name,token)
       JSON.parse(RestClient.post("#{server}/api/list_users",
-        {:app_name => app_name, :api_token => token}.to_json, :content_type => :json))
+        {:app_name => app_name, :api_token => token}.to_json, :content_type => :json).body)
     end
     
     def create_user(server,app_name,token,login,password)

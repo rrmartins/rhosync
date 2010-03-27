@@ -1,10 +1,8 @@
 class RhosyncConsole::Server
   get '/users' do
-    begin
+    handle_api_error("Can't load list of users") do
       @users = RhosyncApi::list_users(
         session[:server],session[:app_name],session[:token]) 
-    rescue Exception => e
-      session[:errors] = ["Can't load list of users: [#{e.http_code}] #{e.message}"]
     end
     erb :users
   end
@@ -17,11 +15,9 @@ class RhosyncConsole::Server
     session[:errors] = nil
     verify_presence_of :login, "Login is not provaided."
     unless session[:errors]             
-      begin  
+      handle_api_error("Can't create new user") do  
         RhosyncApi::create_user(session[:server],
           session[:app_name],session[:token],params[:login],params[:password])
-      rescue Exception => e
-        session[:errors] = ["Can't create new user: [#{e.http_code}] #{e.message}"]
       end      
     end
     redirect url(session[:errors] ? '/user/new' : '/users'), 303  
@@ -32,10 +28,8 @@ class RhosyncConsole::Server
   end
   
   get '/user/delete' do
-    begin 
+    handle_api_error("Can't delete user #{params[:user]}") do 
       RhosyncApi::delete_user(session[:server],session[:app_name],session[:token],params[:user])
-    rescue Exception => e
-      session[:errors] = ["Can't delete user #{params[:user]}: [#{e.http_code}] #{e.message}"]
     end    
     redirect url(session[:errors] ? "/user?user=#{CGI.escape(params[:user])}" : '/users'), 303
   end

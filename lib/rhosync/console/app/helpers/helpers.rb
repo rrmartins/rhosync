@@ -23,5 +23,14 @@ class RhosyncConsole::Server
     	res.join
     end
         
+    def handle_api_error(error_message)
+      begin
+        yield
+      rescue RestClient::Exception => re
+        session[:errors] = ["#{error_message}: [#{re.http_code}] #{re.message}"]
+      rescue Exception => e      
+        session[:errors] = ["#{error_message}: #{e.message}"]
+      end     
+    end      
   end   
 end

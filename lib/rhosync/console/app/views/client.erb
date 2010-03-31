@@ -1,0 +1,8 @@
+<h1>Client: <%=params[:client_id]%></h1>
+<%=show_errors%>
+<a href="<%=url("user?user_id=#{CGI.escape(params[:user_id])}")%>" class='nav_button'>Back</a>
+<a href='<%=url("client/delete?user_id=#{CGI.escape(params[:user_id])}&client_id=#{CGI.escape(params[:client_id])}")%>' class='nav_button'>
+	Delete client
+</a>
+
+<h2>Client documents</h2>

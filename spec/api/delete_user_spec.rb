@@ -10,7 +10,7 @@ describe "RhosyncApiDeleteUser" do
     last_response.should be_ok
     User.is_exist?(params[:attributes][:login]).should == true
     post "/api/delete_user", {:app_name => @appname, :api_token => @api_token, 
-      :user => params[:attributes][:login]}  
+      :user_id => params[:attributes][:login]}  
       last_response.should be_ok
     User.is_exist?(params[:attributes][:login]).should == false
     App.load(@appname).users.members.should == ["testuser"]

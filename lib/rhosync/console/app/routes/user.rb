@@ -1,8 +1,9 @@
 class RhosyncConsole::Server
   get '/users' do
+    @users = []
     handle_api_error("Can't load list of users") do
       @users = RhosyncApi::list_users(
-        session[:server],session[:app_name],session[:token]) 
+        session[:server],session[:app_name],session[:token])
     end
     erb :users
   end
@@ -24,13 +25,18 @@ class RhosyncConsole::Server
   end
   
   get '/user' do
+    @clients = []
+    handle_api_error("Can't load list of clients") do
+      @clients = RhosyncApi::list_clients(
+        session[:server],session[:app_name],session[:token],params[:user_id])
+    end
     erb :user
   end
   
   get '/user/delete' do
-    handle_api_error("Can't delete user #{params[:user]}") do 
-      RhosyncApi::delete_user(session[:server],session[:app_name],session[:token],params[:user])
+    handle_api_error("Can't delete user #{params[:user_id]}") do 
+      RhosyncApi::delete_user(session[:server],session[:app_name],session[:token],params[:user_id])
     end    
-    redirect url(session[:errors] ? "/user?user=#{CGI.escape(params[:user])}" : '/users'), 303
+    redirect url(session[:errors] ? "/user?user_id=#{CGI.escape(params[:user_id])}" : '/users'), 303
   end
 end

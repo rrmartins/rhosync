@@ -1,7 +1,20 @@
-<h1>User: <%=params[:user]%></h1>
+<h1>User: <%=params[:user_id]%></h1>
 <%=show_errors%>
 <a href="<%=url('users')%>" class='nav_button'>Back</a>
-<a href='<%=url("user/delete?user=#{CGI.escape(params[:user])}")%>' class='nav_button'>Delete user</a>
+<a href='<%=url("user/delete?user_id=#{CGI.escape(params[:user_id])}")%>' class='nav_button'>Delete user</a>
+
+<h2>User documents</h2>
 
 <h2>Registered Clients</h2>
 
+<a href="<%=url("client/create?user_id=#{CGI.escape(params[:user_id])}")%>" class='nav_button'>Create Client</a>
+
+<div class="panel">
+[ 	
+<%@clients.each_index do |i|%>
+	<a href="<%=url("client?user_id=#{CGI.escape(params[:user_id])}&client_id=#{CGI.escape(@clients[i])}")%>">
+		<%=i==0?'':','%>"<%=@clients[i]%>"
+	</a>
+<%end%>
+]
+</div>

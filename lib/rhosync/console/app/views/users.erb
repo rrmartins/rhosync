@@ -8,7 +8,7 @@
 <%else%>
 	[ 	
 	<%@users.each_index do |i|%>
-		<a href="<%=url("user?user=#{CGI.escape(@users[i])}")%>"><%=i==0?'':','%>"<%=@users[i]%>"</a>
+		<a href="<%=url("user?user_id=#{CGI.escape(@users[i])}")%>"><%=i==0?'':','%>"<%=@users[i]%>"</a>
 	<%end%>
 	]
 <%end%>

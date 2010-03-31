@@ -21,10 +21,27 @@ module RhosyncApi
          :content_type => :json)
     end  
     
-    def delete_user(server,app_name,token,user)
+    def delete_user(server,app_name,token,user_id)
       RestClient.post("#{server}/api/delete_user",
-        {:app_name => app_name, :api_token => token, :user => user}.to_json, 
+        {:app_name => app_name, :api_token => token, :user_id => user_id}.to_json, 
          :content_type => :json)    
+    end
+  
+    def list_clients(server,app_name,token,user_id)
+      JSON.parse(RestClient.post("#{server}/api/list_clients", {:app_name => app_name, 
+        :api_token => token, :user_id => user_id}.to_json, :content_type => :json).body)
+    end
+    
+    def create_client(server,app_name,token,user_id)
+      RestClient.post("#{server}/api/create_client",
+        {:app_name => app_name, :api_token => token, :user_id => user_id}.to_json, 
+         :content_type => :json).body
+    end  
+    
+    def delete_client(server,app_name,token,user_id,client_id)
+      RestClient.post("#{server}/api/delete_client",
+        {:app_name => app_name, :api_token => token, :user_id => user_id, 
+         :client_id => client_id}.to_json, :content_type => :json)    
     end
       
   end

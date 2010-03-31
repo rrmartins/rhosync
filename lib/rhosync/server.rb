@@ -218,7 +218,7 @@ module Rhosync
           rescue ApiException => ae
             throw :halt, [ae.error_code, ae.message]  
           rescue Exception => e
-            # puts e.message + "\n" + e.backtrace.join("\n")
+            #puts e.message + "\n" + e.backtrace.join("\n")
             throw :halt, [500, e.message]
           end
         else

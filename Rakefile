@@ -79,11 +79,6 @@ task :console do
   sh "irb -rubygems -r #{File.join(File.dirname(__FILE__),'lib','rhosync','server.rb')}"
 end
 
-desc "Start server using config.ru"
-task :start do
-  sh "rackup config.ru"
-end
-
 desc "Run benchmark scripts"
 task :bench do
   login = ask "login: "
@@ -105,3 +100,5 @@ def ask(msg)
   print msg
   STDIN.gets.chomp
 end
+
+load 'tasks/redis.rake'

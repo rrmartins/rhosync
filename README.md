@@ -17,8 +17,11 @@ INSTALL
 
 Windows Notes: when run any spec task error message box (ruby.exe - Unable to locate component) will appear. Just press 'OK'. This is problem with rcov.
 
-5. Checkout the API documentation: <http://rdoc.info/projects/rhomobile/rhosync>
-
 DOCS
 -------------------------------------------------------------
-Run 'rake doc' to generate documentation files.  See the result in doc/protocol.html.
+  * Intro to Rhodes & Rhosync: <http://wiki.rhomobile.com/index.php/Rhomobile> -> Read this first!
+  * Writing Rhosync Adapters:  <http://wiki.rhomobile.com/index.php/Server_to_Backend_Sync_Process>
+  * Tutorial:                  <http://wiki.rhomobile.com/index.php/Tutorial> 
+  * Architecture:              <http://wiki.rhomobile.com/index.php/RhoSync_2.0_Spec>
+  * Rdoc (still rough):        <http://rdoc.info/projects/rhomobile/rhosync>
+  * Client/Server Protocol:    See doc/protocol.html

@@ -65,8 +65,7 @@ module Rhosync
       Generates a new source adapter with the given name.
     DESC
 
-    first_argument :name, :required => true, :desc => "model name"
-    second_argument :attributes, :as => :array, :default => [], :required => false, :desc => "array of attributes (only string suppported right now)"
+    first_argument :name, :required => true, :desc => "source name"
 
     template :config do |template|
       template.source = 'source_adapter.rb'
@@ -77,4 +76,5 @@ module Rhosync
   
   
   add :app, AppGenerator
+  add :source, SourceGenerator
 end

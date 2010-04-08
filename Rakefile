@@ -1,42 +1,48 @@
 require 'yaml'
-require 'resque/tasks'
-require 'spec/rake/spectask'
-require 'rcov/rcovtask'
 
 $:.unshift File.join(File.dirname(__FILE__),'lib')
 require 'rhosync'
 
 task :default => :all
 
-OPTS = { :spec_opts => ['-fs', '--color', '-b'], 
-         :rcov      => true,
-         :rcov_opts => ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*'] }
+begin
+  require 'spec/rake/spectask'
+  require 'rcov/rcovtask'
+  
+  OPTS = { :spec_opts => ['-fs', '--color', '-b'], 
+           :rcov      => true,
+           :rcov_opts => ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*'] }
          
-TYPES = { :spec   => 'spec/*_spec.rb',
-          :perf   => 'spec/perf/*_spec.rb',
-          :server => 'spec/server/*_spec.rb',
-          :api    => 'spec/api/*_spec.rb',
-          :bulk   => 'spec/bulk_data/*_spec.rb',
-          :doc    => 'spec/doc/*_spec.rb', 
-          :generator => 'spec/generator/*_spec.rb',
-          :bench_spec => 'bench/spec/*_spec.rb'}
+  TYPES = { :spec   => 'spec/*_spec.rb',
+            :perf   => 'spec/perf/*_spec.rb',
+            :server => 'spec/server/*_spec.rb',
+            :api    => 'spec/api/*_spec.rb',
+            :bulk   => 'spec/bulk_data/*_spec.rb',
+            :doc    => 'spec/doc/*_spec.rb', 
+            :generator => 'spec/generator/*_spec.rb',
+            :bench_spec => 'bench/spec/*_spec.rb'}
  
-TYPES.each do |type,files|
-  desc "Run #{type} specs"
-  Spec::Rake::SpecTask.new(type) do |t|
-    t.spec_files = FileList[TYPES[type]]
+  TYPES.each do |type,files|
+    desc "Run #{type} specs"
+    Spec::Rake::SpecTask.new(type) do |t|
+      t.spec_files = FileList[TYPES[type]]
+      t.spec_opts = OPTS[:spec_opts]
+      t.rcov = OPTS[:rcov]
+      t.rcov_opts = OPTS[:rcov_opts]
+    end
+  end
+
+  desc "Run all specs"
+  Spec::Rake::SpecTask.new(:all) do |t|
+    t.spec_files = FileList[TYPES.values]
     t.spec_opts = OPTS[:spec_opts]
     t.rcov = OPTS[:rcov]
     t.rcov_opts = OPTS[:rcov_opts]
   end
-end
-
-desc "Run all specs"
-Spec::Rake::SpecTask.new(:all) do |t|
-  t.spec_files = FileList[TYPES.values]
-  t.spec_opts = OPTS[:spec_opts]
-  t.rcov = OPTS[:rcov]
-  t.rcov_opts = OPTS[:rcov_opts]
+  
+rescue LoadError => e
+  puts "rspec / rcov not available. Install with: "
+  puts "gem install rspec rcov\n\n"
 end
 
 desc "Build rhosync gem"
@@ -55,11 +61,13 @@ begin
     gemspec.files =  FileList["[A-Z]*", "{bench,bin,doc,generators,lib,spec}/**/*"]
 
     gemspec.add_dependency "json", ">=1.2.3"
+    gemspec.add_dependency "log4r", ">=1.1.7"
     gemspec.add_dependency "sqlite3-ruby", ">=1.2.5"
     gemspec.add_dependency "rubyzip", ">=0.9.4"
     gemspec.add_dependency "uuidtools", ">=2.1.1"
     gemspec.add_dependency "redis", ">=0.2.0"
     gemspec.add_dependency "resque", ">=1.6.0"
+    gemspec.add_dependency "rest-client", ">=1.4.2"
     gemspec.add_dependency "sinatra", ">=0.9.2"
     gemspec.add_dependency "templater", ">=1.0.0"
     gemspec.add_development_dependency "jeweler", ">=1.4.0"
@@ -71,7 +79,7 @@ begin
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: "
-  puts "gem install jeweler"
+  puts "gem install jeweler\n\n"
 end
 
 desc "Load console environment"
@@ -92,8 +100,15 @@ task :bench do
   end
 end
 
-task "resque:setup" do
-  require 'init'
+begin
+  require 'resque/tasks'
+
+  task "resque:setup" do
+    require 'init'
+  end
+rescue LoadError
+  puts "Resque not available. Install it with: "
+  puts "gem install resque\n\n"
 end
 
 def ask(msg)

@@ -1,15 +1,16 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
 require 'rubygems'
-require 'sinatra'
 require 'rack/test'
 require 'spec'
 require 'spec/autorun'
 require 'spec/interop/test'
-require 'pp'
 
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
-describe "Rhosync Protocol" do
+describe "Protocol", :shared => true do
+  it_should_behave_like "SourceAdapterHelper"
+  it_should_behave_like "TestappHelper"
+  
   include Rack::Test::Methods
   include Rhosync
   
@@ -20,16 +21,17 @@ describe "Rhosync Protocol" do
     $rand_id ||= 0
     $content_table ||= []
     $content ||= []
-    basedir = File.join(File.dirname(__FILE__),'..')
-    Rhosync.bootstrap(basedir) do |rhosync|
-      rhosync.vendor_directory = File.join(basedir,'..','vendor')
+    require File.join(get_testapp_path,@test_app_name)
+    Rhosync.bootstrap(get_testapp_path) do |rhosync|
+      rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')
     end
     Server.set( 
       :environment => :test,
       :run => false,
       :secret => "secure!"
     )
-    Server.use Rack::Static, :urls => ["/spec/data"], :root => File.join(basedir,'..')
+    Server.use Rack::Static, :urls => ["/data"], 
+      :root =>  File.join(File.dirname(__FILE__),'..','apps',@test_app_name)
   end
   
   before(:each) do
@@ -200,7 +202,7 @@ describe "Rhosync Protocol" do
   
   it "should get multiple source search results" do
     @s_fields[:name] = 'SimpleAdapter'
-    @s1 = Source.create(@s_fields,@s_params)
+    @s1 = Source.load(@s_fields,@s_params)
     Store.put_data('test_db_storage',@data)
     sources = ['SimpleAdapter','SampleAdapter']
     params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},

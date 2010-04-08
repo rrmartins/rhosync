@@ -1,21 +1,18 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
-$:.unshift File.join(__FILE__,'..','..','lib')
 require 'rubygems'
-require 'sinatra'
 require 'rack/test'
 require 'spec'
 require 'spec/autorun'
 require 'spec/interop/test'
-require 'rhosync'
-include Rhosync
 
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
 describe "ApiHelper", :shared => true do
-  include Rack::Test::Methods
-  
-  it_should_behave_like "TestappHelper"
   it_should_behave_like "SourceAdapterHelper"
+  it_should_behave_like "TestappHelper"
+  
+  include Rack::Test::Methods
+  include Rhosync
   
   before(:each) do
     @appname = @a_fields[:name]

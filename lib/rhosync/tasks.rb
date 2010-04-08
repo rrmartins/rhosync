@@ -2,6 +2,7 @@ require 'json'
 require 'mechanize'
 require 'zip/zip'
 require 'uri'
+require File.join(File.dirname(__FILE__),'console','rhosync_api')
 
 module Rhosync
   module TaskHelper
@@ -51,62 +52,68 @@ end
 
 namespace :rhosync do
   include Rhosync::TaskHelper
+  include RhosyncApi
   
   task :config do
-    $settings = load_settings(File.join(File.dirname(__FILE__),'settings','settings.yml'))
-    uri = URI.parse($settings[:syncserver])
+    $settings = load_settings(File.join(ENV['PWD'],'settings','settings.yml'))
+    env = (ENV['RHO_ENV'] || :development).to_sym  
+    uri = URI.parse($settings[env][:syncserver])
     $url = "#{uri.scheme}://#{uri.host}"
     $url = "#{$url}:#{uri.port}" if uri.port && uri.port != 80
     $host = uri.host
     $port = uri.port
     $agent = Mechanize.new
-    $appname = $settings[:syncserver].split('/').last
+    $appname = $settings[env][:syncserver].split('/').last
     $token_file = File.join(ENV['HOME'],'.rhosync_token')
     $token = File.read($token_file) if File.exist?($token_file)
   end
   
   desc "Reset the rhosync database (you will need to run rhosync:get_api_token afterwards)"
   task :reset => :config do
-    $agent.post("#{$url}/api/reset",:api_token => $token)
+    RhosyncApi.reset($url,$token)
   end
   
   desc "Fetches current api token from rhosync"
-  task :get_api_token => :config do
+  task :get_token => :config do
     login = ask "admin login: "
     password = ask "admin password: "
-    $agent.post("#{$url}/login", :login => login, :password => password)
-    $token = $agent.post("#{$url}/api/get_api_token").body
+    $token = RhosyncApi.get_token($url,login,password)
     File.open($token_file,'w') {|f| f.write $token}
     puts "Token is saved in: #{$token_file}"
   end
   
   desc "Clean rhosync, get token, and create new user"
-  task :clean_start => [:reset, :get_api_token, :create_user]
+  task :clean_start => [:reset, :get_token, :create_user]
   
   desc "Creates and subscribes user for application in rhosync"
   task :create_user => :config do
     login = ask "new user login: "
     password = ask "new user password: "
-    post("/api/create_user", {:app_name => $appname, :api_token => $token,
-      :attributes => {:login => login, :password => password}})
+    RhosyncApi.create_user($url,$appname,$token,login,password)
   end
   
-  desc "Updates an existing user in rhosync"
-  task :update_user => :config do
-    login = ask "login: "
-    password = ask "password: "
-    new_password = ask "new password: "
-    post("/api/update_user", {:app_name => $appname, :api_token => $token,
-      :login => login, :password => password, :attributes => {:new_password => new_password}})
+  desc "Deletes the user from rhosync"
+  task :delete_user => :config do
+    login = ask "login to delete: "
+    RhosyncApi.delete_user($url,$appname,$token,login)
   end
   
-  desc "Reset source refresh time"
-  task :reset_refresh_time => :config do
-    user = ask "user: "
-    source_name = ask "source name: "
-    post("/api/set_refresh_time", {:api_token => $token, :app_name => $appname,
-      :user_name => user, :source_name => source_name})
-  end
+  # desc "Updates an existing user in rhosync"
+  # task :update_user => :config do
+  #   login = ask "login: "
+  #   password = ask "password: "
+  #   new_password = ask "new password: "
+  #   post("/api/update_user", {:app_name => $appname, :api_token => $token,
+  #     :login => login, :password => password, :attributes => {:new_password => new_password}})
+  # end
+  
+  # desc "Reset source refresh time"
+  # task :reset_refresh_time => :config do
+  #   user = ask "user: "
+  #   source_name = ask "source name: "
+  #   post("/api/set_refresh_time", {:api_token => $token, :app_name => $appname,
+  #     :user_name => user, :source_name => source_name})
+  # end
   
   desc "Run rhosync source adapter specs"
   task :spec do

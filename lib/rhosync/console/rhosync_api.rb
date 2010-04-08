@@ -43,6 +43,11 @@ module RhosyncApi
         {:app_name => app_name, :api_token => token, :user_id => user_id, 
          :client_id => client_id}.to_json, :content_type => :json)    
     end
+    
+    def reset(server,token)
+      RestClient.post("#{server}/api/reset",
+        {:api_token => token}.to_json, :content_type => :json)
+    end
       
   end
 end

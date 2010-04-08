@@ -6,7 +6,7 @@ describe "Store" do
   
   describe "store methods" do
     it "should create db class method" do
-      Store.db.class.should == Redis
+      Store.db.class.name.should match(/Redis/)
     end
     
     it "should set redis connection" do

@@ -60,7 +60,7 @@ module Rhosync
   end
   
   def start_app(config)
-    if config and config[Rhosync.environment][:sources]
+    if config and config[Rhosync.environment]
       app = nil
       app_name = get_app_name(config)
       if App.is_exist?(app_name)
@@ -68,16 +68,17 @@ module Rhosync
       else
         app = App.create(:name => app_name)
       end
-      config[Rhosync.environment][:sources].each do |source_name,fields|
-        fields[:name] = source_name
-        source = nil
-        unless app.sources.members.include?(source_name) or Source.is_exist?(source_name)
-          source = Source.create(fields,{:app_id => app.name})
-          app.sources << source.name
+      sources = config[Rhosync.environment][:sources] || []
+      sources.each do |source_name,fields|
+          fields[:name] = source_name
+          source = nil
+          unless app.sources.members.include?(source_name) or Source.is_exist?(source_name)
+            source = Source.create(fields,{:app_id => app.name})
+            app.sources << source.name
+          end
+          # load ruby file for source adapter to re-load class
+          load underscore(source_name+'.rb')
         end
-        # load ruby file for source adapter to re-load class
-        load underscore(source_name+'.rb')
-      end
     end
   end
   

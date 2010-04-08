@@ -73,7 +73,7 @@ describe "SourceAdapter" do
       expected = {'1'=>@product1,'2'=>@product2}
       @sa.inject_result expected
       @sa.query.should == expected
-      @sa.sync.should == true
+      @sa.sync
       Store.get_data(@s.docname(:md)).should == expected
       Store.get_value(@s.docname(:md_size)).to_i.should == 2
     end

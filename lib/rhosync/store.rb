@@ -12,7 +12,7 @@ module Rhosync
       
       def create(server=nil)
         @@db ||= _get_redis(server)
-        raise "Error connecting to Redis store." unless @@db and @@db.is_a?(Redis)
+        raise "Error connecting to Redis store." unless @@db and (@@db.is_a?(Redis) or @@db.is_a?(Redis::Client))
       end
   
       # Adds set with given data, replaces existing set

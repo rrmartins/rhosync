@@ -66,7 +66,7 @@ begin
     gemspec.add_dependency "rubyzip", ">=0.9.4"
     gemspec.add_dependency "uuidtools", ">=2.1.1"
     gemspec.add_dependency "redis", ">=0.2.0"
-    gemspec.add_dependency "resque", ">=1.6.0"
+    gemspec.add_dependency "resque", ">=1.8.0"
     gemspec.add_dependency "rest-client", ">=1.4.2"
     gemspec.add_dependency "sinatra", ">=0.9.2"
     gemspec.add_dependency "templater", ">=1.0.0"

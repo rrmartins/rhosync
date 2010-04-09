@@ -85,6 +85,9 @@ namespace :rhosync do
   desc "Clean rhosync, get token, and create new user"
   task :clean_start => [:get_token, :reset, :get_token, :create_user]
   
+  desc "Alias for `rake rhosync:stop; rake rhosync:start`"
+  task :restart => [:stop, :start]
+  
   desc "Creates and subscribes user for application in rhosync"
   task :create_user => :config do
     login = ask "new user login: "

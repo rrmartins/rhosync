@@ -1,2 +1,7 @@
-require 'rhosync/tasks'
+# Try to load vendor-ed rhosync tasks, otherwise load the gem
+begin
+  require 'vendor/rhosync/lib/rhosync/tasks'
+rescue LoadError
+  require 'rhosync/tasks'
+end
 require 'resque/tasks'

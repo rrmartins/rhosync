@@ -2,11 +2,12 @@
 
 # Try to load vendor-ed rhosync, otherwise load the gem
 begin
-  require 'vendor/rhosync/lib/rhosync'
+  require 'vendor/rhosync/lib/rhosync/server'
+  require 'vendor/rhosync/lib/rhosync/console/server'
 rescue LoadError
-  require 'rhosync'
+  require 'rhosync/server'
+  require 'rhosync/console/server'
 end
-require '<%=underscore_name%>'
 
 # By default, turn on the resque web console
 require 'resque/server'
@@ -15,14 +16,16 @@ require 'resque/server'
 Rhosync::Server.disable :run
 Rhosync::Server.disable :clean_trace
 Rhosync::Server.enable  :raise_errors
-Rhosync::Server.set     :environment, Rhosync.environment
+Rhosync::Server.set     :environment, :development
 Rhosync::Server.set     :secret,      '<changeme>'
-Rhosync::Server.set     :root,        File.dirname(__FILE__)
+Rhosync::Server.set     :root,        File.expand_path(File.dirname(__FILE__))
+Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
 
-Rhosync::Server.use Rack::Static, :urls => ["/data"], :root => Rhosync.base_directory
+# Load our rhosync application
+require '<%=underscore_name%>'
 
-# Setup the url map for rhosync and resque
-# Note: If you don't want to expose the resque frontend, disable it here
+# Setup the url map
 run Rack::URLMap.new \
-	"/" => Rhosync::Server.new,
-	"/resque" => Resque::Server.new
+	"/"         => Rhosync::Server.new,
+	"/resque"   => Resque::Server.new, # If you don't want resque frontend, disable it here
+	"/console"  => RhosyncConsole::Server.new # If you don't want rhosync frontend, disable it here

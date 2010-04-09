@@ -58,7 +58,7 @@ begin
     gemspec.homepage = %q{http://rhomobile.com/products/rhosync}
     gemspec.authors = ["Rhomobile"]
     gemspec.version = Rhosync::VERSION
-    gemspec.files =  FileList["[A-Z]*", "{bench,bin,doc,generators,lib,spec}/**/*"]
+    gemspec.files =  FileList["[A-Z]*", "{bench,bin,doc,generators,lib,spec,tasks}/**/*"]
 
     gemspec.add_dependency "json", ">=1.2.3"
     gemspec.add_dependency "log4r", ">=1.1.7"

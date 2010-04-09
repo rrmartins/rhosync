@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-03-24}
+  s.date = %q{2010-04-09}
   s.default_executable = %q{rhosync}
   s.description = %q{Rhosync Server and related command-line utilities for using Rhosync}
   s.executables = ["rhosync"]
@@ -62,10 +62,16 @@ Gem::Specification.new do |s|
      "generators/templates/application/application.rb",
      "generators/templates/application/config.ru",
      "generators/templates/application/settings/settings.yml",
+     "generators/templates/source/source_adapter.rb",
      "lib/rhosync.rb",
+     "lib/rhosync/api/create_client.rb",
      "lib/rhosync/api/create_user.rb",
+     "lib/rhosync/api/delete_client.rb",
+     "lib/rhosync/api/delete_user.rb",
      "lib/rhosync/api/get_api_token.rb",
      "lib/rhosync/api/get_db_doc.rb",
+     "lib/rhosync/api/list_clients.rb",
+     "lib/rhosync/api/list_users.rb",
      "lib/rhosync/api/reset.rb",
      "lib/rhosync/api/set_db_doc.rb",
      "lib/rhosync/api/set_refresh_time.rb",
@@ -80,6 +86,22 @@ Gem::Specification.new do |s|
      "lib/rhosync/bulk_data/syncdb.schema",
      "lib/rhosync/client.rb",
      "lib/rhosync/client_sync.rb",
+     "lib/rhosync/console/app/helpers/auth_helper.rb",
+     "lib/rhosync/console/app/helpers/hash_ex.rb",
+     "lib/rhosync/console/app/helpers/helpers.rb",
+     "lib/rhosync/console/app/public/main.css",
+     "lib/rhosync/console/app/routes/auth.rb",
+     "lib/rhosync/console/app/routes/client.rb",
+     "lib/rhosync/console/app/routes/home.rb",
+     "lib/rhosync/console/app/routes/user.rb",
+     "lib/rhosync/console/app/views/client.erb",
+     "lib/rhosync/console/app/views/index.erb",
+     "lib/rhosync/console/app/views/layout.erb",
+     "lib/rhosync/console/app/views/newuser.erb",
+     "lib/rhosync/console/app/views/user.erb",
+     "lib/rhosync/console/app/views/users.erb",
+     "lib/rhosync/console/rhosync_api.rb",
+     "lib/rhosync/console/server.rb",
      "lib/rhosync/credential.rb",
      "lib/rhosync/document.rb",
      "lib/rhosync/indifferent_access.rb",
@@ -93,12 +115,18 @@ Gem::Specification.new do |s|
      "lib/rhosync/source_job.rb",
      "lib/rhosync/source_sync.rb",
      "lib/rhosync/store.rb",
+     "lib/rhosync/tasks.rb",
      "lib/rhosync/user.rb",
      "lib/rhosync/version.rb",
      "spec/api/api_helper.rb",
+     "spec/api/create_client_spec.rb",
      "spec/api/create_user_spec.rb",
+     "spec/api/delete_client_spec.rb",
+     "spec/api/delete_user_spec.rb",
      "spec/api/get_api_token_spec.rb",
      "spec/api/get_db_doc_spec.rb",
+     "spec/api/list_clients_spec.rb",
+     "spec/api/list_users_spec.rb",
      "spec/api/reset_spec.rb",
      "spec/api/set_db_doc_spec.rb",
      "spec/api/set_refresh_time_spec.rb",
@@ -125,9 +153,6 @@ Gem::Specification.new do |s|
      "spec/doc/footer.html",
      "spec/doc/header.html",
      "spec/document_spec.rb",
-     "spec/generator/expected/application/config.ru",
-     "spec/generator/expected/application/mynewapp.rb",
-     "spec/generator/expected/application/settings/settings.yml",
      "spec/generator/generator_spec.rb",
      "spec/generator/generator_spec_helper.rb",
      "spec/model_spec.rb",
@@ -144,9 +169,11 @@ Gem::Specification.new do |s|
      "spec/spec_helper.rb",
      "spec/store_spec.rb",
      "spec/sync_states_spec.rb",
+     "spec/tasks_spec.rb",
      "spec/testdata/1000-data.txt",
      "spec/testdata/compressed/compress-data.txt",
-     "spec/user_spec.rb"
+     "spec/user_spec.rb",
+     "tasks/redis.rake"
   ]
   s.homepage = %q{http://rhomobile.com/products/rhosync}
   s.rdoc_options = ["--charset=UTF-8"]
@@ -155,9 +182,14 @@ Gem::Specification.new do |s|
   s.summary = %q{Rhosync Server}
   s.test_files = [
     "spec/api/api_helper.rb",
+     "spec/api/create_client_spec.rb",
      "spec/api/create_user_spec.rb",
+     "spec/api/delete_client_spec.rb",
+     "spec/api/delete_user_spec.rb",
      "spec/api/get_api_token_spec.rb",
      "spec/api/get_db_doc_spec.rb",
+     "spec/api/list_clients_spec.rb",
+     "spec/api/list_users_spec.rb",
      "spec/api/reset_spec.rb",
      "spec/api/set_db_doc_spec.rb",
      "spec/api/set_refresh_time_spec.rb",
@@ -178,7 +210,6 @@ Gem::Specification.new do |s|
      "spec/client_sync_spec.rb",
      "spec/doc/doc_spec.rb",
      "spec/document_spec.rb",
-     "spec/generator/expected/application/mynewapp.rb",
      "spec/generator/generator_spec.rb",
      "spec/generator/generator_spec_helper.rb",
      "spec/model_spec.rb",
@@ -195,6 +226,7 @@ Gem::Specification.new do |s|
      "spec/spec_helper.rb",
      "spec/store_spec.rb",
      "spec/sync_states_spec.rb",
+     "spec/tasks_spec.rb",
      "spec/user_spec.rb",
      "examples/simple/simple.rb",
      "examples/simple/sources/simple_adapter.rb",
@@ -207,11 +239,13 @@ Gem::Specification.new do |s|
 
     if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<json>, [">= 1.2.3"])
+      s.add_runtime_dependency(%q<log4r>, [">= 1.1.7"])
       s.add_runtime_dependency(%q<sqlite3-ruby>, [">= 1.2.5"])
       s.add_runtime_dependency(%q<rubyzip>, [">= 0.9.4"])
       s.add_runtime_dependency(%q<uuidtools>, [">= 2.1.1"])
       s.add_runtime_dependency(%q<redis>, [">= 0.2.0"])
-      s.add_runtime_dependency(%q<resque>, [">= 1.6.0"])
+      s.add_runtime_dependency(%q<resque>, [">= 1.8.0"])
+      s.add_runtime_dependency(%q<rest-client>, [">= 1.4.2"])
       s.add_runtime_dependency(%q<sinatra>, [">= 0.9.2"])
       s.add_runtime_dependency(%q<templater>, [">= 1.0.0"])
       s.add_development_dependency(%q<jeweler>, [">= 1.4.0"])
@@ -222,11 +256,13 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<mechanize>, [">= 1.0.0"])
     else
       s.add_dependency(%q<json>, [">= 1.2.3"])
+      s.add_dependency(%q<log4r>, [">= 1.1.7"])
       s.add_dependency(%q<sqlite3-ruby>, [">= 1.2.5"])
       s.add_dependency(%q<rubyzip>, [">= 0.9.4"])
       s.add_dependency(%q<uuidtools>, [">= 2.1.1"])
       s.add_dependency(%q<redis>, [">= 0.2.0"])
-      s.add_dependency(%q<resque>, [">= 1.6.0"])
+      s.add_dependency(%q<resque>, [">= 1.8.0"])
+      s.add_dependency(%q<rest-client>, [">= 1.4.2"])
       s.add_dependency(%q<sinatra>, [">= 0.9.2"])
       s.add_dependency(%q<templater>, [">= 1.0.0"])
       s.add_dependency(%q<jeweler>, [">= 1.4.0"])
@@ -238,11 +274,13 @@ Gem::Specification.new do |s|
     end
   else
     s.add_dependency(%q<json>, [">= 1.2.3"])
+    s.add_dependency(%q<log4r>, [">= 1.1.7"])
     s.add_dependency(%q<sqlite3-ruby>, [">= 1.2.5"])
     s.add_dependency(%q<rubyzip>, [">= 0.9.4"])
     s.add_dependency(%q<uuidtools>, [">= 2.1.1"])
     s.add_dependency(%q<redis>, [">= 0.2.0"])
-    s.add_dependency(%q<resque>, [">= 1.6.0"])
+    s.add_dependency(%q<resque>, [">= 1.8.0"])
+    s.add_dependency(%q<rest-client>, [">= 1.4.2"])
     s.add_dependency(%q<sinatra>, [">= 0.9.2"])
     s.add_dependency(%q<templater>, [">= 1.0.0"])
     s.add_dependency(%q<jeweler>, [">= 1.4.0"])

@@ -83,7 +83,10 @@ namespace :rhosync do
   end
   
   desc "Clean rhosync, get token, and create new user"
-  task :clean_start => [:reset, :get_token, :create_user]
+  task :clean_start => [:get_token, :reset, :get_token, :create_user]
+  
+  desc "Alias for `rake rhosync:stop; rake rhosync:start`"
+  task :restart => [:stop, :start]
   
   desc "Creates and subscribes user for application in rhosync"
   task :create_user => :config do
@@ -94,7 +97,7 @@ namespace :rhosync do
   
   desc "Deletes the user from rhosync"
   task :delete_user => :config do
-    login = ask "login to delete: "
+    login = ask "user to delete: "
     RhosyncApi.delete_user($url,$appname,$token,login)
   end
   

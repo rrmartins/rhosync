@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rhosync}
-  s.version = "2.0.0"
+  s.version = "2.0.0.pre"
 
-  s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
+  s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-04-09}
+  s.date = %q{2010-04-10}
   s.default_executable = %q{rhosync}
   s.description = %q{Rhosync Server and related command-line utilities for using Rhosync}
   s.executables = ["rhosync"]
@@ -182,7 +182,6 @@ Gem::Specification.new do |s|
      "spec/spec_helper.rb",
      "spec/store_spec.rb",
      "spec/sync_states_spec.rb",
-     "spec/tasks_spec.rb",
      "spec/testdata/1000-data.txt",
      "spec/testdata/compressed/compress-data.txt",
      "spec/user_spec.rb",
@@ -243,7 +242,6 @@ Gem::Specification.new do |s|
      "spec/spec_helper.rb",
      "spec/store_spec.rb",
      "spec/sync_states_spec.rb",
-     "spec/tasks_spec.rb",
      "spec/user_spec.rb",
      "examples/simple/simple.rb",
      "examples/simple/sources/sample_adapter.rb",

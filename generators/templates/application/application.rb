@@ -6,10 +6,10 @@ class <%=class_name%> < Rhosync::Application
     
     # Add hooks for application startup here
     # Don't forget to call super at the end!
-    def initializer
+    def initializer(path)
       super
     end
   end
 end
 
-<%=class_name%>.initializer
+<%=class_name%>.initializer(Rhosync::Server.root)

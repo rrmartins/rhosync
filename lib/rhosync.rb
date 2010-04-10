@@ -235,14 +235,14 @@ module Rhosync
   class Application
     # Add everything in vendor to load path
     # TODO: Integrate with 3rd party dependency management
-    def self.initializer
+    def self.initializer(path=nil)
       Dir["vendor/*"].each do |dir|
         $:.unshift File.join(dir,'lib')
       end
       require 'rhosync'
       require 'rhosync/server'
       # Bootstrap Rhosync system
-      Rhosync.bootstrap(ENV['PWD'])
+      Rhosync.bootstrap(path || ENV['PWD'])
     end
   end
   

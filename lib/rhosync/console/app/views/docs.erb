@@ -1,0 +1,15 @@
+<h1>Documents for <%=@docs_name%></h1>
+<%=show_errors%>
+<div class='panel'>
+	<a href='<%= @back_href%>' class='nav_button'>Back</a>
+</div>
+<div class='panel'>
+	<table>
+		<%@docs.each do |name,dbkey|%>
+			<tr>
+				<td>:<%=name%></td>
+				<td><a href='<%=url("doc?dbkey=#{CGI.escape(dbkey)}&#{@doc_params}")%>' class='nav_button'><%=dbkey%></a></td>
+			</tr>	
+		<%end%>
+	</table>
+</div>	

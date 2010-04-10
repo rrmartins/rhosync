@@ -70,15 +70,19 @@ module Rhosync
       end
       sources = config[Rhosync.environment][:sources] || []
       sources.each do |source_name,fields|
+        if Source.is_exist?(source_name)  
+          s = Source.load(source_name,{:app_id => app.name,:user_id => '*'})
+          s.update(fields)
+        else  
           fields[:name] = source_name
-          source = nil
-          unless app.sources.members.include?(source_name) or Source.is_exist?(source_name)
-            source = Source.create(fields,{:app_id => app.name})
-            app.sources << source.name
-          end
-          # load ruby file for source adapter to re-load class
-          load underscore(source_name+'.rb')
+          Source.create(fields,{:app_id => app.name})
         end
+        unless app.sources.members.include?(source_name)
+          app.sources << source_name
+        end
+        # load ruby file for source adapter to re-load class
+        load underscore(source_name+'.rb')
+      end
     end
   end
   

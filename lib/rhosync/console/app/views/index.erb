@@ -1,8 +1,23 @@
 <%if not login_required %>
     <h1>Application: <%= session[:app_name]%></h1>
-	<a href="<%=url('users')%>" class='nav_button'>Application users</a>
-	<a href="<%=url('documents')%>" class='nav_button'>Application documents</a>
-	<a href="<%=url('logout')%>" class='nav_button'>Logout</a>
+	<div class='panel'>
+		<a href="<%=url('logout')%>" class='nav_button'>Logout</a>
+	</div>	
+	<div class='panel'>
+		<a href="<%=url('users')%>" class='nav_button'>Application users</a>
+	</div>
+	<h2>App partition sources</h2>	
+	<div class='panel'>
+		<%if is_errors?%>
+			<%= show_errors%>
+		<%else%>
+			[
+			<%@sources.each_index do |i|%>
+				<a href="<%=url("docs?source_id=#{@sources[i]}&user_id=*")%>"><%=i==0?'':','%>"<%=@sources[i]%>"</a>
+			<%end%>
+			]
+		<%end%>	
+	</div>
 <% else %>
 	<h1>Login</h1>
 	<%=show_errors%>

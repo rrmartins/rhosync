@@ -30,6 +30,10 @@ class RhosyncConsole::Server
       @clients = RhosyncApi::list_clients(
         session[:server],session[:app_name],session[:token],params[:user_id])
     end
+    @sources = []
+    handle_api_error("Can't load list of user partition sources") do
+      @sources = RhosyncApi::list_sources(session[:server],session[:app_name],session[:token],:user)
+    end
     erb :user
   end
   

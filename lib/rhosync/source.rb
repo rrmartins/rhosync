@@ -18,11 +18,8 @@ module Rhosync
     
     include Document
     include LockOps
-    
-    def self.create(fields,params)
-      fields = fields.with_indifferent_access # so we can access hash keys as symbols
-      # validate_attributes(params)
-      fields[:id] = fields[:name]
+  
+    def self.set_defaults(fields)
       fields[:url] ||= ''
       fields[:login] ||= ''
       fields[:password] ||= ''
@@ -30,12 +27,24 @@ module Rhosync
       fields[:partition_type] ||= :user
       fields[:poll_interval] ||= 300
       fields[:sync_type] ||= :incremental
+    end
+        
+    def self.create(fields,params)
+      fields = fields.with_indifferent_access # so we can access hash keys as symbols
+      # validate_attributes(params)
+      fields[:id] = fields[:name]
+      set_defaults(fields)
       super(fields,params)
     end
     
     def self.load(id,params)
       validate_attributes(params)
       super(id,params)
+    end
+    
+    def update(fields)
+      self.class.set_defaults(fields)
+      super(fields)
     end
     
     def clone(src_doctype,dst_doctype)

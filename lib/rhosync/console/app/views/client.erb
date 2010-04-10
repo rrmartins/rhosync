@@ -5,4 +5,12 @@
 	Delete client
 </a>
 
-<h2>Client documents</h2>
+<h2>Client documents for source:</h2>
+
+[
+<%@sources.each_index do |i|%>
+	<a href="<%=url("docs?source_id=#{@sources[i]}&client_id=#{CGI.escape(params[:client_id])}&user_id=#{CGI.escape(params[:user_id])}")%>">
+		<%=i==0?'':','%>"<%=@sources[i]%>"
+	</a>
+<%end%>
+]

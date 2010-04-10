@@ -50,7 +50,24 @@ module Rhosync
     def self.is_exist?(id)
       !redis.get(self._field_key(self._prefix,id,'rho__id')).nil?
     end
-    
+  
+    def to_array
+      res = []
+      self.class.fields.each do |field|
+        res << field.merge!(:value => send(field[:name].to_sym))
+      end
+      res
+    end
+
+    def update(attribs)
+      self.class.fields.each do |field|
+        if field[:name] != 'name' and field[:name] != 'rho__id'
+          redis.del field_key(field[:name]) 
+        end  
+      end    
+      self.class.populate_attributes(self,attribs)
+    end
+      
   protected
     def prefix #:nodoc:
       @prefix ||= self.class.prefix || self.class.class_prefix(self.class)

@@ -10,6 +10,10 @@ class RhosyncConsole::Server
   end
   
   get '/client' do
+    @sources = []
+    handle_api_error("Can't load list of application partition sources") do
+      @sources = RhosyncApi::list_sources(session[:server],session[:app_name],session[:token],:all)
+    end
     erb :client
   end
   

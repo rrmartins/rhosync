@@ -9,4 +9,12 @@ describe "RhosyncApiSetDbDoc" do
     last_response.should be_ok
     verify_result('abc:abc' => data)
   end
+
+  it "should set db document by doc name, data type, and data" do
+    data = 'some string'
+    post "/api/set_db_doc", :api_token => @api_token, :doc => 'abc:abc:str', :data => data, :data_type => :string
+    last_response.should be_ok
+    verify_result('abc:abc:str' => data)
+  end
+  
 end

@@ -3,7 +3,13 @@
 <a href="<%=url('users')%>" class='nav_button'>Back</a>
 <a href='<%=url("user/delete?user_id=#{CGI.escape(params[:user_id])}")%>' class='nav_button'>Delete user</a>
 
-<h2>User documents</h2>
+<h2>User partition sources</h2>	
+
+[
+<%@sources.each_index do |i|%>
+	<a href="<%=url("docs?source_id=#{@sources[i]}&user_id=#{CGI.escape(params[:user_id])}")%>"><%=i==0?'':','%>"<%=@sources[i]%>"</a>
+<%end%>
+]
 
 <h2>Registered Clients</h2>
 

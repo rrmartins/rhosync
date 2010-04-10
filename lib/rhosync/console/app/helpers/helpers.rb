@@ -27,10 +27,22 @@ class RhosyncConsole::Server
       begin
         yield
       rescue RestClient::Exception => re
-        session[:errors] = ["#{error_message}: [#{re.http_code}] #{re.message}"]
+        session[:errors] ||= []
+        session[:errors] << "#{error_message}: [#{re.http_code}] #{re.message}"
       rescue Exception => e      
-        session[:errors] = ["#{error_message}: #{e.message}"]
+        session[:errors] ||= []
+        session[:errors] << "#{error_message}: #{e.message}"
       end     
-    end      
+    end
+    
+    def doc_params
+      doc_params = "source_id=#{CGI.escape(params[:source_id])}&user_id=#{CGI.escape(params[:user_id])}"
+      doc_params += "&client_id=#{CGI.escape(params[:client_id])}" if params[:client_id] 
+      doc_params
+    end
+    
+    def doc_is_string
+      params[:dbkey].ends_with?('token') or params[:dbkey].ends_with?('size')
+    end        
   end   
 end

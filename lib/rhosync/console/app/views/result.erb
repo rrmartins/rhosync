@@ -1,0 +1,11 @@
+<h1><%=@result_name%></h1>
+<div class='panel'>
+	<%if is_errors?%>
+		<%=show_errors%>
+	<%else%>
+		<p><%=@status%></p>
+	<%end%>
+</div>		
+<div class='panel'>
+	<a href='<%= @back_href%>' class='nav_button'>Back</a>
+</div>

@@ -1,4 +1,4 @@
-class <%=name.camelize%> < SourceAdapter
+class <%=class_name%> < SourceAdapter
   def initialize(source,credential)
     super(source,credential)
   end

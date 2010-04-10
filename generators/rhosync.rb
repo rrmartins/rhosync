@@ -62,18 +62,28 @@ module Rhosync
     end
 
     desc <<-DESC
-      Generates a new source adapter with the given name.
+      Generates a new source adapter.
+      
+      Required:
+        name        - source name(i.e. product)
     DESC
 
     first_argument :name, :required => true, :desc => "source name"
 
     template :config do |template|
       template.source = 'source_adapter.rb'
-      template.destination = "lib/#{name.snake_case}.rb"
+      template.destination = "sources/#{underscore_name}.rb"
+      settings_file = 'settings/settings.yml'
+      settings = YAML.load_file(settings_file)
+      settings.each do |key,env|
+        env[:sources] ||= {}
+        env[:sources][class_name] = {:poll_interval => 300}
+      end
+      File.open(settings_file, 'w' ) do |file|
+        YAML.dump(settings,file)
+      end
     end
-
   end
-  
   
   add :app, AppGenerator
   add :source, SourceGenerator

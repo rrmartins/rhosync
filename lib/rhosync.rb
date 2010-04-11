@@ -44,6 +44,7 @@ module Rhosync
     Rhosync.data_directory = get_setting(config,environment,:data_directory)
     Rhosync.vendor_directory = get_setting(config,environment,:vendor_directory)
     Rhosync.blackberry_bulk_sync = get_setting(config,environment,:blackberry_bulk_sync,false)
+    Rhosync.redis = get_setting(config,environment,:redis,false)
     Rhosync.environment = environment
     yield self if block_given?
     Store.create(Rhosync.redis)

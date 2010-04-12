@@ -12,13 +12,15 @@ end
 # By default, turn on the resque web console
 require 'resque/server'
 
+ROOT_PATH = File.expand_path(File.dirname(__FILE__))
+
 # Rhosync server flags
 Rhosync::Server.disable :run
 Rhosync::Server.disable :clean_trace
 Rhosync::Server.enable  :raise_errors
 Rhosync::Server.set     :environment, :development
 Rhosync::Server.set     :secret,      '<changeme>'
-Rhosync::Server.set     :root,        File.expand_path(File.dirname(__FILE__))
+Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
 
 # Load our rhosync application

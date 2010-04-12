@@ -23,7 +23,7 @@ require 'rhosync/indifferent_access'
   
 # Various module utilities for the store
 module Rhosync
-  APP_NAME = 'application'
+  APP_NAME = 'application' unless defined? APP_NAME
   
   class InvalidArgumentError < RuntimeError; end
   class RhosyncServerError < RuntimeError; end

@@ -42,8 +42,8 @@ describe "Server" do
     last_response.should be_ok
   end
   
-  it "should respond with 401 to /apps/:app_name" do
-    get "/apps/#{@a.name}"
+  it "should respond with 401 to /:app_name" do
+    get "/application"
     last_response.status.should == 401
   end
   
@@ -67,28 +67,28 @@ describe "Server" do
   
   describe "helpers" do 
     before(:each) do
-      do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
+      do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
     end
     
     it "should return nil if params[:source_name] is missing" do
-      get "/apps/#{@a.name}"
+      get "/application"
       last_response.status.should == 500
     end
   end
 
   describe "auth routes" do
     it "should login user with correct username,password" do
-      do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
+      do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
       last_response.should be_ok
     end
     
     it "should respond 401 for incorrect username or password" do
-      do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'wrongpass'
+      do_post "/application/clientlogin", "login" => @u.login, "password" => 'wrongpass'
       last_response.status.should == 401
     end
     
     it "should create unknown user through delegated authentication" do
-      do_post "/apps/#{@a.name}/clientlogin", "login" => 'newuser', "password" => 'testpass'
+      do_post "/application/clientlogin", "login" => 'newuser', "password" => 'testpass'
       User.is_exist?('newuser').should == true
       @a.users.members.sort.should == ['newuser','testuser']
     end
@@ -96,11 +96,11 @@ describe "Server" do
   
   describe "client management routes" do
     before(:each) do
-      do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
+      do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
     end
     
     it "should respond to clientcreate" do
-      get "/apps/#{@a.name}/clientcreate"
+      get "/application/clientcreate"
       last_response.should be_ok
       last_response.content_type.should == 'application/json'
       id = JSON.parse(last_response.body)['client']['client_id']
@@ -110,7 +110,7 @@ describe "Server" do
     end
     
     it "should respond to clientregister" do
-      do_post "/apps/#{@a.name}/clientregister", "device_type" => "iPhone", "client_id" => @c.id
+      do_post "/application/clientregister", "device_type" => "iPhone", "client_id" => @c.id
       last_response.should be_ok
       last_response.body.should == ''
       @c.device_type.should == 'iPhone'
@@ -119,18 +119,18 @@ describe "Server" do
     
     it "should respond to clientreset" do
       set_state(@c.docname(:cd) => @data)
-      get "/apps/#{@a.name}/clientreset", :client_id => @c.id,:version => ClientSync::VERSION
+      get "/application/clientreset", :client_id => @c.id,:version => ClientSync::VERSION
       verify_result(@c.docname(:cd) => {})
     end
   end
   
   describe "source routes" do
     before(:each) do
-      do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
+      do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
     end
     
     it "should return 404 message with version < 3" do
-      get "/apps/#{@a.name}",:source_name => @s.name,:version => 2
+      get "/application",:source_name => @s.name,:version => 2
       last_response.status.should == 404
       last_response.body.should == "Server supports version 3 or higher of the protocol."
     end
@@ -139,7 +139,7 @@ describe "Server" do
       @product1['_id'] = '1'
       params = {'create'=>{'1'=>@product1},:client_id => @c.id,:source_name => @s.name,
         :version => ClientSync::VERSION}
-      do_post "/apps/#{@a.name}", params
+      do_post "/application", params
       last_response.should be_ok
       last_response.body.should == ''
       verify_result("test_create_storage" => {'1'=>@product1})
@@ -148,7 +148,7 @@ describe "Server" do
     it "should post records for update" do
       params = {'update'=>{'1'=>@product1},:client_id => @c.id,:source_name => @s.name,
         :version => ClientSync::VERSION}
-      do_post "/apps/#{@a.name}", params
+      do_post "/application", params
       last_response.should be_ok
       last_response.body.should == ''
       verify_result("test_update_storage" => {'1'=>@product1})
@@ -157,7 +157,7 @@ describe "Server" do
     it "should post records for delete" do
       params = {'delete'=>{'1'=>@product1},:client_id => @c.id,:source_name => @s.name,
         :version => ClientSync::VERSION}
-      do_post "/apps/#{@a.name}", params
+      do_post "/application", params
       last_response.should be_ok
       last_response.body.should == ''
       verify_result("test_delete_storage" => {'1'=>@product1})
@@ -167,7 +167,7 @@ describe "Server" do
       cs = ClientSync.new(@s,@c,1)
       data = {'1'=>@product1,'2'=>@product2}
       set_test_data('test_db_storage',data)
-      get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+      get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
       last_response.should be_ok
       last_response.content_type.should == 'application/json'
       token = @c.get_value(:page_token)
@@ -179,12 +179,12 @@ describe "Server" do
       cs = ClientSync.new(@s,@c,1)
       data = {'1'=>@product1,'2'=>@product2}
       set_test_data('test_db_storage',data)
-      get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+      get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
       last_response.should be_ok
       token = @c.get_value(:page_token)
       JSON.parse(last_response.body).should == [{"version"=>ClientSync::VERSION},{"token"=>token}, 
         {"count"=>2}, {"progress_count"=>0}, {"total_count"=>2},{'insert'=>data}]
-      get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
+      get "/application",:client_id => @c.id,:source_name => @s.name,:token => token,
         :version => ClientSync::VERSION
       last_response.should be_ok
       JSON.parse(last_response.body).should == [{"version"=>ClientSync::VERSION},{"token"=>''}, 
@@ -196,7 +196,7 @@ describe "Server" do
       data = {'1'=>@product1,'2'=>@product2}
       set_test_data('test_db_storage',data)
       
-      get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+      get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
       last_response.should be_ok
       token = @c.get_value(:page_token)
       JSON.parse(last_response.body).should == [{"version"=>ClientSync::VERSION},{"token"=>token}, 
@@ -205,7 +205,7 @@ describe "Server" do
       Store.flash_data('test_db_storage')
       @s.read_state.refresh_time = Time.now.to_i      
       
-      get "/apps/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
+      get "/application",:client_id => @c.id,:source_name => @s.name,:token => token,
         :version => ClientSync::VERSION
       last_response.should be_ok
       token = @c.get_value(:page_token)
@@ -219,7 +219,7 @@ describe "Server" do
       Store.put_data('test_db_storage',@data)
       params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
         :version => ClientSync::VERSION}
-      get "/apps/#{@a.name}/search",params
+      get "/application/search",params
       last_response.content_type.should == 'application/json'
       token = @c.get_value(:search_token)
       JSON.parse(last_response.body).should == [[{'version'=>ClientSync::VERSION},{'search_token'=>token},
@@ -232,7 +232,7 @@ describe "Server" do
       error = set_test_data('test_db_storage',@data,msg,'search error')
       params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
         :version => ClientSync::VERSION}
-      get "/apps/#{@a.name}/search",params
+      get "/application/search",params
       JSON.parse(last_response.body).should == [[{'version'=>ClientSync::VERSION},
         {'source'=>sources[0]},{'search-error'=>{'search-error'=>{'message'=>msg}}}]]
     end
@@ -244,7 +244,7 @@ describe "Server" do
       sources = ['SimpleAdapter','SampleAdapter']
       params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},
         :version => ClientSync::VERSION}
-      get "/apps/#{@a.name}/search",params
+      get "/application/search",params
       @c.source_name = 'SimpleAdapter'
       token1 = @c.get_value(:search_token)
       @c.source_name = 'SampleAdapter'
@@ -259,7 +259,7 @@ describe "Server" do
     
   describe "bulk data routes" do
     before(:each) do
-      do_post "/apps/#{@a.name}/clientlogin", "login" => @u.login, "password" => 'testpass'
+      do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
     end
     
     after(:each) do
@@ -268,16 +268,16 @@ describe "Server" do
   
     it "should make initial bulk data request and receive wait" do
       set_state('test_db_storage' => @data)
-      get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
+      get "/application/bulk_data", :partition => :user, :client_id => @c.id
       last_response.should be_ok
       last_response.body.should == {:result => :wait}.to_json
     end
     
     it "should receive url when bulk data is available" do
       set_state('test_db_storage' => @data)
-      get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
+      get "/application/bulk_data", :partition => :user, :client_id => @c.id
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
-      get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
+      get "/application/bulk_data", :partition => :user, :client_id => @c.id
       last_response.should be_ok
       last_response.body.should == {:result => :url, 
         :url => BulkData.load(bulk_data_docname(@a.id,@u.id)).dbfile}.to_json
@@ -286,10 +286,10 @@ describe "Server" do
     
     it "should download bulk data file" do
       set_state('test_db_storage' => @data)
-      get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
+      get "/application/bulk_data", :partition => :user, :client_id => @c.id
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
-      get "/apps/#{@a.name}/bulk_data", :partition => :user, :client_id => @c.id
-      get "/data/#{@a.name}/#{@u.id}/#{JSON.parse(last_response.body)["url"].split('/').last}"
+      get "/application/bulk_data", :partition => :user, :client_id => @c.id
+      get "/data/application/#{@u.id}/#{JSON.parse(last_response.body)["url"].split('/').last}"
       last_response.should be_ok
       File.open('test.data','wb') {|f| f.puts last_response.body}
       validate_db_by_name('test.data',@data)
@@ -299,7 +299,7 @@ describe "Server" do
     it "should receive nop when no sources are available for partition" do
       set_state('test_db_storage' => @data)
       Source.load('SimpleAdapter',@s_params).partition = :user
-      get "/apps/#{@a.name}/bulk_data", :partition => :app, :client_id => @c.id
+      get "/application/bulk_data", :partition => :app, :client_id => @c.id
       last_response.should be_ok
       last_response.body.should == {:result => :nop}.to_json
     end

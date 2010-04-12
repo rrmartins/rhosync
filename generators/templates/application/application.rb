@@ -12,4 +12,4 @@ class <%=class_name%> < Rhosync::Application
   end
 end
 
-<%=class_name%>.initializer(Rhosync::Server.root)
+<%=class_name%>.initializer(ROOT_PATH)

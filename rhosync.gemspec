@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-04-10}
+  s.date = %q{2010-04-12}
   s.default_executable = %q{rhosync}
   s.description = %q{Rhosync Server and related command-line utilities for using Rhosync}
   s.executables = ["rhosync"]
@@ -18,7 +18,8 @@ Gem::Specification.new do |s|
      "README.md"
   ]
   s.files = [
-    "LICENSE",
+    "CHANGELOG",
+     "LICENSE",
      "README.md",
      "Rakefile",
      "bench/bench",

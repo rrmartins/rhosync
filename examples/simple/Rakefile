@@ -1,2 +1,14 @@
 $:.unshift File.join(File.dirname(__FILE__),'..','..','lib')
 require 'rhosync/tasks'
+
+begin
+  require 'resque/tasks'
+
+  task "resque:setup" do
+    require 'rhosync'
+    require 'simple'
+  end
+rescue LoadError
+  puts "Resque not available. Install it with: "
+  puts "gem install resque\n\n"
+end

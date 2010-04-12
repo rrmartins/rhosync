@@ -1,15 +1,16 @@
-# Try to load vendor-ed rhosync tasks, otherwise load the gem
 begin
   require 'vendor/rhosync/lib/rhosync/tasks'
+  require 'vendor/rhosync/lib/rhosync'
 rescue LoadError
   require 'rhosync/tasks'
+  require 'rhosync'
 end
+
+ROOT_PATH = File.expand_path(File.dirname(__FILE__))
 
 begin
   require 'resque/tasks'
-
   task "resque:setup" do
-    require 'rhosync'
     require '<%=name%>'
   end
 rescue LoadError

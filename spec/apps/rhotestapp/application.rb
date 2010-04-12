@@ -1,7 +1,8 @@
 class Application < Rhosync::Base
   class << self
     def authenticate(username,password,session)
-      true # do some interesting authentication here...
+      session[:auth] = "delegated"
+      password == 'wrongpass' ? false : true
     end
     
     # Add hooks for application startup here
@@ -12,4 +13,4 @@ class Application < Rhosync::Base
   end
 end
 
-Application.initializer(ROOT_PATH)
+Application.initializer(File.dirname(__FILE__))

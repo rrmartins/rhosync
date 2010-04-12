@@ -8,12 +8,12 @@ defaults: &defaults
 :development:
   <<: *defaults
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/benchapp/
+  :syncserver: http://localhost:9292/apps/application/
 :test: 
   <<: *defaults
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/benchapp/
+  :syncserver: http://localhost:9292/apps/application/
 :production: 
   <<: *defaults
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/benchapp/    
+  :syncserver: http://localhost:9292/apps/application/    

@@ -43,12 +43,12 @@ describe "Rhosync" do
     App.load(@test_app_name).sources.members.should == []
   end
   
-  it "should load subclass initializer and Rhosync::Application initializer" do
+  it "should load subclass initializer and Rhosync::Base initializer" do
     Testapp.initializer
     Rhosync.base_directory.should == ENV['PWD']
   end
   
-  class Testapp < Rhosync::Application
+  class Testapp < Rhosync::Base
     def self.initializer
       super
     end

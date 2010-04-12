@@ -11,10 +11,10 @@ end
 
 describe "TestappHelper", :shared => true do
   before(:all) do
-    @test_app_name = 'rhotestapp'
+    @test_app_name = 'application'
   end
   def get_testapp_path
-    File.expand_path(File.join(File.dirname(__FILE__),'apps',@test_app_name))
+    File.expand_path(File.join(File.dirname(__FILE__),'apps','rhotestapp'))
   end
 end
 

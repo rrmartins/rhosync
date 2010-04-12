@@ -4,4 +4,15 @@ begin
 rescue LoadError
   require 'rhosync/tasks'
 end
-require 'resque/tasks'
+
+begin
+  require 'resque/tasks'
+
+  task "resque:setup" do
+    require 'rhosync'
+    require '<%=name%>'
+  end
+rescue LoadError
+  puts "Resque not available. Install it with: "
+  puts "gem install resque\n\n"
+end

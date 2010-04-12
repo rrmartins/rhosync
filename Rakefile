@@ -100,17 +100,6 @@ task :bench do
   end
 end
 
-begin
-  require 'resque/tasks'
-
-  task "resque:setup" do
-    require 'init'
-  end
-rescue LoadError
-  puts "Resque not available. Install it with: "
-  puts "gem install resque\n\n"
-end
-
 def ask(msg)
   print msg
   STDIN.gets.chomp

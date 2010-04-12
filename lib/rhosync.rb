@@ -23,6 +23,8 @@ require 'rhosync/indifferent_access'
   
 # Various module utilities for the store
 module Rhosync
+  APP_NAME = 'application'
+  
   class InvalidArgumentError < RuntimeError; end
   class RhosyncServerError < RuntimeError; end
   extend self
@@ -63,7 +65,7 @@ module Rhosync
   def start_app(config)
     if config and config[Rhosync.environment]
       app = nil
-      app_name = get_app_name(config)
+      app_name = APP_NAME
       if App.is_exist?(app_name)
         app = App.load(app_name)
       else
@@ -102,10 +104,10 @@ module Rhosync
   end
   
   # Return app_name if it is configured, otherwise use directory name
-  def get_app_name(config)
-    #config[Rhosync.environment][:app_name] || File.basename(File.expand_path(Rhosync.base_directory))
-    "application"
-  end
+  # def get_APP_NAME
+  #   #config[Rhosync.environment][:app_name] || File.basename(File.expand_path(Rhosync.base_directory))
+  #   "application"
+  # end
   
   def get_config(basedir)
     #Load settings

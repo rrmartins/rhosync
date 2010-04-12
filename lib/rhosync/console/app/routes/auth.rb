@@ -2,7 +2,7 @@ class RhosyncConsole::Server
   post '/login' do
     begin
       session[:server] = params[:server]
-      session[:app_name] = params[:app_name]
+      session[:app_name] = APP_NAME
       session[:login] = params[:login]
       session[:errors] = nil      
       

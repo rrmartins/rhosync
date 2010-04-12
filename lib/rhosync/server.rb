@@ -59,7 +59,7 @@ module Rhosync
         end
         if user
           session[:login] = user.login
-          session[:app_name] = params[:app_name]
+          session[:app_name] = APP_NAME
           true
         else
           false
@@ -74,7 +74,7 @@ module Rhosync
         if @user.nil? and User.is_exist?(session[:login]) 
           @user = User.load(session[:login])
         end
-        if @user and (@user.admin == 1 || session[:app_name] == params[:app_name])
+        if @user and (@user.admin == 1 || session[:app_name] == APP_NAME)
           @user
         else  
           nil
@@ -86,15 +86,15 @@ module Rhosync
       end
 
       def current_app
-        App.load(params[:app_name]) if params[:app_name]
+        App.load(APP_NAME)
       end
 
       def current_source
         return @source if @source 
         user = current_user
-        if params[:source_name] and params[:app_name] and user
+        if params[:source_name] and user
           @source = Source.load(params[:source_name],
-            {:user_id => user.login,:app_id => params[:app_name]}) 
+            {:user_id => user.login,:app_id => APP_NAME}) 
         else
           nil
         end
@@ -136,7 +136,7 @@ module Rhosync
     end
 
     %w[get post].each do |verb|
-      send(verb, "/apps/:app_name*") do
+      send(verb, "/application*") do
         unless request_action == 'clientlogin'
           throw :halt, [401, "Not authenticated"] if login_required
         end
@@ -154,29 +154,29 @@ module Rhosync
       do_login
     end
 
-    post '/apps/:app_name/clientlogin' do
+    post '/application/clientlogin' do
       logout
       do_login
     end
 
-    get '/apps/:app_name/clientcreate' do
+    get '/application/clientcreate' do
       content_type :json
       client = Client.create(:user_id => current_user.id,:app_id => current_app.id)
       { "client" => { "client_id" =>  client.id.to_s } }.to_json
     end
 
-    post '/apps/:app_name/clientregister' do
+    post '/application/clientregister' do
       current_client.device_type = params[:device_type]
       status 200
     end
 
-    get '/apps/:app_name/clientreset' do
+    get '/application/clientreset' do
       ClientSync.reset(current_client)
       status 200
     end
 
     # Member routes
-    get '/apps/:app_name' do
+    get '/application' do
       catch_all do
         content_type :json
         cs = ClientSync.new(current_source,current_client,params[:p_size])
@@ -186,7 +186,7 @@ module Rhosync
       end
     end
 
-    post '/apps/:app_name' do
+    post '/application' do
       catch_all do
         #puts "receive_cud params: #{params.inspect}"
         cs = ClientSync.new(current_source,current_client,params[:p_size]) 
@@ -195,7 +195,7 @@ module Rhosync
       end
     end
 
-    get '/apps/:app_name/bulk_data' do
+    get '/application/bulk_data' do
       catch_all do
         content_type :json
         data = ClientSync.bulk_data(params[:partition].to_sym,current_client)
@@ -203,7 +203,7 @@ module Rhosync
       end
     end
 
-    get '/apps/:app_name/search' do
+    get '/application/search' do
       catch_all do
         content_type :json
         ClientSync.search_all(current_client,params).to_json

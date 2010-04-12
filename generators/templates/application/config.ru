@@ -24,7 +24,7 @@ Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
 
 # Load our rhosync application
-require '<%=underscore_name%>'
+require 'application'
 
 # Setup the url map
 run Rack::URLMap.new \

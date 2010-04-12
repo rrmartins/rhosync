@@ -5,7 +5,7 @@ describe "RhosyncApiGetSourceParams" do
   
   it "should list application sources" do
     pending
-    post "/api/get_source_params", {:app_name => @appname, :api_token => @api_token, :source_id =>"SampleAdapter"}
+    post "/api/get_source_params", {:app_name => @test_app_name, :api_token => @api_token, :source_id =>"SampleAdapter"}
     JSON.parse(last_response.body).should == [
       {"name"=>"rho__id", "value"=>"SampleAdapter", "type"=>"string"}, 
       {"name"=>"source_id", "value"=>1, "type"=>"integer"}, 

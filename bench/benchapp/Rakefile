@@ -6,7 +6,7 @@ begin
 
   task "resque:setup" do
     require 'rhosync'
-    require 'benchapp'
+    require 'application'
   end
 rescue LoadError
   puts "Resque not available. Install it with: "

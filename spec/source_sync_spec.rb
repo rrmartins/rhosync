@@ -193,10 +193,10 @@ describe "SourceSync" do
         expected = {'1'=>@product1,'2'=>@product2}
         set_state('test_db_storage' => expected)
         @ss1.process_query
-        verify_result("source:#{@a_fields[:name]}:__shared__:#{@s_fields[:name]}:md" => expected)
-        Store.db.keys("read_state:#{@a_fields[:name]}:__shared__*").sort.should ==
-          [ "read_state:rhotestapp:__shared__:SampleAdapter:refresh_time",
-            "read_state:rhotestapp:__shared__:SampleAdapter:rho__id"]
+        verify_result("source:#{@test_app_name}:__shared__:#{@s_fields[:name]}:md" => expected)
+        Store.db.keys("read_state:#{@test_app_name}:__shared__*").sort.should ==
+          [ "read_state:#{@test_app_name}:__shared__:SampleAdapter:refresh_time",
+            "read_state:#{@test_app_name}:__shared__:SampleAdapter:rho__id"]
       end
     end
     

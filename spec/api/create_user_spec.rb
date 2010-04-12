@@ -4,7 +4,7 @@ describe "RhosyncApiCreateUser" do
   it_should_behave_like "ApiHelper"
   
   it "should create user as admin" do
-    params = {:app_name => @appname, :api_token => @api_token,
+    params = {:app_name => @test_app_name, :api_token => @api_token,
       :attributes => {:login => 'testuser1', :password => 'testpass1'}}
     post "/api/create_user", params
     last_response.should be_ok

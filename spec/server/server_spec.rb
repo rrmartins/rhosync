@@ -25,7 +25,7 @@ describe "Server" do
       :secret => "secure!"
     )
     Server.use Rack::Static, :urls => ["/data"], 
-      :root =>  File.join(File.dirname(__FILE__),'..','apps',@test_app_name)
+      :root =>  File.join(File.dirname(__FILE__),'..','apps','rhotestapp')
   end
 
   def app

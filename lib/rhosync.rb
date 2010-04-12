@@ -103,7 +103,8 @@ module Rhosync
   
   # Return app_name if it is configured, otherwise use directory name
   def get_app_name(config)
-    config[Rhosync.environment][:app_name] || File.basename(File.expand_path(Rhosync.base_directory))
+    #config[Rhosync.environment][:app_name] || File.basename(File.expand_path(Rhosync.base_directory))
+    "application"
   end
   
   def get_config(basedir)
@@ -233,7 +234,7 @@ module Rhosync
   end
   
   # Base rhosync application class
-  class Application
+  class Base
     # Add everything in vendor to load path
     # TODO: Integrate with 3rd party dependency management
     def self.initializer(path=nil)

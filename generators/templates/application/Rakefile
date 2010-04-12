@@ -11,7 +11,7 @@ ROOT_PATH = File.expand_path(File.dirname(__FILE__))
 begin
   require 'resque/tasks'
   task "resque:setup" do
-    require '<%=name%>'
+    require 'application'
   end
 rescue LoadError
   puts "Resque not available. Install it with: "

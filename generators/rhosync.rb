@@ -47,7 +47,7 @@ module Rhosync
     
     template :application do |template|
       template.source = 'application.rb'
-      template.destination = "#{name}/#{underscore_name}.rb"
+      template.destination = "#{name}/application.rb"
     end
     
     template :rakefile do |template|

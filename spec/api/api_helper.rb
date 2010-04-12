@@ -15,7 +15,6 @@ describe "ApiHelper", :shared => true do
   include Rhosync
   
   before(:each) do
-    @appname = @a_fields[:name]
     require File.join(get_testapp_path,@test_app_name)
     Rhosync.bootstrap(get_testapp_path) do |rhosync|
       rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')

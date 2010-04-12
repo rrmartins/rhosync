@@ -16,16 +16,16 @@ defaults: &defaults
     
 :development:
   <<: *defaults
-  :app_name: rhotestapp
+  :app_name: application
   :redis: localhost:6379
   :syncserver: http://localhost:9292/apps/benchapp/
 :test: 
   <<: *defaults
-  :app_name: rhotestapp
+  :app_name: application
   :redis: localhost:6379
   :syncserver: http://localhost:9292/apps/benchapp/
 :production: 
   <<: *defaults
-  :app_name: rhotestapp
+  :app_name: application
   :redis: localhost:6379
   :syncserver: http://localhost:9292/apps/benchapp/

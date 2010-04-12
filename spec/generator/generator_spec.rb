@@ -23,7 +23,7 @@ describe "Generator" do
     it "should create new application files" do
       [ 
         'config.ru',
-        "#{appname}.rb",
+        "application.rb",
         'settings/settings.yml',
         'Rakefile'
       ].each do |template|

@@ -1,12 +1,12 @@
 :test: 
   :sources: 
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/<%=underscore_name%>/
+  :syncserver: http://localhost:9292/application/
 :development:
   :sources: 
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/<%=underscore_name%>/
+  :syncserver: http://localhost:9292/application/
 :production: 
   :sources: 
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/<%=underscore_name%>/
+  :syncserver: http://localhost:9292/application/

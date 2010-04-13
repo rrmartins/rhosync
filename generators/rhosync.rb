@@ -75,12 +75,15 @@ module Rhosync
       template.destination = "sources/#{underscore_name}.rb"
       settings_file = 'settings/settings.yml'
       settings = YAML.load_file(settings_file)
-      settings.each do |key,env|
-        env[:sources] ||= {}
-        env[:sources][class_name] = {:poll_interval => 300}
-      end
+      settings[:sources] ||= {}
+      settings[:sources][class_name] = {:poll_interval => 300}
       File.open(settings_file, 'w' ) do |file|
-        YAML.dump(settings,file)
+        file.write "#Sources" + {:sources => settings[:sources]}.to_yaml[3..-1]
+        envs = {}
+        [:development,:test,:production].each do |env|
+          envs[env] = settings[env]
+        end
+        file.write envs.to_yaml[3..-1]
       end
     end
   end

@@ -71,7 +71,7 @@ module Rhosync
       else
         app = App.create(:name => app_name)
       end
-      sources = config[Rhosync.environment][:sources] || []
+      sources = config[:sources] || []
       sources.each do |source_name,fields|
         if Source.is_exist?(source_name)  
           s = Source.load(source_name,{:app_id => app.name,:user_id => '*'})

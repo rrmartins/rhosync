@@ -1,3 +1,5 @@
 == 2.0.0
 * New implementation of RhoSync using redis storage engine
 * Support for modular routes (console & resque frontend optional)
+* Bulk Data synchronization
+* REST / JSON api for server management

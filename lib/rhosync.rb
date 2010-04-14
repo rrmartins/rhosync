@@ -102,20 +102,13 @@ module Rhosync
   def check_and_add(path)
     $:.unshift path unless $:.include?(path) 
   end
-  
-  # Return app_name if it is configured, otherwise use directory name
-  # def get_APP_NAME
-  #   #config[Rhosync.environment][:app_name] || File.basename(File.expand_path(Rhosync.base_directory))
-  #   "application"
-  # end
-  
+
   def get_config(basedir)
     #Load settings
     settings_file = File.join(basedir,'settings','settings.yml') if basedir
     config = YAML.load_file(settings_file) if settings_file and File.exist?(settings_file)
   end
   ### End Rhosync setup methods  
-  
   
   
   def check_default_secret!(secret)

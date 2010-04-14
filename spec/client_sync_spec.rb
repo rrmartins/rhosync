@@ -116,6 +116,10 @@ describe "ClientSync" do
         @c.docname(:cd) => {})
     end
     
+    it "should handle blob upload in receive_cud" do
+      pending
+    end
+    
     it "should handle send_cud with query_params" do
       expected = {'1'=>@product1}
       set_state('test_db_storage' => {'1'=>@product1,'2'=>@product2,'4'=>@product4})

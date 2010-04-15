@@ -241,6 +241,10 @@ module Rhosync
       # Bootstrap Rhosync system
       Rhosync.bootstrap(path || ENV['PWD'])
     end
+    
+    def self.store_blob(blob)
+      blob[:tempfile].path if blob[:tempfile]
+    end
   end
   
   protected

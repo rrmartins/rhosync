@@ -1,0 +1,1850 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+  <head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>Rhosync API</title>
+	
+	<link rel="stylesheet" href="./public/css/screen.css" type="text/css" media="screen, projection">
+	<link rel="stylesheet" href="./public/css/print.css" type="text/css" media="print">
+	<!--[if lt IE 8]>
+	  <link rel="stylesheet" href="./public/css/ie.css" type="text/css" media="screen, projection">
+	<![endif]-->
+	<link rel="stylesheet" href="./public/css/style.css" type="text/css" media="screen" charset="utf-8"/>
+  </head>
+
+  <body>
+	<br/><br/>
+	<div class="container">
+	  <div id="wrapper">
+		 <h1>Table of Contents</h1>
+		 <ul id="toc">
+		   
+		     <li><span>1.</span> <a href="#1">clientlogin - authenticate client</a><br/></li>
+		   
+		     <li><span>2.</span> <a href="#2">clientlogin - login failure</a><br/></li>
+		   
+		     <li><span>3.</span> <a href="#3">clientcreate - create client id</a><br/></li>
+		   
+		     <li><span>4.</span> <a href="#4">clientregister - register client device_type</a><br/></li>
+		   
+		     <li><span>5.</span> <a href="#5">clientreset - reset client database</a><br/></li>
+		   
+		     <li><span>6.</span> <a href="#6">create - create object(s)</a><br/></li>
+		   
+		     <li><span>7.</span> <a href="#7">update - update object(s)</a><br/></li>
+		   
+		     <li><span>8.</span> <a href="#8">delete - delete object(s)</a><br/></li>
+		   
+		     <li><span>9.</span> <a href="#9">create - client creates blobs</a><br/></li>
+		   
+		     <li><span>10.</span> <a href="#10">create-update-delete - create,update,delete object(s)</a><br/></li>
+		   
+		     <li><span>11.</span> <a href="#11">create-with-link - send link for created object</a><br/></li>
+		   
+		     <li><span>12.</span> <a href="#12">query-error - send query error</a><br/></li>
+		   
+		     <li><span>13.</span> <a href="#13">login-error - send login error</a><br/></li>
+		   
+		     <li><span>14.</span> <a href="#14">logoff-error - send logoff error</a><br/></li>
+		   
+		     <li><span>15.</span> <a href="#15">create-error - send create error</a><br/></li>
+		   
+		     <li><span>16.</span> <a href="#16">update-error - send update error</a><br/></li>
+		   
+		     <li><span>17.</span> <a href="#17">delete-error - send delete error</a><br/></li>
+		   
+		     <li><span>18.</span> <a href="#18">insert objects - send insert objects</a><br/></li>
+		   
+		     <li><span>19.</span> <a href="#19">metadata - send metadata</a><br/></li>
+		   
+		     <li><span>20.</span> <a href="#20">delete objects - send delete objects</a><br/></li>
+		   
+		     <li><span>21.</span> <a href="#21">insert-delete objects - send insert and delete objects</a><br/></li>
+		   
+		     <li><span>22.</span> <a href="#22">search result - send search results</a><br/></li>
+		   
+		     <li><span>23.</span> <a href="#23">search error - send search error</a><br/></li>
+		   
+		     <li><span>24.</span> <a href="#24">multi source search - send multiple sources in search results</a><br/></li>
+		   
+		 </ul>
+	  </div>
+	</div>
+	<br/><br/>
+	<div class="container">
+	  <div class="span-24 content">
+<h2 id='1'>1. clientlogin - authenticate client</h2>
+
+<h3>Request: POST /application/clientlogin</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>42</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"password":"testpass","login":"testuser"}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='2'>2. clientlogin - login failure</h2>
+
+<h3>Request: POST /application/clientlogin</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>43</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"password":"wrongpass","login":"testuser"}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 401</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luMA%3D%3D%0A--8d9813e61b7111105cad964fee06a431cb91a1fb; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luMA%3D%3D%0A--8d9813e61b7111105cad964fee06a431cb91a1fb; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='3'>3. clientcreate - create client id</h2>
+
+<h3>Request: GET /application/clientcreate</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>59</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>{"client":{"client_id":"e5a0945830184f5ea3cc1f80d998ac66"}}</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='4'>4. clientregister - register client device_type</h2>
+
+<h3>Request: POST /application/clientregister</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>71</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"device_type":"iPhone","client_id":"c1443d8d09fb4c93b42ec49ace500381"}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='5'>5. clientreset - reset client database</h2>
+
+<h3>Request: GET /application/clientreset?client_id=c49dffbbd92e419682ee959d3e51205a</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='6'>6. create - create object(s)</h2>
+
+<h3>Request: POST /application</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>144</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"client_id":"a9ac406b924c4bf18238491fd410f98a","source_name":"SampleAdapter","create":{"1":{"price":"199.99","brand":"Apple","name":"iPhone"}}}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='7'>7. update - update object(s)</h2>
+
+<h3>Request: POST /application</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>144</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"client_id":"4a00ea74307d40739f1b3f4e3b13b096","source_name":"SampleAdapter","update":{"1":{"price":"199.99","brand":"Apple","name":"iPhone"}}}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:34 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='8'>8. delete - delete object(s)</h2>
+
+<h3>Request: POST /application</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>144</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"client_id":"1c0fc60b6ddf497f9059cf2acf515840","delete":{"1":{"price":"199.99","brand":"Apple","name":"iPhone"}},"source_name":"SampleAdapter"}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:35 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:35 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='9'>9. create - client creates blobs</h2>
+
+<h3>Request: POST /application</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>multipart/form-data; boundary=----------XnJLe9ZIbbGUYtzPQJ16u1</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>833</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6
+CmxvZ2luIg10ZXN0dXNlcg==
+--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><pre>------------XnJLe9ZIbbGUYtzPQJ16u1
+Content-Disposition: form-data; name="txtfile-rhoblob-1"; filename="upload1.txt"
+Content-Type: application/octet-stream
+Content-Length: 5
+
+hello
+------------XnJLe9ZIbbGUYtzPQJ16u1
+Content-Disposition: form-data; name="txtfile-rhoblob-2"; filename="upload2.txt"
+Content-Type: application/octet-stream
+Content-Length: 5
+
+world
+------------XnJLe9ZIbbGUYtzPQJ16u1
+Content-Disposition: form-data; name="cud"
+
+{"client_id":"278c76a7ab2a4f64ba804c1aa22504f3","source_name":"SampleAdapter","version":3,"create":{"1":{"price":"199.99","brand":"Apple","name":"iPhone","txtfile-rhoblob":"upload1.txt","_id":"tempobj1"},"2":{"price":"99.99","brand":"Android","name":"G2","txtfile-rhoblob":"upload2.txt","_id":"tempobj2"}},"blob_fields":["txtfile-rhoblob"]}
+------------XnJLe9ZIbbGUYtzPQJ16u1--</pre>
+</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoKbG9naW4iDXRlc3R1c2VyOg1hcHBfbmFtZSIPcmhvdGVzdGFwcDoJ%0AYXV0aCIOZGVsZWdhdGVk%0A--788449811455529433e658e1c486c622f47ee0d8; path=/; expires=Mon, 04-Apr-2011 19:29:32</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='10'>10. create-update-delete - create,update,delete object(s)</h2>
+
+<h3>Request: POST /application</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>269</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>{"client_id":"4426e1285e824e21a1e7354ee580b036","delete":{"3":{"price":"299.99","brand":"HTC","name":"Fuze"}},"source_name":"SampleAdapter","create":{"1":{"price":"199.99","brand":"Apple","name":"iPhone"}},"update":{"2":{"price":"99.99","brand":"Android","name":"G2"}}}</td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>text/html</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:35 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:35 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'></td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='11'>11. create-with-link - send link for created object</h2>
+
+<h3>Request: GET /application?client_id=5d28e31720664127b8903da407eab9bf&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>223</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:35 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:35 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":"40502135516969"},{"count":1},{"progress_count":0},{"total_count":0},{"delete":{"backend_id":{"price":"249.99","brand":"Android","name":"Droid","link":"test link"}},"links":{"4":{"l":"backend_id"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='12'>12. query-error - send query error</h2>
+
+<h3>Request: GET /application?client_id=49b24a3ef0b448dea0fb379164b16ca7&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>145</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:35 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:35 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":""},{"count":0},{"progress_count":0},{"total_count":0},{"source-error":{"query-error":{"message":"Error during query"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='13'>13. login-error - send login error</h2>
+
+<h3>Request: GET /application?client_id=34eeb1b7de544375a3ef9bc1cba3c7cc&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>168</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:35 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:35 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":""},{"count":0},{"progress_count":0},{"total_count":0},{"source-error":{"login-error":{"message":"undefined method `login' for nil:NilClass"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='14'>14. logoff-error - send logoff error</h2>
+
+<h3>Request: GET /application?client_id=aa7d768207894fc8a30713fe612a7f58&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>250</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:35 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:35 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":"40502135978018"},{"count":1},{"progress_count":0},{"total_count":1},{"source-error":{"logoff-error":{"message":"Error logging off"}},"insert":{"0_broken_object_id":{"name":"logoff error","an_attribute":"Error logging off"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='15'>15. create-error - send create error</h2>
+
+<h3>Request: GET /application?client_id=543848b994454ca6a486c38b045e359c&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>224</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:36 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:36 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":""},{"count":0},{"progress_count":0},{"total_count":0},{"create-error":{"0_broken_object_id":{"name":"wrongname","an_attribute":"error create"},"0_broken_object_id-error":{"message":"error create"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='16'>16. update-error - send update error</h2>
+
+<h3>Request: GET /application?client_id=da29538ae7d84b50bab879905a4a0b14&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>224</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:36 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:36 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":""},{"count":0},{"progress_count":0},{"total_count":0},{"update-error":{"0_broken_object_id":{"name":"wrongname","an_attribute":"error update"},"0_broken_object_id-error":{"message":"error update"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='17'>17. delete-error - send delete error</h2>
+
+<h3>Request: GET /application?client_id=acc12446fed64ecea77b2c1fd8c7c710&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>231</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:36 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:36 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":""},{"count":0},{"progress_count":0},{"total_count":0},{"delete-error":{"0_broken_object_id":{"name":"wrongname","an_attribute":"error delete"},"0_broken_object_id-error":{"message":"Error delete record"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='18'>18. insert objects - send insert objects</h2>
+
+<h3>Request: GET /application?client_id=4eec59d08fb74a3096396427ba4fcca0&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>213</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:36 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:36 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":"40502136560930"},{"count":2},{"progress_count":0},{"total_count":2},{"insert":{"1":{"price":"199.99","name":"iPhone","brand":"Apple"},"2":{"price":"99.99","brand":"Android","name":"G2"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='19'>19. metadata - send metadata</h2>
+
+<h3>Request: GET /application?client_id=dd1d465feda349d8a8c2dfed5920e0eb&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>295</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:36 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:36 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":"40502136734850"},{"count":3},{"progress_count":0},{"total_count":3},{"metadata":"{\"foo\":\"bar\"}","insert":{"1":{"price":"199.99","brand":"Apple","name":"iPhone"},"2":{"name":"G2","price":"99.99","brand":"Android"},"3":{"brand":"HTC","name":"Fuze","price":"299.99"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='20'>20. delete objects - send delete objects</h2>
+
+<h3>Request: GET /application?client_id=ddafa8ff8aeb47de8215ed1be72edbcb&token=40502136860125&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>213</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:36 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:36 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":"40502136880486"},{"count":2},{"progress_count":0},{"total_count":0},{"delete":{"1":{"price":"199.99","name":"iPhone","brand":"Apple"},"2":{"price":"99.99","brand":"Android","name":"G2"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='21'>21. insert-delete objects - send insert and delete objects</h2>
+
+<h3>Request: GET /application?client_id=0501f8b1d5d342c58abc95cca2a4738d&token=40502137053131&version=3&source_name=SampleAdapter</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>220</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:37 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:37 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[{"version":3},{"token":"40502137074465"},{"count":2},{"progress_count":1},{"total_count":2},{"delete":{"2":{"price":"99.99","brand":"Android","name":"G2"}},"insert":{"3":{"price":"299.99","brand":"HTC","name":"Fuze"}}}]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='22'>22. search result - send search results</h2>
+
+<h3>Request: GET /application/search?search[name]=iPhone&client_id=bab710666ecc48c6beb61dd938bb986b&sources[]=SampleAdapter&version=3</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>158</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:37 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:37 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[[{"version":3},{"search_token":"40502137192336"},{"source":"SampleAdapter"},{"count":1},{"insert":{"1":{"name":"iPhone","price":"199.99","brand":"Apple"}}}]]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='23'>23. search error - send search error</h2>
+
+<h3>Request: GET /application/search?search[name]=iPhone&client_id=46bc9a0044e2481aa34a4926d8790ba9&sources[]=SampleAdapter&version=3</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>112</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:37 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:37 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[[{"version":3},{"source":"SampleAdapter"},{"search-error":{"search-error":{"message":"Error during search"}}}]]</td>
+    </tr>
+  </tbody>
+</table>
+<h2 id='24'>24. multi source search - send multiple sources in search results</h2>
+
+<h3>Request: GET /application/search?search[search]=bar&client_id=928239cde3b148028ea67afbdc4f3ffb&sources[]=SimpleAdapter&sources[]=SampleAdapter&version=3</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>&nbsp;</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>0</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+<h3>Response: 200</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Header</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>Content-Type</td>
+      <td style='text-align: left;'>application/json</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Content-Length</td>
+      <td style='text-align: left;'>280</td>
+    </tr>
+    <tr>
+      <td style='text-align: left;'>Set-Cookie</td>
+      <td style='text-align: left;'>rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:37 GMT
+rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6%0ACmxvZ2luIg10ZXN0dXNlcg%3D%3D%0A--87659670a0625baf4cdd81bdb9bf829b4567eb35; path=/; expires=Fri, 15-Apr-2011 02:35:37 GMT</td>
+    </tr>
+  </tbody>
+</table>
+<table>
+  <thead>
+    <tr>
+      <th>Body</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td style='text-align: left;'>[[{"version":3},{"search_token":"40502137476733"},{"source":"SimpleAdapter"},{"count":1},{"insert":{"obj":{"foo":"bar"}}}],[{"version":3},{"search_token":"40502137481522"},{"source":"SampleAdapter"},{"count":1},{"insert":{"1":{"name":"iPhone","price":"199.99","brand":"Apple"}}}]]</td>
+    </tr>
+  </tbody>
+</table>
+	  </div>
+	</div>
+  </body>
+</html>

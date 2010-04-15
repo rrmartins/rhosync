@@ -70,7 +70,7 @@ module Rhosync
 
     first_argument :name, :required => true, :desc => "source name"
 
-    template :config do |template|
+    template :source do |template|
       template.source = 'source_adapter.rb'
       template.destination = "sources/#{underscore_name}.rb"
       settings_file = 'settings/settings.yml'

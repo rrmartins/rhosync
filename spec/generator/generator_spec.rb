@@ -40,12 +40,12 @@ describe "Generator" do
     end
     
     before(:each) do
-      @app_generator = Rhosync::AppGenerator.new('/tmp',{},appname)
-      @source_generator = Rhosync::SourceGenerator.new('/tmp',{},source)
+      @generator = Rhosync::SourceGenerator.new('/tmp',{},source)
     end
     
     it "should create new source adapter" do
-      @source_generator.should create("/tmp/sources/#{source}.rb")
+      pending
+      @generator.should create("/tmp/sources/#{source}.rb")
     end
   end
   

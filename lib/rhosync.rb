@@ -84,7 +84,7 @@ module Rhosync
           app.sources << source_name
         end
         # load ruby file for source adapter to re-load class
-        load underscore(source_name+'.rb')
+        load under_score(source_name+'.rb')
       end
     end
   end
@@ -150,7 +150,7 @@ module Rhosync
   end
 
   # Returns require-friendly filename for a class
-  def underscore(camel_cased_word)
+  def under_score(camel_cased_word)
     camel_cased_word.to_s.gsub(/::/, '/').
     gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
     gsub(/([a-z\d])([A-Z])/,'\1_\2').

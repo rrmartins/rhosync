@@ -23,7 +23,7 @@ module Rhosync
       if source
         begin
           source.name.strip! if source.name
-          require underscore(source.name)
+          require under_score(source.name)
           adapter=(Object.const_get(source.name)).new(source,credential) 
         rescue Exception=>e
           Logger.error "Failure to create adapter from class #{source.name}: #{e.inspect.to_s}"

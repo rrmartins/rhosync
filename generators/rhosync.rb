@@ -15,7 +15,7 @@ module Rhosync
     end
     
     def underscore_name
-      Rhosync.underscore(name)
+      Rhosync.under_score(name)
     end
 
     alias_method :module_name, :class_name

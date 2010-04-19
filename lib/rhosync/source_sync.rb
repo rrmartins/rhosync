@@ -73,6 +73,29 @@ module Rhosync
         @source.app_id,@source.user_id,client_id,params)
     end
     
+    def push_objects(objects)
+      @source.lock(:md) do |s|
+        doc = @source.get_data(:md)
+        objects.each do |id,obj|
+          doc[id] ||= {}
+          doc[id].merge!(obj)
+        end  
+        @source.put_data(:md,doc)
+        @source.update_count(:md_size,doc.size)
+      end      
+    end    
+
+    def push_deletes(objects)
+      @source.lock(:md) do |s|
+        doc = @source.get_data(:md)
+        objects.each do |id|
+          doc.delete(id)
+        end  
+        @source.put_data(:md,doc)
+        @source.update_count(:md_size,doc.size)
+      end      
+    end
+    
     private
     def _auth_op(operation,client_id=-1)
       edockey = client_id == -1 ? @source.docname(:errors) :

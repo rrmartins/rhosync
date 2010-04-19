@@ -12,10 +12,13 @@ module Rhosync
     end
     
     def receive_cud(cud_params={},query_params=nil)
-      cud_params.each do |key,value|
-        _receive_cud(key,value)
+      _process_blobs(cud_params)
+      processed = 0
+      ['create','update','delete'].each do |op|
+        key,value = op,cud_params[op]
+        processed += _receive_cud(key,value) if value
       end
-      @source_sync.process_cud(@client.id) if cud_params.size > 0
+      @source_sync.process_cud(@client.id) if processed > 0
     end
     
     def send_cud(token=nil,query_params=nil)
@@ -226,8 +229,23 @@ module Rhosync
     end
     
     def _receive_cud(operation,params)
-      return if not ['create','update','delete'].include?(operation)
+      return 0 if not ['create','update','delete'].include?(operation)
       @client.lock(operation) { |c| c.put_data(operation,params,true) }
+      return 1
+    end
+    
+    def _process_blobs(params)
+      unless params[:blob_fields].nil?
+        [:create,:update].each do |utype|
+          objects = params[utype] || {}
+          objects.each do |id,obj|
+            params[:blob_fields].each do |field|
+        		  blob = params["#{field}-#{id}"]
+        		  obj[field] = @client.app.store_blob(blob)
+      		  end
+        	end
+      	end
+      end
     end
     
     def _ack_token(token)

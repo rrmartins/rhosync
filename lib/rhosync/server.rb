@@ -126,6 +126,11 @@ module Rhosync
     end
 
     before do
+      if params["cud"]
+        cud = JSON.parse(params["cud"])
+        params.delete("cud")
+        params.merge!(cud)
+      end
       if request.env['CONTENT_TYPE'] == 'application/json'
         params.merge!(JSON.parse(request.body.read))
         request.body.rewind

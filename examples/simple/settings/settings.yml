@@ -1,20 +1,16 @@
-defaults: &defaults
-  :sources:
-    SimpleAdapter:
-      poll_interval: 300
-    SampleAdapter:
-      :partition_type: app    
-      poll_interval: 500
+:sources:
+  SimpleAdapter:
+    :poll_interval: 300
+  SampleAdapter:
+    :partition_type: app    
+    :poll_interval: 500
 
 :development:
-  <<: *defaults
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/application/
+  :syncserver: http://localhost:9292/application/
 :test: 
-  <<: *defaults
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/application/
+  :syncserver: http://localhost:9292/application/
 :production: 
-  <<: *defaults
   :redis: localhost:6379
-  :syncserver: http://localhost:9292/apps/application/
+  :syncserver: http://localhost:9292/application/

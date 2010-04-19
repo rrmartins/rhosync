@@ -241,7 +241,7 @@ module Rhosync
           objects.each do |id,obj|
             params[:blob_fields].each do |field|
         		  blob = params["#{field}-#{id}"]
-        		  obj[field] = @client.app.store_blob(blob)
+        		  obj[field] = @client.app.store_blob(obj,field,blob)
       		  end
         	end
       	end

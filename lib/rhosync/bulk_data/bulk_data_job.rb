@@ -46,7 +46,7 @@ module Rhosync
      
     def self.refs_to_s(refs)
       str = ''
-      refs.each do |name,value|
+      refs.sort.each do |name,value|
         str << "#{name},#{value},"
       end
       str[0..-2]

@@ -75,7 +75,7 @@ describe "Server" do
       last_response.status.should == 500
     end
   end
-
+  
   describe "auth routes" do
     it "should login user with correct username,password" do
       do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
@@ -302,6 +302,31 @@ describe "Server" do
       get "/application/bulk_data", :partition => :app, :client_id => @c.id
       last_response.should be_ok
       last_response.body.should == {:result => :nop}.to_json
+    end
+  end
+  
+  describe "blob sync" do
+    before(:each) do
+      do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
+    end
+    it "should upload blob in multipart post" do
+      file1,file2 = 'upload1.txt','upload2.txt'
+      @product1['txtfile-rhoblob'] = file1
+      @product1['_id'] = 'tempobj1'
+      @product2['txtfile-rhoblob'] = file2
+      @product2['_id'] = 'tempobj2'
+      cud = {'create'=>{'1'=>@product1,'2'=>@product2},
+        :client_id => @c.id,:source_name => @s.name,
+        :version => ClientSync::VERSION,
+        :blob_fields => ['txtfile-rhoblob']}.to_json
+      post "/application", 
+        {:cud => cud,'txtfile-rhoblob-1' => 
+          Rack::Test::UploadedFile.new(File.join(File.dirname(__FILE__),'..','testdata',file1), "application/octet-stream"),
+          'txtfile-rhoblob-2' => 
+            Rack::Test::UploadedFile.new(File.join(File.dirname(__FILE__),'..','testdata',file2), "application/octet-stream")}
+      Store.get_data('test_create_storage').each do |id,obj|
+        File.exists?(obj['txtfile-rhoblob']).should == true
+      end
     end
   end
 end

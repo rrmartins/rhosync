@@ -1,19 +1,15 @@
-defaults: &defaults
-  :sources:
-    MockAdapter:
-      poll_interval: 300
-    QueueMockAdapter:
-      queue: abc
+:sources:
+  MockAdapter:
+    poll_interval: 300
+  QueueMockAdapter:
+    queue: abc
 
 :development:
-  <<: *defaults
   :redis: localhost:6379
   :syncserver: http://localhost:9292/application/
 :test: 
-  <<: *defaults
   :redis: localhost:6379
   :syncserver: http://localhost:9292/application/
 :production: 
-  <<: *defaults
   :redis: localhost:6379
   :syncserver: http://localhost:9292/application/    

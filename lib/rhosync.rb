@@ -23,7 +23,7 @@ require 'rhosync/indifferent_access'
   
 # Various module utilities for the store
 module Rhosync
-  APP_NAME = 'application'
+  APP_NAME = 'application' unless defined? APP_NAME
   
   class InvalidArgumentError < RuntimeError; end
   class RhosyncServerError < RuntimeError; end
@@ -71,7 +71,7 @@ module Rhosync
       else
         app = App.create(:name => app_name)
       end
-      sources = config[Rhosync.environment][:sources] || []
+      sources = config[:sources] || []
       sources.each do |source_name,fields|
         if Source.is_exist?(source_name)  
           s = Source.load(source_name,{:app_id => app.name,:user_id => '*'})
@@ -84,7 +84,7 @@ module Rhosync
           app.sources << source_name
         end
         # load ruby file for source adapter to re-load class
-        load underscore(source_name+'.rb')
+        load under_score(source_name+'.rb')
       end
     end
   end
@@ -102,20 +102,13 @@ module Rhosync
   def check_and_add(path)
     $:.unshift path unless $:.include?(path) 
   end
-  
-  # Return app_name if it is configured, otherwise use directory name
-  # def get_APP_NAME
-  #   #config[Rhosync.environment][:app_name] || File.basename(File.expand_path(Rhosync.base_directory))
-  #   "application"
-  # end
-  
+
   def get_config(basedir)
     #Load settings
     settings_file = File.join(basedir,'settings','settings.yml') if basedir
     config = YAML.load_file(settings_file) if settings_file and File.exist?(settings_file)
   end
   ### End Rhosync setup methods  
-  
   
   
   def check_default_secret!(secret)
@@ -157,7 +150,7 @@ module Rhosync
   end
 
   # Returns require-friendly filename for a class
-  def underscore(camel_cased_word)
+  def under_score(camel_cased_word)
     camel_cased_word.to_s.gsub(/::/, '/').
     gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
     gsub(/([a-z\d])([A-Z])/,'\1_\2').
@@ -247,6 +240,10 @@ module Rhosync
       require 'rhosync/server'
       # Bootstrap Rhosync system
       Rhosync.bootstrap(path || ENV['PWD'])
+    end
+    
+    def self.store_blob(blob)
+      blob[:tempfile].path if blob[:tempfile]
     end
   end
   

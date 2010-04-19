@@ -10,7 +10,7 @@ module Rhosync
       def create(fields={})
         fields[:id] = fields[:name]
         begin
-          require underscore(fields[:name])
+          require under_score(fields[:name])
         rescue Exception; end
         super(fields)
       end
@@ -59,6 +59,10 @@ module Rhosync
         end
       end
       {:names => names,:need_refresh => need_refresh}
+    end
+    
+    def store_blob(blob)
+      self.delegate.send :store_blob, blob
     end
   end
 end

@@ -7,7 +7,7 @@ require 'spec/interop/test'
 
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
-describe "Protocol", :shared => true do
+describe "Protocol" do
   it_should_behave_like "SourceAdapterHelper"
   it_should_behave_like "TestappHelper"
   
@@ -86,6 +86,49 @@ describe "Protocol", :shared => true do
       do_post "/#{@a.name}", params
       @title,@description = operation, "#{operation} object(s)"
     end
+  end
+  
+  it "client creates blobs" do
+    body = <<eol
+<pre>------------XnJLe9ZIbbGUYtzPQJ16u1
+Content-Disposition: form-data; name="txtfile-rhoblob-1"; filename="upload1.txt"
+Content-Type: application/octet-stream
+Content-Length: 5
+
+hello
+------------XnJLe9ZIbbGUYtzPQJ16u1
+Content-Disposition: form-data; name="txtfile-rhoblob-2"; filename="upload2.txt"
+Content-Type: application/octet-stream
+Content-Length: 5
+
+world
+------------XnJLe9ZIbbGUYtzPQJ16u1
+Content-Disposition: form-data; name="cud"
+
+{"client_id":"278c76a7ab2a4f64ba804c1aa22504f3","source_name":"SampleAdapter","version":3,"create":{"1":{"price":"199.99","brand":"Apple","name":"iPhone","txtfile-rhoblob":"upload1.txt","_id":"tempobj1"},"2":{"price":"99.99","brand":"Android","name":"G2","txtfile-rhoblob":"upload2.txt","_id":"tempobj2"}},"blob_fields":["txtfile-rhoblob"]}
+------------XnJLe9ZIbbGUYtzPQJ16u1--</pre>
+eol
+    @title,@description = 'create', 'client creates blobs'    
+    $content_table << {$rand_id => "#{@title} - #{@description}"}
+    data = {
+      :title => @title,
+      :description => @description,
+      :rand_id => $rand_id,
+      :req_method => 'POST',
+      :req_url => '/application',
+      :req_query_string => '',
+      :req_content_type => "multipart/form-data; boundary=----------XnJLe9ZIbbGUYtzPQJ16u1",
+      :req_content_length => 833,
+      :req_cookie => "rhosync_session=BAh7CDoNYXBwX25hbWUiEGFwcGxpY2F0aW9uOglhdXRoIg5kZWxlZ2F0ZWQ6\nCmxvZ2luIg10ZXN0dXNlcg==\n--87659670a0625baf4cdd81bdb9bf829b4567eb35",
+      :req_body => body,
+      :res_status => 200,
+      :res_content_type => 'text/html',
+      :res_content_length => 0,
+      :res_cookie => "rhosync_session=BAh7CDoKbG9naW4iDXRlc3R1c2VyOg1hcHBfbmFtZSIPcmhvdGVzdGFwcDoJ%0AYXV0aCIOZGVsZWdhdGVk%0A--788449811455529433e658e1c486c622f47ee0d8; path=/; expires=Mon, 04-Apr-2011 19:29:32",
+      :res_body => ''
+    }
+    $content << data
+    @title,@description = nil,nil    
   end
   
   it "client create,update,delete objects" do

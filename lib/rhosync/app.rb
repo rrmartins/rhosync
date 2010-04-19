@@ -61,8 +61,8 @@ module Rhosync
       {:names => names,:need_refresh => need_refresh}
     end
     
-    def store_blob(blob)
-      self.delegate.send :store_blob, blob
+    def store_blob(obj,field_name,blob)
+      self.delegate.send :store_blob, obj,field_name,blob
     end
   end
 end

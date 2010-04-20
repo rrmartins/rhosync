@@ -9,6 +9,12 @@ describe "Client" do
     @c.device_type.should == @c_fields[:device_type]
   end
   
+  it "should update_fields for a client" do
+    @c.update_fields({:device_type => 'android',:device_port => 100})
+    @c.device_type.should == 'android'
+    @c.device_port.should == '100'
+  end
+  
   it "should create client with user_id" do
     @c.id.length.should == 32
     @c.user_id.should == @c_fields[:user_id]

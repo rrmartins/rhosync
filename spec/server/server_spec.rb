@@ -102,21 +102,25 @@ describe "Server" do
     end
     
     it "should respond to clientcreate" do
-      get "/application/clientcreate"
+      get "/application/clientcreate?device_type=blackberry"
       last_response.should be_ok
       last_response.content_type.should == 'application/json'
       id = JSON.parse(last_response.body)['client']['client_id']
       id.length.should == 32
       JSON.parse(last_response.body).should == 
         {"client"=>{"client_id"=>id}}.merge!(@source_config)
-      Client.load(id,{:source_name => '*'}).user_id.should == 'testuser'
+      c = Client.load(id,{:source_name => '*'})
+      c.user_id.should == 'testuser'
+      c.device_type.should == 'blackberry'
     end
     
     it "should respond to clientregister" do
-      do_post "/application/clientregister", "device_type" => "iPhone", "client_id" => @c.id
+      do_post "/application/clientregister", 
+        "device_type" => "iPhone", "device_pin" => 'abcd', "client_id" => @c.id
       last_response.should be_ok
       JSON.parse(last_response.body).should == @source_config
       @c.device_type.should == 'iPhone'
+      @c.device_pin.should == 'abcd'
       @c.id.length.should == 32
     end
     

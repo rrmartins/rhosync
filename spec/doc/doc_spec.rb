@@ -68,9 +68,16 @@ describe "Protocol" do
     @title,@description = 'clientcreate', 'create client id'          
   end
   
+  it "clientcreate" do 
+    get "/#{@a.name}/clientcreate?device_type=iPhone&device_pin=abcd&device_port=3333"
+    @title,@description = 'clientcreate-and-register', 'create client id with register params'          
+  end
+  
   it "clientregister" do
-    do_post "/#{@a.name}/clientregister", "device_type" => "iPhone", "client_id" => @c.id
-    @title,@description = 'clientregister', 'register client device_type'     
+    do_post "/#{@a.name}/clientregister", 
+      "device_type" => "iPhone", "device_pin" => "abcd", 
+      "device_port" => "3333", "client_id" => @c.id
+    @title,@description = 'clientregister', 'register client with params'     
   end
   
   it "clientreset" do

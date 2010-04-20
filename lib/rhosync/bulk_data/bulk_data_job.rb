@@ -72,9 +72,12 @@ module Rhosync
       FileUtils.mkdir_p(File.dirname(bulk_data.dbfile))
       db = SQLite3::Database.new(bulk_data.dbfile)
       db.execute_batch(File.open(schema,'r').read)
-      bulk_data.sources.members.each do |source_name|
+      src_counter = 1
+      bulk_data.sources.members.sort.each do |source_name|
         source = Source.load(source_name,{:app_id => bulk_data.app_id,
           :user_id => bulk_data.user_id})
+        source.source_id = src_counter
+        src_counter += 1
         source_attrib_refs = import_data_to_object_values(db,source)
         sources_refs[source_name] = 
           {:source => source, :refs => source_attrib_refs}

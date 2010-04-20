@@ -97,6 +97,8 @@ describe "Server" do
   describe "client management routes" do
     before(:each) do
       do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
+      @source_config = {"sources"=>{"SampleAdapter"=>{"poll_interval"=>300},
+        "SimpleAdapter"=>{"partition_type"=>"app","poll_interval"=>600}}}
     end
     
     it "should respond to clientcreate" do
@@ -105,14 +107,15 @@ describe "Server" do
       last_response.content_type.should == 'application/json'
       id = JSON.parse(last_response.body)['client']['client_id']
       id.length.should == 32
-      last_response.body.should == { "client" => { "client_id" => id } }.to_json
+      JSON.parse(last_response.body).should == 
+        {"client"=>{"client_id"=>id}}.merge!(@source_config)
       Client.load(id,{:source_name => '*'}).user_id.should == 'testuser'
     end
     
     it "should respond to clientregister" do
       do_post "/application/clientregister", "device_type" => "iPhone", "client_id" => @c.id
       last_response.should be_ok
-      last_response.body.should == ''
+      JSON.parse(last_response.body).should == @source_config
       @c.device_type.should == 'iPhone'
       @c.id.length.should == 32
     end
@@ -120,6 +123,7 @@ describe "Server" do
     it "should respond to clientreset" do
       set_state(@c.docname(:cd) => @data)
       get "/application/clientreset", :client_id => @c.id,:version => ClientSync::VERSION
+      JSON.parse(last_response.body).should == @source_config
       verify_result(@c.docname(:cd) => {})
     end
   end

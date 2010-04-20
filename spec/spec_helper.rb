@@ -1,4 +1,3 @@
-$:.unshift File.join(__FILE__,'..','lib')
 require 'rhosync'
 include Rhosync
 

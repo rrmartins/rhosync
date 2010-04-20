@@ -135,6 +135,7 @@ describe "ClientSync" do
       set_state(@c.docname(:cd) => @data)
       ClientSync.reset(@c)
       verify_result(@c.docname(:cd) => {})
+      Client.load(@c.id,{:source_name => @s.name}).should_not be_nil
     end
   end
   

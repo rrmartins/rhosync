@@ -3,6 +3,9 @@ module Rhosync
   
   class Client < Model
     field :device_type,:string
+    field :device_pin,:string
+    field :device_port,:string
+    
     field :user_id,:string
     field :app_id,:string
     attr_accessor :source_name
@@ -51,6 +54,12 @@ module Rhosync
           self.source_name = source
           Store.clone(s.docname(:md_copy),self.docname(:cd))
         end
+      end
+    end
+    
+    def update_fields(params)
+      [:device_type,:device_pin,:device_port].each do |setting|
+        self.send "#{setting}=".to_sym, params[setting].to_s if params[setting]
       end
     end
     

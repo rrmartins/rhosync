@@ -171,11 +171,12 @@ module Rhosync
     get '/application/clientcreate' do
       content_type :json
       client = Client.create(:user_id => current_user.id,:app_id => current_app.id)
+      client.update_fields(params)
       { "client" => { "client_id" =>  client.id.to_s } }.merge!(source_config).to_json
     end
 
     post '/application/clientregister' do
-      current_client.device_type = params[:device_type]
+      current_client.update_fields(params)
       source_config.to_json
     end
 

@@ -106,6 +106,10 @@ module Rhosync
             params[:source_name] ? {:source_name => current_source.name} : {:source_name => '*'}) 
         end  
       end
+      
+      def source_config
+        { "sources" => Rhosync.get_config(Rhosync.base_directory)[:sources] }
+      end
 
       def catch_all
         begin
@@ -167,17 +171,17 @@ module Rhosync
     get '/application/clientcreate' do
       content_type :json
       client = Client.create(:user_id => current_user.id,:app_id => current_app.id)
-      { "client" => { "client_id" =>  client.id.to_s } }.to_json
+      { "client" => { "client_id" =>  client.id.to_s } }.merge!(source_config).to_json
     end
 
     post '/application/clientregister' do
       current_client.device_type = params[:device_type]
-      status 200
+      source_config.to_json
     end
 
     get '/application/clientreset' do
       ClientSync.reset(current_client)
-      status 200
+      source_config.to_json
     end
 
     # Member routes

@@ -73,7 +73,6 @@ describe "SourceAdapterHelper", :shared => true do
       :app_id => @a.id 
     }
     @s_fields = {
-      :source_id => 1,
       :name => 'SampleAdapter',
       :url => 'http://example.com',
       :login => 'testuser',

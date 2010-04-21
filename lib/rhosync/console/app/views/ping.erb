@@ -1,0 +1,28 @@
+<h1>Ping <%=params[:user_id]%></h1>
+<%=show_errors%>
+<form method="POST" action="<%=url('user/ping')%>">
+  <input type="hidden" name="user_id" value="<%=params[:user_id]%>">
+  <table>
+	<tr>
+		<td>Message:</td>
+		<td><input type="text" name="message" value="push message" size=64/></td>
+	</tr>
+	<tr>
+		<td>Sources:</td>
+		<td><input type="text" name="sources" value="<%=@sources.join(',')%>" size=64/></td>
+	</tr>
+	<tr>
+		<td>Badge:</td>
+		<td><input type="text" name="badge" value="1" /></td>
+	</tr>
+	<tr>
+		<td>Sound:</td>
+		<td><input type="text" name="sound" value="welcome.mp3" /></td>
+	</tr>
+	<tr>
+		<td>Vibrate:</td>
+		<td><input type="text" name="vibrate" value="2" />(seconds)</td>
+	</tr>
+  </table>
+  <input type="submit" value="Ping!"/>
+</form>

@@ -1,6 +1,5 @@
 require 'resque'
-$:.unshift File.join(File.dirname(__FILE__))
-require 'bulk_data_job'
+require 'rhosync/jobs/bulk_data_job'
 
 module Rhosync
   class BulkData < Model
@@ -61,6 +60,14 @@ module Rhosync
         else
           File.join(client.app_id,client.app_id)
         end
+      end
+      
+      def schema_file
+        File.join(File.dirname(__FILE__),'syncdb.schema')
+      end
+      
+      def index_file
+        File.join(File.dirname(__FILE__),'syncdb.index.schema')
       end
     end
   end

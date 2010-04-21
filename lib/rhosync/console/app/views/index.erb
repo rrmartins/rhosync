@@ -22,14 +22,11 @@
 	<h1>Login</h1>
 	<%=show_errors%>
 	<form action="<%=url('login')%>" method='POST'>
+		<input type="hidden" name='app_name' value='application'/>
 		<table>
 			<tr>
 				<td>Server:</td>
 				<td><input name='server' value='<%=session[:server] || 'http://localhost:9292'%>' size=64/></td>
-			</tr>
-			<tr>
-				<td>Application:</td>
-				<td><input name='app_name' value='<%=session[:app_name] || ''%>'/></td>
 			</tr>
 			<tr>
 				<td>Login:</td>

@@ -95,8 +95,8 @@ module Rhosync
     end
     
     def self.get_file_args(bulk_data_name,ts)
-      schema = File.join(File.dirname(__FILE__),'syncdb.schema')
-      index = File.join(File.dirname(__FILE__),'syncdb.index.schema')
+      schema = BulkData.schema_file
+      index = BulkData.index_file
       dbfile = File.join(Rhosync.data_directory,bulk_data_name+'_'+ts+'.data')
       [schema,index,dbfile]
     end

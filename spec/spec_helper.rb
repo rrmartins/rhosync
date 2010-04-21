@@ -68,6 +68,8 @@ describe "SourceAdapterHelper", :shared => true do
     @u.password = 'testpass'
     @c_fields = {
       :device_type => 'iPhone',
+      :device_pin => 'abcd',
+      :device_port => '3333',
       :user_id => @u.id,
       :app_id => @a.id 
     }

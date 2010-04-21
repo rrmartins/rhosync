@@ -1,4 +1,4 @@
-require File.join(File.dirname(__FILE__),'spec_helper')
+require File.join(File.dirname(__FILE__),'..','spec_helper')
 
 describe "SourceJob" do
   it_should_behave_like "SpecBootstrapHelper"

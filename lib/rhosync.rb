@@ -17,9 +17,10 @@ require 'rhosync/read_state'
 require 'rhosync/client_sync'
 require 'rhosync/source_adapter'
 require 'rhosync/source_sync'
-require 'rhosync/source_job'
-require 'rhosync/bulk_data'
 require 'rhosync/indifferent_access'
+require 'rhosync/jobs/source_job'
+require 'rhosync/jobs/ping_job'
+require 'rhosync/bulk_data'
   
 # Various module utilities for the store
 module Rhosync
@@ -104,7 +105,7 @@ module Rhosync
   end
 
   def get_config(basedir)
-    #Load settings
+    # Load settings
     settings_file = File.join(basedir,'settings','settings.yml') if basedir
     config = YAML.load_file(settings_file) if settings_file and File.exist?(settings_file)
   end

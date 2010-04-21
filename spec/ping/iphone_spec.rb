@@ -35,7 +35,7 @@ describe "Ping Iphone" do
   
   it "should compute apn_message" do
     expected = <<-eos
-\000\000 \253\315\000i{"aps":{"vibrate":"5","badge":"5","sound":"hello.mp3","alert":"hello world"},"do_sync":["SampleAdapter"]}
+\000\000 \253\315\000g{"aps":{"vibrate":"5","badge":5,"sound":"hello.mp3","alert":"hello world"},"do_sync":["SampleAdapter"]}
 eos
     Iphone.apn_message(@params).should == expected.strip!
   end
@@ -44,7 +44,7 @@ eos
     error = 'socket error'
     @ssl_socket.stub!(:write).and_return { raise SocketError.new(error) }
     Logger.should_receive(:error).once.with("Error while sending ping: #{error}")
-    Iphone.ping(@params)
+    lambda { Iphone.ping(@params) }.should raise_error(SocketError,error)
   end
   
 end

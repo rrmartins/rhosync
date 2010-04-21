@@ -8,8 +8,8 @@ describe "PingJob" do
     params = {"user_id" => @u.id, "api_token" => @api_token,
       "sources" => [@s.name], "message" => 'hello world', 
       "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3'}
-    Iphone.should_receive(:ping).once.with({:device_pin => @c.device_pin,
-      :device_port => @c.device_port}.merge!(params))
+    Iphone.should_receive(:ping).once.with({'device_pin' => @c.device_pin,
+      'device_port' => @c.device_port}.merge!(params))
     PingJob.perform(params)
   end
   
@@ -18,8 +18,8 @@ describe "PingJob" do
       "sources" => [@s.name], "message" => 'hello world', 
       "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3'}
     @c.device_type = 'blackberry'
-    Blackberry.should_receive(:ping).once.with({:device_pin => @c.device_pin,
-      :device_port => @c.device_port}.merge!(params))
+    Blackberry.should_receive(:ping).once.with({'device_pin' => @c.device_pin,
+      'device_port' => @c.device_port}.merge!(params))
     PingJob.perform(params)
   end
   

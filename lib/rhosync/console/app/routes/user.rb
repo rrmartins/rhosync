@@ -43,4 +43,22 @@ class RhosyncConsole::Server
     end    
     redirect url(session[:errors] ? "/user?user_id=#{CGI.escape(params[:user_id])}" : '/users'), 303
   end
+  
+  get '/user/ping' do
+    @sources = []
+    handle_api_error("Can't load list of user partition sources") do
+      @sources = RhosyncApi::list_sources(session[:server],session[:app_name],session[:token],:all)
+    end
+    erb :ping
+  end
+  
+  post '/user/ping' do
+    params[:sources] = params[:sources].split(',')
+    handle_api_error("Error while pinging") do
+      RhosyncApi::ping(session[:server],session[:token],params[:user_id],params)
+    end
+    user = CGI.escape(params[:user_id])
+    puts "errors: #{session[:errors].inspect}"
+    redirect url(session[:errors] ? "/user/ping?user_id=#{user}" : "/user?user_id=#{user}"), 303
+  end
 end

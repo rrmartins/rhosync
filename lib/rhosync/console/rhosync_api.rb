@@ -80,5 +80,13 @@ module RhosyncApi
         {:api_token => token}.to_json, :content_type => :json)
     end
     
+    def ping(server,token,user_id,params)
+      ping_params = {:api_token => token, :user_id => user_id}
+      [:message,:badge,:sound,:vibrate,:sources].each do |part|
+        ping_params.merge!(part => params[part]) if params[part]
+      end
+      RestClient.post("#{server}/api/ping",ping_params.to_json, :content_type => :json)
+    end
+    
   end
 end

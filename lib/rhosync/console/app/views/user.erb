@@ -1,8 +1,14 @@
 <h1>User: <%=params[:user_id]%></h1>
 <%=show_errors%>
-<a href="<%=url('users')%>" class='nav_button'>Back</a>
-<a href='<%=url("user/delete?user_id=#{CGI.escape(params[:user_id])}")%>' class='nav_button'>Delete user</a>
-
+<div class="panel">
+	<a href="<%=url('users')%>" class='nav_button'>Back</a>
+</div>
+<div class="panel">
+	<a href='<%=url("user/delete?user_id=#{CGI.escape(params[:user_id])}")%>' class='nav_button'>Delete user</a>
+</div>
+<div class="panel">	
+	<a href='<%=url("user/ping?user_id=#{CGI.escape(params[:user_id])}")%>' class='nav_button'>Ping User</a>
+</div>
 <h2>User partition sources</h2>	
 
 [

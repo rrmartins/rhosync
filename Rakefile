@@ -18,6 +18,8 @@ begin
             :server => 'spec/server/*_spec.rb',
             :api    => 'spec/api/*_spec.rb',
             :bulk   => 'spec/bulk_data/*_spec.rb',
+            :jobs   => 'spec/jobs/*_spec.rb',
+            :ping   => 'spec/ping/*_spec.rb',
             :doc    => 'spec/doc/*_spec.rb', 
             :generator => 'spec/generator/*_spec.rb',
             :bench_spec => 'bench/spec/*_spec.rb'}

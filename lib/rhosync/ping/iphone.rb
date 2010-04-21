@@ -22,7 +22,7 @@ module Rhosync
     		socket.close
   		rescue SocketError => error
   		  Logger.error "Error while sending ping: #{error}"
-  		  Logger.error error.backtrace.join("\n")
+  		  #Logger.error error.backtrace.join("\n")
   		  raise error
   		end
     end

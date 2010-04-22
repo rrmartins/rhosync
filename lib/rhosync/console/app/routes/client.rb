@@ -10,8 +10,12 @@ class RhosyncConsole::Server
   end
   
   get '/client' do
+    @attributes = []
+    handle_api_error("Can't load list of client attributes") do
+      @attributes = RhosyncApi::get_client_params(session[:server],session[:app_name],session[:token],params[:client_id])
+    end
     @sources = []
-    handle_api_error("Can't load list of application partition sources") do
+    handle_api_error("Can't load list of sources") do
       @sources = RhosyncApi::list_sources(session[:server],session[:app_name],session[:token],:all)
     end
     erb :client

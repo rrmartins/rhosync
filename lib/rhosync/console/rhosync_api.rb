@@ -43,6 +43,11 @@ module RhosyncApi
         {:app_name => app_name, :api_token => token, :user_id => user_id, 
          :client_id => client_id}.to_json, :content_type => :json)    
     end
+
+    def get_client_params(server,app_name,token,client_id)
+      JSON.parse(RestClient.post("#{server}/api/get_client_params", {:app_name => app_name, 
+        :api_token => token, :client_id => client_id}.to_json, :content_type => :json).body)
+    end
     
     def list_sources(server,app_name,token,partition='all') 
       JSON.parse(RestClient.post("#{server}/api/list_sources", {:app_name => app_name, 

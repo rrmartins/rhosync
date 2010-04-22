@@ -5,6 +5,20 @@
 	Delete client
 </a>
 
+<h2>Client attributes</h2>
+<div class='panel'>
+	<table>
+	<%@attributes.each do |attrib|%>
+		<%if attrib['name'] != 'rho__id' and attrib['value'] and attrib['value'].size > 0%>
+			<tr>
+				<td><%=attrib['name']%>:</td>
+				<td><%=attrib['value']%></td>
+			</tr>
+		<%end%>
+	<%end%>
+	</table>
+</div>
+
 <h2>Client documents for source:</h2>
 
 [

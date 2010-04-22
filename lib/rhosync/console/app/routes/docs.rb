@@ -1,5 +1,10 @@
 class RhosyncConsole::Server
   get '/docs' do
+    @src_params = []
+    handle_api_error("Can't load list of source attributes") do
+      @src_params = RhosyncApi::get_source_params(session[:server],
+        session[:app_name],session[:token],params[:source_id])
+    end
     @docs = []
     @docs_name = ''
     @back_href = ''

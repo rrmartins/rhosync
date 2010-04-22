@@ -1,8 +1,22 @@
-<h1>Documents for <%=@docs_name%></h1>
+<h1><%=params[:source_id]%></h1>
 <%=show_errors%>
 <div class='panel'>
 	<a href='<%= @back_href%>' class='nav_button'>Back</a>
 </div>
+<h2>Source attributes</h2>
+<div class='panel'>
+	<table>
+	<%@src_params.each do |attrib|%>
+		<%if attrib['name'] != 'rho__id' and attrib['value'] and attrib['value'].size > 0%>
+			<tr>
+				<td><%=attrib['name']%>:</td>
+				<td><%=attrib['value']%></td>
+			</tr>
+		<%end%>
+	<%end%>
+	</table>
+</div>
+<h2>Documents for <%=@docs_name%></h2>
 <div class='panel'>
 	<table>
 		<%@docs.each do |name,dbkey|%>

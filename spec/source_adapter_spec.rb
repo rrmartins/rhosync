@@ -97,7 +97,7 @@ describe "SourceAdapter" do
     end
     
     it "should log warning if @result is missing" do
-      Logger.should_receive(:error).with(SourceAdapter::MSG_NIL_RESULT_ATTRIB)
+      @sa.should_receive(:log).with(SourceAdapter::MSG_NIL_RESULT_ATTRIB)
       @sa.inject_result nil
       @sa.sync
     end

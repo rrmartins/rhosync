@@ -43,7 +43,7 @@ eos
   it "should raise SocketError if socket fails" do
     error = 'socket error'
     @ssl_socket.stub!(:write).and_return { raise SocketError.new(error) }
-    Logger.should_receive(:error).once.with("Error while sending ping: #{error}")
+    Iphone.should_receive(:log).once.with("Error while sending ping: #{error}")
     lambda { Iphone.ping(@params) }.should raise_error(SocketError,error)
   end
   

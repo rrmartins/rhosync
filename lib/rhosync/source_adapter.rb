@@ -26,8 +26,7 @@ module Rhosync
           require under_score(source.name)
           adapter=(Object.const_get(source.name)).new(source,credential) 
         rescue Exception=>e
-          Logger.error "Failure to create adapter from class #{source.name}: #{e.inspect.to_s}"
-          #Logger.error e.backtrace.join("\n")
+          log "Failure to create adapter from class #{source.name}: #{e.inspect.to_s}"
           raise e
         end
       end
@@ -89,7 +88,7 @@ module Rhosync
   
     private 
     def _result_nil? #:nodoc:
-      Logger.error MSG_NIL_RESULT_ATTRIB if @result.nil?
+      log MSG_NIL_RESULT_ATTRIB if @result.nil?
       @result.nil?
     end
   end

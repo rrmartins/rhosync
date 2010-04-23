@@ -29,10 +29,11 @@ module Rhosync
   class InvalidArgumentError < RuntimeError; end
   class RhosyncServerError < RuntimeError; end
   extend self
-  
+    
   class << self
     attr_accessor :base_directory, :app_directory, :data_directory, 
-      :vendor_directory, :blackberry_bulk_sync, :redis, :environment
+      :vendor_directory, :blackberry_bulk_sync, :redis, :environment,
+      :log_enabled
   end
   
   ### Begin Rhosync setup methods  
@@ -48,6 +49,7 @@ module Rhosync
     Rhosync.vendor_directory = get_setting(config,environment,:vendor_directory)
     Rhosync.blackberry_bulk_sync = get_setting(config,environment,:blackberry_bulk_sync,false)
     Rhosync.redis = get_setting(config,environment,:redis,false)
+    Rhosync.log_enabled = get_setting(config,environment,:log_enabled,true)
     Rhosync.environment = environment
     yield self if block_given?
     Store.create(Rhosync.redis)
@@ -57,6 +59,7 @@ module Rhosync
     Rhosync.data_directory ||= File.join(Rhosync.base_directory,'data')
     Rhosync.vendor_directory ||= File.join(Rhosync.base_directory,'vendor')
     Rhosync.blackberry_bulk_sync ||= false
+    Rhosync.log_enabled ||= true
     check_and_add(File.join(Rhosync.app_directory,'sources'))
     start_app(config)
     create_admin_user
@@ -114,10 +117,10 @@ module Rhosync
   
   def check_default_secret!(secret)
     if secret == '<changeme>'                        
-      Logger.error "*"*60+"\n\n"
-      Logger.error "WARNING: Change the session secret in config.ru from <changeme> to something secure."
-      Logger.error "  i.e. running `rake secret` in a rails app will generate a secret you could use."
-      Logger.error "\n\n"+"*"*60
+      log "*"*60+"\n\n"
+      log "WARNING: Change the session secret in config.ru from <changeme> to something secure."
+      log "  i.e. running `rake secret` in a rails app will generate a secret you could use."
+      log "\n\n"+"*"*60
     end
   end
 
@@ -168,11 +171,11 @@ module Rhosync
 
   def check_hsql_lib!
     unless File.exists?(File.join(Rhosync.vendor_directory,'hsqldata.jar'))
-      Logger.error "*"*60
-      Logger.error ""
-      Logger.error "WARNING: Missing vendor/hsqldata.jar, please install it for BlackBerry bulk sync support."
-      Logger.error ""
-      Logger.error "*"*60
+      log "*"*60
+      log ""
+      log "WARNING: Missing vendor/hsqldata.jar, please install it for BlackBerry bulk sync support."
+      log ""
+      log "*"*60
     end
   end
 
@@ -190,7 +193,7 @@ module Rhosync
         end
       end
     rescue Exception => e
-      Logger.error "Failed to unzip `#{uploaded_file}`"
+      log "Failed to unzip `#{uploaded_file}`"
       raise e
     ensure
       FileUtils.rm_f(uploaded_file)
@@ -199,12 +202,12 @@ module Rhosync
 
   def lap_timer(msg,start)
     duration = timenow - start
-    Logger.info "#{msg}: #{duration}"
+    log "#{msg}: #{duration}"
     timenow
   end
 
   def start_timer(msg='starting')
-    Logger.info "#{msg}"
+    log "#{msg}"
     timenow
   end
 
@@ -212,21 +215,9 @@ module Rhosync
     (Time.now.to_f * 1000)
   end
   
-  # TODO: replace with real logger
-  class Logger
-    @@enabled = true
-    
-    class << self
-      attr_accessor :enabled
-      
-      def info(*args)
-        puts args.join unless args.nil? or @@enabled == false
-      end
-    
-      def error(*args)
-        puts args.join unless args.nil? or @@enabled == false
-      end
-    end
+  def log(*args)
+    now = Time.now.strftime('%I:%M:%S %p %Y-%m-%d')
+    puts "[#{now}] #{args.join}" if Rhosync.log_enabled
   end
   
   # Base rhosync application class

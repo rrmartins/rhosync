@@ -19,9 +19,8 @@ module Rhosync
         end
 
       rescue Exception => error
-        Logger.error "Error while sending ping: #{error}"
-  		  #Logger.error error.backtrace.join("\n")
-  		  raise error
+        log "Error while sending ping: #{error}"
+        raise error
       end
     end
     

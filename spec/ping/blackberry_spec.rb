@@ -27,7 +27,7 @@ describe "Ping Blackberry" do
   it "should ping blackberry with connection error" do
     error = 'Connection refused'
     @http.stub!(:request).and_return { raise SocketError.new(error) }
-    Logger.should_receive(:error).once.with("Error while sending ping: #{error}")
+    Blackberry.should_receive(:log).once.with("Error while sending ping: #{error}")
     lambda { Blackberry.ping(@params) }.should raise_error(SocketError,error)
   end
   

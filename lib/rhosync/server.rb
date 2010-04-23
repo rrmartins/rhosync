@@ -26,7 +26,7 @@ module Rhosync
     use Rack::Session::Cookie, :key => 'rhosync_session',
                                :expire_after => 31536000,
                                :secret => Server.secret
-                               
+                             
     # Setup route and mimetype for bulk data downloads
     # TODO: Figure out why "mime :data, 'application/octet-stream'" doesn't work
     Rack::Mime::MIME_TYPES['.data'] = 'application/octet-stream'   
@@ -115,13 +115,13 @@ module Rhosync
         begin
           yield
         rescue Exception => e
-          #puts e.message + e.backtrace.join("\n")
+          #log e.message + e.backtrace.join("\n")
           throw :halt, [500, e.message]
         end
       end
     end
     
-    Logger.info "Rhosync Server v#{Rhosync::VERSION} started..."
+    log "Rhosync Server v#{Rhosync::VERSION} started..."
     
     def initialize
       # Whine about default session secret
@@ -142,6 +142,7 @@ module Rhosync
       if params[:version] and params[:version].to_i < 3
         throw :halt, [404, "Server supports version 3 or higher of the protocol."]
       end
+      #log "request params: #{params.inspect}"
     end
 
     %w[get post].each do |verb|
@@ -191,14 +192,12 @@ module Rhosync
         content_type :json
         cs = ClientSync.new(current_source,current_client,params[:p_size])
         res = cs.send_cud(params[:token],params[:query]).to_json
-        #puts "send_cud results: #{res.inspect}"
         res
       end
     end
 
     post '/application' do
       catch_all do
-        #puts "receive_cud params: #{params.inspect}"
         cs = ClientSync.new(current_source,current_client,params[:p_size]) 
         cs.receive_cud(params)
         status 200
@@ -228,7 +227,7 @@ module Rhosync
           rescue ApiException => ae
             throw :halt, [ae.error_code, ae.message]  
           rescue Exception => e
-            #puts e.message + "\n" + e.backtrace.join("\n")
+            # log e.message + "\n" + e.backtrace.join("\n")
             throw :halt, [500, e.message]
           end
         else

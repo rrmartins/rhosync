@@ -54,14 +54,14 @@ describe "Server" do
   it "should update session secret to default" do
     Server.set :secret, "<changeme>"
     Server.secret.should == "<changeme>"
-    Logger.should_receive(:error).any_number_of_times.with(any_args())
+    Server.should_receive(:log).any_number_of_times.with(any_args())
     check_default_secret!("<changeme>")
     Server.set :secret, "secure!"
   end
   
   it "should complain about hsqldata.jar missing" do
     Rhosync.vendor_directory = 'missing'
-    Logger.should_receive(:error).any_number_of_times.with(any_args())
+    Server.should_receive(:log).any_number_of_times.with(any_args())
     check_hsql_lib!
   end
   

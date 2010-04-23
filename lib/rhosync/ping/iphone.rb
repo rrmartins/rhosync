@@ -23,8 +23,7 @@ module Rhosync
     		ssl_socket.close
     		socket.close
   		rescue SocketError => error
-  		  Logger.error "Error while sending ping: #{error}"
-  		  #Logger.error error.backtrace.join("\n")
+  		  log "Error while sending ping: #{error}"
   		  raise error
   		end
     end
@@ -39,7 +38,6 @@ module Rhosync
   		data['aps']['vibrate'] = params['vibrate'] if params['vibrate']
   		data['do_sync'] = params['sources'] if params['sources']
   		json = data.to_json
-  		Logger.info "Push message to iPhone: #{json}"
   		"\0\0 #{[params['device_pin'].delete(' ')].pack('H*')}\0#{json.length.chr}#{json}"
   	end
   end

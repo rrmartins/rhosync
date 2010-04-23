@@ -104,7 +104,7 @@ module Rhosync
         Store.flash_data(edockey) if operation == 'login'
         @adapter.send operation
       rescue Exception => e
-        Logger.error "SourceAdapter raised #{operation} exception: #{e}"
+        log "SourceAdapter raised #{operation} exception: #{e}"
         Store.put_data(edockey,{"#{operation}-error"=>{'message'=>e.message}},true)
         return false
       end
@@ -162,7 +162,7 @@ module Rhosync
             _process_delete(client_id,key,value,dels)
           end
         rescue Exception => e
-          Logger.error "SourceAdapter raised #{operation} exception: #{e}"
+          log "SourceAdapter raised #{operation} exception: #{e}"
           errors ||= {}
           errors[key] = value
           errors["#{key}-error"] = {'message'=>e.message}
@@ -234,7 +234,7 @@ module Rhosync
         end
       rescue Exception => e
         # store sync,operation exceptions to be sent to all clients for this source/user
-        Logger.error "SourceAdapter raised #{operation} exception: #{e}"
+        log "SourceAdapter raised #{operation} exception: #{e}"
         Store.lock(errordoc) do
           Store.put_data(errordoc,{"#{operation}-error"=>{'message'=>e.message}},true)
         end

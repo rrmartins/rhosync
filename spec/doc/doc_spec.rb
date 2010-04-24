@@ -14,7 +14,7 @@ describe "Protocol" do
   include Rack::Test::Methods
   include Rhosync
   
-  Rhosync.log_enabled = false
+  Rhosync.log_disabled = true
   it_should_behave_like "SourceAdapterHelper"
   
   before(:each) do

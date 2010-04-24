@@ -4,7 +4,7 @@ module Rhosync
   class Iphone
     def self.ping(params)
       settings = get_config(Rhosync.base_directory)[Rhosync.environment]
-      cert_file = File.join(Rhosync.base_directory,settings[:cert_file])
+      cert_file = File.join(Rhosync.base_directory,settings[:iphonecertfile])
       cert = File.read(cert_file) if File.exists?(cert_file)
     	passphrase = settings[:iphonepassphrase]
     	host = settings[:iphoneserver]

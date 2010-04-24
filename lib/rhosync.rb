@@ -3,6 +3,7 @@ require 'json'
 require 'base64'
 require 'zip/zip'
 require 'yaml'
+require 'rhosync/license'
 require 'rhosync/version'
 require 'rhosync/document'
 require 'rhosync/lock_ops'
@@ -33,7 +34,7 @@ module Rhosync
   class << self
     attr_accessor :base_directory, :app_directory, :data_directory, 
       :vendor_directory, :blackberry_bulk_sync, :redis, :environment,
-      :log_enabled
+      :log_disabled, :license
   end
   
   ### Begin Rhosync setup methods  
@@ -43,14 +44,14 @@ module Rhosync
     #Load environment
     environment = (ENV['RHO_ENV'] || :development).to_sym     
     # Initialize Rhosync and Resque
-    Rhosync.base_directory = basedir
+    Rhosync.base_directory = basedir    
     Rhosync.app_directory = get_setting(config,environment,:app_directory)
     Rhosync.data_directory = get_setting(config,environment,:data_directory)
     Rhosync.vendor_directory = get_setting(config,environment,:vendor_directory)
     Rhosync.blackberry_bulk_sync = get_setting(config,environment,:blackberry_bulk_sync,false)
     Rhosync.redis = get_setting(config,environment,:redis,false)
-    Rhosync.log_enabled = get_setting(config,environment,:log_enabled,true)
-    Rhosync.environment = environment
+    Rhosync.log_disabled = get_setting(config,environment,:log_disabled,false)
+    Rhosync.environment = environment    
     yield self if block_given?
     Store.create(Rhosync.redis)
     Resque.redis = Store.db
@@ -59,7 +60,9 @@ module Rhosync
     Rhosync.data_directory ||= File.join(Rhosync.base_directory,'data')
     Rhosync.vendor_directory ||= File.join(Rhosync.base_directory,'vendor')
     Rhosync.blackberry_bulk_sync ||= false
-    Rhosync.log_enabled ||= true
+    Rhosync.log_disabled ||= false
+    Rhosync.license = License.new
+    
     check_and_add(File.join(Rhosync.app_directory,'sources'))
     start_app(config)
     create_admin_user
@@ -119,8 +122,8 @@ module Rhosync
     if secret == '<changeme>'                        
       log "*"*60+"\n\n"
       log "WARNING: Change the session secret in config.ru from <changeme> to something secure."
-      log "  i.e. running `rake secret` in a rails app will generate a secret you could use."
-      log "\n\n"+"*"*60
+      log "  i.e. running `rake secret` in a rails app will generate a secret you could use.\n\n"
+      log "*"*60
     end
   end
 
@@ -217,7 +220,7 @@ module Rhosync
   
   def log(*args)
     now = Time.now.strftime('%I:%M:%S %p %Y-%m-%d')
-    puts "[#{now}] #{args.join}" if Rhosync.log_enabled
+    puts "[#{now}] #{args.join}" unless Rhosync.log_disabled
   end
   
   # Base rhosync application class

@@ -15,6 +15,7 @@ module Rhosync
     include LockOps
     
     def self.create(fields,params={})
+      Rhosync.license.check_and_use_seat
       fields[:id] = get_random_uuid
       res = super(fields,params)
       user = User.load(fields[:user_id])
@@ -44,6 +45,7 @@ module Rhosync
     
     def delete
       flash_data('*')
+      Rhosync.license.free_seat
       super
     end
     
@@ -64,6 +66,7 @@ module Rhosync
     end
     
     private
+    
     def self.validate_attributes(params)
       raise ArgumentError.new('Missing required attribute source_name') unless params[:source_name]
     end

@@ -12,6 +12,14 @@ describe "User" do
     @u1.email.should == @u_fields[:email]
   end
   
+  it "should delete seats for user's clients" do
+    Client.create(@c_fields,{:source_name => @s_fields[:name]})
+    c_size = @u.clients.members.size
+    current = Store.get_value(License::CLIENT_DOCKEY).to_i
+    @u.delete
+    Store.get_value(License::CLIENT_DOCKEY).to_i.should == current - c_size
+  end
+  
   it "should create token for user" do
     token = @u.create_token
     token.length.should == 32

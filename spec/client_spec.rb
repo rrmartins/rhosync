@@ -25,12 +25,20 @@ describe "Client" do
     @c.source_name = nil
     lambda { 
       @c.doc_suffix('foo') 
-        }.should raise_error(InvalidSourceNameError, 'Invalid Source Name For Client')
+    }.should raise_error(InvalidSourceNameError, 'Invalid Source Name For Client')
   end
   
-  it "should raise ArgumentError if source_name is not provided" do
-    lambda { Client.create(@c_fields,{}) }.should
-      raise_error(ArgumentError, "Missing required field 'source_name'")
+  it "should raise exception if license seats exceeded" do
+    Store.put_value(License::CLIENT_DOCKEY,100)
+    lambda { Client.create(@c_fields,{}) }.should raise_error(
+      LicenseSeatsExceededException, "WARNING: Maximum # of clients exceeded for this license."
+    )
+  end
+  
+  it "should free seat when client is deleted" do
+    current = Store.get_value(License::CLIENT_DOCKEY).to_i
+    @c.delete
+    Store.get_value(License::CLIENT_DOCKEY).to_i.should == current - 1
   end
 
   it "should delete client and all associated documents" do

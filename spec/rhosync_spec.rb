@@ -33,20 +33,11 @@ describe "Rhosync" do
 
   it "should bootstrap app with no sources" do
     app = App.create(:name => @test_app_name)
-    Rhosync.stub!(:get_config).and_return({Rhosync.environment.to_sym => {:sources => nil}})
+    Rhosync.stub!(:get_config).and_return(
+      { Rhosync.environment.to_sym => { :licensefile => 'settings/license.key' } }
+    )
     App.should_receive(:load).twice.with(@test_app_name).and_return(app)
     Rhosync.bootstrap(get_testapp_path)
     App.load(@test_app_name).sources.members.should == []
-  end
-  
-  it "should load subclass initializer and Rhosync::Base initializer" do
-    Testapp.initializer
-    Rhosync.base_directory.should == ENV['PWD']
-  end
-  
-  class Testapp < Rhosync::Base
-    def self.initializer
-      super
-    end
   end
 end

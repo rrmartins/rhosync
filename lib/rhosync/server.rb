@@ -120,14 +120,14 @@ module Rhosync
         end
       end
     end
-    
-    log "Rhosync Server v#{Rhosync::VERSION} started..."
-    
+        
     def initialize
       # Whine about default session secret
       check_default_secret!(Server.secret)
       super
     end
+    
+    Rhosync.log "Rhosync Server v#{Rhosync::VERSION} started..."
 
     before do
       if params["cud"]

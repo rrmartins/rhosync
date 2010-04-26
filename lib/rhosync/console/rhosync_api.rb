@@ -92,6 +92,11 @@ module RhosyncApi
       end
       RestClient.post("#{server}/api/ping",ping_params.to_json, :content_type => :json)
     end
+
+    def get_license_info(server,token)
+      JSON.parse(RestClient.post("#{server}/api/get_license_info",
+        {:api_token => token}.to_json, :content_type => :json).body)
+    end
     
   end
 end

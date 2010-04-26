@@ -6,7 +6,7 @@ module Rhosync
   
   class License
     attr_reader :rhosync_version, :licensee, :seats, :issued
-    attr_accessor :license
+    #attr_accessor :license
 
     # ships with rhosync
     RHO_PUBLICKEY = "99068e3a2708e6fe918252be8880eac539a1d2b2402651d75de5c7a2333a1cb2"
@@ -48,7 +48,14 @@ module Rhosync
         end
       end
     end
-
+    
+    def available
+      current = Store.get_value(CLIENT_DOCKEY)
+      current = current ? current.to_i : 0
+      available = self.seats - current
+      available > 0 ? available : 0
+    end
+      
     private
 
     def _decrypt

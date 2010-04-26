@@ -19,6 +19,7 @@ end
 
 describe "RhosyncDataHelper", :shared => true do
   it_should_behave_like "RhosyncHelper"
+  it_should_behave_like "TestappHelper"
   
   before(:each) do
     @source = 'Product'
@@ -53,9 +54,7 @@ describe "RhosyncDataHelper", :shared => true do
   end
 end  
 
-describe "SourceAdapterHelper", :shared => true do
-  it_should_behave_like "RhosyncDataHelper"
-  it_should_behave_like "TestappHelper"
+describe "DBObjectsHelper", :shared => true do
   
   ERROR = '0_broken_object_id' unless defined? ERROR
   
@@ -84,7 +83,8 @@ describe "SourceAdapterHelper", :shared => true do
       :app_id => @a.id
     }
     @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
-    @s = Source.create(@s_fields,@s_params)
+    @s = Source.load(@s_fields[:name],@s_params)
+    @s = Source.create(@s_fields,@s_params) if @s.nil?
     @r = @s.read_state
     @a.sources << @s.id
     @a.users << @u.id
@@ -214,6 +214,11 @@ describe "SourceAdapterHelper", :shared => true do
       klass.class_eval "def metadata; end"
     end
   end
+end
+
+describe "SourceAdapterHelper", :shared => true do
+  it_should_behave_like "RhosyncDataHelper"
+  it_should_behave_like "DBObjectsHelper"
 end
 
 describe "StorageStateHelper", :shared => true do

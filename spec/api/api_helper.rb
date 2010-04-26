@@ -8,9 +8,8 @@ require 'spec/interop/test'
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
 describe "ApiHelper", :shared => true do
-  it_should_behave_like "SourceAdapterHelper"
-  it_should_behave_like "TestappHelper"
-  
+  it_should_behave_like "RhosyncDataHelper"
+
   include Rack::Test::Methods
   include Rhosync
   
@@ -26,10 +25,12 @@ describe "ApiHelper", :shared => true do
     )
     @api_token = User.load('admin').token_id
   end
-  
+
   def app
     @app ||= Server.new
   end
+
+  it_should_behave_like "DBObjectsHelper"
 end
 
 def compress(path)

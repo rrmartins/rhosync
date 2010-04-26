@@ -38,4 +38,11 @@ describe "License" do
     License.new.free_seat
     Store.get_value(License::CLIENT_DOCKEY).to_i.should == 4
   end
+
+  it "should get # of available seats" do
+    license = License.new
+    license.check_and_use_seat
+    license.available.should == 9
+  end
+
 end

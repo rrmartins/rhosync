@@ -1,8 +1,12 @@
 <%if not login_required %>
-    <h1>Application: <%= session[:app_name]%></h1>
+    <h1>Application</h1>
+	<%="Licensed to #{@license['licensee']} on #{@license['issued']}, available #{@license['available']} of #{@license['seats']} seats"%>
 	<div class='panel'>
 		<a href="<%=url('logout')%>" class='nav_button'>Logout</a>
 	</div>	
+	<div class='panel'>
+		<a href="<%=url('reset')%>" class='nav_button'>Reset</a>
+	</div>
 	<div class='panel'>
 		<a href="<%=url('users')%>" class='nav_button'>Application users</a>
 	</div>

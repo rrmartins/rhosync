@@ -28,7 +28,11 @@ class RhosyncConsole::Server
         yield
       rescue RestClient::Exception => re
         session[:errors] ||= []
-        session[:errors] << "#{error_message}: [#{re.http_code}] #{re.message}"
+        if re.response.body.nil? or re.response.body.length == 0
+          session[:errors] << "#{error_message}: [#{re.http_code}] #{re.message}"  
+        else
+          session[:errors] << "#{error_message}: #{re.response.body}"
+        end
       rescue Exception => e      
         session[:errors] ||= []
         session[:errors] << "#{error_message}: #{e.message}"

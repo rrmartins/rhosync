@@ -1,6 +1,11 @@
 <%if not login_required %>
-    <h1>Application</h1>
-	<%="Licensed to #{@license['licensee']} on #{@license['issued']}, available #{@license['available']} of #{@license['seats']} seats"%>
+	<h1>Application</h1>
+	<%if is_errors? or @sources.nil? %>
+		<%= show_errors%>
+	<%end%>
+	<%unless @licese.nil? %>
+ 		<%="Licensed to #{@license['licensee']} on #{@license['issued']}, available #{@license['available']} of #{@license['seats']} seats"%>
+	<%end%>	
 	<div class='panel'>
 		<a href="<%=url('logout')%>" class='nav_button'>Logout</a>
 	</div>	
@@ -12,9 +17,7 @@
 	</div>
 	<h2>App partition sources</h2>	
 	<div class='panel'>
-		<%if is_errors?%>
-			<%= show_errors%>
-		<%else%>
+		<%unless @sources.nil? %>
 			[
 			<%@sources.each_index do |i|%>
 				<a href="<%=url("docs?source_id=#{@sources[i]}&user_id=*")%>"><%=i==0?'':','%>"<%=@sources[i]%>"</a>

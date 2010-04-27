@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-04-21}
+  s.date = %q{2010-04-26}
   s.default_executable = %q{rhosync}
   s.description = %q{Rhosync Server and related command-line utilities for using Rhosync}
   s.executables = ["rhosync"]
@@ -26,6 +26,7 @@ Gem::Specification.new do |s|
      "bench/benchapp/Rakefile",
      "bench/benchapp/application.rb",
      "bench/benchapp/config.ru",
+     "bench/benchapp/settings/license.key",
      "bench/benchapp/settings/settings.yml",
      "bench/benchapp/sources/mock_adapter.rb",
      "bench/benchapp/sources/queue_mock_adapter.rb",
@@ -62,6 +63,7 @@ Gem::Specification.new do |s|
      "generators/templates/application/Rakefile",
      "generators/templates/application/application.rb",
      "generators/templates/application/config.ru",
+     "generators/templates/application/settings/license.key",
      "generators/templates/application/settings/settings.yml",
      "generators/templates/source/source_adapter.rb",
      "lib/rhosync.rb",
@@ -70,7 +72,9 @@ Gem::Specification.new do |s|
      "lib/rhosync/api/delete_client.rb",
      "lib/rhosync/api/delete_user.rb",
      "lib/rhosync/api/get_api_token.rb",
+     "lib/rhosync/api/get_client_params.rb",
      "lib/rhosync/api/get_db_doc.rb",
+     "lib/rhosync/api/get_license_info.rb",
      "lib/rhosync/api/get_source_params.rb",
      "lib/rhosync/api/list_client_docs.rb",
      "lib/rhosync/api/list_clients.rb",
@@ -121,6 +125,7 @@ Gem::Specification.new do |s|
      "lib/rhosync/jobs/bulk_data_job.rb",
      "lib/rhosync/jobs/ping_job.rb",
      "lib/rhosync/jobs/source_job.rb",
+     "lib/rhosync/license.rb",
      "lib/rhosync/lock_ops.rb",
      "lib/rhosync/model.rb",
      "lib/rhosync/ping.rb",
@@ -142,7 +147,9 @@ Gem::Specification.new do |s|
      "spec/api/delete_client_spec.rb",
      "spec/api/delete_user_spec.rb",
      "spec/api/get_api_token_spec.rb",
+     "spec/api/get_client_params_spec.rb",
      "spec/api/get_db_doc_spec.rb",
+     "spec/api/get_license_info_spec.rb",
      "spec/api/get_source_params_spec.rb",
      "spec/api/list_client_docs_spec.rb",
      "spec/api/list_clients_spec.rb",
@@ -163,6 +170,7 @@ Gem::Specification.new do |s|
      "spec/apps/rhotestapp/application.rb",
      "spec/apps/rhotestapp/config.ru",
      "spec/apps/rhotestapp/settings/apple_fake_cert.pem",
+     "spec/apps/rhotestapp/settings/license.key",
      "spec/apps/rhotestapp/settings/settings.yml",
      "spec/apps/rhotestapp/sources/base_adapter.rb",
      "spec/apps/rhotestapp/sources/sample_adapter.rb",
@@ -183,6 +191,7 @@ Gem::Specification.new do |s|
      "spec/jobs/bulk_data_job_spec.rb",
      "spec/jobs/ping_job_spec.rb",
      "spec/jobs/source_job_spec.rb",
+     "spec/license_spec.rb",
      "spec/model_spec.rb",
      "spec/perf/bulk_data_perf_spec.rb",
      "spec/perf/perf_spec_helper.rb",
@@ -217,7 +226,9 @@ Gem::Specification.new do |s|
      "spec/api/delete_client_spec.rb",
      "spec/api/delete_user_spec.rb",
      "spec/api/get_api_token_spec.rb",
+     "spec/api/get_client_params_spec.rb",
      "spec/api/get_db_doc_spec.rb",
+     "spec/api/get_license_info_spec.rb",
      "spec/api/get_source_params_spec.rb",
      "spec/api/list_client_docs_spec.rb",
      "spec/api/list_clients_spec.rb",
@@ -251,6 +262,7 @@ Gem::Specification.new do |s|
      "spec/jobs/bulk_data_job_spec.rb",
      "spec/jobs/ping_job_spec.rb",
      "spec/jobs/source_job_spec.rb",
+     "spec/license_spec.rb",
      "spec/model_spec.rb",
      "spec/perf/bulk_data_perf_spec.rb",
      "spec/perf/perf_spec_helper.rb",

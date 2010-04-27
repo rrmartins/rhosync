@@ -45,6 +45,11 @@ module Rhosync
       template.destination = "#{name}/settings/settings.yml"
     end
     
+    template :license do |template|
+      template.source = 'settings/license.key'
+      template.destination = "#{name}/settings/license.key"
+    end
+    
     template :application do |template|
       template.source = 'application.rb'
       template.destination = "#{name}/application.rb"

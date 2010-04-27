@@ -25,6 +25,7 @@ describe "Generator" do
         'config.ru',
         "application.rb",
         'settings/settings.yml',
+        'settings/license.key',
         'Rakefile'
       ].each do |template|
         @generator.should create("/tmp/#{appname}/#{template}")

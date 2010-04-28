@@ -10,11 +10,11 @@ class RhosyncConsole::Server
     @back_href = ''
     @doc_params = doc_params
     handle_api_error("Can't load list of the documents") do
-      if params[:client_id]
-        @docs_name = "client #{params[:client_id]}"
-        @back_href = url("client?user_id=#{CGI.escape(params[:user_id])}&client_id=#{CGI.escape(params[:client_id])}") 
+      if params[:device_id]
+        @docs_name = "device #{params[:device_id]}"
+        @back_href = url("device?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(params[:device_id])}") 
         @docs = RhosyncApi::list_client_docs(session[:server],
-          session[:app_name],session[:token],params[:source_id],params[:client_id])
+          session[:app_name],session[:token],params[:source_id],params[:device_id])
       else   
         if params[:user_id]=='*'      
           @docs_name = "app partition"
@@ -38,7 +38,7 @@ class RhosyncConsole::Server
         session[:token],params[:dbkey],@is_string ? :string : '')
     end
     @back_params = "source_id=#{CGI.escape(params[:source_id])}&user_id=#{CGI.escape(params[:user_id])}"
-    @back_params += "&client_id=#{CGI.escape(params[:client_id])}" if params[:client_id] 
+    @back_params += "&device_id=#{CGI.escape(params[:device_id])}" if params[:device_id] 
     @back_href = url("docs?#{doc_params}")
     erb :doc  
   end 

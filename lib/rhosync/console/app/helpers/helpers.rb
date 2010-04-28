@@ -41,7 +41,7 @@ class RhosyncConsole::Server
     
     def doc_params
       doc_params = "source_id=#{CGI.escape(params[:source_id])}&user_id=#{CGI.escape(params[:user_id])}"
-      doc_params += "&client_id=#{CGI.escape(params[:client_id])}" if params[:client_id] 
+      doc_params += "&device_id=#{CGI.escape(params[:device_id])}" if params[:device_id] 
       doc_params
     end
     

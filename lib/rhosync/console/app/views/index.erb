@@ -3,8 +3,8 @@
 	<%if is_errors? or @sources.nil? %>
 		<%= show_errors%>
 	<%end%>
-	<%unless @licese.nil? %>
- 		<%="Licensed to #{@license['licensee']} on #{@license['issued']}, available #{@license['available']} of #{@license['seats']} seats"%>
+	<%unless @license.nil? %>
+ 		<%="Licensed to #{@license['licensee']} on #{@license['issued']}, available #{@license['available']} of #{@license['seats']} devices"%>
 	<%end%>	
 	<div class='panel'>
 		<a href="<%=url('logout')%>" class='nav_button'>Logout</a>

@@ -1,5 +1,4 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
-require 'rubygems'
 require 'rack/test'
 require 'spec'
 require 'spec/autorun'
@@ -8,9 +7,9 @@ require 'spec/interop/test'
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
 describe "Server" do
-  it_should_behave_like "SourceAdapterHelper"
+  it_should_behave_like "RhosyncDataHelper"
   it_should_behave_like "TestappHelper"
-  
+
   include Rack::Test::Methods
   include Rhosync
   
@@ -31,6 +30,8 @@ describe "Server" do
   def app
     @app ||= Server.new
   end
+
+  it_should_behave_like "DBObjectsHelper"
   
   it "should show status page" do
     get '/'

@@ -3,43 +3,42 @@ require 'yaml'
 $:.unshift File.join(File.dirname(__FILE__),'lib')
 require 'rhosync'
 
-task :default => :all
+task :default => 'spec:all'
+task :spec => 'spec:spec'
 
 begin
   require 'spec/rake/spectask'
   require 'rcov/rcovtask'
   
-  OPTS = { :spec_opts => ['-fs', '--color', '-b'], 
-           :rcov      => true,
-           :rcov_opts => ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*'] }
+  SPEC_OPTS = ['-fn', '--color', '-b']
          
-  TYPES = { :spec   => 'spec/*_spec.rb',
-            :perf   => 'spec/perf/*_spec.rb',
-            :server => 'spec/server/*_spec.rb',
-            :api    => 'spec/api/*_spec.rb',
-            :bulk   => 'spec/bulk_data/*_spec.rb',
-            :jobs   => 'spec/jobs/*_spec.rb',
-            :ping   => 'spec/ping/*_spec.rb',
-            :doc    => 'spec/doc/*_spec.rb', 
-            :generator => 'spec/generator/*_spec.rb',
-            :bench_spec => 'bench/spec/*_spec.rb'}
+  TYPES = { 
+    :spec   => 'spec/*_spec.rb',
+    :perf   => 'spec/perf/*_spec.rb',
+    :server => 'spec/server/*_spec.rb',
+    :api    => 'spec/api/*_spec.rb',
+    :bulk   => 'spec/bulk_data/*_spec.rb',
+    :jobs   => 'spec/jobs/*_spec.rb',
+    :ping   => 'spec/ping/*_spec.rb',
+    :doc    => 'spec/doc/*_spec.rb', 
+    :generator => 'spec/generator/*_spec.rb',
+    :bench => 'bench/spec/*_spec.rb'
+  }
  
   TYPES.each do |type,files|
-    desc "Run #{type} specs"
-    Spec::Rake::SpecTask.new(type) do |t|
+    desc "Run specs in #{files}"
+    Spec::Rake::SpecTask.new("spec:#{type}") do |t|
       t.spec_files = FileList[TYPES[type]]
-      t.spec_opts = OPTS[:spec_opts]
-      t.rcov = OPTS[:rcov]
-      t.rcov_opts = OPTS[:rcov_opts]
+      t.spec_opts = SPEC_OPTS
     end
   end
 
-  desc "Run all specs"
-  Spec::Rake::SpecTask.new(:all) do |t|
+  desc "Run specs in spec/**/*_spec.rb "
+  Spec::Rake::SpecTask.new('spec:all') do |t|
     t.spec_files = FileList[TYPES.values]
-    t.spec_opts = OPTS[:spec_opts]
-    t.rcov = OPTS[:rcov]
-    t.rcov_opts = OPTS[:rcov_opts]
+    t.spec_opts = SPEC_OPTS
+    t.rcov = true
+    t.rcov_opts = ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*']
   end
   
 rescue LoadError => e

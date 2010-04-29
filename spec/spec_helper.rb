@@ -1,3 +1,4 @@
+require 'rubygems'
 require 'rhosync'
 include Rhosync
 

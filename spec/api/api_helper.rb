@@ -1,5 +1,4 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
-require 'rubygems'
 require 'rack/test'
 require 'spec'
 require 'spec/autorun'

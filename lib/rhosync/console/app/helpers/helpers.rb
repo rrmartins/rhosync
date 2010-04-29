@@ -28,7 +28,11 @@ class RhosyncConsole::Server
         yield
       rescue RestClient::Exception => re
         session[:errors] ||= []
-        session[:errors] << "#{error_message}: [#{re.http_code}] #{re.message}"
+        if re.response.body.nil? or re.response.body.length == 0
+          session[:errors] << "#{error_message}: [#{re.http_code}] #{re.message}"  
+        else
+          session[:errors] << "#{error_message}: #{re.response.body}"
+        end
       rescue Exception => e      
         session[:errors] ||= []
         session[:errors] << "#{error_message}: #{e.message}"
@@ -37,7 +41,7 @@ class RhosyncConsole::Server
     
     def doc_params
       doc_params = "source_id=#{CGI.escape(params[:source_id])}&user_id=#{CGI.escape(params[:user_id])}"
-      doc_params += "&client_id=#{CGI.escape(params[:client_id])}" if params[:client_id] 
+      doc_params += "&device_id=#{CGI.escape(params[:device_id])}" if params[:device_id] 
       doc_params
     end
     

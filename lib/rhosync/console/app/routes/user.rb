@@ -25,9 +25,9 @@ class RhosyncConsole::Server
   end
   
   get '/user' do
-    @clients = []
-    handle_api_error("Can't load list of clients") do
-      @clients = RhosyncApi::list_clients(
+    @devices = []
+    handle_api_error("Can't load list of devices") do
+      @devices = RhosyncApi::list_clients(
         session[:server],session[:app_name],session[:token],params[:user_id])
     end
     @sources = []

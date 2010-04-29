@@ -1,11 +1,11 @@
-<h1>Client: <%=params[:client_id]%></h1>
+<h1>Device: <%=params[:device_id]%></h1>
 <%=show_errors%>
 <a href="<%=url("user?user_id=#{CGI.escape(params[:user_id])}")%>" class='nav_button'>Back</a>
-<a href='<%=url("client/delete?user_id=#{CGI.escape(params[:user_id])}&client_id=#{CGI.escape(params[:client_id])}")%>' class='nav_button'>
-	Delete client
+<a href='<%=url("device/delete?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(params[:device_id])}")%>' class='nav_button'>
+	Delete device
 </a>
 
-<h2>Client attributes</h2>
+<h2>Device attributes</h2>
 <div class='panel'>
 	<table>
 	<%@attributes.each do |attrib|%>
@@ -19,11 +19,11 @@
 	</table>
 </div>
 
-<h2>Client documents for source:</h2>
+<h2>Device documents for source:</h2>
 
 [
 <%@sources.each_index do |i|%>
-	<a href="<%=url("docs?source_id=#{@sources[i]}&client_id=#{CGI.escape(params[:client_id])}&user_id=#{CGI.escape(params[:user_id])}")%>">
+	<a href="<%=url("docs?source_id=#{@sources[i]}&device_id=#{CGI.escape(params[:device_id])}&user_id=#{CGI.escape(params[:user_id])}")%>">
 		<%=i==0?'':','%>"<%=@sources[i]%>"
 	</a>
 <%end%>

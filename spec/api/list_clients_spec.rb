@@ -4,7 +4,7 @@ describe "RhosyncApiListUsers" do
   it_should_behave_like "ApiHelper"
   
   it "should list clients" do
-    post "/api/list_clients", {:app_name => @test_app_name, :api_token => @api_token,
+    post "/api/list_clients", {:api_token => @api_token,
       :user_id => @u_fields[:login]}
     res = JSON.parse(last_response.body)
     res.is_a?(Array).should == true
@@ -15,7 +15,7 @@ describe "RhosyncApiListUsers" do
   
   it "should handle empty client's list" do
     @u.clients.delete(@c.id)
-    post "/api/list_clients", {:app_name => @test_app_name, :api_token => @api_token, 
+    post "/api/list_clients", {:api_token => @api_token, 
       :user_id => @u_fields[:login]}
     JSON.parse(last_response.body).should == []    
   end

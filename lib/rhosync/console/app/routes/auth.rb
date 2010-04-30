@@ -2,12 +2,10 @@ class RhosyncConsole::Server
   post '/login' do
     begin
       session[:server] = params[:server]
-      session[:app_name] = APP_NAME
       session[:login] = params[:login]
       session[:errors] = nil      
       
       verify_presence_of :server, "Server is not provaided."
-      verify_presence_of :app_name, "Application name is not provaided."
       verify_presence_of :login, "Login is not provaided."
       
       unless session[:errors]         

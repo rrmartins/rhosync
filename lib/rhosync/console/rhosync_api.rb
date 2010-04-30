@@ -9,72 +9,73 @@ module RhosyncApi
       RestClient.post("#{server}/api/get_api_token",'',{:cookies => res.cookies})
     end
     
-    def list_users(server,app_name,token)
+    def list_users(server,token)
       JSON.parse(RestClient.post("#{server}/api/list_users",
-        {:app_name => app_name, :api_token => token}.to_json, :content_type => :json).body)
+        {:api_token => token}.to_json, :content_type => :json).body)
     end
     
-    def create_user(server,app_name,token,login,password)
+    def create_user(server,token,login,password)
       RestClient.post("#{server}/api/create_user",
-        {:app_name => app_name, :api_token => token,
-         :attributes => {:login => login, :password => password}}.to_json, 
+        {:api_token => token,:attributes => {:login => login, :password => password}}.to_json, 
          :content_type => :json)
     end  
     
-    def delete_user(server,app_name,token,user_id)
+    def delete_user(server,token,user_id)
       RestClient.post("#{server}/api/delete_user",
-        {:app_name => app_name, :api_token => token, :user_id => user_id}.to_json, 
+        {:api_token => token, :user_id => user_id}.to_json, 
          :content_type => :json)    
     end
   
-    def list_clients(server,app_name,token,user_id)
-      JSON.parse(RestClient.post("#{server}/api/list_clients", {:app_name => app_name, 
-        :api_token => token, :user_id => user_id}.to_json, :content_type => :json).body)
+    def list_clients(server,token,user_id)
+      JSON.parse(RestClient.post("#{server}/api/list_clients", 
+        {:api_token => token, :user_id => user_id}.to_json, :content_type => :json).body)
     end
     
-    def create_client(server,app_name,token,user_id)
+    def create_client(server,token,user_id)
       RestClient.post("#{server}/api/create_client",
-        {:app_name => app_name, :api_token => token, :user_id => user_id}.to_json, 
+        {:api_token => token, :user_id => user_id}.to_json, 
          :content_type => :json).body
     end  
     
-    def delete_client(server,app_name,token,user_id,client_id)
+    def delete_client(server,token,user_id,client_id)
       RestClient.post("#{server}/api/delete_client",
-        {:app_name => app_name, :api_token => token, :user_id => user_id, 
+        {:api_token => token, :user_id => user_id, 
          :client_id => client_id}.to_json, :content_type => :json)    
     end
 
-    def get_client_params(server,app_name,token,client_id)
-      JSON.parse(RestClient.post("#{server}/api/get_client_params", {:app_name => app_name, 
-        :api_token => token, :client_id => client_id}.to_json, :content_type => :json).body)
+    def get_client_params(server,token,client_id)
+      JSON.parse(RestClient.post("#{server}/api/get_client_params", 
+        {:api_token => token, :client_id => client_id}.to_json, :content_type => :json).body)
     end
     
-    def list_sources(server,app_name,token,partition='all') 
-      JSON.parse(RestClient.post("#{server}/api/list_sources", {:app_name => app_name, 
-        :api_token => token, :partition_type => partition}.to_json, :content_type => :json).body)
+    def list_sources(server,token,partition='all') 
+      JSON.parse(RestClient.post("#{server}/api/list_sources", 
+        {:api_token => token, :partition_type => partition}.to_json, :content_type => :json).body)
     end
 
-    def get_source_params(server,app_name,token,source_id)
-      JSON.parse(RestClient.post("#{server}/api/get_source_params", {:app_name => app_name, 
-        :api_token => token, :source_id => source_id}.to_json, :content_type => :json).body)
+    def get_source_params(server,token,source_id)
+      JSON.parse(RestClient.post("#{server}/api/get_source_params", 
+        {:api_token => token, :source_id => source_id}.to_json, :content_type => :json).body)
     end
     
-    def list_source_docs(server,app_name,token,source_id,user_id='*')
-      JSON.parse(RestClient.post("#{server}/api/list_source_docs", {:app_name => app_name, 
-        :api_token => token, :source_id => source_id, :user_id => user_id}.to_json, :content_type => :json).body)
+    def list_source_docs(server,token,source_id,user_id='*')
+      JSON.parse(RestClient.post("#{server}/api/list_source_docs", 
+        {:api_token => token, :source_id => source_id, :user_id => user_id}.to_json, :content_type => :json).body)
     end  
       
-    def list_client_docs(server,app_name,token,source_id,client_id)
-      JSON.parse(RestClient.post("#{server}/api/list_client_docs", {:app_name => app_name, 
-        :api_token => token, :source_id => source_id, :client_id => client_id}.to_json, :content_type => :json).body)
+    def list_client_docs(server,token,source_id,client_id)
+      JSON.parse(RestClient.post("#{server}/api/list_client_docs", 
+        {:api_token => token, :source_id => source_id, :client_id => client_id}.to_json, :content_type => :json).body)
     end  
-        
+    
+    #TODO: figure out data_type programmatically     
     def get_db_doc(server,token,doc,data_type='')
       res = RestClient.post("#{server}/api/get_db_doc", 
         {:api_token => token, :doc => doc, :data_type => data_type}.to_json, :content_type => :json).body
       data_type=='' ? JSON.parse(res) : res
     end
 
+    #TODO: figure out data_type programmatically     
     def set_db_doc(server,token,doc,data={},data_type='')
       RestClient.post("#{server}/api/set_db_doc", 
        {:api_token => token, :doc => doc, :data => data, :data_type => data_type}.to_json, :content_type => :json)

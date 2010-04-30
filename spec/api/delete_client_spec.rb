@@ -4,7 +4,7 @@ describe "RhosyncApiDeleteUser" do
   it_should_behave_like "ApiHelper"
   
   it "should delete client" do
-    post "/api/delete_client", {:app_name => @test_app_name, :api_token => @api_token,
+    post "/api/delete_client", {:api_token => @api_token,
       :user_id => @u_fields[:login], :client_id => @c.id}
     last_response.should be_ok
     Client.is_exist?(@c.id).should == false

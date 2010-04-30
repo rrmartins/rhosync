@@ -4,7 +4,7 @@ describe "RhosyncApiListSourceDocs" do
   it_should_behave_like "ApiHelper"
   
   it "should list of shared source documents" do
-    post "/api/list_source_docs", {:app_name => @test_app_name, :api_token => @api_token,
+    post "/api/list_source_docs", {:api_token => @api_token,
       :source_id => "SimpleAdapter", :user_id => '*'}
     JSON.parse(last_response.body).should == {
       "md"=>"source:application:__shared__:SimpleAdapter:md", 
@@ -14,7 +14,7 @@ describe "RhosyncApiListSourceDocs" do
   end
 
   it "should list user source documents" do
-    post "/api/list_source_docs", {:app_name => @test_app_name, :api_token => @api_token,
+    post "/api/list_source_docs", {:api_token => @api_token,
       :source_id => "SampleAdapter", :user_id => @u.id}
     JSON.parse(last_response.body).should == {
       "md"=>"source:application:testuser:SampleAdapter:md", 

@@ -2,8 +2,7 @@ class RhosyncConsole::Server
   get '/users' do
     @users = []
     handle_api_error("Can't load list of users") do
-      @users = RhosyncApi::list_users(
-        session[:server],session[:app_name],session[:token])
+      @users = RhosyncApi::list_users(session[:server],session[:token])
     end
     erb :users
   end
@@ -18,7 +17,7 @@ class RhosyncConsole::Server
     unless session[:errors]             
       handle_api_error("Can't create new user") do  
         RhosyncApi::create_user(session[:server],
-          session[:app_name],session[:token],params[:login],params[:password])
+          session[:token],params[:login],params[:password])
       end      
     end
     redirect url(session[:errors] ? '/user/new' : '/users'), 303  
@@ -28,18 +27,18 @@ class RhosyncConsole::Server
     @devices = []
     handle_api_error("Can't load list of devices") do
       @devices = RhosyncApi::list_clients(
-        session[:server],session[:app_name],session[:token],params[:user_id])
+        session[:server],session[:token],params[:user_id])
     end
     @sources = []
     handle_api_error("Can't load list of user partition sources") do
-      @sources = RhosyncApi::list_sources(session[:server],session[:app_name],session[:token],:user)
+      @sources = RhosyncApi::list_sources(session[:server],session[:token],:user)
     end
     erb :user
   end
   
   get '/user/delete' do
     handle_api_error("Can't delete user #{params[:user_id]}") do 
-      RhosyncApi::delete_user(session[:server],session[:app_name],session[:token],params[:user_id])
+      RhosyncApi::delete_user(session[:server],session[:token],params[:user_id])
     end    
     redirect url(session[:errors] ? "/user?user_id=#{CGI.escape(params[:user_id])}" : '/users'), 303
   end
@@ -47,7 +46,7 @@ class RhosyncConsole::Server
   get '/user/ping' do
     @sources = []
     handle_api_error("Can't load list of user partition sources") do
-      @sources = RhosyncApi::list_sources(session[:server],session[:app_name],session[:token],:all)
+      @sources = RhosyncApi::list_sources(session[:server],session[:token],:all)
     end
     erb :ping
   end

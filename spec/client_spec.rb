@@ -31,7 +31,7 @@ describe "Client" do
   it "should raise exception if license seats exceeded" do
     Store.put_value(License::CLIENT_DOCKEY,100)
     lambda { Client.create(@c_fields,{}) }.should raise_error(
-      LicenseSeatsExceededException, "WARNING: Maximum # of clients exceeded for this license."
+      LicenseSeatsExceededException, "WARNING: Maximum # of devices exceeded for this license."
     )
   end
   

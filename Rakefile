@@ -47,7 +47,7 @@ rescue LoadError => e
 end
 
 desc "Build rhosync gem"
-task :gem => [ :all, :gemspec, :build ]
+task :gem => [ 'spec:all', 'clobber_spec:all', :gemspec, :build ]
 
 begin
   require 'jeweler'
@@ -58,6 +58,7 @@ begin
     gemspec.description = %q{Rhosync Server and related command-line utilities for using Rhosync}
     gemspec.homepage = %q{http://rhomobile.com/products/rhosync}
     gemspec.authors = ["Rhomobile"]
+    gemspec.email = %q{dev@rhomobile.com}
     gemspec.version = Rhosync::VERSION
     gemspec.files =  FileList["[A-Z]*", "{bench,bin,doc,generators,lib,spec,tasks}/**/*"]
 

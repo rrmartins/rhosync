@@ -34,7 +34,7 @@ module Rhosync
         end
       end
       unless incr
-        msg = "WARNING: Maximum # of clients exceeded for this license."
+        msg = "WARNING: Maximum # of devices exceeded for this license."
         log msg; raise LicenseSeatsExceededException.new(msg)
       end
     end

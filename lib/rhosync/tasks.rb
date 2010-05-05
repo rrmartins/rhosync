@@ -47,6 +47,10 @@ module Rhosync
     def rhosync_pid
       "/tmp/rhosync.pid"
     end
+
+    def windows?
+      RUBY_PLATFORM =~ /(win|w)32$/
+    end
   end
 end
 
@@ -68,7 +72,15 @@ namespace :rhosync do
     $token = File.read($token_file) if File.exist?($token_file)
   end
   
-  desc "Reset the rhosync database (you will need to run rhosync:get_api_token afterwards)"
+  task :dtach_installed do
+    if !windows? and (`which dtach` == '')
+      puts "WARNING: dtach not installed or not on path, some tasks will not work!"
+      puts "  Install with '[sudo] rake dtach:install'"
+      exit
+    end
+  end
+  
+  desc "Reset the rhosync database (you will need to run rhosync:get_token afterwards)"
   task :reset => :config do
     RhosyncApi.reset($url,$token)
   end
@@ -130,21 +142,25 @@ namespace :rhosync do
   end
   
   desc "Start rhosync server"
-  task :start do
-    puts 'Detach with Ctrl+\  Re-attach with rake rhosync:attach'
-    sleep 1
-    command = "dtach -A #{rhosync_socket} rackup config.ru -P #{rhosync_pid}"
-    sh command
+  task :start => :dtach_installed do
+    if windows?
+      puts 'Stop with Ctrl+C'
+      sh "rackup config.ru"
+    else
+      puts 'Detach with Ctrl+\  Re-attach with rake rhosync:attach'
+      sleep 2
+      sh "dtach -A #{rhosync_socket} rackup config.ru -P #{rhosync_pid}"
+    end
   end
   
   desc "Stop rhosync server"
-  task :stop do
-    sh "cat #{rhosync_pid} | xargs kill -3"
+  task :stop => :dtach_installed do
+    sh "cat #{rhosync_pid} | xargs kill -3" unless windows?
   end
   
   desc "Attach to rhosync console"
-  task :attach do
-    sh "dtach -a #{rhosync_socket}"
+  task :attach => :dtach_installed do
+    sh "dtach -a #{rhosync_socket}" unless windows?
   end
 end
 

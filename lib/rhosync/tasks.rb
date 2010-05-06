@@ -144,8 +144,8 @@ namespace :rhosync do
   desc "Start rhosync server"
   task :start => :dtach_installed do
     if windows?
-      puts 'Stop with Ctrl+C'
-      sh "rackup config.ru"
+      puts 'Starting server in new window...'
+      system('start cmd.exe /c rackup config.ru')
     else
       puts 'Detach with Ctrl+\  Re-attach with rake rhosync:attach'
       sleep 2

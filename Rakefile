@@ -62,22 +62,23 @@ begin
     gemspec.version = Rhosync::VERSION
     gemspec.files =  FileList["[A-Z]*", "{bench,bin,doc,generators,lib,spec,tasks}/**/*"]
 
-    gemspec.add_dependency "json", ">=1.2.3"
+    # TODO: Due to https://www.pivotaltracker.com/story/show/3417862, we can't use JSON 1.4.3
+    gemspec.add_dependency "json", "<=1.4.2"
     gemspec.add_dependency "log4r", ">=1.1.7"
     gemspec.add_dependency "sqlite3-ruby", ">=1.2.5"
     gemspec.add_dependency "rubyzip", ">=0.9.4"
     gemspec.add_dependency "uuidtools", ">=2.1.1"
-    gemspec.add_dependency "redis", ">=0.2.0"
+    gemspec.add_dependency "redis", ">=1.0.5"
     gemspec.add_dependency "resque", ">=1.8.0"
     gemspec.add_dependency "rest-client", ">=1.4.2"
-    gemspec.add_dependency "sinatra", ">=0.9.2"
+    gemspec.add_dependency "sinatra", ">=1.0"
     gemspec.add_dependency "templater", ">=1.0.0"
+    gemspec.add_dependency "rake", ">=0.8.7"
     gemspec.add_development_dependency "jeweler", ">=1.4.0"
     gemspec.add_development_dependency "rspec", ">=1.3.0"
     gemspec.add_development_dependency "rcov", ">=0.9.8"
     gemspec.add_development_dependency "faker", ">=0.3.1"
     gemspec.add_development_dependency "rack-test", ">=0.5.3"
-    gemspec.add_development_dependency "mechanize", ">=1.0.0"
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: "

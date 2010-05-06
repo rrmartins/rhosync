@@ -2,7 +2,6 @@
 require 'rest_client'
 require 'log4r'
 require 'json'
-require 'mechanize'
 require 'zip/zip'
 $:.unshift File.dirname(__FILE__)
 require 'bench/timer'
@@ -48,7 +47,7 @@ module Bench
     end
     
     def reset_app
-      Mechanize.new.post("#{@host}/api/reset",:api_token => get_token)
+      RestClient.post("#{@host}/api/reset",{:api_token => get_token}.to_json, :content_type => :json)
     end
     
     def create_user

@@ -1,5 +1,4 @@
 require 'json'
-require 'mechanize'
 require 'zip/zip'
 require 'uri'
 require File.join(File.dirname(__FILE__),'console','rhosync_api')
@@ -66,7 +65,6 @@ namespace :rhosync do
     $url = "#{$url}:#{uri.port}" if uri.port && uri.port != 80
     $host = uri.host
     $port = uri.port
-    $agent = Mechanize.new
     $appname = $settings[env][:syncserver].split('/').last
     $token_file = File.join(ENV['HOME'],'.rhosync_token')
     $token = File.read($token_file) if File.exist?($token_file)

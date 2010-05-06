@@ -1,6 +1,8 @@
+require File.join(File.dirname(__FILE__),'..','spec_helper')
 require 'faker'
 
 describe "PerfSpecHelper", :shared => true do
+  it_should_behave_like "SpecBootstrapHelper"
   
   def get_test_data(num=1000)
     file = File.join("spec","testdata","#{num}-data.txt")

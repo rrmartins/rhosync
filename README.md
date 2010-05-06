@@ -20,7 +20,7 @@ Windows Notes: when run any spec task error message box (ruby.exe - Unable to lo
 DOCS
 -------------------------------------------------------------
   * Intro to Rhodes & Rhosync: <http://wiki.rhomobile.com/index.php/Rhomobile> -> Read this first!
-  * Tutorial:                  <http://wiki.rhomobile.com/index.php/Tutorial> 
   * Architecture:              <http://wiki.rhomobile.com/index.php/RhoSync_2.0>
+  * Tutorial:                  <http://wiki.rhomobile.com/index.php/Tutorial> 
   * Rdoc (still rough):        <http://rdoc.info/projects/rhomobile/rhosync>
   * Client/Server Protocol:    See doc/protocol.html

@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-05-06}
+  s.date = %q{2010-05-07}
   s.default_executable = %q{rhosync}
   s.description = %q{Rhosync Server and related command-line utilities for using Rhosync}
   s.email = %q{dev@rhomobile.com}
@@ -110,12 +110,15 @@ Gem::Specification.new do |s|
      "lib/rhosync/console/app/routes/user.rb",
      "lib/rhosync/console/app/views/client.erb",
      "lib/rhosync/console/app/views/doc.erb",
+     "lib/rhosync/console/app/views/docdata.erb",
      "lib/rhosync/console/app/views/docs.erb",
      "lib/rhosync/console/app/views/index.erb",
      "lib/rhosync/console/app/views/layout.erb",
      "lib/rhosync/console/app/views/newuser.erb",
      "lib/rhosync/console/app/views/ping.erb",
      "lib/rhosync/console/app/views/result.erb",
+     "lib/rhosync/console/app/views/select_doc.erb",
+     "lib/rhosync/console/app/views/upload_doc.erb",
      "lib/rhosync/console/app/views/user.erb",
      "lib/rhosync/console/app/views/users.erb",
      "lib/rhosync/console/rhosync_api.rb",

@@ -29,6 +29,21 @@ class RhosyncConsole::Server
     erb :docs
   end
   
+  get '/doc/select' do
+    if params[:dbkey].nil?
+      @dbkey = ''
+      @data = {}
+    else
+      @dbkey = params[:dbkey]
+      @is_string = doc_is_string      
+      handle_api_error("Can't load document") do
+        @data = RhosyncApi::get_db_doc(session[:server],
+          session[:token],params[:dbkey],@is_string ? :string : '')
+      end
+    end    
+    erb :select_doc
+  end
+  
   get '/doc' do
     @data = {}
     @is_string = doc_is_string
@@ -50,7 +65,9 @@ class RhosyncConsole::Server
     end
     @result_name = "Clear result"
     @status = "Successfully cleared: [#{CGI.unescape(params[:dbkey])}]"
-    @back_href = url("doc?#{doc_params}&dbkey=#{CGI.escape(params[:dbkey])}")
+    @back_href = params[:user_id] ?
+      url("doc?#{doc_params}&dbkey=#{CGI.escape(params[:dbkey])}") :
+      url("doc/select?dbkey=#{CGI.escape(params[:dbkey])}")     
     erb :result
   end
   
@@ -76,7 +93,9 @@ class RhosyncConsole::Server
     end
     @result_name = "Upload result"
     @status = "Successfully uploadad data to: [#{CGI.unescape(params[:doc])}]"
-    @back_href = url("doc?#{doc_params}&dbkey=#{params[:doc]}")
+    @back_href = params[:user_id] ?
+      url("doc?#{doc_params}&dbkey=#{params[:doc]}") :
+      url("doc/select?dbkey=#{params[:doc]}")
     erb :result
   end
    

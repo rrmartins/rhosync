@@ -34,8 +34,8 @@ module Rhosync
     
     def search(params)
       res = []
-      return _resend_search_result(params[:search_token]) if params[:search_token] and params[:resend]
-      _ack_search(params[:search_token]) if params[:search_token]
+      return _resend_search_result if params[:token] and params[:resend]
+      _ack_search(params[:token]) if params[:token]
       res = _do_search(params[:search]) if params[:search]
       res
     end
@@ -158,10 +158,11 @@ module Rhosync
         return [] unless params[:sources]
         res = []
         params[:sources].each do |source|
-          s = Source.load(source,{:app_id => client.app_id,
+          s = Source.load(source['name'],{:app_id => client.app_id,
             :user_id => client.user_id})
-          client.source_name = source
+          client.source_name = source['name']
           cs = ClientSync.new(s,client,params[:p_size])
+          params[:token] = source['token'] if source['token']
           search_res = cs.search(params)
           res << search_res if search_res
         end
@@ -193,7 +194,7 @@ module Rhosync
     end
     
     private
-    def _resend_search_result(search_token)
+    def _resend_search_result
        _format_search_result
     end
     
@@ -221,7 +222,7 @@ module Rhosync
         res,diffsize = compute_search 
         return [] if res.empty?
         [ {'version'=>VERSION},
-          {'search_token' => search_token},
+          {'token' => search_token},
           {'source'=>@source.name},
           {'count'=>res.size},
           {'insert'=>res} ]

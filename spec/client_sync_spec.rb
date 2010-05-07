@@ -152,7 +152,7 @@ describe "ClientSync" do
       set_state('test_db_storage' => @data)
       res = @cs.search(params)
       token = @c.get_value(:search_token)
-      res.should == [{'version'=>ClientSync::VERSION},{'search_token'=>token},
+      res.should == [{'version'=>ClientSync::VERSION},{'token'=>token},
         {'source'=>@s.name},{'count'=>1},{'insert'=>{'1'=>@product1}}]
       verify_result(@c.docname(:search) => {'1'=>@product1},
         @c.docname(:search_errors) => {})
@@ -170,8 +170,8 @@ describe "ClientSync" do
       @source = @s
       set_state({@c.docname(:search) => {'1'=>@product1}})
       token = compute_token @cs.client.docname(:search_token)
-      @cs.search({:resend => true,:search_token => token}).should == [{'version'=>ClientSync::VERSION},
-        {'search_token'=>token},{'source'=>@s.name},{'count'=>1},{'insert'=>{'1'=>@product1}}]
+      @cs.search({:resend => true,:token => token}).should == [{'version'=>ClientSync::VERSION},
+        {'token'=>token},{'source'=>@s.name},{'count'=>1},{'insert'=>{'1'=>@product1}}]
       verify_result(@c.docname(:search) => {'1'=>@product1},
         @c.docname(:search_errors) => {},
         @cs.client.docname(:search_token) => token)
@@ -181,42 +181,42 @@ describe "ClientSync" do
       @source = @s
       set_state({@c.docname(:search) => {'1'=>@product1}})
       token = compute_token @cs.client.docname(:search_token)
-      @cs.search({:search_token => token}).should == []
+      @cs.search({:token => token}).should == []
       verify_result(@c.docname(:search) => {},
         @c.docname(:search_errors) => {},
         @cs.client.docname(:search_token) => nil)
     end
     
     it "should handle search all" do
-      sources = ['SampleAdapter']
+      sources = [{'name'=>'SampleAdapter'}]
       set_state('test_db_storage' => @data)
       res = ClientSync.search_all(@c,{:sources => sources,:search => {'name' => 'iPhone'}})
       token = Store.get_value(@cs.client.docname(:search_token))
-      res.should == [[{'version'=>ClientSync::VERSION},{'search_token'=>token},
-        {'source'=>sources[0]},{'count'=>1},{'insert'=>{'1'=>@product1}}]]
+      res.should == [[{'version'=>ClientSync::VERSION},{'token'=>token},
+        {'source'=>sources[0]['name']},{'count'=>1},{'insert'=>{'1'=>@product1}}]]
       verify_result(@c.docname(:search) => {'1'=>@product1},
         @c.docname(:search_errors) => {})
     end
     
     it "should handle search all error" do
-      sources = ['SampleAdapter']
+      sources = [{'name'=>'SampleAdapter'}]
       msg = "Error during search"
       error = set_test_data('test_db_storage',@data,msg,'search error')
       res = ClientSync.search_all(@c,{:sources => sources,:search => {'name' => 'iPhone'}})
       token = Store.get_value(@cs.client.docname(:search_token))
       res.should == [[{'version'=>ClientSync::VERSION},
-        {'source'=>sources[0]},{'search-error'=>{'search-error'=>{'message'=>msg}}}]]
+        {'source'=>sources[0]['name']},{'search-error'=>{'search-error'=>{'message'=>msg}}}]]
       verify_result(@c.docname(:search) => {},
         @c.docname(:search_errors) => {'search-error'=>{'message'=>msg}})
     end
     
     it "should handle search all login error" do
       @u.login = nil
-      sources = ['SampleAdapter']
+      sources = [{'name'=>'SampleAdapter'}]
       msg = "Error logging in"
       error = set_test_data('test_db_storage',@data,msg,'search error')
       ClientSync.search_all(@c,{:sources => sources,:search => {'name' => 'iPhone'}}).should == [
-        [{'version'=>ClientSync::VERSION},{'source'=>sources[0]},
+        [{'version'=>ClientSync::VERSION},{'source'=>sources[0]['name']},
         {'search-error'=>{'login-error'=>{'message'=>msg}}}]]
       verify_result(@c.docname(:search) => {},
         @c.docname(:search_errors) => {'login-error'=>{'message'=>msg}},
@@ -225,27 +225,55 @@ describe "ClientSync" do
     
     it "should handle multiple source search all" do
       set_test_data('test_db_storage',@data)
-      sources = ['SampleAdapter','SimpleAdapter']
+      sources = [{'name'=>'SimpleAdapter'},{'name'=>'SampleAdapter'}]
       res = ClientSync.search_all(@c,{:sources => sources,:search => {'name' => 'iPhone'}})
       @c.source_name = 'SampleAdapter'
       token = Store.get_value(@c.docname(:search_token))
-      res.should == [[{"version"=>ClientSync::VERSION},{'search_token'=>token},
-        {"source"=>"SampleAdapter"},{"count"=>1},{"insert"=>{'1'=>@product1}}],[]]
+      res.sort.should == [[{"version"=>ClientSync::VERSION},{'token'=>token},
+        {"source"=>"SampleAdapter"},{"count"=>1},{"insert"=>{'1'=>@product1}}],[]].sort
     end
     
     it "should handle search and accumulate params" do
       set_test_data('test_db_storage',@data)
-      sources = ['SimpleAdapter','SampleAdapter']
+      sources = [{'name'=>'SimpleAdapter'},{'name'=>'SampleAdapter'}]
       res = ClientSync.search_all(@c,{:sources => sources,:search => {'search'=>'bar'}})
       @c.source_name = 'SimpleAdapter'
       token = Store.get_value(@c.docname(:search_token))
       @c.source_name = 'SampleAdapter'
       token1 = Store.get_value(@c.docname(:search_token))
-      res.should == [[{"version"=>ClientSync::VERSION}, {'search_token'=>token},
+      res.should == [[{"version"=>ClientSync::VERSION}, {'token'=>token},
         {"source"=>"SimpleAdapter"},{"count"=>1},{"insert"=>{'obj'=>{'foo'=>'bar'}}}],
-        [{"version"=>ClientSync::VERSION},{'search_token'=>token1},{"source"=>"SampleAdapter"}, 
+        [{"version"=>ClientSync::VERSION},{'token'=>token1},{"source"=>"SampleAdapter"}, 
          {"count"=>1}, {"insert"=>{'1'=>@product1}}]]      
     end
+    
+    it "should handle search and ack of search results" do
+      set_test_data('test_db_storage',@data)
+      sources = [{'name'=>'SimpleAdapter'},{'name'=>'SampleAdapter'}]
+      ClientSync.search_all(@c,{:sources => sources,:search => {'search'=>'bar'}})
+      @c.source_name = 'SimpleAdapter'
+      token = Store.get_value(@c.docname(:search_token))
+      token.should_not be_nil
+      sources[0]['token'] = token
+      Store.get_data(@c.docname(:search)).should == {'obj'=>{'foo'=>'bar'}}
+      @c.source_name = 'SampleAdapter'
+      token1 = Store.get_value(@c.docname(:search_token))
+      token1.should_not be_nil
+      sources[1]['token'] = token1
+      Store.get_data(@c.docname(:search)).should == {'1'=>@product1}
+      # do ask on multiple sources
+      res = ClientSync.search_all(@c,{:sources => sources})
+      puts "res: #{res.inspect}"
+      @c.source_name = 'SimpleAdapter'
+      token = Store.get_value(@c.docname(:search_token))
+      token.should be_nil
+      Store.get_data(@c.docname(:search)).should == {}
+      @c.source_name = 'SampleAdapter'
+      token1 = Store.get_value(@c.docname(:search_token))
+      token1.should be_nil
+      Store.get_data(@c.docname(:search)).should == {}
+    end
+    
   end
   
   describe "page methods" do

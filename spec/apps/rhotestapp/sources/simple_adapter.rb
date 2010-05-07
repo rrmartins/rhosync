@@ -16,10 +16,11 @@ class SimpleAdapter < SourceAdapter
   end
   
   def search(params=nil,txt='')
-    params[:foo] = 'bar'
+    params[:foo] = 'bar' # this is for 'chaining' test
     if params['search'] == 'bar'
       @result = {'obj'=>{'foo'=>'bar'}} 
-      params['name'] = 'iPhone'
+      # this is for 'chaining' test, addind 'iPhone' to trogger Sample adapter search result
+      params['name'] = 'iPhone'  
     end
     @result
   end

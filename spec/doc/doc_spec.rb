@@ -7,14 +7,13 @@ require 'spec/interop/test'
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
 describe "Protocol" do
+  it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
-  it_should_behave_like "TestappHelper"
   
   include Rack::Test::Methods
   include Rhosync
   
   Rhosync.log_disabled = true
-  it_should_behave_like "SourceAdapterHelper"
   
   before(:each) do
     $rand_id ||= 0
@@ -231,7 +230,7 @@ eol
   end
   
   it "server send search results" do
-    sources = ['SampleAdapter']
+    sources = [{:name=>'SampleAdapter'}]
     Store.put_data('test_db_storage',@data)
     params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
       :version => ClientSync::VERSION}
@@ -240,7 +239,7 @@ eol
   end
   
   it "should get search results with error" do
-    sources = ['SampleAdapter']
+    sources = [{:name=>'SampleAdapter'}]
     msg = "Error during search"
     error = set_test_data('test_db_storage',@data,msg,'search error')
     params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
@@ -250,15 +249,30 @@ eol
   end
   
   it "should get multiple source search results" do
-    @s_fields[:name] = 'SimpleAdapter'
-    @s1 = Source.load(@s_fields,@s_params)
     Store.put_data('test_db_storage',@data)
-    sources = ['SimpleAdapter','SampleAdapter']
+    sources = [{:name=>'SimpleAdapter'},{:name=>'SampleAdapter'}]
     params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},
       :version => ClientSync::VERSION}
     get "/#{@a.name}/search",params
     @title,@description = 'multi source search', 'send multiple sources in search results'
   end  
+  
+  it "should ack multiple sources search results" do
+    set_test_data('test_db_storage',@data)
+    sources = [{'name'=>'SimpleAdapter'},{'name'=>'SampleAdapter'}]
+    ClientSync.search_all(@c,{:sources => sources,:search => {'search'=>'bar'}})
+    @c.source_name = 'SimpleAdapter'
+    token = Store.get_value(@c.docname(:search_token))
+    sources[0]['token'] = token
+    Store.get_data(@c.docname(:search)).should == {'obj'=>{'foo'=>'bar'}}
+    @c.source_name = 'SampleAdapter'
+    token = Store.get_value(@c.docname(:search_token))
+    sources[1]['token'] = token
+    params = {:client_id => @c.id,:sources => sources,
+      :version => ClientSync::VERSION}
+    get "/#{@a.name}/search",params
+    @title,@description = 'multi source search ack', 'acknowledge search result on multiple sources'
+  end
   
   private
   def _print_markdown

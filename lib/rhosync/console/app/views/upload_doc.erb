@@ -1,0 +1,23 @@
+<h2>Upload document</h2>
+<div class='panel'>
+	<form action='<%=url("doc/upload?#{@back_params}")%>' method='post' enctype="multipart/form-data">
+		<input type='hidden' name='doc' value='<%= "#{CGI.escape(params[:dbkey])}"%>'/>
+		<table>
+			<%if @is_string%>
+				<tr>
+					<td>Token string:</td>	
+					<td><input type='text' name='string' value=''/></td>
+				</tr>
+			<%else%>
+				<tr>
+					<td>Data (hash of hashes in json):</td>	
+					<td><input type='file' name='file' value=''/></td>
+				</tr>
+			<%end%>	
+			<tr>
+				<td></td>	
+				<td><input type='submit' value='Submit'/></td>
+			</tr>
+		</table>		
+	</form>	
+</div>

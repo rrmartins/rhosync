@@ -223,7 +223,7 @@ describe "Server" do
     end
     
     it "should get search results" do
-      sources = ['SampleAdapter']
+      sources = [{:name=>'SampleAdapter'}]
       cs = ClientSync.new(@s,@c,1)
       Store.put_data('test_db_storage',@data)
       params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
@@ -231,26 +231,24 @@ describe "Server" do
       get "/application/search",params
       last_response.content_type.should == 'application/json'
       token = @c.get_value(:search_token)
-      JSON.parse(last_response.body).should == [[{'version'=>ClientSync::VERSION},{'search_token'=>token},
-        {'source'=>sources[0]},{'count'=>1},{'insert'=>{'1'=>@product1}}]]
+      JSON.parse(last_response.body).should == [[{'version'=>ClientSync::VERSION},{'token'=>token},
+        {'source'=>sources[0][:name]},{'count'=>1},{'insert'=>{'1'=>@product1}}]]
     end
     
     it "should get search results with error" do
-      sources = ['SampleAdapter']
+      sources = [{:name=>'SampleAdapter'}]
       msg = "Error during search"
       error = set_test_data('test_db_storage',@data,msg,'search error')
       params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
         :version => ClientSync::VERSION}
       get "/application/search",params
       JSON.parse(last_response.body).should == [[{'version'=>ClientSync::VERSION},
-        {'source'=>sources[0]},{'search-error'=>{'search-error'=>{'message'=>msg}}}]]
+        {'source'=>sources[0][:name]},{'search-error'=>{'search-error'=>{'message'=>msg}}}]]
     end
     
     it "should get multiple source search results" do
-      @s_fields[:name] = 'SimpleAdapter'
-      @s1 = Source.load(@s_fields,@s_params)
       Store.put_data('test_db_storage',@data)
-      sources = ['SimpleAdapter','SampleAdapter']
+      sources = [{:name=>'SimpleAdapter'},{:name=>'SampleAdapter'}]
       params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},
         :version => ClientSync::VERSION}
       get "/application/search",params
@@ -259,9 +257,9 @@ describe "Server" do
       @c.source_name = 'SampleAdapter'
       token = @c.get_value(:search_token)
       JSON.parse(last_response.body).should == [
-        [{"version"=>ClientSync::VERSION},{'search_token'=>token1},{"source"=>"SimpleAdapter"}, 
+        [{"version"=>ClientSync::VERSION},{'token'=>token1},{"source"=>"SimpleAdapter"}, 
          {"count"=>1}, {"insert"=>{'obj'=>{'foo'=>'bar'}}}],
-        [{"version"=>ClientSync::VERSION},{'search_token'=>token},{"source"=>"SampleAdapter"}, 
+        [{"version"=>ClientSync::VERSION},{'token'=>token},{"source"=>"SampleAdapter"}, 
          {"count"=>1}, {"insert"=>{'1'=>@product1}}]]
     end
   end

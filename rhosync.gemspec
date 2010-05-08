@@ -11,7 +11,7 @@ Gem::Specification.new do |s|
   s.authors = ["Rhomobile"]
   s.date = %q{2010-05-07}
   s.default_executable = %q{rhosync}
-  s.description = %q{Rhosync Server and related command-line utilities for using Rhosync}
+  s.description = %q{Rhosync library and related command-line utilities for using Rhosync}
   s.email = %q{dev@rhomobile.com}
   s.executables = ["rhosync"]
   s.extra_rdoc_files = [

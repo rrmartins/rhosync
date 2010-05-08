@@ -55,7 +55,7 @@ begin
   Jeweler::Tasks.new do |gemspec|
     gemspec.name = "rhosync"
     gemspec.summary = %q{Rhosync Server}
-    gemspec.description = %q{Rhosync Server and related command-line utilities for using Rhosync}
+    gemspec.description = %q{Rhosync library and related command-line utilities for using Rhosync}
     gemspec.homepage = %q{http://rhomobile.com/products/rhosync}
     gemspec.authors = ["Rhomobile"]
     gemspec.email = %q{dev@rhomobile.com}

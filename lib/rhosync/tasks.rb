@@ -102,13 +102,13 @@ namespace :rhosync do
   task :create_user => :config do
     login = ask "new user login: "
     password = ask "new user password: "
-    RhosyncApi.create_user($url,$appname,$token,login,password)
+    RhosyncApi.create_user($url,$token,login,password)
   end
   
   desc "Deletes the user from rhosync"
   task :delete_user => :config do
     login = ask "user to delete: "
-    RhosyncApi.delete_user($url,$appname,$token,login)
+    RhosyncApi.delete_user($url,$token,login)
   end
   
   # desc "Updates an existing user in rhosync"
@@ -128,14 +128,29 @@ namespace :rhosync do
   #     :user_name => user, :source_name => source_name})
   # end
   
-  desc "Run rhosync source adapter specs"
-  task :spec do
-    files = File.join($app_basedir,'rhosync/spec/sources/*_spec.rb')
-    Spec::Rake::SpecTask.new('rhosync:spec') do |t|
-      t.spec_files = FileList[files]
-      t.spec_opts = %w(-fs --color)
-      t.rcov = true
-      t.rcov_opts = ['--exclude', 'spec/*,gems/*']
+  begin
+    require 'spec/rake/spectask'
+    require 'rcov/rcovtask' unless windows?
+
+    desc "Run source adapter specs"
+    task :spec do
+      files = File.join('spec','sources','*_spec.rb')
+      Spec::Rake::SpecTask.new('rhosync:spec') do |t|
+        t.spec_files = FileList[files]
+        t.spec_opts = %w(-fn --color)
+        unless windows?
+          t.rcov = true
+          t.rcov_opts = ['--exclude', 'spec/*,gems/*']
+        end
+      end
+    end
+  rescue LoadError
+    if windows?
+      puts "rspec not available. Install it with: "
+      puts "gem install rspec\n\n"
+    else
+      puts "rspec / rcov not available. Install it with: "
+      puts "gem install rspec rcov\n\n"
     end
   end
   

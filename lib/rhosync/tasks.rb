@@ -120,13 +120,13 @@ namespace :rhosync do
   #     :login => login, :password => password, :attributes => {:new_password => new_password}})
   # end
   
-  # desc "Reset source refresh time"
-  # task :reset_refresh_time => :config do
-  #   user = ask "user: "
-  #   source_name = ask "source name: "
-  #   post("/api/set_refresh_time", {:api_token => $token, :app_name => $appname,
-  #     :user_name => user, :source_name => source_name})
-  # end
+  desc "Reset source refresh time"
+  task :reset_refresh => :config do
+    user = ask "user: "
+    source_name = ask "source name: "
+    RestClient.post("#{$url}/api/set_refresh_time", {:api_token => $token,
+      :user_name => user, :source_name => source_name})
+  end
   
   begin
     require 'spec/rake/spectask'

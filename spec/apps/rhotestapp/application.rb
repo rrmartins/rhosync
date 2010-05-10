@@ -2,7 +2,9 @@ class Application < Rhosync::Base
   class << self
     def authenticate(username,password,session)
       session[:auth] = "delegated"
-      password == 'wrongpass' ? false : true
+      raise RuntimeError.new('server error') if password == 'server error'
+      raise LoginException.new('login exception') if password == 'wrongpass'
+      password == 'wrongpassnomsg' ? false : true
     end
     
     # Add hooks for application startup here

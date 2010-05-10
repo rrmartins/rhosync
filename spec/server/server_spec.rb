@@ -83,9 +83,22 @@ describe "Server" do
       last_response.should be_ok
     end
     
-    it "should respond 401 for incorrect username or password" do
+    it "should return 401 and LoginException messsage from authenticate" do
       do_post "/application/clientlogin", "login" => @u.login, "password" => 'wrongpass'
       last_response.status.should == 401
+      last_response.body.should == 'login exception'
+    end
+    
+    it "should return 500 and Exception messsage from authenticate" do
+      do_post "/application/clientlogin", "login" => @u.login, "password" => 'server error'
+      last_response.status.should == 500
+      last_response.body.should == 'server error'
+    end
+    
+    it "should return 401 and no messsage from authenticate if no exception raised" do
+      do_post "/application/clientlogin", "login" => @u.login, "password" => 'wrongpassnomsg'
+      last_response.status.should == 401
+      last_response.body.should == ''
     end
     
     it "should create unknown user through delegated authentication" do

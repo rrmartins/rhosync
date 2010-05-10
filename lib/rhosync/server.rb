@@ -44,7 +44,13 @@ module Rhosync
       end
 
       def do_login
-        login ? status(200) : status(401)
+        begin
+          login ? status(200) : status(401)
+        rescue LoginException => le
+          throw :halt, [401, le.message]
+        rescue Exception => e
+          throw :halt, [500, e.message]
+        end
       end
 
       def login_required
@@ -55,6 +61,7 @@ module Rhosync
         if current_app and current_app.can_authenticate?
           user = current_app.authenticate(params[:login], params[:password], session)
         else
+          # TODO: this is not used / supported anymore
           user = User.authenticate(params[:login], params[:password])
         end
         if user

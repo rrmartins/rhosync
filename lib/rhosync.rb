@@ -29,6 +29,10 @@ module Rhosync
   
   class InvalidArgumentError < RuntimeError; end
   class RhosyncServerError < RuntimeError; end
+  
+  # Used by application authenticate to indicate login failure
+  class LoginException < RuntimeError; end
+  
   extend self
     
   class << self
@@ -224,7 +228,7 @@ module Rhosync
   end
   
   # Base rhosync application class
-  class Base
+  class Base    
     # Add everything in vendor to load path
     # TODO: Integrate with 3rd party dependency management
     def self.initializer(path=nil)

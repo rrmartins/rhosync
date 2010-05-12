@@ -40,29 +40,35 @@ module Rhosync
     def search(params=nil); end
     
     def sync
-      return if _result_nil?
-      if @result.empty?
+      if @result and @result.empty?
         @source.lock(:md) do |s|
           s.flash_data(:md)
           s.put_value(:md_size,0)
         end
       else
-        Store.put_data(@tmp_docname,@result)
+        if @result
+          Store.put_data(@tmp_docname,@result) 
+          @stash_size += @result.size
+        end  
         @source.lock(:md) do |s|
+          s.flash_data(:md)
           Store.rename(@tmp_docname,s.docname(:md))
-          s.put_value(:md_size,@result.size)
+          s.put_value(:md_size,@stash_size)
         end
       end
     end
     
     def do_query(params=nil)
       @tmp_docname = @source.docname(:md) + get_random_uuid
+      @stash_size = 0
       params ? self.query(params) : self.query
       self.sync
     end
     
     def stash_result
+      return if @result.nil?
       Store.put_data(@tmp_docname,@result,true)
+      @stash_size += @result.size
       @result = nil
     end
   
@@ -77,29 +83,17 @@ module Rhosync
     def logoff; end
     
     def save(docname)
-      return if _result_nil?
+      return if @result.nil?
       if @result.empty?
         Store.flash_data(docname)
       else
         Store.put_data(docname,@result)
       end
     end
-  
-    # only implement this if you want RhoSync to install a callback into your backend
-    # def set_callback(notify_url)
-    # end
-  
-    MSG_NIL_RESULT_ATTRIB = "You might have expected a synchronization but the @result attribute was 'nil'"
     
     protected
     def current_user
       @source.user
-    end
-  
-    private 
-    def _result_nil? #:nodoc:
-      log MSG_NIL_RESULT_ATTRIB if @result.nil?
-      @result.nil?
     end
   end
 end

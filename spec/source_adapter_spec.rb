@@ -7,6 +7,7 @@ class Rhosync::SourceAdapter
   
   def inject_tmpdoc(docname)
     @tmp_docname = docname
+    @stash_size = 0
   end
 end
 
@@ -91,12 +92,6 @@ describe "SourceAdapter" do
     
     it "should execute SourceAdapter create method" do
       @sa.create(@product4).should == 'obj4'
-    end
-    
-    it "should log warning if @result is missing" do
-      @sa.should_receive(:log).with(SourceAdapter::MSG_NIL_RESULT_ATTRIB)
-      @sa.inject_result nil
-      @sa.sync
     end
     
     it "should stash @result in store and set it to nil" do

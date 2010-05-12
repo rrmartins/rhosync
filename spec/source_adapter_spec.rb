@@ -4,6 +4,10 @@ class Rhosync::SourceAdapter
   def inject_result(result) 
     @result = result
   end
+  
+  def inject_tmpdoc(docname)
+    @tmp_docname = docname
+  end
 end
 
 describe "SourceAdapter" do
@@ -50,12 +54,6 @@ describe "SourceAdapter" do
       @sa.query.should == expected
     end
     
-    it "should execute SourceAdapter query method" do
-      expected = {'1'=>@product1,'2'=>@product2}
-      @sa.inject_result expected
-      @sa.query.should == expected
-    end
-    
     it "should execute SourceAdapter search method and modify params" do
       params = {:hello => 'world'}
       expected = {'1'=>@product1,'2'=>@product2}
@@ -72,8 +70,7 @@ describe "SourceAdapter" do
     it "should execute SourceAdapter sync method" do
       expected = {'1'=>@product1,'2'=>@product2}
       @sa.inject_result expected
-      @sa.query.should == expected
-      @sa.sync
+      @sa.do_query
       Store.get_data(@s.docname(:md)).should == expected
       Store.get_value(@s.docname(:md_size)).to_i.should == 2
     end
@@ -85,10 +82,10 @@ describe "SourceAdapter" do
         
     it "should reset count if @result is empty" do
       @sa.inject_result({'1'=>@product1,'2'=>@product2})
-      @sa.query; @sa.sync
+      @sa.do_query
       Store.get_value(@s.docname(:md_size)).to_i.should == 2
       @sa.inject_result({})
-      @sa.query; @sa.sync
+      @sa.do_query
       Store.get_value(@s.docname(:md_size)).to_i.should == 0
     end
     
@@ -100,6 +97,14 @@ describe "SourceAdapter" do
       @sa.should_receive(:log).with(SourceAdapter::MSG_NIL_RESULT_ATTRIB)
       @sa.inject_result nil
       @sa.sync
+    end
+    
+    it "should stash @result in store and set it to nil" do
+      expected = {'1'=>@product1,'2'=>@product2}
+      @sa.inject_result(expected)
+      @sa.inject_tmpdoc('tmpdoc')
+      @sa.stash_result
+      Store.get_data('tmpdoc').should == expected
     end
     
     describe "SourceAdapter metadata method" do

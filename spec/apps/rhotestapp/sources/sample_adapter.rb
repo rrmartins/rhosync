@@ -58,9 +58,14 @@ class SampleAdapter < SourceAdapter
   
   def _read(operation,params)
     @result = Store.get_data('test_db_storage')
-    raise SourceAdapterServerErrorException.new(@result[ERROR]['an_attribute']) if @result[ERROR] and 
-      @result[ERROR]['name'] == "#{operation} error"
-    @result.reject! {|key,value| value['name'] != params['name']} if params
+    if params and params['stash_result']
+      stash_result
+      # @result is nil at this point; if @result is empty then md will be cleared
+    else   
+      raise SourceAdapterServerErrorException.new(@result[ERROR]['an_attribute']) if @result[ERROR] and 
+        @result[ERROR]['name'] == "#{operation} error"
+      @result.reject! {|key,value| value['name'] != params['name']} if params
+    end  
     @result
   end
 end

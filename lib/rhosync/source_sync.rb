@@ -225,8 +225,7 @@ module Rhosync
         else
           errordoc = @source.docname(:errors)
           _get_metadata
-          params ? @adapter.query(params) : @adapter.query
-          @adapter.sync
+          @adapter.do_query(params)
         end
         # operation,sync succeeded, remove errors
         Store.lock(errordoc) do

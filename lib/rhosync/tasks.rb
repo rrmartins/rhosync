@@ -137,7 +137,7 @@ namespace :rhosync do
       files = File.join('spec','sources','*_spec.rb')
       Spec::Rake::SpecTask.new('rhosync:spec') do |t|
         t.spec_files = FileList[files]
-        t.spec_opts = %w(-fn --color)
+        t.spec_opts = %w(-fn -b --color)
         unless windows?
           t.rcov = true
           t.rcov_opts = ['--exclude', 'spec/*,gems/*']

@@ -133,13 +133,15 @@ module Rhosync
 
   # Serializes oav to set element
   def setelement(obj,attrib,value)
-    "#{obj}:#{attrib}:#{Base64.encode64(value.to_s)}"
+    #"#{obj}:#{attrib}:#{Base64.encode64(value.to_s)}"
+    "#{obj}:#{attrib}:#{value.to_s}"
   end
 
   # De-serializes oav from set element
   def getelement(element)
-    res = element.split(':')
-    [res[0], res[1], Base64.decode64(res[2].to_s)]
+    res = element.split(':',3)
+    #[res[0], res[1], Base64.decode64(res[2].to_s)]
+    [res[0], res[1], res[2]]
   end
 
   # Get random UUID string

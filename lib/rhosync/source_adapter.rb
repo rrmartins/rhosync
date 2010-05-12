@@ -47,13 +47,23 @@ module Rhosync
           s.put_value(:md_size,0)
         end
       else
-        tmp_docname = @source.docname(:md) + get_random_uuid
-        Store.put_data(tmp_docname,@result)
+        Store.put_data(@tmp_docname,@result)
         @source.lock(:md) do |s|
-          Store.rename(tmp_docname,s.docname(:md))
+          Store.rename(@tmp_docname,s.docname(:md))
           s.put_value(:md_size,@result.size)
         end
       end
+    end
+    
+    def do_query(params=nil)
+      @tmp_docname = @source.docname(:md) + get_random_uuid
+      params ? self.query(params) : self.query
+      self.sync
+    end
+    
+    def stash_result
+      Store.put_data(@tmp_docname,@result,true)
+      @result = nil
     end
   
     def create(name_value_list); end

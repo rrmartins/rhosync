@@ -75,7 +75,7 @@ describe "SourceSync" do
     it "should process source adapter with stash" do
       expected = {'1'=>@product1,'2'=>@product2}
       set_state('test_db_storage' => expected)
-      @ss.adapter.should_receive(:stash_result).once
+      #@ss.adapter.should_receive(:stash_result).once
       @ss.process_query('stash_result' => true)
       verify_result(@s.docname(:md) => expected,
         @s.docname(:md_size) => expected.size.to_s)

@@ -7,7 +7,7 @@ class <%=class_name%> < SourceAdapter
     # TODO: Login to your data source here if necessary
   end
  
-  def query
+  def query(params=nil)
     # TODO: Query your backend data source and assign the records 
     # to a nested hash structure called @result. For example:
     # @result = { 

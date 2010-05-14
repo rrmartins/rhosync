@@ -53,7 +53,7 @@ module Rhosync
     
       # Retrieves value for a given key
       def get_value(dockey)
-          @@db.get(dockey) if dockey
+        @@db.get(dockey) if dockey
       end
   
       # Retrieves set for given dockey,source,user

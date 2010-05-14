@@ -50,16 +50,14 @@ module Rhosync
     
     def partition_sources(partition,user_id)
       names = []
-      need_refresh = false
       sources.members.each do |source|
         s = Source.load(source,{:app_id => self.name,
           :user_id => user_id})
         if s.partition == partition
           names << s.name
-          need_refresh = true if !need_refresh and s.check_refresh_time  
         end
       end
-      {:names => names,:need_refresh => need_refresh}
+      names
     end
     
     def store_blob(obj,field_name,blob)

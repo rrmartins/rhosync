@@ -184,8 +184,14 @@ describe "DBObjectsHelper", :shared => true do
   
   def validate_db_by_name(name,data)
     db = SQLite3::Database.new(name)
-    db.execute("select * from sources").each do |row|
-      return false if row.last != get_attrib_counter(data)
+    db.execute("select source_id,name,priority,partition,sync_type,source_attribs,metadata from sources").each do |row|
+      return false if row[0] != @s.source_id.to_s
+      return false if row[1] != @s.name
+      return false if row[2] != @s.priority.to_s
+      return false if row[3] != @s.partition_type.to_s
+      return false if row[4] != @s.sync_type.to_s
+      return false if row[5] != get_attrib_counter(data)
+      return false if row[6] != @s.get_value(:metadata)
     end
     db.execute("select * from object_values").each do |row|
       object = data[row[2]]
@@ -213,6 +219,16 @@ describe "DBObjectsHelper", :shared => true do
     yield
     adapters.each do |klass|
       klass.class_eval "def metadata; end"
+    end
+  end
+  
+  def unzip_file(file,file_dir)
+    Zip::ZipFile.open(file) do |zip_file|
+      zip_file.each do |f|
+        f_path = File.join(file_dir,f.name)
+        FileUtils.mkdir_p(File.dirname(f_path))
+        zip_file.extract(f, f_path) { true }
+      end
     end
   end
 end

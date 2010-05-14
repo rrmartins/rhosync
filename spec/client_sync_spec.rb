@@ -351,7 +351,7 @@ describe "ClientSync" do
           "class"=>"Rhosync::BulkDataJob"}
     end
     
-    it "should create bulk data job app partition if none exists and no parition sources" do
+    it "should create bulk data job app partition if none exists and no partition sources" do
       ClientSync.bulk_data(:app,@c).should == {:result => :nop}
       Resque.peek(:bulk_data).should == nil
     end
@@ -369,7 +369,7 @@ describe "ClientSync" do
       ClientSync.bulk_data(:user,@c)
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
       ClientSync.bulk_data(:user,@c).should == {:result => :url,
-        :url => BulkData.load(bulk_data_docname(@a.id,@u.id)).dbfile}
+        :url => BulkData.load(bulk_data_docname(@a.id,@u.id)).url}
       verify_result(
         "client:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@c.id}:#{@s_fields[:name]}:cd" => @data,
         "source:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@s_fields[:name]}:md" => @data,
@@ -382,7 +382,7 @@ describe "ClientSync" do
       ClientSync.bulk_data(:app,@c)
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,"*"))
       ClientSync.bulk_data(:app,@c).should == {:result => :url,
-        :url => BulkData.load(bulk_data_docname(@a.id,"*")).dbfile}
+        :url => BulkData.load(bulk_data_docname(@a.id,"*")).url}
       verify_result(
         "client:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@c.id}:#{@s_fields[:name]}:cd" => @data,
         "source:#{@a_fields[:name]}:__shared__:#{@s_fields[:name]}:md" => @data,
@@ -395,7 +395,7 @@ describe "ClientSync" do
       ClientSync.bulk_data(:user,@c)
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
       ClientSync.bulk_data(:user,@c).should == {:result => :url,
-        :url => BulkData.load(bulk_data_docname(@a.id,@u.id)).dbfile}
+        :url => BulkData.load(bulk_data_docname(@a.id,@u.id)).url}
       verify_result(
         "client:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@c.id}:#{@s_fields[:name]}:cd" => {},
         "source:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@s_fields[:name]}:md" => @data,

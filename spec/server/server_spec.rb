@@ -299,9 +299,10 @@ describe "Server" do
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
       get "/application/bulk_data", :partition => :user, :client_id => @c.id
       last_response.should be_ok
+      data = BulkData.load(bulk_data_docname(@a.id,@u.id))
       last_response.body.should == {:result => :url, 
-        :url => BulkData.load(bulk_data_docname(@a.id,@u.id)).dbfile}.to_json
-      validate_db_by_name(JSON.parse(last_response.body)["url"],@data)
+        :url => data.url}.to_json
+      validate_db_by_name(data.dbfile,@data)
     end
     
     it "should download bulk data file" do
@@ -309,7 +310,7 @@ describe "Server" do
       get "/application/bulk_data", :partition => :user, :client_id => @c.id
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
       get "/application/bulk_data", :partition => :user, :client_id => @c.id
-      get "/data/application/#{@u.id}/#{JSON.parse(last_response.body)["url"].split('/').last}"
+      get JSON.parse(last_response.body)["url"]
       last_response.should be_ok
       File.open('test.data','wb') {|f| f.puts last_response.body}
       validate_db_by_name('test.data',@data)

@@ -39,7 +39,7 @@ module Rhosync
     end
     
     def url
-      dbfile
+      File.join('/data',dbfile[Rhosync.data_directory.length..-1])
     end
     
     class << self

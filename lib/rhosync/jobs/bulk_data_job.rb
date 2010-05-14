@@ -17,7 +17,8 @@ module Rhosync
           create_sqlite_data_file(bulk_data,ts)
           timer = lap_timer('create_sqlite_data_file',timer)
           create_hsql_data_file(bulk_data,ts) if Rhosync.blackberry_bulk_sync
-          timer = lap_timer('create_hsql_data_file',timer)
+          lap_timer('create_hsql_data_file',timer)
+          log "finished bulk data process"
           bulk_data.state = :completed
           bulk_data.refresh_time = Time.now.to_i + Rhosync.bulk_sync_poll_interval
         else

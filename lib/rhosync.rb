@@ -38,7 +38,7 @@ module Rhosync
   class << self
     attr_accessor :base_directory, :app_directory, :data_directory, 
       :vendor_directory, :blackberry_bulk_sync, :redis, :environment,
-      :log_disabled, :license
+      :log_disabled, :license, :bulk_sync_poll_interval
   end
   
   ### Begin Rhosync setup methods  
@@ -53,6 +53,7 @@ module Rhosync
     Rhosync.data_directory = get_setting(config,environment,:data_directory)
     Rhosync.vendor_directory = get_setting(config,environment,:vendor_directory)
     Rhosync.blackberry_bulk_sync = get_setting(config,environment,:blackberry_bulk_sync,false)
+    Rhosync.bulk_sync_poll_interval = get_setting(config,environment,:bulk_sync_poll_interval,3600)
     Rhosync.redis = get_setting(config,environment,:redis,false)
     Rhosync.log_disabled = get_setting(config,environment,:log_disabled,false)
     Rhosync.environment = environment    
@@ -64,6 +65,7 @@ module Rhosync
     Rhosync.data_directory ||= File.join(Rhosync.base_directory,'data')
     Rhosync.vendor_directory ||= File.join(Rhosync.base_directory,'vendor')
     Rhosync.blackberry_bulk_sync ||= false
+    Rhosync.bulk_sync_poll_interval ||= 3600
     Rhosync.log_disabled ||= false
     Rhosync.license = License.new
     
@@ -117,7 +119,7 @@ module Rhosync
   def get_config(basedir)
     # Load settings
     settings_file = File.join(basedir,'settings','settings.yml') if basedir
-    config = YAML.load_file(settings_file) if settings_file and File.exist?(settings_file)
+    YAML.load_file(settings_file) if settings_file and File.exist?(settings_file)
   end
   ### End Rhosync setup methods  
   

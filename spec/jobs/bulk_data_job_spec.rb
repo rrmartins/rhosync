@@ -26,9 +26,14 @@ describe "BulkDataJob" do
     data.completed?.should == true
     verify_result(@s.docname(:md) => @data,@s.docname(:md_copy) => @data)
     validate_db(data,@data).should == true
+    File.exists?(data.dbfile+'.rzip').should == true
     File.exists?(data.dbfile+'.hsqldb.data').should == true
     File.exists?(data.dbfile+'.hsqldb.script').should == true
     File.exists?(data.dbfile+'.hsqldb.properties').should == true
+    path = File.join(File.dirname(data.dbfile),'tmp')
+    FileUtils.mkdir_p path
+    unzip_file("#{data.dbfile}.rzip",path)
+    validate_db_by_name(File.join(path,File.basename(data.dbfile)),@data)
   end
   
   it "should not create hsql db files if blackberry_bulk_sync is disabled" do
@@ -47,6 +52,25 @@ describe "BulkDataJob" do
     validate_db(data,@data).should == true
     File.exists?(data.dbfile+'.hsqldb.script').should == false
     File.exists?(data.dbfile+'.hsqldb.properties').should == false
+  end
+  
+  it "should create sqlite data with source metadata" do
+    set_state('test_db_storage' => @data)
+    mock_metadata_method([SampleAdapter]) do
+      docname = bulk_data_docname(@a.id,@u.id)
+      data = BulkData.create(:name => docname,
+        :state => :inprogress,
+        :app_id => @a.id,
+        :user_id => @u.id,
+        :sources => [@s_fields[:name]])
+      BulkDataJob.perform("data_name" => data.name)
+      data = BulkData.load(docname)
+      data.completed?.should == true
+      verify_result(@s.docname(:md) => @data,
+        @s.docname(:metadata) => {'foo'=>'bar'}.to_json,
+        @s.docname(:md_copy) => @data)
+      validate_db(data,@data).should == true
+    end
   end
   
   it "should raise exception if hsqldata fails" do

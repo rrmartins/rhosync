@@ -173,17 +173,18 @@ module Rhosync
         name = BulkData.get_name(partition,client)
         data = BulkData.load(name)
         sources = client.app.partition_sources(partition,client.user_id)
-        if (data.nil? or (data.completed? and sources[:need_refresh] == true)) and 
-          sources[:names].length > 0 
+        if (data.nil? or (data.completed? and data.refresh_time <= Time.now.to_i)) and 
+          sources.length > 0 
           data.delete if data
           data = BulkData.create(:name => name,
             :app_id => client.app_id,
             :user_id => client.user_id,
-            :sources => sources[:names])
+            :sources => sources,
+            :refresh_time => Time.now.to_i + Rhosync.bulk_sync_poll_interval)
           BulkData.enqueue("data_name" => name)
         end
         if data and data.completed? 
-          client.update_clientdoc(sources[:names])
+          client.update_clientdoc(sources)
           {:result => :url, :url => data.url}
         elsif data
           {:result => :wait}

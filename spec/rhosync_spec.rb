@@ -14,6 +14,7 @@ describe "Rhosync" do
     File.expand_path(Rhosync.data_directory).should == File.join(path,'data')
     Rhosync.vendor_directory.should == 'foo'
     Rhosync.blackberry_bulk_sync.should == false
+    Rhosync.bulk_sync_poll_interval.should == 3600
     Rhosync.environment.should == :development  
     App.is_exist?(@test_app_name).should be_true
   end

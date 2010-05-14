@@ -1,4 +1,5 @@
 require 'sqlite3'
+require 'zip/zip'
 
 module Rhosync
   module BulkDataJob
@@ -18,6 +19,7 @@ module Rhosync
           create_hsql_data_file(bulk_data,ts) if Rhosync.blackberry_bulk_sync
           timer = lap_timer('create_hsql_data_file',timer)
           bulk_data.state = :completed
+          bulk_data.refresh_time = Time.now.to_i + Rhosync.bulk_sync_poll_interval
         else
           raise Exception.new("No bulk data found for #{params["data_name"]}")
         end
@@ -55,12 +57,12 @@ module Rhosync
     def self.populate_sources_table(db,sources_refs) 
       db.transaction do |database|
         database.prepare("insert into sources
-          (source_id,name,priority,partition,sync_type,source_attribs) 
-          values (?,?,?,?,?,?)") do |stmt|
+          (source_id,name,priority,partition,sync_type,source_attribs,metadata) 
+          values (?,?,?,?,?,?,?)") do |stmt|
           sources_refs.each do |source_name,ref|
             s = ref[:source]
             stmt.execute(s.source_id,s.name,s.priority,s.partition_type,
-              s.sync_type,refs_to_s(ref[:refs]))
+              s.sync_type,refs_to_s(ref[:refs]),s.get_value(:metadata))
           end
         end
       end
@@ -74,6 +76,7 @@ module Rhosync
       db.execute_batch(File.open(schema,'r').read)
       src_counter = 1
       bulk_data.sources.members.sort.each do |source_name|
+        timer = start_timer("start importing sqlite data for #{source_name}")
         source = Source.load(source_name,{:app_id => bulk_data.app_id,
           :user_id => bulk_data.user_id})
         source.source_id = src_counter
@@ -81,9 +84,11 @@ module Rhosync
         source_attrib_refs = import_data_to_object_values(db,source)
         sources_refs[source_name] = 
           {:source => source, :refs => source_attrib_refs}
+        lap_timer("finished importing sqlite data for #{source_name}",timer)
       end
       populate_sources_table(db,sources_refs)
       db.execute_batch(File.open(index,'r').read)
+      compress("#{bulk_data.dbfile}.rzip",bulk_data.dbfile)
     end
     
     def self.create_hsql_data_file(bulk_data,ts)
@@ -99,6 +104,12 @@ module Rhosync
       index = BulkData.index_file
       dbfile = File.join(Rhosync.data_directory,bulk_data_name+'_'+ts+'.data')
       [schema,index,dbfile]
+    end
+    
+    def self.compress(archive,file)
+      Zip::ZipFile.open(archive, 'w') do |zipfile|
+        zipfile.add(File.basename(file),file)
+      end
     end
   end
 end

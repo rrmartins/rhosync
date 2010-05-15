@@ -175,6 +175,11 @@ namespace :rhosync do
   task :attach => :dtach_installed do
     sh "dtach -a #{rhosync_socket}" unless windows?
   end
+  
+  desc "Launch the web console in a browser - uses :syncserver: in settings.yml"
+  task :web => :config do
+    windows? ? sh("start #{$url}") : sh("open #{$url}")
+  end
 end
 
 load File.join(File.dirname(__FILE__),'..','..','tasks','redis.rake')

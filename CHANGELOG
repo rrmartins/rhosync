@@ -1,6 +1,9 @@
 == 2.0.0.beta3
 * #3316030 - added source adapter spec helper + infrastructure
 * #3475519 - return exception string on 401 / 500 login errors
+* #3513037 - re-animated bulk sync feature
+* #3511533 - added stash_result source adapter utility - useful for huge datasets
+* #3539092 - added rake rhosync:web task
 
 == 2.0.0.beta2
 * #3416343 - unify rake tasks to work on windows & Mac OS / *nix

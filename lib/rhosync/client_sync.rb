@@ -173,7 +173,7 @@ module Rhosync
         name = BulkData.get_name(partition,client)
         data = BulkData.load(name)
         sources = client.app.partition_sources(partition,client.user_id)
-        if (data.nil? or !File.exist?(data.dbfile) or 
+        if (data.nil? or (data.completed? and !File.exist?(data.dbfile)) or 
           (data.completed? and data.refresh_time <= Time.now.to_i)) and sources.length > 0 
           data.delete if data
           data = BulkData.create(:name => name,

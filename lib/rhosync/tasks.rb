@@ -105,10 +105,17 @@ namespace :rhosync do
     RhosyncApi.create_user($url,$token,login,password)
   end
   
-  desc "Deletes the user from rhosync"
+  desc "Deletes a user from rhosync"
   task :delete_user => :config do
     login = ask "user to delete: "
     RhosyncApi.delete_user($url,$token,login)
+  end
+  
+  desc "Deletes a device from rhosync"
+  task :delete_device => :config do
+    user_id = ask "device's user_id: "
+    device_id = ask "device to delete: "
+    RhosyncApi.delete_client($url,$token,user_id,device_id)
   end
   
   # desc "Updates an existing user in rhosync"

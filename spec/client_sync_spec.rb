@@ -401,5 +401,17 @@ describe "ClientSync" do
         "source:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@s_fields[:name]}:md" => @data,
         "source:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@s_fields[:name]}:md_copy" => {})
     end
+    
+    it "should create bulk data job if no file exists" do
+      set_state('test_db_storage' => @data)
+      ClientSync.bulk_data(:user,@c)
+      BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
+      data = BulkData.load(bulk_data_docname(@a.id,@u.id))
+      ClientSync.bulk_data(:user,@c).should == {:result => :url, :url => data.url}
+      File.delete(data.dbfile)
+      ClientSync.bulk_data(:user,@c).should == {:result => :wait}
+      Resque.peek(:bulk_data).should == {"args"=>
+        [{"data_name"=>bulk_data_docname(@a.id,@u.id)}], "class"=>"Rhosync::BulkDataJob"}
+    end
   end
 end

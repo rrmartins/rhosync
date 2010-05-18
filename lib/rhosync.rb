@@ -1,4 +1,5 @@
 require 'redis'
+require 'redis/dist_redis'
 require 'json'
 require 'base64'
 require 'zip/zip'

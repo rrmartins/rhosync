@@ -13,7 +13,7 @@ module Rhosync
       def create(server=nil)
         @@db ||= _get_redis(server)
         raise "Error connecting to Redis store." unless @@db and 
-          (@@db.is_a?(Redis) or @@db.is_a?(Redis::Client) or @@db.is_a?(Redis::DistRedis))
+          (@@db.is_a?(Redis) or @@db.is_a?(Redis::Client) or @@db.is_a?(Redis::Distributed))
       end
   
       # Adds set with given data, replaces existing set
@@ -184,7 +184,7 @@ module Rhosync
           Redis.new(:thread_safe => true, :host => host,
             :port => port, :db => db, :password => password)
         elsif server and server.is_a?(Array)
-          Redis::DistRedis.new :hosts => server
+          Redis::Distributed.new :hosts => server
         else
           Redis.new(:thread_safe => true)
         end

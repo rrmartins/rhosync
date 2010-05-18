@@ -18,9 +18,9 @@ describe "Store" do
       end
     end
     
-    it "should create Redis::DistRedis if redis array is provided" do
+    it "should create Redis::Distributed if redis array is provided" do
       Store.db = ['localhost:5555','localhost:5556']
-      Store.db.class.should == Redis::DistRedis
+      Store.db.class.should == Redis::Distributed
       Store.db = ''
     end
     

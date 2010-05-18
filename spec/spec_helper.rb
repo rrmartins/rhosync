@@ -184,7 +184,7 @@ describe "DBObjectsHelper", :shared => true do
   
   def validate_db_by_name(name,data)
     db = SQLite3::Database.new(name)
-    db.execute("select source_id,name,priority,partition,sync_type,source_attribs,metadata from sources").each do |row|
+    db.execute("select source_id,name,sync_priority,partition,sync_type,source_attribs,metadata from sources").each do |row|
       return false if row[0] != @s.source_id.to_s
       return false if row[1] != @s.name
       return false if row[2] != @s.priority.to_s

@@ -26,6 +26,8 @@ module Rhosync
         end
       rescue Exception => e
         bulk_data.delete if bulk_data
+        log "Bulk data job raised: #{e.message}"
+        log e.backtrace.join("\n")
         raise e
       end
     end
@@ -58,7 +60,7 @@ module Rhosync
     def self.populate_sources_table(db,sources_refs) 
       db.transaction do |database|
         database.prepare("insert into sources
-          (source_id,name,priority,partition,sync_type,source_attribs,metadata) 
+          (source_id,name,sync_priority,partition,sync_type,source_attribs,metadata) 
           values (?,?,?,?,?,?,?)") do |stmt|
           sources_refs.each do |source_name,ref|
             s = ref[:source]

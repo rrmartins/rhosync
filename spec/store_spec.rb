@@ -18,6 +18,12 @@ describe "Store" do
       end
     end
     
+    it "should create Redis::DistRedis if redis array is provided" do
+      Store.db = ['localhost:5555','localhost:5556']
+      Store.db.class.should == Redis::DistRedis
+      Store.db = ''
+    end
+    
     it "should add simple data to new set" do
       Store.put_data(@s.docname(:md),@data).should == true
       Store.get_data(@s.docname(:md)).should == @data

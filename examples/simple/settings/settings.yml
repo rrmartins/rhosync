@@ -7,7 +7,9 @@
 
 :development:
   :licensefile: settings/license.key
-  :redis: localhost:6379
+  :redis: 
+    - 'localhost:6379'
+    - 'localhost:6380'
   :syncserver: http://localhost:9292/application/
 :test: 
   :licensefile: settings/license.key

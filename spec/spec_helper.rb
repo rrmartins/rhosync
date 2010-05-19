@@ -2,93 +2,11 @@ require 'rubygems'
 require 'rhosync'
 include Rhosync
 
-describe "RhosyncHelper", :shared => true do
-  before(:each) do
-    Store.create
-    Store.db.flushdb
-  end
-end
+ERROR = '0_broken_object_id' unless defined? ERROR
 
-describe "TestappHelper", :shared => true do
-  before(:all) do
-    @test_app_name = 'application'
-  end
+module TestHelpers
   def get_testapp_path
     File.expand_path(File.join(File.dirname(__FILE__),'apps','rhotestapp'))
-  end
-end
-
-describe "RhosyncDataHelper", :shared => true do
-  it_should_behave_like "RhosyncHelper"
-  it_should_behave_like "TestappHelper"
-  
-  before(:each) do
-    @source = 'Product'
-    @user_id = 5
-    @client_id = 1
-    
-    @product1 = {
-      'name' => 'iPhone',
-      'brand' => 'Apple',
-      'price' => '199.99'
-    }
-    
-    @product2 = {
-      'name' => 'G2',
-      'brand' => 'Android',
-      'price' => '99.99'
-    }
-
-    @product3 = {
-      'name' => 'Fuze',
-      'brand' => 'HTC',
-      'price' => '299.99'
-    }
-    
-    @product4 = {
-      'name' => 'Droid',
-      'brand' => 'Android',
-      'price' => '249.99'
-    }
-    
-    @data = {'1'=>@product1,'2'=>@product2,'3'=>@product3}
-  end
-end  
-
-describe "DBObjectsHelper", :shared => true do
-  
-  ERROR = '0_broken_object_id' unless defined? ERROR
-  
-  before(:each) do
-    @a_fields = { :name => @test_app_name }
-    # @a = App.create(@a_fields)
-    @a = (App.load(@test_app_name) || App.create(@a_fields))
-    @u_fields = {:login => 'testuser'}
-    @u = User.create(@u_fields) 
-    @u.password = 'testpass'
-    @c_fields = {
-      :device_type => 'iPhone',
-      :device_pin => 'abcd',
-      :device_port => '3333',
-      :user_id => @u.id,
-      :app_id => @a.id 
-    }
-    @s_fields = {
-      :name => 'SampleAdapter',
-      :url => 'http://example.com',
-      :login => 'testuser',
-      :password => 'testpass',
-    }
-    @s_params = {
-      :user_id => @u.id,
-      :app_id => @a.id
-    }
-    @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
-    @s = Source.load(@s_fields[:name],@s_params)
-    @s = Source.create(@s_fields,@s_params) if @s.nil?
-    @r = @s.read_state
-    @a.sources << @s.id
-    @a.users << @u.id
   end
   
   def do_post(url,params)
@@ -230,6 +148,93 @@ describe "DBObjectsHelper", :shared => true do
         zip_file.extract(f, f_path) { true }
       end
     end
+  end
+end #TestHelpers
+
+describe "RhosyncHelper", :shared => true do
+  before(:each) do
+    Store.create
+    Store.db.flushdb
+  end
+end
+
+describe "TestappHelper", :shared => true do
+  include TestHelpers
+  before(:all) do
+    @test_app_name = 'application'
+  end
+end
+
+describe "RhosyncDataHelper", :shared => true do  
+  it_should_behave_like "RhosyncHelper"
+  it_should_behave_like "TestappHelper"
+  
+  before(:each) do
+    @source = 'Product'
+    @user_id = 5
+    @client_id = 1
+    
+    @product1 = {
+      'name' => 'iPhone',
+      'brand' => 'Apple',
+      'price' => '199.99'
+    }
+    
+    @product2 = {
+      'name' => 'G2',
+      'brand' => 'Android',
+      'price' => '99.99'
+    }
+
+    @product3 = {
+      'name' => 'Fuze',
+      'brand' => 'HTC',
+      'price' => '299.99'
+    }
+    
+    @product4 = {
+      'name' => 'Droid',
+      'brand' => 'Android',
+      'price' => '249.99'
+    }
+    
+    @data = {'1'=>@product1,'2'=>@product2,'3'=>@product3}
+  end
+end  
+
+describe "DBObjectsHelper", :shared => true do
+  include TestHelpers
+  
+  before(:each) do
+    @a_fields = { :name => @test_app_name }
+    # @a = App.create(@a_fields)
+    @a = (App.load(@test_app_name) || App.create(@a_fields))
+    @u_fields = {:login => 'testuser'}
+    @u = User.create(@u_fields) 
+    @u.password = 'testpass'
+    @c_fields = {
+      :device_type => 'iPhone',
+      :device_pin => 'abcd',
+      :device_port => '3333',
+      :user_id => @u.id,
+      :app_id => @a.id 
+    }
+    @s_fields = {
+      :name => 'SampleAdapter',
+      :url => 'http://example.com',
+      :login => 'testuser',
+      :password => 'testpass',
+    }
+    @s_params = {
+      :user_id => @u.id,
+      :app_id => @a.id
+    }
+    @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
+    @s = Source.load(@s_fields[:name],@s_params)
+    @s = Source.create(@s_fields,@s_params) if @s.nil?
+    @r = @s.read_state
+    @a.sources << @s.id
+    @a.users << @u.id
   end
 end
 

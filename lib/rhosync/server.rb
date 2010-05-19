@@ -58,11 +58,10 @@ module Rhosync
       end
 
       def login
-        if current_app and current_app.can_authenticate?
-          user = current_app.authenticate(params[:login], params[:password], session)
-        else
-          # TODO: this is not used / supported anymore
+        if params[:login] == 'admin'
           user = User.authenticate(params[:login], params[:password])
+        elsif current_app and current_app.can_authenticate?
+          user = current_app.authenticate(params[:login], params[:password], session)
         end
         if user
           session[:login] = user.login

@@ -59,6 +59,11 @@ module Rhosync
       template.source = 'Rakefile'
       template.destination = "#{name}/Rakefile"
     end
+    
+    template :spec_helper do |template|
+      template.source = 'spec/spec_helper.rb'
+      template.destination = "#{name}/spec/spec_helper.rb"
+    end
   end
   
   class SourceGenerator < BaseGenerator
@@ -78,7 +83,7 @@ module Rhosync
     template :source do |template|
       template.source = 'source_adapter.rb'
       template.destination = "sources/#{underscore_name}.rb"
-      settings_file = 'settings/settings.yml'
+      settings_file = File.join(@destination_root,'settings','settings.yml')
       settings = YAML.load_file(settings_file)
       settings[:sources] ||= {}
       settings[:sources][class_name] = {:poll_interval => 300}
@@ -90,6 +95,11 @@ module Rhosync
         end
         file.write envs.to_yaml[3..-1]
       end
+    end
+    
+    template :source_spec do |template|
+      template.source = 'source_spec.rb'
+      template.destination = "spec/sources/#{underscore_name}_spec.rb"
     end
   end
   

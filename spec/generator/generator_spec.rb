@@ -5,8 +5,8 @@ describe "Generator" do
   source = 'mysource'
   path = File.expand_path(File.join(File.dirname(__FILE__)))
   
-  after(:each) do
-    #FileUtils.rm_rf path
+  before(:each) do
+    FileUtils.mkdir_p '/tmp'
   end
   
   describe "AppGenerator" do
@@ -26,7 +26,8 @@ describe "Generator" do
         "application.rb",
         'settings/settings.yml',
         'settings/license.key',
-        'Rakefile'
+        'Rakefile',
+        'spec/spec_helper.rb'
       ].each do |template|
         @generator.should create("/tmp/#{appname}/#{template}")
       end
@@ -41,12 +42,15 @@ describe "Generator" do
     end
     
     before(:each) do
-      @generator = Rhosync::SourceGenerator.new('/tmp',{},source)
+      FileUtils.rm_rf "/tmp/#{appname}"
+      @app_generator = Rhosync::AppGenerator.new('/tmp',{},appname)
+      @app_generator.invoke!
+      @generator = Rhosync::SourceGenerator.new("/tmp/#{appname}",{},source)
     end
     
-    it "should create new source adapter" do
-      pending
-      @generator.should create("/tmp/sources/#{source}.rb")
+    it "should create new source adapter and spec" do
+      @generator.should create("/tmp/#{appname}/sources/#{source}.rb")
+      @generator.should create("/tmp/#{appname}/spec/sources/#{source}_spec.rb")
     end
   end
   

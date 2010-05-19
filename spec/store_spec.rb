@@ -18,6 +18,11 @@ describe "Store" do
       end
     end
     
+    it "should create default redis connection" do
+      Store.db = nil
+      Store.db.class.name.should match(/Redis/)
+    end
+    
     it "should create Redis::Distributed if redis array is provided" do
       Store.db = ['localhost:5555','localhost:5556']
       Store.db.class.should == Redis::Distributed

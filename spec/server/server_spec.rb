@@ -43,6 +43,11 @@ describe "Server" do
     last_response.should be_ok
   end
   
+  it "should login as admin user" do
+    post "/login", "login" => 'admin', "password" => ''
+    last_response.should be_ok
+  end
+  
   it "should respond with 401 to /:app_name" do
     get "/application"
     last_response.status.should == 401

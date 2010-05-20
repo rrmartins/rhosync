@@ -112,10 +112,6 @@ module Rhosync
             params[:source_name] ? {:source_name => current_source.name} : {:source_name => '*'}) 
         end  
       end
-      
-      def source_config
-        { "sources" => Rhosync.get_config(Rhosync.base_directory)[:sources] }
-      end
 
       def catch_all
         begin

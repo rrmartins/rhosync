@@ -4,6 +4,19 @@
   SimpleAdapter:
     poll_interval: 600
     partition_type: app
+  FixedSchemaAdapter:
+    poll_interval: 300
+    schema:
+      version: '1.0'
+      property:
+        - name: string
+        - brand: string
+        - price: string
+        - image_url: blob
+      index: 
+        - by_name_brand: 'name,brand'
+      unique_index: 
+        - by_image_url: 'image_url'
     
 :development:
   :licensefile: settings/license.key

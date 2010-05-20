@@ -58,6 +58,10 @@ module TestHelpers
   def delete_data_directory
     FileUtils.rm_rf(Rhosync.data_directory)
   end
+  
+  def json_clone(data)
+    JSON.parse(data.to_json)
+  end
       
   def set_state(state)
     state.each do |dockey,data|
@@ -97,23 +101,34 @@ module TestHelpers
   end
   
   def validate_db(bulk_data,data)
-    validate_db_by_name(bulk_data.dbfile,data)
+    puts "validating: #{bulk_data.inspect}"
+    puts "data: #{data.inspect}"
+    db = SQLite3::Database.new(bulk_data.dbfile)
+    bulk_data.sources.members.each do |source_name|
+      s = Source.load(source_name,{:app_id => APP_NAME,:user_id => @u.login})
+      return false unless validate_db_by_name(db,s,data[s.name])
+    end 
+    true 
   end
   
-  def validate_db_by_name(name,data)
-    db = SQLite3::Database.new(name)
-    db.execute("select source_id,name,sync_priority,partition,sync_type,source_attribs,metadata from sources").each do |row|
-      return false if row[0] != @s.source_id.to_s
-      return false if row[1] != @s.name
-      return false if row[2] != @s.priority.to_s
-      return false if row[3] != @s.partition_type.to_s
-      return false if row[4] != @s.sync_type.to_s
+  def validate_db_by_name(db,s,data)
+    db.execute("select source_id,name,sync_priority,partition,
+      sync_type,source_attribs,metadata from sources where name='#{s.name}'").each do |row|
+      puts "row: #{row.inspect}"
+      return false if row[0] != s.source_id.to_s
+      return false if row[1] != s.name
+      return false if row[2] != s.priority.to_s
+      return false if row[3] != s.partition_type.to_s
+      return false if row[4] != s.sync_type.to_s
       return false if row[5] != get_attrib_counter(data)
-      return false if row[6] != @s.get_value(:metadata)
+      puts "s.metadata = #{s.get_value(:metadata)}"
+      return false if row[6] != s.get_value(:metadata)
     end
-    db.execute("select * from object_values").each do |row|
+    puts "after sources"
+    data = json_clone(data)
+    db.execute("select * from object_values where source_id=#{s.source_id}").each do |row|
       object = data[row[2]]
-      return false if object.nil? or object[row[1]] != row[3] or row[0] != @s.source_id.to_s
+      return false if object.nil? or object[row[1]] != row[3] or row[0] != s.source_id.to_s
       object.delete(row[1])
       data.delete(row[2]) if object.empty?
     end 
@@ -232,6 +247,11 @@ describe "DBObjectsHelper", :shared => true do
     @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
     @s = Source.load(@s_fields[:name],@s_params)
     @s = Source.create(@s_fields,@s_params) if @s.nil?
+    @s1 = Source.create({:name => 'FixedSchemaAdapter'},@s_params)
+    config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
+    config["schema"] = config["schema"].to_json
+    puts "fixed schema: " + config.inspect
+    @s1.update(config)
     @r = @s.read_state
     @a.sources << @s.id
     @a.users << @u.id

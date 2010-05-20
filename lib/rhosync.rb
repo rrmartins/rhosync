@@ -122,6 +122,10 @@ module Rhosync
     settings_file = File.join(basedir,'settings','settings.yml') if basedir
     YAML.load_file(settings_file) if settings_file and File.exist?(settings_file)
   end
+  
+  def source_config
+    { "sources" => Rhosync.get_config(Rhosync.base_directory)[:sources] }
+  end
   ### End Rhosync setup methods  
   
   

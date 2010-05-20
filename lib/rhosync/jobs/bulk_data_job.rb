@@ -131,8 +131,6 @@ module Rhosync
         source.source_id = src_counter
         src_counter += 1
         source_attrib_refs = nil
-        puts "source: #{source.inspect}"
-        puts "schema: #{source.schema.inspect}"
         if source.schema
           source_attrib_refs = import_data_to_fixed_schema(db,source)
         else

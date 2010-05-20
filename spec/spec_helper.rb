@@ -247,11 +247,12 @@ describe "DBObjectsHelper", :shared => true do
     @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
     @s = Source.load(@s_fields[:name],@s_params)
     @s = Source.create(@s_fields,@s_params) if @s.nil?
-    @s1 = Source.create({:name => 'FixedSchemaAdapter'},@s_params)
-    config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
-    config["schema"] = config["schema"].to_json
-    puts "fixed schema: " + config.inspect
-    @s1.update(config)
+    unless Source.is_exist?('FixedSchemaAdapter')
+      @s1 = Source.create({:name => 'FixedSchemaAdapter'},@s_params)
+      config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
+      config["schema"] = config["schema"].to_json
+      @s1.update(config)
+    end
     @r = @s.read_state
     @a.sources << @s.id
     @a.users << @u.id

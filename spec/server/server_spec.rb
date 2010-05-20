@@ -307,7 +307,7 @@ describe "Server" do
       data = BulkData.load(bulk_data_docname(@a.id,@u.id))
       last_response.body.should == {:result => :url, 
         :url => data.url}.to_json
-      validate_db_by_name(data.dbfile,@data)
+      validate_db(data,@s.name => @data)
     end
     
     it "should download bulk data file" do
@@ -318,7 +318,8 @@ describe "Server" do
       get JSON.parse(last_response.body)["url"]
       last_response.should be_ok
       File.open('test.data','wb') {|f| f.puts last_response.body}
-      validate_db_by_name('test.data',@data)
+      data = BulkData.load(bulk_data_docname(@a.id,@u.id))
+      validate_db(data,@s.name => @data)
       File.delete('test.data')
     end
   

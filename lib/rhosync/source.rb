@@ -13,6 +13,7 @@ module Rhosync
     field :queue,:string
     field :query_queue,:string
     field :cud_queue,:string
+    field :schema, :string
     attr_accessor :app_id, :user_id
     validates_presence_of :name #, :source_id
     
@@ -27,6 +28,7 @@ module Rhosync
       fields[:partition_type] ||= :user
       fields[:poll_interval] ||= 300
       fields[:sync_type] ||= :incremental
+      fields[:schema] = fields[:schema].to_json if fields[:schema]
     end
         
     def self.create(fields,params)

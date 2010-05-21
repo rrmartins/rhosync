@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rhosync}
-  s.version = "2.0.0.beta3"
+  s.version = "2.0.0.beta4"
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-05-18}
+  s.date = %q{2010-05-20}
   s.default_executable = %q{rhosync}
   s.description = %q{Rhosync library and related command-line utilities for using Rhosync}
   s.email = %q{dev@rhomobile.com}
@@ -180,6 +180,7 @@ Gem::Specification.new do |s|
      "spec/apps/rhotestapp/settings/license.key",
      "spec/apps/rhotestapp/settings/settings.yml",
      "spec/apps/rhotestapp/sources/base_adapter.rb",
+     "spec/apps/rhotestapp/sources/fixed_schema_adapter.rb",
      "spec/apps/rhotestapp/sources/sample_adapter.rb",
      "spec/apps/rhotestapp/sources/simple_adapter.rb",
      "spec/apps/rhotestapp/sources/sub_adapter.rb",
@@ -255,6 +256,7 @@ Gem::Specification.new do |s|
      "spec/app_spec.rb",
      "spec/apps/rhotestapp/application.rb",
      "spec/apps/rhotestapp/sources/base_adapter.rb",
+     "spec/apps/rhotestapp/sources/fixed_schema_adapter.rb",
      "spec/apps/rhotestapp/sources/sample_adapter.rb",
      "spec/apps/rhotestapp/sources/simple_adapter.rb",
      "spec/apps/rhotestapp/sources/sub_adapter.rb",

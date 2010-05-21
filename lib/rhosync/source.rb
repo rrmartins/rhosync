@@ -45,6 +45,7 @@ module Rhosync
     end
     
     def update(fields)
+      fields = fields.with_indifferent_access # so we can access hash keys as symbols
       self.class.set_defaults(fields)
       super(fields)
     end

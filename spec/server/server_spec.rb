@@ -13,6 +13,8 @@ describe "Server" do
   include Rack::Test::Methods
   include Rhosync
   
+  it_should_behave_like "DBObjectsHelper"
+  
   before(:each) do
     require File.join(get_testapp_path,@test_app_name)
     Rhosync.bootstrap(get_testapp_path) do |rhosync|
@@ -24,14 +26,12 @@ describe "Server" do
       :secret => "secure!"
     )
     Server.use Rack::Static, :urls => ["/data"], 
-      :root =>  File.join(File.dirname(__FILE__),'..','apps','rhotestapp')
+      :root =>  File.expand_path(File.join(File.dirname(__FILE__),'..','apps','rhotestapp'))
   end
 
   def app
     @app ||= Server.new
   end
-
-  it_should_behave_like "DBObjectsHelper"
   
   it "should show status page" do
     get '/'
@@ -116,8 +116,19 @@ describe "Server" do
   describe "client management routes" do
     before(:each) do
       do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
-      @source_config = {"sources"=>{"SampleAdapter"=>{"poll_interval"=>300},
-        "SimpleAdapter"=>{"partition_type"=>"app","poll_interval"=>600}}}
+      @source_config = {
+        "sources"=> { 
+          "FixedSchemaAdapter"=>
+            {"schema"=>{"property"=>[{"name"=>"string"}, 
+              {"brand"=>"string"}, {"price"=>"string"}, 
+              {"image_url"=>"blob"}], "version"=>"1.0", 
+              "unique_index"=>[{"by_price"=>"price"}], 
+              "index"=>[{"by_name_brand"=>"name,brand"}]}, 
+              "poll_interval"=>300},
+           "SampleAdapter"=>{"poll_interval"=>300}, 
+           "SimpleAdapter"=>{"partition_type"=>"app", 
+             "poll_interval"=>600}}
+      }
     end
     
     it "should respond to clientcreate" do
@@ -307,7 +318,7 @@ describe "Server" do
       data = BulkData.load(bulk_data_docname(@a.id,@u.id))
       last_response.body.should == {:result => :url, 
         :url => data.url}.to_json
-      validate_db(data,@s.name => @data)
+      validate_db(data,{@s.name => @data, 'FixedSchemaAdapter' => @data})
     end
     
     it "should download bulk data file" do
@@ -318,8 +329,7 @@ describe "Server" do
       get JSON.parse(last_response.body)["url"]
       last_response.should be_ok
       File.open('test.data','wb') {|f| f.puts last_response.body}
-      data = BulkData.load(bulk_data_docname(@a.id,@u.id))
-      validate_db(data,@s.name => @data)
+      validate_db_file('test.data',[@s.name,'FixedSchemaAdapter'],{@s.name => @data, 'FixedSchemaAdapter' => @data})
       File.delete('test.data')
     end
   

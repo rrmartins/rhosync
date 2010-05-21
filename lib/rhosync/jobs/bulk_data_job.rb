@@ -54,9 +54,8 @@ module Rhosync
       data = source.get_data(:md)
       counter = {}
       columns,qm = [],[]
-      create_table = ['object varchar NOT NULL']
+      create_table = ['object varchar']
       schema = JSON.parse(source.schema)
-      puts "schema in bulkl data: #{schema.inspect}"
       
       db.transaction do |database|
         # Create a table with columns specified by 'property' array in settings
@@ -82,7 +81,6 @@ module Rhosync
         
         # Create indexes for specified columns in settings 'index'
         schema['index'].each do |index|
-          puts "index: "+ "CREATE INDEX #{index.keys[0]} on #{source.name} (#{index.values[0]});"
           database.execute("CREATE INDEX #{index.keys[0]} on #{source.name} (#{index.values[0]});")
         end if schema['index']
         
@@ -150,7 +148,7 @@ module Rhosync
       hsql_file = dbfile + ".hsqldb"
       raise Exception.new("Error running hsqldata") unless 
         system('java','-cp', File.join(File.dirname(__FILE__),'..','..','..','vendor','hsqldata.jar'),
-        'com.rhomobile.hsqldata.HsqlData', dbfile, hsql_file, schema, index)
+        'com.rhomobile.hsqldata.HsqlData', dbfile, hsql_file)
     end
     
     def self.get_file_args(bulk_data_name,ts)

@@ -190,6 +190,20 @@ describe "Server" do
       verify_result("test_delete_storage" => {'1'=>@product1})
     end
     
+    it "should handle client posting broken json" do
+      broken_json = "{\"foo\":\"bar\"\"}"
+      post "/application", broken_json, {'CONTENT_TYPE'=>'application/json'}
+      last_response.status.should == 500
+      last_response.body.should == "Server error while processing client data"
+    end
+    
+    it "should handle client posting broken body" do
+      broken_json = ['foo']
+      post "/application", broken_json, {'CONTENT_TYPE'=>'application/json'}
+      last_response.status.should == 500
+      last_response.body.should == "Internal server error"
+    end
+    
     it "should get inserts json" do
       cs = ClientSync.new(@s,@c,1)
       data = {'1'=>@product1,'2'=>@product2}

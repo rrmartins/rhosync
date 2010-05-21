@@ -13,6 +13,7 @@ module Rhosync
     field :queue,:string
     field :query_queue,:string
     field :cud_queue,:string
+    field :schema, :string
     attr_accessor :app_id, :user_id
     validates_presence_of :name #, :source_id
     
@@ -27,6 +28,7 @@ module Rhosync
       fields[:partition_type] ||= :user
       fields[:poll_interval] ||= 300
       fields[:sync_type] ||= :incremental
+      fields[:schema] = fields[:schema].to_json if fields[:schema]
     end
         
     def self.create(fields,params)
@@ -43,6 +45,7 @@ module Rhosync
     end
     
     def update(fields)
+      fields = fields.with_indifferent_access # so we can access hash keys as symbols
       self.class.set_defaults(fields)
       super(fields)
     end

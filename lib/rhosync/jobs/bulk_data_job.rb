@@ -48,6 +48,50 @@ module Rhosync
       end
       counter
     end
+    
+    # Loads data into fixed schema table based on source settings
+    def self.import_data_to_fixed_schema(db,source)
+      data = source.get_data(:md)
+      counter = {}
+      columns,qm = [],[]
+      create_table = ['object varchar']
+      schema = JSON.parse(source.schema)
+      
+      db.transaction do |database|
+        # Create a table with columns specified by 'property' array in settings
+        schema['property'].each do |column|
+          create_table << "#{column.keys[0]} varchar default NULL" 
+          columns << column.keys[0]
+          qm << '?'
+        end
+        database.execute("CREATE TABLE #{source.name}(
+          #{create_table.join(",")} );")
+        
+        # Insert each object as single row in fixed schema table
+        database.prepare("insert into #{source.name} 
+          (object,#{columns.join(',')}) values (?,#{qm.join(',')})") do |stmt|
+          data.each do |obj,row|
+            args = [obj]
+            columns.each do |col|
+              args << row[col]
+            end  
+            stmt.execute(args)
+          end
+        end
+        
+        # Create indexes for specified columns in settings 'index'
+        schema['index'].each do |index|
+          database.execute("CREATE INDEX #{index.keys[0]} on #{source.name} (#{index.values[0]});")
+        end if schema['index']
+        
+        # Create unique indexes for specified columns in settings 'unique_index'
+        schema['unique_index'].each do |index|
+          database.execute("CREATE UNIQUE INDEX #{index.keys[0]} on #{source.name} (#{index.values[0]});")
+        end if schema['unique_index']
+      end
+    
+      return {}
+    end
      
     def self.refs_to_s(refs)
       str = ''
@@ -84,7 +128,12 @@ module Rhosync
           :user_id => bulk_data.user_id})
         source.source_id = src_counter
         src_counter += 1
-        source_attrib_refs = import_data_to_object_values(db,source)
+        source_attrib_refs = nil
+        if source.schema
+          source_attrib_refs = import_data_to_fixed_schema(db,source)
+        else
+          source_attrib_refs = import_data_to_object_values(db,source)
+        end
         sources_refs[source_name] = 
           {:source => source, :refs => source_attrib_refs}
         lap_timer("finished importing sqlite data for #{source_name}",timer)
@@ -99,7 +148,7 @@ module Rhosync
       hsql_file = dbfile + ".hsqldb"
       raise Exception.new("Error running hsqldata") unless 
         system('java','-cp', File.join(File.dirname(__FILE__),'..','..','..','vendor','hsqldata.jar'),
-        'com.rhomobile.hsqldata.HsqlData', dbfile, hsql_file, schema, index)
+        'com.rhomobile.hsqldata.HsqlData', dbfile, hsql_file)
     end
     
     def self.get_file_args(bulk_data_name,ts)

@@ -28,8 +28,6 @@ describe "Protocol" do
       :run => false,
       :secret => "secure!"
     )
-    Server.use Rack::Static, :urls => ["/data"], 
-      :root =>  File.join(File.dirname(__FILE__),'..','apps',@test_app_name)
   end
   
   before(:each) do

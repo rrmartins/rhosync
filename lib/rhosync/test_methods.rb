@@ -135,10 +135,14 @@ module Rhosync
       @c.get_data(:delete_errors)
     end
     
+    # Returns the master document (:md) for the source adapter stored in redis.
+    # This is equivalent to the @result hash of hashes structure.
     def md
       @s.get_data(:md)
     end
     
+    # Returns the client document (:cd) for the source adapter + client under test.
+    # The master document (:md) and client document (:cd) should be equal
     def cd
       @c.get_data(:cd)
     end

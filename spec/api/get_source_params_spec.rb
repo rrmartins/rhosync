@@ -19,7 +19,8 @@ describe "RhosyncApiGetSourceParams" do
       {"name"=>"sync_type", "value"=>"incremental", "type"=>"string"}, 
       {"name"=>"queue", "value"=>nil, "type"=>"string"}, 
       {"name"=>"query_queue", "value"=>nil, "type"=>"string"}, 
-      {"name"=>"cud_queue", "value"=>nil, "type"=>"string"}]
+      {"name"=>"cud_queue", "value"=>nil, "type"=>"string"},
+      {"name"=>"schema", "value"=>nil, "type"=>"string"}]
   end
   
 end

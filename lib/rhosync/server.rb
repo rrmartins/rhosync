@@ -142,13 +142,13 @@ module Rhosync
           params.merge!(JSON.parse(request.body.read))
           request.body.rewind
         end      
-        if params[:version] and params[:version].to_i < 3
-          throw :halt, [404, "Server supports version 3 or higher of the protocol."]
-        end
       rescue JSON::ParserError => jpe
         throw :halt, [500, "Server error while processing client data"]
       rescue Exception => e
         throw :halt, [500, "Internal server error"]
+      end
+      if params[:version] and params[:version].to_i < 3
+        throw :halt, [404, "Server supports version 3 or higher of the protocol."]
       end
       #log "request params: #{params.inspect}"
     end

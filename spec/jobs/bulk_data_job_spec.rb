@@ -57,7 +57,7 @@ describe "BulkDataJob" do
     File.exists?(data.dbfile+'.hsqldb.script').should == false
     File.exists?(data.dbfile+'.hsqldb.properties').should == false
   end
-  
+
   it "should create sqlite data with source metadata" do
     set_state('test_db_storage' => @data)
     mock_metadata_method([SampleAdapter]) do

@@ -2,6 +2,16 @@
 require 'fileutils'
 require 'open-uri'
 
+def windows?
+	RUBY_PLATFORM =~ /(win|w)32$/
+end
+
+if windows?
+	$redis_ver = "redis-1.2.6-windows"
+	$redis_zip = "C:/#{$redis_ver}.zip"
+	$redis_dest = "C:/"
+end
+	
 class RedisRunner
 
   def self.redisdir
@@ -27,10 +37,16 @@ class RedisRunner
   end
 
   def self.start
-    puts 'Detach with Ctrl+\  Re-attach with rake redis:attach'
-    sleep 1
-    command = "dtach -A #{dtach_socket} redis-server #{redisconfdir}"
-    sh command
+  	if windows?
+  		puts "Starting redis in a new window..."
+  		sh "start #{File.join($redis_dest,$redis_ver,'redis-server')}" rescue
+  			"redis-server not installed on your path, please run 'rake redis:install' first."
+		else
+      puts 'Detach with Ctrl+\  Re-attach with rake redis:attach'
+      sleep 1
+      command = "dtach -A #{dtach_socket} redis-server #{redisconfdir}"
+      sh command
+    end
   end
 
   def self.attach
@@ -73,31 +89,59 @@ namespace :redis do
 
   desc 'Install the latest verison of Redis from Github (requires git, duh)'
   task :install => [:about, :download, :make] do
-    ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = '/usr/bin'
-    %w(redis-benchmark redis-cli redis-server).each do |bin|
-      sh "cp /tmp/redis/#{bin} #{bin_dir}"
+  	unless windows?
+	    ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = '/usr/local/bin'
+	    %w(redis-benchmark redis-cli redis-server).each do |bin|
+	      sh "cp /tmp/redis/#{bin} #{bin_dir}"
+	    end
+	
+	    puts "Installed redis-benchmark, redis-cli and redis-server to #{bin_dir}"
+	
+	    ENV['PREFIX'] and conf_dir = "#{ENV['PREFIX']}/etc" or conf_dir = '/etc'
+	    unless File.exists?("#{conf_dir}/redis.conf")
+	      sh "mkdir #{conf_dir}" unless File.exists?("#{conf_dir}")
+	      sh "cp /tmp/redis/redis.conf #{conf_dir}/redis.conf"
+	      puts "Installed redis.conf to #{conf_dir} \n You should look at this file!"
+	    end
     end
-
-    puts "Installed redis-benchmark, redis-cli and redis-server to #{bin_dir}"
-
-    ENV['PREFIX'] and conf_dir = "#{ENV['PREFIX']}/etc" or conf_dir = '/etc'
-    unless File.exists?("#{conf_dir}/redis.conf")
-      sh "mkdir #{conf_dir}" unless File.exists?("#{conf_dir}")
-      sh "cp /tmp/redis/redis.conf #{conf_dir}/redis.conf"
-      puts "Installed redis.conf to #{conf_dir} \n You should look at this file!"
-    end
-  end
+	end
 
   task :make do
-    sh "cd #{RedisRunner.redisdir} && make clean"
-    sh "cd #{RedisRunner.redisdir} && make"
+  	unless windows?
+      sh "cd #{RedisRunner.redisdir} && make clean"
+      sh "cd #{RedisRunner.redisdir} && make"
+    end
   end
 
   desc "Download package"
   task :download do
-    sh 'rm -rf /tmp/redis/' if File.exists?("#{RedisRunner.redisdir}/.svn")
-    sh 'git clone git://github.com/antirez/redis.git /tmp/redis' unless File.exists?(RedisRunner.redisdir)
-    sh "cd #{RedisRunner.redisdir} && git pull" if File.exists?("#{RedisRunner.redisdir}/.git")
+  	if windows?
+	  	require 'net/http'
+	  	require 'zip/zip'
+	  	
+	  	puts "Installing redis to #{$redis_dest}/#{$redis_ver}."
+	
+	    Net::HTTP.start("servicestack.googlecode.com") do |http|
+	      resp = http.get("/files/#{$redis_ver}.zip")
+	      open($redis_zip, "wb") do |file|
+	        file.write(resp.body)
+	      end
+	    end
+	    
+	    Zip::ZipFile.open($redis_zip) do |zip_file|
+	    	zip_file.each do |f|
+	    		f_path = File.join($redis_dest, f.name)
+          FileUtils.mkdir_p(File.dirname(f_path))
+          zip_file.extract(f, f_path) { true }
+    		end
+    	end
+    	
+    	FileUtils.rm_f $redis_zip
+    else
+      sh 'rm -rf /tmp/redis/' if File.exists?("#{RedisRunner.redisdir}/.svn")
+      sh 'git clone git://github.com/antirez/redis.git /tmp/redis' unless File.exists?(RedisRunner.redisdir)
+      sh "cd #{RedisRunner.redisdir} && git pull" if File.exists?("#{RedisRunner.redisdir}/.git")
+    end
   end
 
 end
@@ -124,7 +168,7 @@ namespace :dtach do
       system('tar xzf dtach-0.8.tar.gz')
     end
 
-    ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = "/usr/bin"
+    ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = "/usr/local/bin"
     Dir.chdir('/tmp/dtach-0.8/')
     sh 'cd /tmp/dtach-0.8/ && ./configure && make'
     sh "cp /tmp/dtach-0.8/dtach #{bin_dir}"

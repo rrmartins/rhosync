@@ -58,7 +58,7 @@ namespace :rhosync do
   include RhosyncApi
   
   task :config do
-    $settings = load_settings(File.join(ENV['PWD'],'settings','settings.yml'))
+    $settings = load_settings(File.join('settings','settings.yml'))
     env = (ENV['RHO_ENV'] || :development).to_sym  
     uri = URI.parse($settings[env][:syncserver])
     $url = "#{uri.scheme}://#{uri.host}"

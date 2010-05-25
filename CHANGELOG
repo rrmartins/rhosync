@@ -1,3 +1,18 @@
+== 2.0.0.beta7
+* #3651932 - support redis:* tasks on windows and linux/mac
+
+== 2.0.0.beta6
+* no new changes, rubygems.org upload failed for 2.0.0.beta5
+
+== 2.0.0.beta5
+* #3628036 - support loading generator from gem
+
+== 2.0.0.beta4
+* #3316030 - added rspec test framework
+* #3557341 - create new bulk data instance if the file is missing
+* #3415335 - support fixed schema models
+* #3582235 - report error if client-posted json doesn't parse (instead of crashing server)
+
 == 2.0.0.beta3
 * #3316030 - added source adapter spec helper + infrastructure
 * #3475519 - return exception string on 401 / 500 login errors

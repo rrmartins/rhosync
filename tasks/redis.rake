@@ -13,6 +13,10 @@ if windows?
 end
 	
 class RedisRunner
+  
+  def self.prefix
+    "/usr/local/"
+  end
 
   def self.redisdir
     "/tmp/redis/"
@@ -20,9 +24,9 @@ class RedisRunner
 
   def self.redisconfdir
     server_dir = File.dirname(`which redis-server`)
-    conf_file = "#{server_dir}/../etc/redis.conf"
+    conf_file = "#{RedisRunner.prefix}etc/redis.conf"
     unless File.exists? conf_file
-      conf_file = "#{server_dir}/../../etc/redis.conf"
+      conf_file = "#{RedisRunner.prefix}etc/redis.conf"
     end
     conf_file
   end
@@ -90,14 +94,14 @@ namespace :redis do
   desc 'Install the latest verison of Redis from Github (requires git, duh)'
   task :install => [:about, :download, :make] do
   	unless windows?
-	    ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = '/usr/local/bin'
+	    ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = "#{RedisRunner.prefix}bin"
 	    %w(redis-benchmark redis-cli redis-server).each do |bin|
 	      sh "cp /tmp/redis/#{bin} #{bin_dir}"
 	    end
 	
 	    puts "Installed redis-benchmark, redis-cli and redis-server to #{bin_dir}"
 	
-	    ENV['PREFIX'] and conf_dir = "#{ENV['PREFIX']}/etc" or conf_dir = '/etc'
+	    ENV['PREFIX'] and conf_dir = "#{ENV['PREFIX']}/etc" or conf_dir = "#{RedisRunner.prefix}etc"
 	    unless File.exists?("#{conf_dir}/redis.conf")
 	      sh "mkdir #{conf_dir}" unless File.exists?("#{conf_dir}")
 	      sh "cp /tmp/redis/redis.conf #{conf_dir}/redis.conf"
@@ -168,7 +172,7 @@ namespace :dtach do
       system('tar xzf dtach-0.8.tar.gz')
     end
 
-    ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = "/usr/local/bin"
+    ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = "#{RedisRunner.prefix}bin"
     Dir.chdir('/tmp/dtach-0.8/')
     sh 'cd /tmp/dtach-0.8/ && ./configure && make'
     sh "cp /tmp/dtach-0.8/dtach #{bin_dir}"

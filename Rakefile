@@ -10,7 +10,7 @@ begin
   require 'spec/rake/spectask'
   require 'rcov/rcovtask'
   
-  SPEC_OPTS = ['-fn', '--color', '-b','-R']
+  SPEC_OPTS = ['-fn', '--color', '-b']
          
   TYPES = { 
     :spec   => 'spec/*_spec.rb',

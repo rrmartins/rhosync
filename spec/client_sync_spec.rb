@@ -263,7 +263,6 @@ describe "ClientSync" do
       Store.get_data(@c.docname(:search)).should == {'1'=>@product1}
       # do ask on multiple sources
       res = ClientSync.search_all(@c,{:sources => sources})
-      puts "res: #{res.inspect}"
       @c.source_name = 'SimpleAdapter'
       token = Store.get_value(@c.docname(:search_token))
       token.should be_nil

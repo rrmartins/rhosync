@@ -1,5 +1,6 @@
 == 2.0.0.beta7
 * #3651932 - support redis:* tasks on windows and linux/mac
+* #3663335 - don't need ENV['PWD'] in tasks.rb
 
 == 2.0.0.beta6
 * no new changes, rubygems.org upload failed for 2.0.0.beta5

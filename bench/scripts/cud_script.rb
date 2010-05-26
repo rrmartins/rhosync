@@ -1,17 +1,15 @@
-# Simulate creating multiple objects
 include BenchHelpers
+logger.info "Simulate creating multiple objects"
 
 Bench.config do |config|
-  config.concurrency = 5
-  config.iterations  = 5
+  config.concurrency = 1
+  config.iterations  = 1
   config.user_name = "benchuser"
   config.password = "password"
-  config.app_name = "benchapp"
   config.get_test_server
   config.reset_app
-  config.create_user
   config.reset_refresh_time('MockAdapter',0)
-  config.set_server_state("test_db_storage:benchapp:#{config.user_name}",{})
+  config.set_server_state("test_db_storage:application:#{config.user_name}",{})
   @create_objects = []
   @create_count = 5
   config.concurrency.times do |i|
@@ -61,8 +59,7 @@ Bench.verify do |config,sessions|
   
   sessions.each do |session|
     actual = config.get_server_state(
-      client_docname(config.app_name,
-                     config.user_name,
+      client_docname(config.user_name,
                      session.client_id,
                      'MockAdapter',:cd))
     session.results['create-object'][0].verification_error += 
@@ -70,8 +67,7 @@ Bench.verify do |config,sessions|
   end
   
   master_doc = config.get_server_state(
-    source_docname(config.app_name,
-                   config.user_name,
+    source_docname(config.user_name,
                    'MockAdapter',:md))
   Bench.verify_error = Bench.compare_and_log(@expected_md,master_doc,current_line)
 end

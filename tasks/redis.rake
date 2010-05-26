@@ -58,7 +58,7 @@ class RedisRunner
   end
 
   def self.stop
-    sh 'echo "SHUTDOWN" | nc localhost 6379'
+    Redis.new.shutdown
   end
 
 end
@@ -159,24 +159,25 @@ namespace :dtach do
 
   desc 'Install dtach 0.8 from source'
   task :install => [:about] do
+    unless windows?
+      Dir.chdir('/tmp/')
+      unless File.exists?('/tmp/dtach-0.8.tar.gz')
+        require 'net/http'
 
-    Dir.chdir('/tmp/')
-    unless File.exists?('/tmp/dtach-0.8.tar.gz')
-      require 'net/http'
+        url = 'http://downloads.sourceforge.net/project/dtach/dtach/0.8/dtach-0.8.tar.gz'
+        open('/tmp/dtach-0.8.tar.gz', 'wb') do |file| file.write(open(url).read) end
+      end
 
-      url = 'http://downloads.sourceforge.net/project/dtach/dtach/0.8/dtach-0.8.tar.gz'
-      open('/tmp/dtach-0.8.tar.gz', 'wb') do |file| file.write(open(url).read) end
+      unless File.directory?('/tmp/dtach-0.8')
+        system('tar xzf dtach-0.8.tar.gz')
+      end
+
+      ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = "#{RedisRunner.prefix}bin"
+      Dir.chdir('/tmp/dtach-0.8/')
+      sh 'cd /tmp/dtach-0.8/ && ./configure && make'
+      sh "cp /tmp/dtach-0.8/dtach #{bin_dir}"
+
+      puts "Dtach successfully installed to #{bin_dir}"
     end
-
-    unless File.directory?('/tmp/dtach-0.8')
-      system('tar xzf dtach-0.8.tar.gz')
-    end
-
-    ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = "#{RedisRunner.prefix}bin"
-    Dir.chdir('/tmp/dtach-0.8/')
-    sh 'cd /tmp/dtach-0.8/ && ./configure && make'
-    sh "cp /tmp/dtach-0.8/dtach #{bin_dir}"
-
-    puts "Dtach successfully installed to #{bin_dir}"
   end
 end

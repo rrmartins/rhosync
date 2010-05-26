@@ -44,7 +44,7 @@ module Bench
       @rows.each do |marker,row|
         logger.info "Request %-15s: min: %0.4f, max: %0.4f, avg: %0.4f, err: %d, verification err: %d" % [marker, row[:min], row[:max], average(row), row[:errors], row[:verification_errors]]
       end
-      logger.info "Verify Error       : #{Bench.verify_error}"
+      logger.info "State of MD        : #{Bench.verify_error == 0 ? true : false}"
       logger.info "Concurrency        : #{@concurrency}"
       logger.info "Iterations         : #{@iterations}"
       logger.info "Total Count        : #{@total_count}"

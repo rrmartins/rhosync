@@ -54,8 +54,8 @@ begin
 
   Jeweler::Tasks.new do |gemspec|
     gemspec.name = "rhosync"
-    gemspec.summary = %q{Rhosync Server}
-    gemspec.description = %q{Rhosync library and related command-line utilities for using Rhosync}
+    gemspec.summary = %q{RhoSync Synchronization Framework}
+    gemspec.description = %q{RhoSync Synchronization Framework and related command-line utilities}
     gemspec.homepage = %q{http://rhomobile.com/products/rhosync}
     gemspec.authors = ["Rhomobile"]
     gemspec.email = %q{dev@rhomobile.com}
@@ -79,6 +79,7 @@ begin
     gemspec.add_development_dependency "rcov", ">=0.9.8"
     gemspec.add_development_dependency "faker", ">=0.3.1"
     gemspec.add_development_dependency "rack-test", ">=0.5.3"
+    gemspec.add_development_dependency "thor", ">=0.13.6"
   end
 rescue LoadError
   puts "Jeweler not available. Install it with: "

@@ -1,8 +1,12 @@
 #!/usr/bin/env ruby
 
+path = File.join(File.dirname(__FILE__),'..','..','lib')
+$:.unshift path
+
 # Try to load vendor-ed rhosync, otherwise load the gem
 begin
-  require 'vendor/rhosync/lib/rhosync'
+  require 'vendor/rhosync/lib/rhosync/server'
+  require 'vendor/rhosync/lib/rhosync/console/server'
 rescue LoadError
   require 'rhosync/server'
   require 'rhosync/console/server'

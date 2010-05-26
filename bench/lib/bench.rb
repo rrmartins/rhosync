@@ -25,13 +25,13 @@ module Bench
     include Utils
 
     attr_accessor :concurrency, :iterations, :admin_login 
-    attr_accessor :admin_password, :user_name, :app_name
+    attr_accessor :admin_password, :user_name
     attr_accessor :password, :host, :base_url, :token
     attr_accessor :total_time, :sessions, :verify_error
     
     def config
       begin
-        @verify_error ||= false
+        @verify_error ||= 0
         yield self
       rescue Exception => e
         puts "error in config: #{e.inspect}"
@@ -50,13 +50,13 @@ module Bench
       RestClient.post("#{@host}/api/reset",{:api_token => get_token}.to_json, :content_type => :json)
     end
     
-    def create_user
-      token = get_token
-      RestClient.post("#{@host}/api/create_user",
-        {:api_token => token, :app_name => @app_name,
-         :attributes => {:login => @user_name, :password => @password}}.to_json, 
-         :content_type => :json)
-    end
+    # def create_user
+    #       token = get_token
+    #       RestClient.post("#{@host}/api/create_user",
+    #         {:api_token => token, :app_name => @app_name,
+    #          :attributes => {:login => @user_name, :password => @password}}.to_json, 
+    #          :content_type => :json)
+    #     end
     
     def set_server_state(doc,data)
       token = get_token
@@ -68,7 +68,7 @@ module Bench
       token = get_token
       RestClient.post("#{@host}/api/set_refresh_time",
         {:api_token => token, :source_name => source_name,
-          :app_name => @app_name, :user_name => @user_name, 
+          :user_name => @user_name, 
           :poll_interval => poll_interval}.to_json, 
           :content_type => :json)
     end
@@ -83,7 +83,7 @@ module Bench
     end
     
     def get_test_server
-      load_settings(File.join(File.dirname(__FILE__),'..',@app_name,'settings','settings.yml'))
+      load_settings(File.join(File.dirname(__FILE__),'..','benchapp','settings','settings.yml'))
       @base_url = $settings[:development][:syncserver].gsub(/\/$/,'')
       uri = URI.parse(@base_url)
       port = (uri.port and uri.port != 80) ? ":"+uri.port.to_s : "" 

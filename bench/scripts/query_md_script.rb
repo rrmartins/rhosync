@@ -1,4 +1,5 @@
-# Run sync session, forces source adapter query on every sync request
+include BenchHelpers
+logger.info "Run sync session, forces source adapter query on every sync request"
 
 @datasize = 100
 @expected = Bench.get_test_data(@datasize)
@@ -10,11 +11,9 @@ Bench.config do |config|
   config.iterations  = 5
   config.user_name = "benchuser"
   config.password = "password"
-  config.app_name = "benchapp"
   config.get_test_server
   config.reset_app
-  config.create_user
-  config.set_server_state("test_db_storage:benchapp:#{config.user_name}",@expected)
+  config.set_server_state("test_db_storage:application:#{config.user_name}",@expected)
   config.reset_refresh_time('MockAdapter',0)
 end
 

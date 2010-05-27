@@ -5,8 +5,8 @@ module Rhosync
     VERSION = 3
     
     def initialize(source,client,p_size=nil)
-      raise ArgumentError.new('Missing required attribute client') unless client
-      raise ArgumentError.new('Missing required attribute source') unless source
+      raise ArgumentError.new('Unknown client') unless client
+      raise ArgumentError.new('Unknown source') unless source
       @source,@client,@p_size = source,client,p_size ? p_size.to_i : 500
       @source_sync = SourceSync.new(@source)
     end

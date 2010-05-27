@@ -112,12 +112,16 @@ module Rhosync
             params[:source_name] ? {:source_name => current_source.name} : {:source_name => '*'}) 
         end  
       end
+      
+      def current_client_sync
+        ClientSync.new(current_source,current_client,params[:p_size])
+      end
 
       def catch_all
         begin
           yield
         rescue Exception => e
-          #log e.message + e.backtrace.join("\n")
+          log e.message + e.backtrace.join("\n")
           throw :halt, [500, e.message]
         end
       end
@@ -198,16 +202,14 @@ module Rhosync
     get '/application' do
       catch_all do
         content_type :json
-        cs = ClientSync.new(current_source,current_client,params[:p_size])
-        res = cs.send_cud(params[:token],params[:query]).to_json
+        res = current_client_sync.send_cud(params[:token],params[:query]).to_json
         res
       end
     end
 
     post '/application' do
       catch_all do
-        cs = ClientSync.new(current_source,current_client,params[:p_size]) 
-        cs.receive_cud(params)
+        current_client_sync.receive_cud(params)
         status 200
       end
     end

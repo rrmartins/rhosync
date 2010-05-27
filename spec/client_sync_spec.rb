@@ -5,8 +5,8 @@ describe "ClientSync" do
   it_should_behave_like "SourceAdapterHelper"
   
   it "should raise Argument error if no client or source is provided" do
-    lambda { ClientSync.new(@s,nil,2) }.should raise_error(ArgumentError,'Missing required attribute client')
-    lambda { ClientSync.new(nil,@c,2) }.should raise_error(ArgumentError,'Missing required attribute source')
+    lambda { ClientSync.new(@s,nil,2) }.should raise_error(ArgumentError,'Unknown client')
+    lambda { ClientSync.new(nil,@c,2) }.should raise_error(ArgumentError,'Unknown source')
   end
   
   before(:each) do

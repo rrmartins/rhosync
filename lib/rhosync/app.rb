@@ -31,19 +31,6 @@ module Rhosync
       end
     end
     
-    # TODO: Do we need this anymore?
-    # def delete
-    #   sources.members.each do |source_name|
-    #     Source.load(source_name,{:app_id => self.name,
-    #       :user_id => '*'}).delete
-    #   end
-    #   users.members.each do |user_name|
-    #     User.load(user_name).delete
-    #   end
-    #   ReadState.delete(self.name)
-    #   super
-    # end
-    
     def delegate
       @delegate.nil? ? Object.const_get(camelize(self.name)) : @delegate
     end

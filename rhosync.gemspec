@@ -5,13 +5,13 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rhosync}
-  s.version = "2.0.0.beta7"
+  s.version = "2.0.0.beta8"
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-05-25}
+  s.date = %q{2010-05-26}
   s.default_executable = %q{rhosync}
-  s.description = %q{Rhosync library and related command-line utilities for using Rhosync}
+  s.description = %q{RhoSync Synchronization Framework and related command-line utilities}
   s.email = %q{dev@rhomobile.com}
   s.executables = ["rhosync"]
   s.extra_rdoc_files = [
@@ -31,7 +31,6 @@ Gem::Specification.new do |s|
      "bench/benchapp/settings/settings.yml",
      "bench/benchapp/sources/mock_adapter.rb",
      "bench/benchapp/sources/queue_mock_adapter.rb",
-     "bench/benchapp/vendor/rhosync/lib/rhosync.rb",
      "bench/lib/bench.rb",
      "bench/lib/bench/cli.rb",
      "bench/lib/bench/logging.rb",
@@ -227,8 +226,8 @@ Gem::Specification.new do |s|
   s.homepage = %q{http://rhomobile.com/products/rhosync}
   s.rdoc_options = ["--charset=UTF-8"]
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.3.6}
-  s.summary = %q{Rhosync Server}
+  s.rubygems_version = %q{1.3.7}
+  s.summary = %q{RhoSync Synchronization Framework}
   s.test_files = [
     "spec/api/api_helper.rb",
      "spec/api/create_client_spec.rb",
@@ -293,15 +292,14 @@ Gem::Specification.new do |s|
      "spec/user_spec.rb",
      "examples/simple/application.rb",
      "examples/simple/sources/sample_adapter.rb",
-     "examples/simple/sources/simple_adapter.rb",
-     "examples/simple/vendor/rhosync/lib/rhosync.rb"
+     "examples/simple/sources/simple_adapter.rb"
   ]
 
   if s.respond_to? :specification_version then
     current_version = Gem::Specification::CURRENT_SPECIFICATION_VERSION
     s.specification_version = 3
 
-    if Gem::Version.new(Gem::RubyGemsVersion) >= Gem::Version.new('1.2.0') then
+    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
       s.add_runtime_dependency(%q<json>, ["<= 1.4.2"])
       s.add_runtime_dependency(%q<log4r>, [">= 1.1.7"])
       s.add_runtime_dependency(%q<sqlite3-ruby>, [">= 1.2.5"])
@@ -318,6 +316,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rcov>, [">= 0.9.8"])
       s.add_development_dependency(%q<faker>, [">= 0.3.1"])
       s.add_development_dependency(%q<rack-test>, [">= 0.5.3"])
+      s.add_development_dependency(%q<thor>, [">= 0.13.6"])
     else
       s.add_dependency(%q<json>, ["<= 1.4.2"])
       s.add_dependency(%q<log4r>, [">= 1.1.7"])
@@ -335,6 +334,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<rcov>, [">= 0.9.8"])
       s.add_dependency(%q<faker>, [">= 0.3.1"])
       s.add_dependency(%q<rack-test>, [">= 0.5.3"])
+      s.add_dependency(%q<thor>, [">= 0.13.6"])
     end
   else
     s.add_dependency(%q<json>, ["<= 1.4.2"])
@@ -353,6 +353,7 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<rcov>, [">= 0.9.8"])
     s.add_dependency(%q<faker>, [">= 0.3.1"])
     s.add_dependency(%q<rack-test>, [">= 0.5.3"])
+    s.add_dependency(%q<thor>, [">= 0.13.6"])
   end
 end
 

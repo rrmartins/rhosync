@@ -1,3 +1,6 @@
+== 2.0.0.beta8
+* #3685476 - CGI escape api cookies
+
 == 2.0.0.beta7
 * #3651932 - support redis:* tasks on windows and linux/mac
 * #3663335 - don't need ENV['PWD'] in tasks.rb

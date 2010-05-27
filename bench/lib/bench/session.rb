@@ -40,6 +40,8 @@ module Bench
         logger.error "#{log_prefix} #{e.http_code.to_s} #{e.message}\n"
         raise e
       end
+      @last_result.cookies['rhosync_session'] = 
+        CGI.escape(@last_result.cookies['rhosync_session']) if @last_result.cookies['rhosync_session']
       @cookies = @cookies.merge(@last_result.cookies)
       @last_result
     end

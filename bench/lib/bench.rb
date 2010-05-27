@@ -77,6 +77,7 @@ module Bench
       unless @token
         res = RestClient.post("#{@host}/login", 
           {:login => @admin_login, :password => @admin_password}.to_json, :content_type => :json)
+        res.cookies['rhosync_session'] = CGI.escape(res.cookies['rhosync_session'])
         @token = RestClient.post("#{@host}/api/get_api_token",'',{:cookies => res.cookies})
       end
       @token

@@ -2,10 +2,11 @@ require 'rest_client'
 
 module RhosyncApi
   class << self
-    
+
     def get_token(server,login,password)
-      res = RestClient.post("#{server}/login", 
+      res = RestClient.post("#{server}/login",
           {:login => login, :password => password}.to_json, :content_type => :json)
+      res.cookies['rhosync_session'] = CGI.escape(res.cookies['rhosync_session'])
       RestClient.post("#{server}/api/get_api_token",'',{:cookies => res.cookies})
     end
     

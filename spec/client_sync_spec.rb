@@ -403,6 +403,7 @@ describe "ClientSync" do
     
     it "should create bulk data job if no file exists" do
       set_state('test_db_storage' => @data)
+      Rhosync.blackberry_bulk_sync = true
       ClientSync.bulk_data(:user,@c)
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
       data = BulkData.load(bulk_data_docname(@a.id,@u.id))

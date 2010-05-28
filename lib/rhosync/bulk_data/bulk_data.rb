@@ -13,8 +13,7 @@ module Rhosync
     validates_presence_of :app_id, :user_id, :sources
     
     def completed?
-      if state.to_sym == :completed and 
-        dbfile and File.exist?(dbfile)
+      if state.to_sym == :completed
         return true
       end
       false
@@ -42,6 +41,19 @@ module Rhosync
       File.join('/data',dbfile[Rhosync.data_directory.length..-1])
     end
     
+    def dbfiles_exist?
+      files = [dbfile,dbfile+'.rzip']
+      if Rhosync.blackberry_bulk_sync
+        files << dbfile+'.hsqldb.data'
+        files << dbfile+'.hsqldb.script'
+        files << dbfile+'.hsqldb.properties'
+      end
+      files.each do |file|
+        return false unless File.exist?(file)
+      end
+      true
+    end
+    
     class << self
       def create(fields={})
         fields[:id] = fields[:name]
@@ -54,11 +66,11 @@ module Rhosync
         Resque.enqueue(BulkDataJob,params)
       end
       
-      def get_name(partition,client)
+      def get_name(partition,user_id)
         if partition == :user
-          File.join(client.app_id,client.user_id,client.user_id)
+          File.join(APP_NAME,user_id,user_id)
         else
-          File.join(client.app_id,client.app_id)
+          File.join(APP_NAME,APP_NAME)
         end
       end
       

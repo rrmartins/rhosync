@@ -170,11 +170,17 @@ module Rhosync
       end
       
       def bulk_data(partition,client)
-        name = BulkData.get_name(partition,client)
+        name = BulkData.get_name(partition,client.user_id)
         data = BulkData.load(name)
+        
         sources = client.app.partition_sources(partition,client.user_id)
-        if (data.nil? or (data.completed? and !File.exist?(data.dbfile)) or 
-          (data.completed? and data.refresh_time <= Time.now.to_i)) and sources.length > 0 
+        return {:result => :nop} if sources.length <= 0
+        
+        do_bd_sync = data.nil?
+        do_bd_sync = (data.completed? and 
+            (data.refresh_time <= Time.now.to_i or !data.dbfiles_exist?)) unless do_bd_sync
+               
+        if do_bd_sync  
           data.delete if data
           data = BulkData.create(:name => name,
             :app_id => client.app_id,
@@ -183,13 +189,12 @@ module Rhosync
             :refresh_time => Time.now.to_i + Rhosync.bulk_sync_poll_interval)
           BulkData.enqueue("data_name" => name)
         end
-        if data and data.completed? 
+        
+        if data and data.completed? and data.dbfiles_exist?
           client.update_clientdoc(sources)
           {:result => :url, :url => data.url}
         elsif data
           {:result => :wait}
-        else
-          {:result => :nop}
         end
       end
     end

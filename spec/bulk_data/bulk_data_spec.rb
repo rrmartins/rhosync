@@ -28,6 +28,20 @@ describe "BulkData" do
     data.completed?.should == false
   end
   
+  it "should expire_bulk_data from a source adapter" do
+    adapter = SourceSync.new(@s).adapter
+    time = Time.now.to_i + 10000
+    data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id),
+      :state => :inprogress,
+      :app_id => @a.id,
+      :user_id => @u.id,
+      :sources => [@s_fields[:name]],
+      :refresh_time => time)
+    adapter.expire_bulk_data
+    data = BulkData.load(bulk_data_docname(@a.id,@u.id))
+    data.refresh_time.should <= Time.now.to_i
+  end
+  
   it "should enqueue sqlite db type" do
     BulkData.enqueue
     Resque.peek(:bulk_data).should == {"args"=>[{}], 
@@ -35,11 +49,11 @@ describe "BulkData" do
   end
   
   it "should generate correct bulk data name for user partition" do
-    BulkData.get_name(:user,@c).should == File.join(@a_fields[:name],@u_fields[:login],@u_fields[:login])
+    BulkData.get_name(:user,@c.user_id).should == File.join(@a_fields[:name],@u_fields[:login],@u_fields[:login])
   end
   
   it "should generate correct bulk data name for app partition" do
-    BulkData.get_name(:app,@c).should == 
+    BulkData.get_name(:app,@c.user_id).should == 
       File.join(@a_fields[:name],@a_fields[:name])
   end
   

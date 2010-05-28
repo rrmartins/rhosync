@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new("> 1.3.1") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-05-26}
+  s.date = %q{2010-05-28}
   s.default_executable = %q{rhosync}
   s.description = %q{RhoSync Synchronization Framework and related command-line utilities}
   s.email = %q{dev@rhomobile.com}
@@ -47,6 +47,7 @@ Gem::Specification.new do |s|
      "bench/scripts/cud_script.rb",
      "bench/scripts/helpers.rb",
      "bench/scripts/query_md_script.rb",
+     "bench/scripts/query_only_script.rb",
      "bench/scripts/query_script.rb",
      "bench/spec/bench_spec_helper.rb",
      "bench/spec/logging_spec.rb",

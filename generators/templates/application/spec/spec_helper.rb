@@ -2,7 +2,7 @@ require 'rubygems'
 
 # Set environment to test
 ENV['RHO_ENV'] = 'test'
-ROOT_PATH = ENV['ROOT_PATH']
+ROOT_PATH = File.expand_path(File.join(File.dirname(__FILE__),'..'))
 
 # Try to load vendor-ed rhosync, otherwise load the gem
 begin

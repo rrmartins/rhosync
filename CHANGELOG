@@ -1,6 +1,8 @@
 == 2.0.0.beta9
 * #3565139 - return better error message if client/source is unknown
 * #3616601 - added blob_attribs to bulk data job file
+* #3576126 - added expire_bulk_data source adapter method
+* #3576151 - trigger new bulk data job if any relevant dbfiles are missing
 
 == 2.0.0.beta8
 * #3685476 - CGI escape api cookies

@@ -44,6 +44,16 @@ module Rhosync
       super(id,params)
     end
     
+    def blob_attribs
+      return '' unless self.schema
+      schema = JSON.parse(self.schema)
+      blob_attribs = []
+      schema['property'].each do |property|
+        blob_attribs << property.keys[0] if property.values[0] == 'blob'
+      end
+      blob_attribs.sort.join(',')
+    end
+    
     def update(fields)
       fields = fields.with_indifferent_access # so we can access hash keys as symbols
       self.class.set_defaults(fields)

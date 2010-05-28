@@ -115,7 +115,7 @@ module TestHelpers
   
   def validate_db_by_name(db,s,data)
     db.execute("select source_id,name,sync_priority,partition,
-      sync_type,source_attribs,metadata from sources where name='#{s.name}'").each do |row|
+      sync_type,source_attribs,metadata,blob_attribs from sources where name='#{s.name}'").each do |row|
       return false if row[0] != s.source_id.to_s
       return false if row[1] != s.name
       return false if row[2] != s.priority.to_s
@@ -123,6 +123,7 @@ module TestHelpers
       return false if row[4] != s.sync_type.to_s
       return false if row[5] != (s.schema ? "" : get_attrib_counter(data))
       return false if row[6] != s.get_value(:metadata)
+      return false if row[7] != s.blob_attribs
     end
     data = json_clone(data)
     if s.schema

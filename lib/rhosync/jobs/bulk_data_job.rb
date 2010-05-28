@@ -104,12 +104,12 @@ module Rhosync
     def self.populate_sources_table(db,sources_refs) 
       db.transaction do |database|
         database.prepare("insert into sources
-          (source_id,name,sync_priority,partition,sync_type,source_attribs,metadata) 
-          values (?,?,?,?,?,?,?)") do |stmt|
+          (source_id,name,sync_priority,partition,sync_type,source_attribs,metadata,blob_attribs) 
+          values (?,?,?,?,?,?,?,?)") do |stmt|
           sources_refs.each do |source_name,ref|
             s = ref[:source]
             stmt.execute(s.source_id,s.name,s.priority,s.partition_type,
-              s.sync_type,refs_to_s(ref[:refs]),s.get_value(:metadata))
+              s.sync_type,refs_to_s(ref[:refs]),s.get_value(:metadata),s.blob_attribs)
           end
         end
       end

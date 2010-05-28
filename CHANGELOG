@@ -1,3 +1,7 @@
+== 2.0.0.beta9
+* #3565139 - return better error message if client/source is unknown
+* #3616601 - added blob_attribs to bulk data job file
+
 == 2.0.0.beta8
 * #3685476 - CGI escape api cookies
 

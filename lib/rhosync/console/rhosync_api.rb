@@ -8,7 +8,6 @@ module RhosyncApi
       #           {:login => login, :password => password}.to_json, :content_type => :json)
       # RestClient.post("#{server}/api/get_api_token",'',{:cookies => res.cookies})
       cookie = login(server,login,password)
-      puts "got cookie: #{cookie.inspect}"
       RestClient.post("#{server}/api/get_api_token",'',{:cookies => cookie})
     end
     

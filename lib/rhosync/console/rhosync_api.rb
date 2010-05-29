@@ -4,10 +4,12 @@ module RhosyncApi
   class << self
 
     def get_token(server,login,password)
-      res = RestClient.post("#{server}/login",
-          {:login => login, :password => password}.to_json, :content_type => :json)
-      res.cookies['rhosync_session'] = CGI.escape(res.cookies['rhosync_session'])
-      RestClient.post("#{server}/api/get_api_token",'',{:cookies => res.cookies})
+      # res = RestClient.post("#{server}/login",
+      #           {:login => login, :password => password}.to_json, :content_type => :json)
+      # RestClient.post("#{server}/api/get_api_token",'',{:cookies => res.cookies})
+      cookie = login(server,login,password)
+      puts "got cookie: #{cookie.inspect}"
+      RestClient.post("#{server}/api/get_api_token",'',{:cookies => cookie})
     end
     
     def list_users(server,token)
@@ -100,5 +102,18 @@ module RhosyncApi
         {:api_token => token}.to_json, :content_type => :json).body)
     end
     
+    private
+    
+    # TODO: Kill this code when rest-client properly 
+    # escapes cookie strings on MAC/LINUX AND WINDOWS
+    def login(server,login,password)
+      uri = URI.parse(server)
+      http = Net::HTTP.new(uri.host,uri.port)
+      res,data = http.post( '/login', 
+        {:login => login, :password => password}.to_json, 
+        {'Content-Type' => 'application/json'} )
+      cookie = res.response['set-cookie'].split('; ')[0].split('=')
+      {cookie[0] => cookie[1]}
+    end
   end
 end

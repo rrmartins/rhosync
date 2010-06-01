@@ -1,3 +1,7 @@
+== 2.0.0.beta10
+* #3662891 - adding rhosync:flushdb rake task
+* 
+
 == 2.0.0.beta9
 * #3565139 - return better error message if client/source is unknown
 * #3616601 - added blob_attribs to bulk data job file

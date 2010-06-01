@@ -59,13 +59,13 @@ namespace :rhosync do
   
   task :config do
     $settings = load_settings(File.join('settings','settings.yml'))
-    env = (ENV['RHO_ENV'] || :development).to_sym  
-    uri = URI.parse($settings[env][:syncserver])
+    $env = (ENV['RHO_ENV'] || :development).to_sym  
+    uri = URI.parse($settings[$env][:syncserver])
     $url = "#{uri.scheme}://#{uri.host}"
     $url = "#{$url}:#{uri.port}" if uri.port && uri.port != 80
     $host = uri.host
     $port = uri.port
-    $appname = $settings[env][:syncserver].split('/').last
+    $appname = $settings[$env][:syncserver].split('/').last
     $token_file = File.join(ENV['HOME'],'.rhosync_token')
     $token = File.read($token_file) if File.exist?($token_file)
   end
@@ -186,6 +186,18 @@ namespace :rhosync do
   desc "Launch the web console in a browser - uses :syncserver: in settings.yml"
   task :web => :config do
     windows? ? sh("start #{$url}") : sh("open #{$url}")
+  end
+  
+  desc "Flush data store - WARNING: THIS REMOVES ALL DATA IN RHOSYNC"
+  task :flushdb => :config do
+    puts "*** WARNING: THIS WILL REMOVE ALL DATA FROM YOUR REDIS STORE ***"
+    confirm = ask "Are you sure (please answer yes/no)? "
+    if confirm == 'yes'
+      Redis.new.flushdb
+      puts "Database flushed..."
+    else
+      puts "Aborted..."
+    end
   end
 end
 

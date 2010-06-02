@@ -4,12 +4,12 @@ describe "RhosyncApiGetApiToken" do
   it_should_behave_like "ApiHelper"
   
   it "should get token string" do
-    post "/login", :login => 'admin',:password => ''
+    post "/login", :login => 'rhoadmin',:password => ''
     post "/api/get_api_token"
     last_response.body.should == @api_token
   end
   
-  it "should fail to get token if user is not admin" do
+  it "should fail to get token if user is not rhoadmin" do
     post "/login", :login => @u_fields[:login],:password => 'testpass'
     post "/api/get_api_token"
     last_response.status.should == 422    

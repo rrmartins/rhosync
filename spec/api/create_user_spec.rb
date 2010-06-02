@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__),'api_helper')
 describe "RhosyncApiCreateUser" do
   it_should_behave_like "ApiHelper"
   
-  it "should create user as admin" do
+  it "should create user" do
     params = {:api_token => @api_token,
       :attributes => {:login => 'testuser1', :password => 'testpass1'}}
     post "/api/create_user", params

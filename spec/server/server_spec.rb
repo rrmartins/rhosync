@@ -43,8 +43,8 @@ describe "Server" do
     last_response.should be_ok
   end
   
-  it "should login as admin user" do
-    post "/login", "login" => 'admin', "password" => ''
+  it "should login as rhoadmin user" do
+    post "/login", "login" => 'rhoadmin', "password" => ''
     last_response.should be_ok
   end
   

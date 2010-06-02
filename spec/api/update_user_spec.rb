@@ -7,8 +7,8 @@ describe "RhosyncApiUpdateUser" do
     post "/api/update_user", :api_token => @api_token, 
       :attributes => {:new_password => '123'}
     last_response.should be_ok
-    user = User.authenticate('admin','123')
-    user.login.should == 'admin'
+    user = User.authenticate('rhoadmin','123')
+    user.login.should == 'rhoadmin'
     user.admin.should == 1
   end
   
@@ -23,8 +23,8 @@ describe "RhosyncApiUpdateUser" do
     post "/api/update_user", :api_token => @api_token, 
       :attributes => {:new_password => '123', :login => 'admin1'}
     last_response.should be_ok
-    user = User.authenticate('admin','123')
-    user.login.should == 'admin'
+    user = User.authenticate('rhoadmin','123')
+    user.login.should == 'rhoadmin'
     user.admin.should == 1
     User.is_exist?('admin1').should == false
   end

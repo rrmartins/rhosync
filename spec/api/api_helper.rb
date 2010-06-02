@@ -22,7 +22,7 @@ describe "ApiHelper", :shared => true do
       :run => false,
       :secret => "secure!"
     )
-    @api_token = User.load('admin').token_id
+    @api_token = User.load('rhoadmin').token_id
   end
 
   def app

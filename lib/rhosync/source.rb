@@ -10,6 +10,7 @@ module Rhosync
     field :poll_interval,:integer
     field :partition_type,:string
     field :sync_type,:string
+    field :belongs_to,:string
     field :queue,:string
     field :query_queue,:string
     field :cud_queue,:string
@@ -28,6 +29,7 @@ module Rhosync
       fields[:partition_type] ||= :user
       fields[:poll_interval] ||= 300
       fields[:sync_type] ||= :incremental
+      fields[:belongs_to] = fields[:belongs_to].to_json if fields[:belongs_to]
       fields[:schema] = fields[:schema].to_json if fields[:schema]
     end
         
@@ -48,8 +50,9 @@ module Rhosync
       return '' unless self.schema
       schema = JSON.parse(self.schema)
       blob_attribs = []
-      schema['property'].each do |property|
-        blob_attribs << property.keys[0] if property.values[0] == 'blob'
+      schema['property'].each do |key,value|
+        values = value ? value.split(',') : []
+        blob_attribs << key if values.include?('blob')
       end
       blob_attribs.sort.join(',')
     end

@@ -129,8 +129,8 @@ module TestHelpers
     if s.schema
       schema = JSON.parse(s.schema)
       columns = ['object']
-      schema['property'].each do |column|
-        columns << column.keys[0]
+      schema['property'].each do |key,value|
+        columns << key
       end
       db.execute("select #{columns.join(',')} from #{s.name}") do |row|
         obj = data[row[0]]

@@ -17,6 +17,7 @@ describe "RhosyncApiGetSourceParams" do
       {"name"=>"poll_interval", "value"=>300, "type"=>"integer"}, 
       {"name"=>"partition_type", "value"=>"user", "type"=>"string"}, 
       {"name"=>"sync_type", "value"=>"incremental", "type"=>"string"}, 
+      {"name"=>"belongs_to", "type"=>"string", "value"=>nil},
       {"name"=>"queue", "value"=>nil, "type"=>"string"}, 
       {"name"=>"query_queue", "value"=>nil, "type"=>"string"}, 
       {"name"=>"cud_queue", "value"=>nil, "type"=>"string"},

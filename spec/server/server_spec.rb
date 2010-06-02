@@ -117,17 +117,23 @@ describe "Server" do
     before(:each) do
       do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
       @source_config = {
-        "sources"=> { 
-          "FixedSchemaAdapter"=>
-            {"schema"=>{"property"=>[{"name"=>"string"}, 
-              {"brand"=>"string"}, {"price"=>"string"}, 
-              {"image_url"=>"blob"}], "version"=>"1.0", 
-              "unique_index"=>[{"by_price"=>"price"}], 
-              "index"=>[{"by_name_brand"=>"name,brand"}]}, 
-              "poll_interval"=>300},
-           "SampleAdapter"=>{"poll_interval"=>300}, 
-           "SimpleAdapter"=>{"partition_type"=>"app", 
-             "poll_interval"=>600}}
+        "sources"=>
+        {"FixedSchemaAdapter"=>
+          {"schema"=>
+            {"property"=>
+              {"image_url_cropped"=>"blob,overwrite",
+               "price"=>"string",
+               "brand"=>"string",
+               "name"=>"string",
+               "image_url"=>"blob"},
+             "unique_index"=>{"by_price"=>"price"},
+             "version"=>"1.0",
+             "index"=>{"by_name_brand"=>"name,brand"}},
+           "poll_interval"=>300,
+           "sync_type"=>"incremental",
+           "belongs_to"=>{"brand"=>"Customer"}},
+         "SampleAdapter"=>{"poll_interval"=>300},
+         "SimpleAdapter"=>{"partition_type"=>"app", "poll_interval"=>600}}
       }
     end
     

@@ -59,9 +59,9 @@ module Rhosync
       
       db.transaction do |database|
         # Create a table with columns specified by 'property' array in settings
-        schema['property'].each do |column|
-          create_table << "#{column.keys[0]} varchar default NULL" 
-          columns << column.keys[0]
+        schema['property'].each do |key,value|
+          create_table << "#{key} varchar default NULL" 
+          columns << key
           qm << '?'
         end
         database.execute("CREATE TABLE #{source.name}(
@@ -80,13 +80,13 @@ module Rhosync
         end
         
         # Create indexes for specified columns in settings 'index'
-        schema['index'].each do |index|
-          database.execute("CREATE INDEX #{index.keys[0]} on #{source.name} (#{index.values[0]});")
+        schema['index'].each do |key,value|
+          database.execute("CREATE INDEX #{key} on #{source.name} (#{value});")
         end if schema['index']
         
         # Create unique indexes for specified columns in settings 'unique_index'
-        schema['unique_index'].each do |index|
-          database.execute("CREATE UNIQUE INDEX #{index.keys[0]} on #{source.name} (#{index.values[0]});")
+        schema['unique_index'].each do |key,value|
+          database.execute("CREATE UNIQUE INDEX #{key} on #{source.name} (#{value});")
         end if schema['unique_index']
       end
     

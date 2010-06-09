@@ -147,8 +147,10 @@ module Rhosync
           request.body.rewind
         end      
       rescue JSON::ParserError => jpe
+        log jpe.message + jpe.backtrace.join("\n")
         throw :halt, [500, "Server error while processing client data"]
       rescue Exception => e
+        log e.message + e.backtrace.join("\n")
         throw :halt, [500, "Internal server error"]
       end
       if params[:version] and params[:version].to_i < 3

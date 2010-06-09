@@ -1,45 +1,48 @@
-== 2.0.0.beta10
+## 2.0.0.beta11
+* #3850478 - fix hardcoded hsqldata.jar path
+
+## 2.0.0.beta10
 * #3662891 - adding rhosync:flushdb rake task
 * #3742919 - fixing sources json structure according to http://wiki.rhomobile.com/index.php/Rhom#Source_Configuration_Protocol
 * #3740205 - changed default admin user to 'rhoadmin'
 
-== 2.0.0.beta9
+## 2.0.0.beta9
 * #3565139 - return better error message if client/source is unknown
 * #3616601 - added blob_attribs to bulk data job file
 * #3576126 - added expire_bulk_data source adapter method
 * #3576151 - trigger new bulk data job if any relevant dbfiles are missing
 * #3707791 - fixing ROOT_PATH problem on windows
 
-== 2.0.0.beta8
+## 2.0.0.beta8
 * #3685476 - CGI escape api cookies
 
-== 2.0.0.beta7
+## 2.0.0.beta7
 * #3651932 - support redis:* tasks on windows and linux/mac
 * #3663335 - don't need ENV['PWD'] in tasks.rb
 
-== 2.0.0.beta6
+## 2.0.0.beta6
 * no new changes, rubygems.org upload failed for 2.0.0.beta5
 
-== 2.0.0.beta5
+## 2.0.0.beta5
 * #3628036 - support loading generator from gem
 
-== 2.0.0.beta4
+## 2.0.0.beta4
 * #3316030 - added rspec test framework
 * #3557341 - create new bulk data instance if the file is missing
 * #3415335 - support fixed schema models
 * #3582235 - report error if client-posted json doesn't parse (instead of crashing server)
 
-== 2.0.0.beta3
+## 2.0.0.beta3
 * #3316030 - added source adapter spec helper + infrastructure
 * #3475519 - return exception string on 401 / 500 login errors
 * #3513037 - re-animated bulk sync feature
 * #3511533 - added stash_result source adapter utility - useful for huge datasets
 * #3539092 - added rake rhosync:web task
 
-== 2.0.0.beta2
+## 2.0.0.beta2
 * #3416343 - unify rake tasks to work on windows & Mac OS / *nix
 
-== 2.0.0.beta1
+## 2.0.0.beta1
 * New implementation of RhoSync using redis storage engine
 * Support for modular routes (console & resque frontend optional)
 * Bulk Data synchronization

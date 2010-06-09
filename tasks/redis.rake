@@ -58,7 +58,7 @@ class RedisRunner
   end
 
   def self.stop
-    Redis.new.shutdown
+    Redis.new.shutdown rescue nil
   end
 
 end

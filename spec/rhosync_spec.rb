@@ -41,4 +41,10 @@ describe "Rhosync" do
     Rhosync.bootstrap(get_testapp_path)
     App.load(@test_app_name).sources.members.should == []
   end
+  
+  it "should add associations during bootstrap" do
+    Rhosync.bootstrap(get_testapp_path)
+    s = Source.load('SampleAdapter',{:app_id => @test_app_name,:user_id => '*'})
+    s.has_many.should == "FixedSchemaAdapter,brand"
+  end
 end

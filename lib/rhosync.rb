@@ -100,6 +100,8 @@ module Rhosync
         # load ruby file for source adapter to re-load class
         load under_score(source_name+'.rb')
       end
+      # Create associations for all sources
+      Source.update_associations(app.sources.members)
     end
   end
   

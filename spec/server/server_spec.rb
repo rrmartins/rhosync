@@ -131,7 +131,7 @@ describe "Server" do
              "index"=>{"by_name_brand"=>"name,brand"}},
            "poll_interval"=>300,
            "sync_type"=>"incremental",
-           "belongs_to"=>{"brand"=>"Customer"}},
+           "belongs_to"=>{"brand"=>"SampleAdapter"}},
          "SampleAdapter"=>{"poll_interval"=>300},
          "SimpleAdapter"=>{"partition_type"=>"app", "poll_interval"=>600}}
       }

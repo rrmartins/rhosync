@@ -11,6 +11,7 @@ module Rhosync
     field :partition_type,:string
     field :sync_type,:string
     field :belongs_to,:string
+    field :has_many,:string
     field :queue,:string
     field :query_queue,:string
     field :cud_queue,:string
@@ -44,6 +45,22 @@ module Rhosync
     def self.load(id,params)
       validate_attributes(params)
       super(id,params)
+    end
+    
+    def self.update_associations(sources)
+      params = {:app_id => APP_NAME,:user_id => '*'}
+      sources.each { |source| Source.load(source, params).has_many = nil }
+      sources.each do |source|
+        s = Source.load(source, params)
+        if s.belongs_to
+          belongs_to = JSON.parse(s.belongs_to)
+          belongs_to.each do |attrib,model|
+            owner = Source.load(model, params)
+            owner.has_many = owner.has_many.length > 0 ? owner.has_many+',' : ''
+            owner.has_many += [source,attrib].join(',')
+          end
+        end
+      end
     end
     
     def blob_attribs
@@ -118,7 +135,7 @@ module Rhosync
       end
       yield client_id,params if need_refresh
     end
-    
+        
     private
     def self.validate_attributes(params)
       raise ArgumentError.new('Missing required attribute user_id') unless params[:user_id]

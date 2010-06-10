@@ -18,6 +18,7 @@ describe "RhosyncApiGetSourceParams" do
       {"name"=>"partition_type", "value"=>"user", "type"=>"string"}, 
       {"name"=>"sync_type", "value"=>"incremental", "type"=>"string"}, 
       {"name"=>"belongs_to", "type"=>"string", "value"=>nil},
+      {"name"=>"has_many", "type"=>"string", "value"=>"FixedSchemaAdapter,brand"},
       {"name"=>"queue", "value"=>nil, "type"=>"string"}, 
       {"name"=>"query_queue", "value"=>nil, "type"=>"string"}, 
       {"name"=>"cud_queue", "value"=>nil, "type"=>"string"},

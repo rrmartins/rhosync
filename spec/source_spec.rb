@@ -19,7 +19,7 @@ describe "Source" do
     @s.sync_type.should == :incremental
     @s.partition_type.should == :user
     @s.poll_interval.should == 300
-
+  
     @s1 = Source.load(@s.id,@s_params)
     @s1.name.should == @s_fields[:name]
     @s1.url.should == @s_fields[:url]
@@ -73,5 +73,11 @@ describe "Source" do
     s.queue.should == 'default'
     s.query_queue.should == 'query'
     s.cud_queue.should == 'cud'
+  end
+  
+  it "should add associations based on belongs_to field for a source" do
+    Source.update_associations([@s.name,@s1.name])
+    s = Source.load(@s.name,{:app_id => @a.id,:user_id => '*'})
+    s.has_many.should == "#{@s1.name},brand"
   end
 end

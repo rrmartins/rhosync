@@ -1,3 +1,7 @@
+## 2.0.0.beta12
+* #3851464 - log every error in client post parsing
+* #3795105 - store associations in sources table for bulk data
+
 ## 2.0.0.beta11
 * #3850478 - fix hardcoded hsqldata.jar path
 

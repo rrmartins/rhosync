@@ -128,7 +128,6 @@ Gem::Specification.new do |s|
      "lib/rhosync/credential.rb",
      "lib/rhosync/document.rb",
      "lib/rhosync/generator.rb",
-     "lib/rhosync/indifferent_access.rb",
      "lib/rhosync/jobs/bulk_data_job.rb",
      "lib/rhosync/jobs/ping_job.rb",
      "lib/rhosync/jobs/source_job.rb",
@@ -139,6 +138,7 @@ Gem::Specification.new do |s|
      "lib/rhosync/ping/blackberry.rb",
      "lib/rhosync/ping/iphone.rb",
      "lib/rhosync/read_state.rb",
+     "lib/rhosync/rho_indifferent_access.rb",
      "lib/rhosync/server.rb",
      "lib/rhosync/server/views/index.erb",
      "lib/rhosync/source.rb",
@@ -301,7 +301,7 @@ Gem::Specification.new do |s|
     s.specification_version = 3
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<json>, [">= 1.1.9"])
+      s.add_runtime_dependency(%q<json>, ["~> 1.4.2"])
       s.add_runtime_dependency(%q<log4r>, [">= 1.1.7"])
       s.add_runtime_dependency(%q<sqlite3-ruby>, [">= 1.2.5"])
       s.add_runtime_dependency(%q<rubyzip>, [">= 0.9.4"])
@@ -319,7 +319,7 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<rack-test>, [">= 0.5.3"])
       s.add_development_dependency(%q<thor>, [">= 0.13.6"])
     else
-      s.add_dependency(%q<json>, [">= 1.1.9"])
+      s.add_dependency(%q<json>, ["~> 1.4.2"])
       s.add_dependency(%q<log4r>, [">= 1.1.7"])
       s.add_dependency(%q<sqlite3-ruby>, [">= 1.2.5"])
       s.add_dependency(%q<rubyzip>, [">= 0.9.4"])
@@ -338,7 +338,7 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<thor>, [">= 0.13.6"])
     end
   else
-    s.add_dependency(%q<json>, [">= 1.1.9"])
+    s.add_dependency(%q<json>, ["~> 1.4.2"])
     s.add_dependency(%q<log4r>, [">= 1.1.7"])
     s.add_dependency(%q<sqlite3-ruby>, [">= 1.2.5"])
     s.add_dependency(%q<rubyzip>, [">= 0.9.4"])

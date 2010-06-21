@@ -1,3 +1,6 @@
+## 2.0.0.beta13
+* #3417862 - namespacing issue with HashWithIndifferentAccess
+
 ## 2.0.0.beta12
 * #3851464 - log every error in client post parsing
 * #3795105 - store associations in sources table for bulk data

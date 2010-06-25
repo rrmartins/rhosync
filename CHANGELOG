@@ -1,3 +1,9 @@
+## 2.0.0.rc2
+* #4040573 - sqlite3-ruby v1.3.0 breaks bulk data tests, require ~>1.2.5 for now
+
+## 2.0.0.rc1
+* dupe tag of 2.0.0.beta13
+
 ## 2.0.0.beta13
 * #3417862 - namespacing issue with HashWithIndifferentAccess
 

@@ -142,9 +142,9 @@ namespace :redis do
     	
     	FileUtils.rm_f $redis_zip
     else
-      sh 'rm -rf /tmp/redis/' if File.exists?("#{RedisRunner.redisdir}/.svn")
-      sh 'git clone git://github.com/antirez/redis.git /tmp/redis' unless File.exists?(RedisRunner.redisdir)
-      sh "cd #{RedisRunner.redisdir} && git pull" if File.exists?("#{RedisRunner.redisdir}/.git")
+      sh 'rm -rf /tmp/redis/' if File.exists?("#{RedisRunner.redisdir}")
+      sh 'git clone git://github.com/antirez/redis.git /tmp/redis -n'
+      sh "cd #{RedisRunner.redisdir} && git reset --hard && git checkout v1.3.12"
     end
   end
 

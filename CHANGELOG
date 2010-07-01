@@ -1,4 +1,8 @@
-## 2.0.0.rc2
+## 2.0.1
+* #4124559 - rake redis:install fails due to redis build changes, require 1.3.12 for now
+* #4094373 - default task is now rhosync:spec
+
+## 2.0.0.rc2, 2.0.0
 * #4040573 - sqlite3-ruby v1.3.0 breaks bulk data tests, require ~>1.2.5 for now
 
 ## 2.0.0.rc1

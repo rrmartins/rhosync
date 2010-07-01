@@ -201,4 +201,6 @@ namespace :rhosync do
   end
 end
 
+task :default => ['rhosync:spec']
+
 load File.join(File.dirname(__FILE__),'..','..','tasks','redis.rake')

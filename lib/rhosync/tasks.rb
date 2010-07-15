@@ -80,7 +80,13 @@ namespace :rhosync do
   
   desc "Reset the rhosync database (you will need to run rhosync:get_token afterwards)"
   task :reset => :config do
-    RhosyncApi.reset($url,$token)
+    confirm = ask " Are you sure? Resetting will remove all data!\n It will also return an error code to all\n existing devices when they connect! (yes/no): "
+    if confirm == 'yes'
+      RhosyncApi.reset($url,$token) 
+      puts "Database reset."
+    else
+      puts "Cancelling."
+    end
   end
   
   desc "Fetches current api token from rhosync"

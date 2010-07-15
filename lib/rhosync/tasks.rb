@@ -91,9 +91,23 @@ namespace :rhosync do
   
   desc "Fetches current api token from rhosync"
   task :get_token => :config do
+    password = ''
     login = ask "admin login: "
-    password = ask "admin password: "
-    $token = RhosyncApi.get_token($url,login,password)
+    begin
+      system "stty -echo"
+      password = ask "\nadmin password: "
+      system "stty echo"
+    rescue NoMethodError, Interrupt
+      system "stty echo"
+      exit
+    end
+    puts ''
+    begin
+      $token = RhosyncApi.get_token($url,login,password)
+    rescue
+      puts "Login failed."
+      exit
+    end
     File.open($token_file,'w') {|f| f.write $token}
     puts "Token is saved in: #{$token_file}"
   end
@@ -106,8 +120,17 @@ namespace :rhosync do
   
   desc "Creates and subscribes user for application in rhosync"
   task :create_user => :config do
+    password = ''
     login = ask "new user login: "
-    password = ask "new user password: "
+    begin
+      system "stty -echo"
+      password = ask "\nnew user password: "
+      system "stty echo"
+    rescue NoMethodError, Interrupt
+      system "stty echo"
+      exit
+    end
+    puts ''
     RhosyncApi.create_user($url,$token,login,password)
   end
   
@@ -124,14 +147,26 @@ namespace :rhosync do
     RhosyncApi.delete_client($url,$token,user_id,device_id)
   end
   
-  # desc "Updates an existing user in rhosync"
-  # task :update_user => :config do
-  #   login = ask "login: "
-  #   password = ask "password: "
-  #   new_password = ask "new password: "
-  #   post("/api/update_user", {:app_name => $appname, :api_token => $token,
-  #     :login => login, :password => password, :attributes => {:new_password => new_password}})
-  # end
+  desc "Sets the admin password"
+  task :set_admin_password => :get_token do
+    new_pass,new_pass_confirm = '',''
+    begin
+      system "stty -echo"
+      new_pass = ask "\nnew admin password: "
+      new_pass_confirm = ask "\nconfirm new admin password: "
+      system "stty echo"
+    rescue NoMethodError, Interrupt
+      system "stty echo"
+      exit
+    end
+    if new_pass == new_pass_confirm
+      puts ""
+      post("/api/update_user", {:app_name => $appname, :api_token => $token,
+        :attributes => {:new_password => new_pass}})
+    else
+      puts "\nNew password and confirm didn't match."
+    end
+  end
   
   desc "Reset source refresh time"
   task :reset_refresh => :config do

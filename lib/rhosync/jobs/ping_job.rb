@@ -10,9 +10,13 @@ module Rhosync
       user.clients.members.each do |client_id|
         client = Client.load(client_id,{:source_name => '*'})
         params.merge!('device_port' => client.device_port,
-          'device_pin' => client.device_pin)        
-        klass = Object.const_get(camelize(client.device_type.downcase))
-        klass.ping(params) if klass
+          'device_pin' => client.device_pin)   
+        if client.device_type and client.device_type.size > 0
+          klass = Object.const_get(camelize(client.device_type.downcase))
+          klass.ping(params) if klass
+        else
+          log "Skipping ping for non-registered client_id '#{client_id}'..."
+        end
       end
     end
   end

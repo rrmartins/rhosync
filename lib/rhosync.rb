@@ -1,3 +1,5 @@
+# TODO: Support redis 2.x
+gem 'redis', '~>1.0.7'
 require 'redis'
 require 'redis/distributed'
 require 'json'

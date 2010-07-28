@@ -1,5 +1,5 @@
+gem 'redis', '~>1.0.7'
 require 'yaml'
-
 $:.unshift File.join(File.dirname(__FILE__),'lib')
 require 'rhosync'
 

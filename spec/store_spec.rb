@@ -1,7 +1,8 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
 
 describe "Store" do
-  
+    
+  it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
   describe "store methods" do
@@ -10,12 +11,10 @@ describe "Store" do
     end
     
     it "should set redis connection" do
-      begin
-        Store.db = 'localhost:5555'
-        Store.db.server.should == 'localhost:5555'
-      ensure
-        Store.db = ''
-      end
+      Store.db = nil
+      Store.db = 'localhost:6379'
+      Store.db.client.host.should == 'localhost'
+      Store.db.client.port.should == 6379
     end
     
     it "should create default redis connection" do
@@ -23,10 +22,12 @@ describe "Store" do
       Store.db.class.name.should match(/Redis/)
     end
     
-    it "should create Redis::Distributed if redis array is provided" do
-      Store.db = ['localhost:5555','localhost:5556']
-      Store.db.class.should == Redis::Distributed
-      Store.db = ''
+    it "should create redis connection based on ENV" do
+      ENV[REDIS_URL] = 'redis://localhost:6379'
+      Redis.should_receive(:connect).with(:url => 'redis://localhost:6379').and_return { Redis.new }
+      Store.db = nil
+      Store.db.should_not == nil
+      ENV.delete(REDIS_URL)
     end
     
     it "should add simple data to new set" do
@@ -39,7 +40,7 @@ describe "Store" do
       Store.put_data(@s.docname(:md),@data).should == true
       Store.get_data(@s.docname(:md),Array).sort.should == @data
     end
-  
+      
     it "should replace simple data to existing set" do
       new_data,new_data['3'] = {},{'name' => 'Droid','brand' => 'Google'}
       Store.put_data(@s.docname(:md),@data).should == true
@@ -71,7 +72,7 @@ describe "Store" do
       Store.get_data(@c.docname(:cd)).should == @data1
       Store.get_diff_data(@s.docname(:md),@c.docname(:cd)).should == [expected,1]
     end
-  
+      
     it "should return attributes modified and missed in doc2" do
       Store.put_data(@s.docname(:md),@data).should == true
       Store.get_data(@s.docname(:md)).should == @data
@@ -84,7 +85,7 @@ describe "Store" do
       Store.get_data(@c.docname(:cd)).should == @data1
       Store.get_diff_data(@c.docname(:cd),@s.docname(:md)).should == [expected,2]
     end  
-  
+      
     it "should ignore reserved attributes" do
       @newproduct = {
         'name' => 'iPhone',
@@ -116,19 +117,26 @@ describe "Store" do
     it "should lock document" do
       doc = "locked_data"
       m_lock = Store.get_lock(doc)
-      th = Thread.new do 
+      pid = Process.fork do
+        Store.db = Redis.new
         t_lock = Store.get_lock(doc)
         Store.put_data(doc,{'1'=>@product1},true)
         Store.release_lock(doc,t_lock) 
+        Process.exit(0)
       end
       Store.put_data(doc,{'2'=>@product2},true)
       Store.get_data(doc).should == {'2'=>@product2}
-      th.alive?.should == true
       Store.release_lock(doc,m_lock)
-      sleep(2)
+      Process.waitpid(pid)
       m_lock = Store.get_lock(doc)
       Store.get_data(doc).should == {'1'=>@product1,'2'=>@product2}
-      th.alive?.should == false
+    end
+    
+    it "should lock key for timeout" do
+      doc = "locked_data"
+      Store.db.set "#{doc}:lock", Time.now.to_i+3
+      Store.should_receive(:sleep).at_least(:once).with(1).and_return { sleep 1 }
+      m_lock = Store.get_lock(doc,2)
     end
     
     it "should lock document in block" do

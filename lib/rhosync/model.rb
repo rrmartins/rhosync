@@ -378,7 +378,12 @@ module Rhosync
       alias_method :member?, :include?
     
       def members
-        @redis.smembers(@name).map { |v| @marshal.load(v) }
+        members = @redis.smembers(@name)
+        if members
+          members.map { |v| @marshal.load(v) }
+        else 
+          []
+        end
       end
     
       def intersect(*keys)

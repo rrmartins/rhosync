@@ -1,3 +1,7 @@
+## 2.0.4
+* #3624650 - support redis-rb ~>2.0.0
+* #4480303 - support connection to redis uri, if ENV[REDIS_URL] exists
+
 ## 2.0.3
 * #4379293 - don't fail ping job if device type is nil or empty, just skip the device
 

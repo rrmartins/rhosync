@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rhosync}
-  s.version = "2.0.3"
+  s.version = "2.0.4"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-07-21}
+  s.date = %q{2010-07-28}
   s.default_executable = %q{rhosync}
   s.description = %q{RhoSync Synchronization Framework and related command-line utilities}
   s.email = %q{dev@rhomobile.com}
@@ -306,8 +306,8 @@ Gem::Specification.new do |s|
       s.add_runtime_dependency(%q<sqlite3-ruby>, ["~> 1.2.5"])
       s.add_runtime_dependency(%q<rubyzip>, ["~> 0.9.4"])
       s.add_runtime_dependency(%q<uuidtools>, [">= 2.1.1"])
-      s.add_runtime_dependency(%q<redis>, ["~> 1.0.0"])
-      s.add_runtime_dependency(%q<resque>, [">= 1.8.3"])
+      s.add_runtime_dependency(%q<redis>, ["~> 2.0.0"])
+      s.add_runtime_dependency(%q<resque>, [">= 1.9.7"])
       s.add_runtime_dependency(%q<rest-client>, [">= 1.4.2"])
       s.add_runtime_dependency(%q<sinatra>, ["~> 1.0"])
       s.add_runtime_dependency(%q<templater>, ["~> 1.0.0"])
@@ -324,8 +324,8 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<sqlite3-ruby>, ["~> 1.2.5"])
       s.add_dependency(%q<rubyzip>, ["~> 0.9.4"])
       s.add_dependency(%q<uuidtools>, [">= 2.1.1"])
-      s.add_dependency(%q<redis>, ["~> 1.0.0"])
-      s.add_dependency(%q<resque>, [">= 1.8.3"])
+      s.add_dependency(%q<redis>, ["~> 2.0.0"])
+      s.add_dependency(%q<resque>, [">= 1.9.7"])
       s.add_dependency(%q<rest-client>, [">= 1.4.2"])
       s.add_dependency(%q<sinatra>, ["~> 1.0"])
       s.add_dependency(%q<templater>, ["~> 1.0.0"])
@@ -343,8 +343,8 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<sqlite3-ruby>, ["~> 1.2.5"])
     s.add_dependency(%q<rubyzip>, ["~> 0.9.4"])
     s.add_dependency(%q<uuidtools>, [">= 2.1.1"])
-    s.add_dependency(%q<redis>, ["~> 1.0.0"])
-    s.add_dependency(%q<resque>, [">= 1.8.3"])
+    s.add_dependency(%q<redis>, ["~> 2.0.0"])
+    s.add_dependency(%q<resque>, [">= 1.9.7"])
     s.add_dependency(%q<rest-client>, [">= 1.4.2"])
     s.add_dependency(%q<sinatra>, ["~> 1.0"])
     s.add_dependency(%q<templater>, ["~> 1.0.0"])

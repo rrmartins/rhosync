@@ -1,7 +1,4 @@
-# TODO: Support redis 2.x
-gem 'redis', '~>1.0.7'
 require 'redis'
-require 'redis/distributed'
 require 'json'
 require 'base64'
 require 'zip/zip'
@@ -25,6 +22,8 @@ require 'rhosync/rho_indifferent_access'
 require 'rhosync/jobs/source_job'
 require 'rhosync/jobs/ping_job'
 require 'rhosync/bulk_data'
+
+REDIS_URL = 'REDIS' unless defined? REDIS_URL
   
 # Various module utilities for the store
 module Rhosync

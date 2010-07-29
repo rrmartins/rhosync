@@ -1,4 +1,3 @@
-gem 'redis', '~>1.0.7'
 require 'yaml'
 $:.unshift File.join(File.dirname(__FILE__),'lib')
 require 'rhosync'
@@ -68,7 +67,7 @@ begin
     gemspec.add_dependency "sqlite3-ruby", "~>1.2.5"
     gemspec.add_dependency "rubyzip", "~>0.9.4"
     gemspec.add_dependency "uuidtools", ">=2.1.1"
-    gemspec.add_dependency "redis", "~>1.0.0"
+    gemspec.add_dependency "redis", "~>2.0.0"
     gemspec.add_dependency "resque", ">=1.8.3"
     gemspec.add_dependency "rest-client", ">=1.4.2"
     gemspec.add_dependency "sinatra", "~>1.0"

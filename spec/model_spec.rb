@@ -187,6 +187,10 @@ describe Rhosync::Model do
       @x.set_date.diff('x', 'y')[0].should be_kind_of(DateTime)
     end
 
+    it "should handle empty members" do
+      @xRedisMock.stub!(:smembers).and_return(nil)
+      @x.set_date.members.should == []
+    end
   end
   
   context "increment/decrement" do

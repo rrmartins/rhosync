@@ -13,7 +13,7 @@ module Rhosync
       def create(server=nil)
         @@db ||= _get_redis(server)
         raise "Error connecting to Redis store." unless @@db and 
-          (@@db.is_a?(Redis) or @@db.is_a?(Redis::Client) or @@db.is_a?(Redis::Distributed))
+          (@@db.is_a?(Redis) or @@db.is_a?(Redis::Client))
       end
   
       # Adds set with given data, replaces existing set
@@ -24,19 +24,19 @@ module Rhosync
           flash_data(dockey) unless append
           # Inserts a hash or array
           if data.is_a?(Hash)
-            @@db.pipelined do |pipeline|
+            @@db.pipelined do
               data.each do |key,value|
                 value.each do |attrib,value|
                   unless _is_reserved?(attrib,value)
-                    pipeline.sadd(dockey,setelement(key,attrib,value))
+                    @@db.sadd(dockey,setelement(key,attrib,value))
                   end
                 end
               end
             end
           else
-            @@db.pipelined do |pipeline|
+            @@db.pipelined do
               data.each do |value|
-                pipeline.sadd(dockey,value)
+                @@db.sadd(dockey,value)
               end
             end
           end
@@ -61,7 +61,8 @@ module Rhosync
       def get_data(dockey,type=Hash)
         res = type == Hash ? {} : []
         if dockey
-          @@db.smembers(dockey).each do |element|
+          members = @@db.smembers(dockey)
+          members.each do |element|
             if type == Hash
               key,attrib,value = getelement(element)
               res[key] = {} unless res[key]
@@ -69,7 +70,7 @@ module Rhosync
             else
               res << element
             end
-          end
+          end if members
           res
         end
       end
@@ -101,10 +102,10 @@ module Rhosync
       # Deletes data from a given doctype,source,user
       def delete_data(dockey,data={})
         if dockey and data
-          @@db.pipelined do |pipeline|
+          @@db.pipelined do
             data.each do |key,value|
               value.each do |attrib,val|
-                pipeline.srem(dockey,setelement(key,attrib,val))
+                @@db.srem(dockey,setelement(key,attrib,val))
               end
             end
           end
@@ -139,18 +140,19 @@ module Rhosync
     
       def get_lock(dockey,timeout=0)
         lock_key = _lock_key(dockey)
-        current_time = Time.now.to_i
-        if not @@db.setnx(lock_key,current_time+timeout+1)
-          loop do
+        current_time = Time.now.to_i   
+        ts = current_time+timeout+1
+        if not @@db.setnx(lock_key,ts)
+          loop do 
             if @@db.get(lock_key).to_i <= current_time and 
-                @@db.getset(lock_key,current_time+timeout+1).to_i <= current_time
+              @@db.getset(lock_key,ts).to_i <= current_time
               break
             end
             sleep(1)
             current_time = Time.now.to_i
           end
         end
-        current_time+timeout+1
+        return ts
       end
       
       # Due to redis bug #140, setnx always returns true so this doesn't work
@@ -179,12 +181,12 @@ module Rhosync
       
       private
       def _get_redis(server=nil)
-        if server and server.is_a?(String)
+        if ENV[REDIS_URL]
+          Redis.connect(:url => ENV[REDIS_URL])
+        elsif server and server.is_a?(String)
           host,port,db,password = server.split(':')
           Redis.new(:thread_safe => true, :host => host,
             :port => port, :db => db, :password => password)
-        elsif server and server.is_a?(Array)
-          Redis::Distributed.new :hosts => server
         else
           Redis.new(:thread_safe => true)
         end

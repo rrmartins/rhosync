@@ -1,4 +1,4 @@
-Rhosync::Server.api :list_client_docs do |params,user|
+Server.api :list_client_docs do |params,user|
   c = Client.load(params[:client_id],{:source_name => params[:source_id]})
   res = {}
   [:cd,:cd_size,:create,:update,:delete,

@@ -5,7 +5,7 @@ class RhosyncConsole::Server
       session[:login] = params[:login]
       session[:errors] = nil      
       
-      verify_presence_of :server, "Server is not provaided."
+      #verify_presence_of :server, "Server is not provaided."
       verify_presence_of :login, "Login is not provaided."
       
       unless session[:errors]         

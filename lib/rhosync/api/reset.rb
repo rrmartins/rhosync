@@ -1,4 +1,4 @@
-Rhosync::Server.api :reset do |params,user|
+Server.api :reset do |params,user|
   Store.db.flushdb
   app_klass = Object.const_get(camelize(APP_NAME))
   if app_klass.singleton_methods.include?("initializer")

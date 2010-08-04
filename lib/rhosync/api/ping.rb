@@ -1,5 +1,5 @@
-Rhosync::Server.api :ping do |params,user|
-  if params[:async]
+Server.api :ping do |params,user|
+  if params['async']
     PingJob.enqueue(params)
   else
     PingJob.perform(params)

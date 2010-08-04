@@ -20,17 +20,17 @@ describe "Server" do
     Rhosync.bootstrap(get_testapp_path) do |rhosync|
       rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')
     end
-    Server.set( 
+    Rhosync::Server.set( 
       :environment => :test,
       :run => false,
       :secret => "secure!"
     )
-    Server.use Rack::Static, :urls => ["/data"], 
+    Rhosync::Server.use Rack::Static, :urls => ["/data"], 
       :root =>  File.expand_path(File.join(File.dirname(__FILE__),'..','apps','rhotestapp'))
   end
 
   def app
-    @app ||= Server.new
+    @app ||= Rhosync::Server.new
   end
   
   it "should show status page" do
@@ -54,20 +54,20 @@ describe "Server" do
   end
   
   it "should have default session secret" do
-    Server.secret.should == "secure!"
+    Rhosync::Server.secret.should == "secure!"
   end
   
   it "should update session secret to default" do
-    Server.set :secret, "<changeme>"
-    Server.secret.should == "<changeme>"
-    Server.should_receive(:log).any_number_of_times.with(any_args())
+    Rhosync::Server.set :secret, "<changeme>"
+    Rhosync::Server.secret.should == "<changeme>"
+    Rhosync::Server.should_receive(:log).any_number_of_times.with(any_args())
     check_default_secret!("<changeme>")
-    Server.set :secret, "secure!"
+    Rhosync::Server.set :secret, "secure!"
   end
   
   it "should complain about hsqldata.jar missing" do
     Rhosync.vendor_directory = 'missing'
-    Server.should_receive(:log).any_number_of_times.with(any_args())
+    Rhosync::Server.should_receive(:log).any_number_of_times.with(any_args())
     check_hsql_lib!
   end
   

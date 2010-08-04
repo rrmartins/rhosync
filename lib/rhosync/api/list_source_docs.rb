@@ -1,4 +1,4 @@
-Rhosync::Server.api :list_source_docs do |params,user|
+Server.api :list_source_docs do |params,user|
   res = {}
   s = Source.load(params[:source_id], {:app_id => APP_NAME,:user_id => params[:user_id]})
   [:md,:md_size,:md_copy,:errors].each do |doc|

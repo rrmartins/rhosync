@@ -23,7 +23,7 @@ describe "Protocol" do
     Rhosync.bootstrap(get_testapp_path) do |rhosync|
       rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')
     end
-    Server.set( 
+    Rhosync::Server.set( 
       :environment => :test,
       :run => false,
       :secret => "secure!"
@@ -37,7 +37,7 @@ describe "Protocol" do
   end
   
   def app
-    @app ||= Server.new
+    @app ||= Rhosync::Server.new
   end
   
   after(:each) do

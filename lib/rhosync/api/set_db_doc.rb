@@ -1,4 +1,4 @@
-Rhosync::Server.api :set_db_doc do |params,user|
+Server.api :set_db_doc do |params,user|
   if params[:data_type] and params[:data_type] == 'string'
     Store.put_value(params[:doc],params[:data])
   else

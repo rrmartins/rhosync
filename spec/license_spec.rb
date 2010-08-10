@@ -51,6 +51,7 @@ describe "License" do
     license.licensee.should == 'Rhohub'
     license.seats.should == 5
     license.issued.should == 'Tue Aug 10 16:14:24 -0700 2010'
+    ENV.delete('RHOSYNC_LICENSE')
   end
 
 end

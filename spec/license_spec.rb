@@ -44,5 +44,13 @@ describe "License" do
     license.check_and_use_seat
     license.available.should == 9
   end
+  
+  it "should use RHOSYNC_LICENSE env var" do
+    ENV['RHOSYNC_LICENSE'] = 'b749cbe6e029400e688360468624388e2cb7f6a1e72c91d4686a1b8c9d37b72c3e1872ec9f369d481220e10759c18e16'
+    license = License.new
+    license.licensee.should == 'Rhohub'
+    license.seats.should == 5
+    license.issued.should == 'Tue Aug 10 16:14:24 -0700 2010'
+  end
 
 end

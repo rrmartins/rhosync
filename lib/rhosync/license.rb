@@ -15,7 +15,11 @@ module Rhosync
     def initialize
       begin
         settings = Rhosync.get_config(Rhosync.base_directory)[Rhosync.environment]
-        @license = IO.read(File.join(Rhosync.base_directory,settings[:licensefile])).strip
+        if ENV['RHOSYNC_LICENSE']
+          @license = ENV['RHOSYNC_LICENSE']
+        else
+          @license = IO.read(File.join(Rhosync.base_directory,settings[:licensefile])).strip
+        end
         _decrypt
       rescue Exception => e
         #puts e.backtrace.join('\n')

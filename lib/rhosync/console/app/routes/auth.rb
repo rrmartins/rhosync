@@ -1,15 +1,17 @@
 class RhosyncConsole::Server
   post '/login' do
     begin
-      session[:server] = params[:server]
-      session[:login] = params[:login]
       session[:errors] = nil      
+      session[:login] = params[:login]
+      session[:connect] = params[:connect]    
+      session[:server_url] = params[:server] 
+      session[:server] = params[:connect] == 'direct' ? nil : params[:server]
       
       #verify_presence_of :server, "Server is not provaided."
       verify_presence_of :login, "Login is not provaided."
       
       unless session[:errors]         
-        session[:token] = RhosyncApi::get_token(params[:server],params[:login],params[:password])
+        session[:token] = RhosyncApi::get_token(session[:server],params[:login],params[:password])
       end  
     rescue Exception => e
       session[:token] = nil

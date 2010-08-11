@@ -32,12 +32,20 @@
 	<form action="<%=url('login')%>" method='POST'>
 		<table>
 			<tr>
-				<td>Server:</td>
-				<td><input name='server' value='<%=session[:server] || 'http://localhost:9292'%>' size=64/></td>
+				<td>Connect to RhoSync:</td>
+				<td>
+					<input type="radio" name="connect" value="direct" 
+						<%= 'checked' if session[:connect] == 'direct' or session[:connect].nil?%>> Directly</input><br>
+					<input type="radio" name="connect" value="remote" <%= 'checked' if session[:connect] == 'remote'%>> Using REST API</input><br>
+				</td>
+			</tr>	
+			<tr>
+				<td>REST Server address:</td>
+				<td><input name='server' value='<%=session[:server_url] || 'http://localhost:9292'%>' size=64/></td>
 			</tr>
 			<tr>
 				<td>Login:</td>
-				<td><input name='login' value='<%=session[:login] || ''%>'/></td>
+				<td><input name='login' value='<%=session[:login] || 'rhoadmin'%>'/></td>
 			</tr>
 			<tr>
 				<td>Password:</td>

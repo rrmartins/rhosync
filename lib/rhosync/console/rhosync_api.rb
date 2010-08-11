@@ -85,7 +85,7 @@ module RhosyncApi
     
     def list_sources(server,token,partition='all')
       if directcall?(server) and verify_token(token)
-        JSON.parse(Server.list_sources({:partition_type => partition},nil))
+        JSON.parse(Server.list_sources({:partition_type => partition.to_s},nil))
       else  
         JSON.parse(RestClient.post("#{server}/api/list_sources", 
           {:api_token => token, :partition_type => partition}.to_json, :content_type => :json).body)

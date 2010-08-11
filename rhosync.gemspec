@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rhosync}
-  s.version = "2.0.4"
+  s.version = "2.0.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-07-30}
+  s.date = %q{2010-08-10}
   s.default_executable = %q{rhosync}
   s.description = %q{RhoSync Synchronization Framework and related command-line utilities}
   s.email = %q{dev@rhomobile.com}
@@ -168,6 +168,7 @@ Gem::Specification.new do |s|
      "spec/api/push_deletes_spec.rb",
      "spec/api/push_objects_spec.rb",
      "spec/api/reset_spec.rb",
+     "spec/api/rhosync_api_spec.rb",
      "spec/api/set_db_doc_spec.rb",
      "spec/api/set_refresh_time_spec.rb",
      "spec/api/update_user_spec.rb",
@@ -249,6 +250,7 @@ Gem::Specification.new do |s|
      "spec/api/push_deletes_spec.rb",
      "spec/api/push_objects_spec.rb",
      "spec/api/reset_spec.rb",
+     "spec/api/rhosync_api_spec.rb",
      "spec/api/set_db_doc_spec.rb",
      "spec/api/set_refresh_time_spec.rb",
      "spec/api/update_user_spec.rb",

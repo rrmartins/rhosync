@@ -38,7 +38,8 @@ module Rhosync
     end
     
     def url
-      File.join('/data',dbfile[Rhosync.data_directory.length..-1])
+      zippath = dbfile.gsub(Regexp.compile(Regexp.escape(Rhosync.data_directory)), "")
+      File.join('/data',zippath)
     end
     
     def dbfiles_exist?

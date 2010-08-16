@@ -1,7 +1,7 @@
 require 'socket'
 require 'openssl'
 module Rhosync
-  class Iphone
+  class Apple
     def self.ping(params)
       settings = get_config(Rhosync.base_directory)[Rhosync.environment]
       cert_file = File.join(Rhosync.base_directory,settings[:iphonecertfile])
@@ -40,5 +40,13 @@ module Rhosync
   		json = data.to_json
   		"\0\0 #{[params['device_pin'].delete(' ')].pack('H*')}\0#{json.length.chr}#{json}"
   	end
+  end
+  
+  # Deprecated - use Apple instead
+  class Iphone < Apple    
+    def self.ping(params)
+      log "DEPRECATION WARNING: 'iphone' is a deprecated device_type, use 'apple' instead"
+      super(params)
+    end
   end
 end

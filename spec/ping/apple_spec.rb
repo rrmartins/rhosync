@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
 
-describe "Ping Iphone" do
+describe "Ping Apple" do
   it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
@@ -29,7 +29,14 @@ describe "Ping Iphone" do
   end
   
   # TODO: This should really test SSLSocket.write
-  it "should ping iphone" do
+  it "should ping apple" do
+    Apple.ping(@params)
+  end
+  
+  it "should log deprecation on iphone ping" do
+    Iphone.should_receive(
+      :log
+    ).once.with("DEPRECATION WARNING: 'iphone' is a deprecated device_type, use 'apple' instead")
     Iphone.ping(@params)
   end
   
@@ -37,14 +44,14 @@ describe "Ping Iphone" do
     expected = <<-eos
 \000\000 \253\315\000g{"aps":{"vibrate":"5","badge":5,"sound":"hello.mp3","alert":"hello world"},"do_sync":["SampleAdapter"]}
 eos
-    Iphone.apn_message(@params).should == expected.strip!
+    Apple.apn_message(@params).should == expected.strip!
   end
   
   it "should raise SocketError if socket fails" do
     error = 'socket error'
     @ssl_socket.stub!(:write).and_return { raise SocketError.new(error) }
-    Iphone.should_receive(:log).once.with("Error while sending ping: #{error}")
-    lambda { Iphone.ping(@params) }.should raise_error(SocketError,error)
+    Apple.should_receive(:log).once.with("Error while sending ping: #{error}")
+    lambda { Apple.ping(@params) }.should raise_error(SocketError,error)
   end
   
 end

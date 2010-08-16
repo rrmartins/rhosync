@@ -155,7 +155,7 @@ describe "Server" do
         "device_type" => "iPhone", "device_pin" => 'abcd', "client_id" => @c.id
       last_response.should be_ok
       JSON.parse(last_response.body).should == @source_config
-      @c.device_type.should == 'iPhone'
+      @c.device_type.should == 'Apple'
       @c.device_pin.should == 'abcd'
       @c.id.length.should == 32
     end

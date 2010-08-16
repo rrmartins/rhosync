@@ -13,7 +13,7 @@ module Rhosync
         :app_id => app_id
       }
       c_fields = {
-        :device_type => 'iPhone',
+        :device_type => 'Apple',
         :device_pin => 'abcd',
         :device_port => '3333',
         :user_id => user_id,

@@ -8,7 +8,7 @@ describe "RhosyncApiGetClientParams" do
     res = JSON.parse(last_response.body)
     res.delete_if { |attrib| attrib['name'] == 'rho__id' }
     res.sort{|x,y| x['name']<=>y['name']}.should == [
-      {"name"=>"device_type", "value"=>"iPhone", "type"=>"string"}, 
+      {"name"=>"device_type", "value"=>"Apple", "type"=>"string"}, 
       {"name"=>"device_pin", "value"=>"abcd", "type"=>"string"}, 
       {"name"=>"device_port", "value"=>"3333", "type"=>"string"}, 
       {"name"=>"user_id", "value"=>"testuser", "type"=>"string"}, 

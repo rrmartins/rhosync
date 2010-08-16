@@ -1,2 +1,2 @@
-require 'rhosync/ping/iphone'
+require 'rhosync/ping/apple'
 require 'rhosync/ping/blackberry'

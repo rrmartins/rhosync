@@ -25,7 +25,7 @@ describe "TestMethods" do
     @c.id.size.should == 32
     @c.device_pin.should == 'abcd'
     @c.device_port.should == '3333'
-    @c.device_type.should == 'iPhone'
+    @c.device_type.should == 'Apple'
     @c.user_id.should == 'user1'
     @c.app_id.should == 'application'
   end

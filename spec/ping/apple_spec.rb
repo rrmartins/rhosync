@@ -47,6 +47,14 @@ eos
     Apple.apn_message(@params).should == expected.strip!
   end
   
+  it "should compute apn_message with source array" do
+    @params['sources'] << 'SimpleAdapter'
+    expected = <<-eos
+\000\000 \253\315\000w{"aps":{"vibrate":"5","badge":5,"sound":"hello.mp3","alert":"hello world"},"do_sync":["SampleAdapter","SimpleAdapter"]}
+eos
+    Apple.apn_message(@params).should == expected.strip!
+  end
+  
   it "should raise SocketError if socket fails" do
     error = 'socket error'
     @ssl_socket.stub!(:write).and_return { raise SocketError.new(error) }

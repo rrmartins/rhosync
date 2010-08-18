@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-08-14}
+  s.date = %q{2010-08-18}
   s.default_executable = %q{rhosync}
   s.description = %q{RhoSync Synchronization Framework and related command-line utilities}
   s.email = %q{dev@rhomobile.com}
@@ -135,8 +135,8 @@ Gem::Specification.new do |s|
      "lib/rhosync/lock_ops.rb",
      "lib/rhosync/model.rb",
      "lib/rhosync/ping.rb",
+     "lib/rhosync/ping/apple.rb",
      "lib/rhosync/ping/blackberry.rb",
-     "lib/rhosync/ping/iphone.rb",
      "lib/rhosync/read_state.rb",
      "lib/rhosync/rho_indifferent_access.rb",
      "lib/rhosync/server.rb",
@@ -206,8 +206,8 @@ Gem::Specification.new do |s|
      "spec/perf/bulk_data_perf_spec.rb",
      "spec/perf/perf_spec_helper.rb",
      "spec/perf/store_perf_spec.rb",
+     "spec/ping/apple_spec.rb",
      "spec/ping/blackberry_spec.rb",
-     "spec/ping/iphone_spec.rb",
      "spec/read_state_spec.rb",
      "spec/rhosync_spec.rb",
      "spec/server/server_spec.rb",
@@ -280,8 +280,8 @@ Gem::Specification.new do |s|
      "spec/perf/bulk_data_perf_spec.rb",
      "spec/perf/perf_spec_helper.rb",
      "spec/perf/store_perf_spec.rb",
+     "spec/ping/apple_spec.rb",
      "spec/ping/blackberry_spec.rb",
-     "spec/ping/iphone_spec.rb",
      "spec/read_state_spec.rb",
      "spec/rhosync_spec.rb",
      "spec/server/server_spec.rb",

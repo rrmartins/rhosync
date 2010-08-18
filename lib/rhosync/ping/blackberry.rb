@@ -26,8 +26,9 @@ module Rhosync
     
     def self.pap_message(params)
       data = "do_sync=" + (params['sources'] ? params['sources'].join(',') : "") + "\r\n"
-      data << "show_popup=#{params['message']}\r\n" if params['message']
+      data << "alert=#{params['message']}\r\n" if params['message']
       data << "vibrate=#{params['vibrate']}\r\n" if params['vibrate']
+      data << "sound=#{params['sound']}\r\n" if params['sound']
       post_body = <<-DESC
 --asdlfkjiurwghasf
 Content-Type: application/xml; charset=UTF-8

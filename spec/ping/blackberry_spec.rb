@@ -51,9 +51,9 @@ Content-Type: application/xml; charset=UTF-8
 Content-Type: text/plain
 
 do_sync=SampleAdapter
-show_popup=hello world
+alert=hello world
 vibrate=5
-
+sound=hello.mp3
 --asdlfkjiurwghasf-- 
 PAP
     actual = Blackberry.pap_message(@params).gsub!(/pushID\:\d+/,'pushID:RAND_ID')

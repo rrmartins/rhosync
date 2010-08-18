@@ -1,6 +1,7 @@
 ## 2.0.6
 * #4701421 - dbfile url has junk characters
 * #4731763 - support 'apple' device type, deprecate 'iphone' device type
+* #4763532 - sound was missing from BB pap message
 
 ## 2.0.5
 * #4650808 - use ENV['RHOSYNC_LICENSE'] if it exists

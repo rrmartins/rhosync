@@ -52,7 +52,7 @@ class RhosyncConsole::Server
   end
   
   post '/user/ping' do
-    params[:sources] = params[:sources].split(',')
+    params['sources'] = params['sources'].split(',')
     handle_api_error("Error while pinging") do
       RhosyncApi::ping(session[:server],session[:token],params[:user_id],params)
     end

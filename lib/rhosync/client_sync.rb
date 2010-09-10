@@ -33,11 +33,15 @@ module Rhosync
     end
     
     def search(params)
-      res = []
-      return _resend_search_result if params[:token] and params[:resend]
-      _ack_search(params[:token]) if params[:token]
-      res = _do_search(params[:search]) if params[:search]
-      res
+      if params
+        return _resend_search_result if params[:token] and params[:resend]
+        if params[:token] and !_ack_search(params[:token]) 
+          formatted_result = _format_search_result
+          @client.flash_data('search*')
+          return formatted_result
+        end
+      end
+      _do_search(params)
     end
     
     def build_page
@@ -108,9 +112,20 @@ module Rhosync
       [progress_count,total_count,res]
     end
     
-    # Computes search hash
+    # Computes search result, updates md for source and cd for client with the result
     def compute_search
-      Store.get_diff_data(@client.docname(:cd),@client.docname(:search),@p_size)
+      client_res,diffsize = Store.get_diff_data(@client.docname(:cd),@client.docname(:search),@p_size)
+      @client.put_data(:cd,client_res,true)
+      @client.update_count(:cd_size,client_res.size)
+      @client.put_data(:search_page,client_res)
+      
+      @source.lock(:md) do |s|
+        source_diff,source_diffsize = Store.get_diff_data(s.docname(:md),@client.docname(:cd))
+        s.put_data(:md,source_diff,true)
+        s.update_count(:md_size,source_diff.size)
+      end
+      
+      [client_res,client_res.size]
     end
     
     # Computes deleted objects (down to individual attributes) 
@@ -201,22 +216,32 @@ module Rhosync
     
     private
     def _resend_search_result
-       _format_search_result
+      res = @client.get_data(:search_page)
+       _format_search_result(res,res.size)
     end
     
     def _ack_search(search_token)
-      token = @client.get_value(:search_token)
-      if token == search_token
-        @client.flash_data('search*')      
+      if @client.get_value(:search_token) != search_token
+        @client.flash_data('search*')
+        @client.put_data(:search_errors,
+          {'search-error'=>{'message'=>'Search error - invalid token'}}
+        )
+        return false
       end
+      true
     end
     
-    def _do_search(params)
-      @source_sync.search(@client.id,params)
-      _format_search_result      
+    def _do_search(params={})
+      # call source adapter search unless client is sending token for ack
+      search_params = params[:search] if params
+      @source_sync.search(@client.id,search_params) if params.nil? or !params[:token]
+      res,diffsize = compute_search
+      formatted_res = _format_search_result(res,diffsize)      
+      @client.flash_data('search*') if diffsize == 0
+      formatted_res
     end
     
-    def _format_search_result
+    def _format_search_result(res={},diffsize=nil)
       error = @client.get_data(:search_errors)
       if not error.empty?
         [ {'version'=>VERSION},
@@ -225,7 +250,7 @@ module Rhosync
       else  
         search_token = @client.get_value(:search_token)
         search_token ||= ''
-        res,diffsize = compute_search 
+        #res,diffsize = compute_search 
         return [] if res.empty?
         [ {'version'=>VERSION},
           {'token' => search_token},

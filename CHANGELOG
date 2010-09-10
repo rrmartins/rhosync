@@ -1,3 +1,6 @@
+## 2.0.7
+* #4893692 - fixed infinite search loop
+
 ## 2.0.6
 * #4701421 - dbfile url has junk characters
 * #4731763 - support 'apple' device type, deprecate 'iphone' device type

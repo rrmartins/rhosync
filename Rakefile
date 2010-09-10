@@ -37,7 +37,7 @@ begin
     t.spec_files = FileList[TYPES.values]
     t.spec_opts = SPEC_OPTS
     t.rcov = true
-    t.rcov_opts = ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*']
+    t.rcov_opts = ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*,json/*']
   end
   
 rescue LoadError => e

@@ -1,5 +1,6 @@
 ## 2.0.7
 * #4893692 - fixed infinite search loop
+* search properly handles multiple page results
 
 ## 2.0.6
 * #4701421 - dbfile url has junk characters

@@ -18,6 +18,7 @@ begin
     :api    => 'spec/api/*_spec.rb',
     :bulk   => 'spec/bulk_data/*_spec.rb',
     :jobs   => 'spec/jobs/*_spec.rb',
+    :monitoring => 'spec/monitoring/*_spec.rb',
     :ping   => 'spec/ping/*_spec.rb',
     :doc    => 'spec/doc/*_spec.rb', 
     :generator => 'spec/generator/*_spec.rb',

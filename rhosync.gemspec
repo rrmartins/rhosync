@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rhosync}
-  s.version = "2.0.7"
+  s.version = "2.0.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-09-13}
+  s.date = %q{2010-09-14}
   s.default_executable = %q{rhosync}
   s.description = %q{RhoSync Synchronization Framework and related command-line utilities}
   s.email = %q{dev@rhomobile.com}
@@ -134,6 +134,7 @@ Gem::Specification.new do |s|
      "lib/rhosync/license.rb",
      "lib/rhosync/lock_ops.rb",
      "lib/rhosync/model.rb",
+     "lib/rhosync/monitoring/record.rb",
      "lib/rhosync/ping.rb",
      "lib/rhosync/ping/apple.rb",
      "lib/rhosync/ping/blackberry.rb",
@@ -203,6 +204,7 @@ Gem::Specification.new do |s|
      "spec/jobs/source_job_spec.rb",
      "spec/license_spec.rb",
      "spec/model_spec.rb",
+     "spec/monitoring/record_spec.rb",
      "spec/perf/bulk_data_perf_spec.rb",
      "spec/perf/perf_spec_helper.rb",
      "spec/perf/store_perf_spec.rb",
@@ -277,6 +279,7 @@ Gem::Specification.new do |s|
      "spec/jobs/source_job_spec.rb",
      "spec/license_spec.rb",
      "spec/model_spec.rb",
+     "spec/monitoring/record_spec.rb",
      "spec/perf/bulk_data_perf_spec.rb",
      "spec/perf/perf_spec_helper.rb",
      "spec/perf/store_perf_spec.rb",

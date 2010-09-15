@@ -1,3 +1,6 @@
+## 2.0.8
+* #5185540 - don't try to load licensefile if env var exists
+
 ## 2.0.7
 * #4893692 - fixed infinite search loop
 * search properly handles multiple page results

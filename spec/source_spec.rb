@@ -76,8 +76,10 @@ describe "Source" do
   end
   
   it "should add associations based on belongs_to field for a source" do
-    Source.update_associations([@s.name,@s1.name])
+    @s2 = Source.create({:name => 'SimpleAdapter'}, @s_params)
+    @s2.belongs_to = {'product_id' => 'SampleAdapter'}.to_json
+    Source.update_associations([@s.name,@s1.name, @s2.name])
     s = Source.load(@s.name,{:app_id => @a.id,:user_id => '*'})
-    s.has_many.should == "#{@s1.name},brand"
+    s.has_many.should == "#{@s1.name},brand,#{@s2.name},product_id"
   end
 end

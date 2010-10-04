@@ -8,7 +8,7 @@
     poll_interval: 300
     sync_type: 'incremental'
     belongs_to: 
-      brand: 'SampleAdapter'
+      - brand: 'SampleAdapter'
     schema:
       version: '1.0'
       property:

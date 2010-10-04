@@ -54,10 +54,16 @@ module Rhosync
         s = Source.load(source, params)
         if s.belongs_to
           belongs_to = JSON.parse(s.belongs_to)
-          belongs_to.each do |attrib,model|
-            owner = Source.load(model, params)
-            owner.has_many = owner.has_many.length > 0 ? owner.has_many+',' : ''
-            owner.has_many += [source,attrib].join(',')
+          if belongs_to.is_a?(Array)
+            belongs_to.each do |entry|
+              attrib = entry.keys[0]
+              model = entry[attrib]
+              owner = Source.load(model, params)
+              owner.has_many = owner.has_many.length > 0 ? owner.has_many+',' : ''
+              owner.has_many += [source,attrib].join(',')
+            end
+          else
+            log "WARNING: Incorrect belongs_to format for #{source}, belongs_to should be an array."
           end
         end
       end

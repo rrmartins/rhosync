@@ -77,9 +77,18 @@ describe "Source" do
   
   it "should add associations based on belongs_to field for a source" do
     @s2 = Source.create({:name => 'SimpleAdapter'}, @s_params)
-    @s2.belongs_to = {'product_id' => 'SampleAdapter'}.to_json
+    @s2.belongs_to = [{'product_id' => 'SampleAdapter'}].to_json
     Source.update_associations([@s.name,@s1.name, @s2.name])
     s = Source.load(@s.name,{:app_id => @a.id,:user_id => '*'})
     s.has_many.should == "#{@s1.name},brand,#{@s2.name},product_id"
+  end
+  
+  it "should log warning about incorrect belongs_to format for a source" do
+    @s2 = Source.create({:name => 'SimpleAdapter'}, @s_params)
+    @s2.belongs_to = {'product_id' => 'SampleAdapter'}.to_json
+    Source.should_receive(:log).once.with(
+      "WARNING: Incorrect belongs_to format for SimpleAdapter, belongs_to should be an array."
+    )
+    Source.update_associations([@s.name,@s1.name, @s2.name])
   end
 end

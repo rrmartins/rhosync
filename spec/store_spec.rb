@@ -22,6 +22,11 @@ describe "Store" do
       Store.db.class.name.should match(/Redis/)
     end
     
+    it "should assign redis to existing redis" do
+      Store.db = Redis.new(:timeout => 60)
+      Store.db.client.timeout.should == 60
+    end
+    
     it "should create redis connection based on ENV" do
       ENV[REDIS_URL] = 'redis://localhost:6379'
       Redis.should_receive(:connect).with(:url => 'redis://localhost:6379').and_return { Redis.new }

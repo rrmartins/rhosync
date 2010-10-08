@@ -1,5 +1,7 @@
 ## 2.0.8
 * #5185540 - don't try to load licensefile if env var exists
+* #5246936 - changed settings.yml-belongs_to format to use array instead of hash
+* #5578580 - allow Store.db to accept an existing redis object (useful for overriding redis settings)
 
 ## 2.0.7
 * #4893692 - fixed infinite search loop

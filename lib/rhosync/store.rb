@@ -187,6 +187,8 @@ module Rhosync
           host,port,db,password = server.split(':')
           Redis.new(:thread_safe => true, :host => host,
             :port => port, :db => db, :password => password)
+        elsif server and server.is_a?(Redis)
+          server
         else
           Redis.new(:thread_safe => true)
         end

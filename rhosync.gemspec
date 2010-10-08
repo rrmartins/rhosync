@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-09-14}
+  s.date = %q{2010-10-08}
   s.default_executable = %q{rhosync}
   s.description = %q{RhoSync Synchronization Framework and related command-line utilities}
   s.email = %q{dev@rhomobile.com}

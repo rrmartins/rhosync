@@ -14,7 +14,7 @@ module Rhosync
 
         http = Net::HTTP.new(url.host, url.port)
         http.use_ssl = true
-        http.verify_mode = OpenSSL::SSL::VERIFY_NONE;
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         res = http.request(req)
 
       rescue Exception => error

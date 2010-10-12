@@ -1,8 +1,6 @@
 <h1>Document <%= @dbkey%></h1>
 <%=show_errors%>
-<div class='panel'>
-	<a href='<%= url('/')%>' class='nav_button'>Back</a>
-</div>	
+
 <form action=<%= url('doc/select')%> method='GET'>
 	<table>
 		<tr>

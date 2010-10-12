@@ -1,0 +1,15 @@
+<!-- div, links[]{ :url, :title, :selected }> -->
+
+<div id="right-box_links">
+	<ul class="right-box_links">
+		<% i=1 %>
+		<% links.each do |link| %>
+		<li><a id="link<%=i%>" 
+				<%= 'class="selected"' if link[:selected] %> 
+				onclick="javascript:loadXMLDoc('<%=link[:url]%>','<%= div %>');switch_tab(this.id); this.blur();" 
+				href="javascript:void(0);"><%=link[:title]%></a>
+		</li>
+		<% i = i + 1 %>
+		<% end %>
+	</ul>
+</div>

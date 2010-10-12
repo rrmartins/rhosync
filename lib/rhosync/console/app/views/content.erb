@@ -1,0 +1,14 @@
+<h1><%=@pagetitle%></h1>
+
+
+
+<div id="left" >
+		<div class="boxes" id="main_box">
+		</div>
+</div>
+
+<%= erb(:rightboxlinks, :layout => false, :locals => @locals)%>
+
+<script  type="text/javascript">
+	loadXMLDoc('<%= @initialcontent %>','main_box');
+</script>

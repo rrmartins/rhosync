@@ -1,6 +1,6 @@
 <h1>Device: <%=params[:device_id]%></h1>
 <%=show_errors%>
-<a href="<%=url("user?user_id=#{CGI.escape(params[:user_id])}")%>" class='nav_button'>Back</a>
+<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url("user?user_id=#{CGI.escape(params[:user_id])}")%>','main_box');" class='nav_button'>Back</a>
 <a href='<%=url("device/delete?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(params[:device_id])}")%>' class='nav_button'>
 	Delete device
 </a>

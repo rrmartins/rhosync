@@ -30,18 +30,35 @@ class RhosyncConsole::Server
   end
   
   get '/doc/select' do
-    if params[:dbkey].nil?
-      @dbkey = ''
-      @data = {}
-    else
-      @dbkey = params[:dbkey]
-      @is_string = doc_is_string      
-      handle_api_error("Can't load document") do
-        @data = RhosyncApi::get_db_doc(session[:server],
-          session[:token],params[:dbkey],@is_string ? :string : '')
+    if params[:xhr] or request.xhr?
+      if params[:dbkey].nil?
+        @dbkey = ''
+        @data = {}
+      else
+        @dbkey = params[:dbkey]
+        @is_string = doc_is_string      
+        handle_api_error("Can't load document") do
+          @data = RhosyncApi::get_db_doc(session[:server],
+            session[:token],params[:dbkey],@is_string ? :string : '')
+        end
       end
-    end    
-    erb :select_doc
+      erb :select_doc, :layout => false
+    else
+      @currentpage = "Console"
+      @pagetitle = "Application" #H1 title
+      params[:dbkey] = CGI::escape(params[:dbkey]) if params[:dbkey]
+      @initialcontent = url("/doc/select?dbkey=#{params[:dbkey]}")
+
+      @locals = {
+        :div => "main_box",
+        :links => [ 
+          { :url => url('/homepage'), :title => 'License' },
+          { :url => url('/doc/select'), :selected => true, :title => 'Server Document' },
+          { :url => url('/users'), :title => 'Users' }
+        ]
+      }
+      erb :content
+    end
   end
   
   get '/doc' do

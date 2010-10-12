@@ -8,7 +8,7 @@ class RhosyncConsole::Server
       session[:server] = params[:connect] == 'direct' ? nil : params[:server]
       
       #verify_presence_of :server, "Server is not provaided."
-      verify_presence_of :login, "Login is not provaided."
+      verify_presence_of :login, "Login is not provided."
       
       unless session[:errors]         
         session[:token] = RhosyncApi::get_token(session[:server],params[:login],params[:password])

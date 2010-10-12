@@ -1,19 +1,44 @@
 class RhosyncConsole::Server
+  def render_page(contenturl)
+    @currentpage = "Console"
+    @initialcontent = contenturl
+     @pagetitle = "Application" #H1 title
+     @locals = {
+       :div => "main_box",
+       :links => [ 
+         { :url => url('/homepage'), :title => 'License' },
+         { :url => url('/doc/select'), :title => 'Server Document' },
+         { :url => url('/users'), :selected => true, :title => 'Users' }
+       ]
+     }
+     erb :content
+  end
+  
   get '/users' do
-    @users = []
-    handle_api_error("Can't load list of users") do
-      @users = RhosyncApi::list_users(session[:server],session[:token])
-    end
-    erb :users
+    if params[:xhr] or request.xhr?
+      @users = []
+      handle_api_error("Can't load list of users") do
+        @users = RhosyncApi::list_users(session[:server],session[:token])
+      end
+      erb :users, :layout => false
+      
+    else
+       render_page url("/users")
+     end 
   end
   
   get '/user/new' do
-    erb :newuser
+    if params[:xhr] or request.xhr?
+      erb :newuser, :layout => false
+    else
+      render_page url("/user/new")
+    end 
+      
   end
   
   post '/user/create' do
     session[:errors] = nil
-    verify_presence_of :login, "Login is not provaided."
+    verify_presence_of :login, "Login is not provided."
     unless session[:errors]             
       handle_api_error("Can't create new user") do  
         RhosyncApi::create_user(session[:server],
@@ -24,16 +49,22 @@ class RhosyncConsole::Server
   end
   
   get '/user' do
-    @devices = []
-    handle_api_error("Can't load list of devices") do
-      @devices = RhosyncApi::list_clients(
-        session[:server],session[:token],params[:user_id])
-    end
-    @sources = []
-    handle_api_error("Can't load list of user partition sources") do
-      @sources = RhosyncApi::list_sources(session[:server],session[:token],:user)
-    end
-    erb :user
+    if params[:xhr] or request.xhr?
+    
+      @devices = []
+      handle_api_error("Can't load list of devices") do
+        @devices = RhosyncApi::list_clients(
+          session[:server],session[:token],params[:user_id])
+      end
+      @sources = []
+      handle_api_error("Can't load list of user partition sources") do
+        @sources = RhosyncApi::list_sources(session[:server],session[:token],:user)
+      end
+      erb :user, :layout => false
+    else
+       params[:user_id] = CGI::escape(params[:user_id]) if params[:user_id]
+       render_page url("/user?user_id=#{params[:user_id]}")
+    end     
   end
   
   get '/user/delete' do

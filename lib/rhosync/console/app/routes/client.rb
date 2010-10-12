@@ -17,7 +17,7 @@ class RhosyncConsole::Server
     handle_api_error("Can't load list of sources") do
       @sources = RhosyncApi::list_sources(session[:server],session[:token],:all)
     end
-    erb :client
+    erb :client, :layout => false
   end
   
   get '/device/delete' do

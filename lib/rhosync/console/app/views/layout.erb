@@ -1,12 +1,74 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <title>Rhosync Console</title>
-  <link rel="stylesheet" href="<%=url('main.css')%>" type="text/css" media="screen" /> 
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>Rhosync Console</title>
+	<!--<link rel="stylesheet" href="<%=url('main.css')%>" type="text/css" media="screen" /> -->
+	<link rel="stylesheet" href="<%=url('reset.css')%>" type="text/css" media="screen" /> 
+	<link rel="stylesheet" href="<%=url('home.css')%>" type="text/css" media="screen" /> 
+	<link rel="stylesheet" href="<%=url('style.css')%>" type="text/css" media="screen" /> 
+	<link rel="stylesheet" href="<%=url('ThickBox.css')%>" type="text/css" media="screen" /> 
+    <script type="text/javascript">
+
+          function loadXMLDoc(url,id)
+          {
+			if(url.indexOf('?') != -1) {
+				url = url + "&xhr=true";
+			} else {
+				url = url + "?xhr=true";
+			}
+            if (window.XMLHttpRequest)
+            {// code for IE7+, Firefox, Chrome, Opera, Safari
+              xmlhttp=new XMLHttpRequest();
+
+              xmlhttp.open("GET",url,false);
+              xmlhttp.send(null);
+                      if (xmlhttp.responseText != null)
+              {
+                            element = document.getElementById(id);
+                    if (element != null)
+                            {
+                                    element.innerHTML=xmlhttp.responseText;
+                            }
+                      }
+            }
+          }
+
+		function switch_tab(elem)
+		{
+		    if(document.getElementById('link1') != null)document.getElementById('link1').className = "no_class";
+		    if(document.getElementById('link2') != null)document.getElementById('link2').className = "no_class";
+		    if(document.getElementById('link3') != null)document.getElementById('link3').className = "no_class";
+		    if(document.getElementById('link4') != null)document.getElementById('link4').className = "no_class";
+		    if(document.getElementById('link5') != null)document.getElementById('link5').className = "no_class";
+		    if(document.getElementById('link6') != null)document.getElementById('link6').className = "no_class";
+		    if(document.getElementById('link7') != null)document.getElementById('link7').className = "no_class";
+		    document.getElementById(elem).className = "selected";
+		}
+
+    </script>
+
 </head>
-  <body>
-	<%= yield%>
-  <body>
+<body>
+	<div class="container"> 
+		<div class="wrapper"> 
+			<div class="header"> 
+				<div class="logos"> 
+					<a href="" class="logo_rhomobile">RhoMobile</a> 
+					<a href="" class="logo_rhohub">RhoHub</a> 
+				</div> 
+				<div id="menu"> 
+					<%= erb(:headermenu,:layout => false, :locals => {:currentpage => @currentpage})%>
+				</div>
+				<div class="header_landing"> 
+					<div class="col_1"> 
+						<%= yield%>
+					</div><!--END col_1 --> 
+					<div class="land_separator"></div> 
+				</div><!--END header_landing --> 
+			</div><!--END header -->
+		</div><!--END wrapper -->
+	</div><!-- END container -->
+</body>
 </html>		

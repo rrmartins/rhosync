@@ -1,0 +1,41 @@
+<ul> 
+	<% currentpage = "Console" if currentpage.nil? %>
+	<% if currentpage == "Resque" %>
+		<li id="current"><a href="/resque" class="current">Resque</a></li> 
+	<% else %>
+		<li ><a href="/resque" >Resque</a></li> 
+	<% end %>
+
+	<% if currentpage == "Console" %>
+		<li id="current"><a href="<%=url("")%>" class="current">Console</a></li> 
+	<% else %>
+		<li ><a href="<%=url("")%>" >Console</a></li> 
+	<% end %>
+	
+	<% if currentpage == "Timing" %>
+		<li id="current"><a href="<%=url("timing")%>" class="current">Timing</a></li> 
+	<% else %>
+		<li ><a href="<%=url("timing")%>" class="">Timing</a></li> 
+	<% end %>
+	
+	<% if currentpage == "Storage" %>
+		<li id="current"><a href="/pricing" class="current">Storage</a></li> 
+	<% else %>
+		<li ><a href="/pricing" class="">Storage</a></li> 
+	<% end %>
+
+	<% if currentpage == "Counts" %>
+		<li id="current"><a href="/pricing" class="current">Counts</a></li> 
+	<% else %>
+		<li ><a href="/pricing" class="">Counts</a></li> 
+	<% end %>
+	
+	<li class="separator"> 
+		<img src="/console/images/tabs_separator.png"/> 
+	</li>
+	<% if session[:token] != nil %> 
+		<li><a href="<%=url("logout")%>" class="logout">Logout</a></li>
+	<% else %>
+		<li><a href="<%=url("")%>" class="login">Login</a></li>
+	<% end %>
+</ul>

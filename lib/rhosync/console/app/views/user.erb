@@ -1,9 +1,6 @@
 <h1>User: <%=params[:user_id]%></h1>
 <%=show_errors%>
 <div class="panel">
-	<a href="<%=url('users')%>" class='nav_button'>Back</a>
-</div>
-<div class="panel">
 	<a href='<%=url("user/delete?user_id=#{CGI.escape(params[:user_id])}")%>' class='nav_button'>Delete user</a>
 </div>
 <div class="panel">	
@@ -19,12 +16,12 @@
 
 <h2>Registered Devices</h2>
 
-<a href="<%=url("device/create?user_id=#{CGI.escape(params[:user_id])}")%>" class='nav_button'>Create Device</a>
+<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url("device/create?user_id=#{CGI.escape(params[:user_id])}")%>','');loadXMLDoc('<%=url("user?user_id=#{CGI.escape(params[:user_id])}")%>','main_box');" class='nav_button'>Create Device</a>
 
 <div class="panel">
 [ 	
 <%@devices.each_index do |i|%>
-	<a href="<%=url("device?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(@devices[i])}")%>">
+	<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url("device?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(@devices[i])}")%>','main_box');">
 		<%=i==0?'':','%>"<%=@devices[i]%>"
 	</a>
 <%end%>

@@ -117,9 +117,9 @@ module TestHelpers
     db.execute("select source_id,name,sync_priority,partition,
       sync_type,source_attribs,metadata,blob_attribs,associations
       from sources where name='#{s.name}'").each do |row|
-      return false if row[0] != s.source_id.to_s
+      return false if row[0].to_s != s.source_id.to_s
       return false if row[1] != s.name
-      return false if row[2] != s.priority.to_s
+      return false if row[2].to_s != s.priority.to_s
       return false if row[3] != s.partition_type.to_s
       return false if row[4] != s.sync_type.to_s
       return false if row[5] != (s.schema ? "" : get_attrib_counter(data))
@@ -127,6 +127,7 @@ module TestHelpers
       return false if row[7] != s.blob_attribs
       return false if row[8] != s.has_many
     end
+
     data = json_clone(data)
     if s.schema
       schema = JSON.parse(s.schema)
@@ -145,7 +146,7 @@ module TestHelpers
     else
       db.execute("select * from object_values where source_id=#{s.source_id}").each do |row|
         object = data[row[2]]
-        return false if object.nil? or object[row[1]] != row[3] or row[0] != s.source_id.to_s
+        return false if object.nil? or object[row[1]] != row[3] or row[0].to_s != s.source_id.to_s
         object.delete(row[1])
         data.delete(row[2]) if object.empty?
       end

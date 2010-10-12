@@ -43,4 +43,11 @@ describe "Record" do
     Record.reset('foo')
     Store.db.zrange('stat:foo', 0, -1).should == []
   end
+  
+  it "should reset all metrics" do
+    Record.add('foo')
+    Record.add('bar')
+    Record.reset_all
+    Store.db.keys('stat:*').should == []
+  end
 end

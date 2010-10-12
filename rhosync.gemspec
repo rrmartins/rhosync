@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rhosync}
-  s.version = "2.0.8"
+  s.version = "2.0.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-10-08}
+  s.date = %q{2010-10-11}
   s.default_executable = %q{rhosync}
   s.description = %q{RhoSync Synchronization Framework and related command-line utilities}
   s.email = %q{dev@rhomobile.com}
@@ -135,6 +135,7 @@ Gem::Specification.new do |s|
      "lib/rhosync/lock_ops.rb",
      "lib/rhosync/model.rb",
      "lib/rhosync/ping.rb",
+     "lib/rhosync/ping/android.rb",
      "lib/rhosync/ping/apple.rb",
      "lib/rhosync/ping/blackberry.rb",
      "lib/rhosync/read_state.rb",
@@ -144,6 +145,7 @@ Gem::Specification.new do |s|
      "lib/rhosync/source.rb",
      "lib/rhosync/source_adapter.rb",
      "lib/rhosync/source_sync.rb",
+     "lib/rhosync/stats/middleware.rb",
      "lib/rhosync/stats/record.rb",
      "lib/rhosync/store.rb",
      "lib/rhosync/tasks.rb",
@@ -215,7 +217,9 @@ Gem::Specification.new do |s|
      "spec/source_adapter_spec.rb",
      "spec/source_spec.rb",
      "spec/source_sync_spec.rb",
+     "spec/spec.opts",
      "spec/spec_helper.rb",
+     "spec/stats/middleware_spec.rb",
      "spec/stats/record_spec.rb",
      "spec/store_spec.rb",
      "spec/sync_states_spec.rb",
@@ -291,6 +295,7 @@ Gem::Specification.new do |s|
      "spec/source_spec.rb",
      "spec/source_sync_spec.rb",
      "spec/spec_helper.rb",
+     "spec/stats/middleware_spec.rb",
      "spec/stats/record_spec.rb",
      "spec/store_spec.rb",
      "spec/sync_states_spec.rb",

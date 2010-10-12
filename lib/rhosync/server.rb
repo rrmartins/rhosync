@@ -20,13 +20,9 @@ module Rhosync
     set :views,  "#{libdir}/server/views"
     set :public, "#{libdir}/server/public"
     set :static, true
-    
-    set :secret, '<changeme>' unless defined? Server.secret
-    
-    use Rack::Session::Cookie, :key => 'rhosync_session',
-                               :expire_after => 31536000,
-                               :secret => Server.secret
-                             
+
+    use Rhosync::Stats::Middleware                    
+                                                                                         
     # Setup route and mimetype for bulk data downloads
     # TODO: Figure out why "mime :data, 'application/octet-stream'" doesn't work
     Rack::Mime::MIME_TYPES['.data'] = 'application/octet-stream'   
@@ -129,7 +125,7 @@ module Rhosync
         
     def initialize
       # Whine about default session secret
-      check_default_secret!(Server.secret)
+      check_default_secret!((defined? SESSION_SECRET) ? SESSION_SECRET : '<changeme>')
       super
     end
     

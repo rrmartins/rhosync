@@ -17,15 +17,21 @@ require 'resque/server'
 
 ROOT_PATH = File.expand_path(File.dirname(__FILE__))
 
+SESSION_SECRET = '<changeme>'
+
 # Rhosync server flags
 Rhosync::Server.disable :run
 Rhosync::Server.disable :clean_trace
 Rhosync::Server.enable  :raise_errors
 Rhosync::Server.set     :environment, :development
-Rhosync::Server.set     :secret,      '<changeme>'
 Rhosync::Server.set     :root,        ROOT_PATH
+Rhosync::Server.enable  :stats
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
-
+Rhosync::Server.use     Rack::Session::Cookie, 
+                          :key => 'rhosync_session',
+                          :expire_after => 31536000,
+                          :secret => SESSION_SECRET
+                           
 # Load our rhosync application
 require 'application'
 

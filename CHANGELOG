@@ -1,3 +1,7 @@
+## 2.1.0
+* #5154725 - stats framework
+* #5013521 - new web interface: show statistics & other runtime info
+
 ## 2.0.8
 * #5185540 - don't try to load licensefile if env var exists
 * #5246936 - changed settings.yml-belongs_to format to use array instead of hash

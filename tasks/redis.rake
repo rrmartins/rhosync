@@ -144,7 +144,7 @@ namespace :redis do
     else
       sh 'rm -rf /tmp/redis/' if File.exists?("#{RedisRunner.redisdir}")
       sh 'git clone git://github.com/antirez/redis.git /tmp/redis -n'
-      sh "cd #{RedisRunner.redisdir} && git reset --hard && git checkout v1.3.12"
+      sh "cd #{RedisRunner.redisdir} && git reset --hard && git checkout v2.0.2-stable"
     end
   end
 

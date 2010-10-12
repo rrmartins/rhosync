@@ -16,6 +16,7 @@ module Rhosync
           ts = Time.now.to_i.to_s
           create_sqlite_data_file(bulk_data,ts)
           timer = lap_timer('create_sqlite_data_file',timer)
+          log " bulk_data.dbfile :  #{bulk_data.dbfile}"
           create_hsql_data_file(bulk_data,ts) if Rhosync.blackberry_bulk_sync
           lap_timer('create_hsql_data_file',timer)
           log "finished bulk data process"
@@ -54,13 +55,13 @@ module Rhosync
       data = source.get_data(:md)
       counter = {}
       columns,qm = [],[]
-      create_table = ['object varchar']
+      create_table = ["\"object\" varchar"]
       schema = JSON.parse(source.schema)
       
       db.transaction do |database|
         # Create a table with columns specified by 'property' array in settings
         schema['property'].each do |key,value|
-          create_table << "#{key} varchar default NULL" 
+          create_table << "\"#{key}\" varchar default NULL" 
           columns << key
           qm << '?'
         end
@@ -81,12 +82,24 @@ module Rhosync
         
         # Create indexes for specified columns in settings 'index'
         schema['index'].each do |key,value|
-          database.execute("CREATE INDEX #{key} on #{source.name} (#{value});")
+          val2 = ""
+          value.split(',').each do |col|
+            val2 += ',' if val2.length() > 0
+            val2 += "\"#{col}\""
+          end
+          
+          database.execute("CREATE INDEX #{key} on #{source.name} (#{val2});")
         end if schema['index']
         
         # Create unique indexes for specified columns in settings 'unique_index'
         schema['unique_index'].each do |key,value|
-          database.execute("CREATE UNIQUE INDEX #{key} on #{source.name} (#{value});")
+          val2 = ""
+          value.split(',').each do |col|
+            val2 += ',' if val2.length() > 0
+            val2 += "\"#{col}\""
+          end
+        
+          database.execute("CREATE UNIQUE INDEX #{key} on #{source.name} (#{val2});")
         end if schema['unique_index']
       end
     

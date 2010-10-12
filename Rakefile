@@ -8,8 +8,6 @@ task :spec => 'spec:spec'
 begin
   require 'spec/rake/spectask'
   require 'rcov/rcovtask'
-  
-  SPEC_OPTS = ['-fn', '--color', '-b']
          
   TYPES = { 
     :spec   => 'spec/*_spec.rb',
@@ -18,7 +16,7 @@ begin
     :api    => 'spec/api/*_spec.rb',
     :bulk   => 'spec/bulk_data/*_spec.rb',
     :jobs   => 'spec/jobs/*_spec.rb',
-    :monitoring => 'spec/monitoring/*_spec.rb',
+    :stats => 'spec/stats/*_spec.rb',
     :ping   => 'spec/ping/*_spec.rb',
     :doc    => 'spec/doc/*_spec.rb', 
     :generator => 'spec/generator/*_spec.rb',
@@ -29,14 +27,12 @@ begin
     desc "Run specs in #{files}"
     Spec::Rake::SpecTask.new("spec:#{type}") do |t|
       t.spec_files = FileList[TYPES[type]]
-      t.spec_opts = SPEC_OPTS
     end
   end
 
   desc "Run specs in spec/**/*_spec.rb "
   Spec::Rake::SpecTask.new('spec:all') do |t|
     t.spec_files = FileList[TYPES.values]
-    t.spec_opts = SPEC_OPTS
     t.rcov = true
     t.rcov_opts = ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*,json/*']
   end

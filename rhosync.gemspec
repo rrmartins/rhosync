@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-09-14}
+  s.date = %q{2010-10-08}
   s.default_executable = %q{rhosync}
   s.description = %q{RhoSync Synchronization Framework and related command-line utilities}
   s.email = %q{dev@rhomobile.com}
@@ -134,7 +134,6 @@ Gem::Specification.new do |s|
      "lib/rhosync/license.rb",
      "lib/rhosync/lock_ops.rb",
      "lib/rhosync/model.rb",
-     "lib/rhosync/monitoring/record.rb",
      "lib/rhosync/ping.rb",
      "lib/rhosync/ping/apple.rb",
      "lib/rhosync/ping/blackberry.rb",
@@ -145,6 +144,7 @@ Gem::Specification.new do |s|
      "lib/rhosync/source.rb",
      "lib/rhosync/source_adapter.rb",
      "lib/rhosync/source_sync.rb",
+     "lib/rhosync/stats/record.rb",
      "lib/rhosync/store.rb",
      "lib/rhosync/tasks.rb",
      "lib/rhosync/test_methods.rb",
@@ -204,7 +204,6 @@ Gem::Specification.new do |s|
      "spec/jobs/source_job_spec.rb",
      "spec/license_spec.rb",
      "spec/model_spec.rb",
-     "spec/monitoring/record_spec.rb",
      "spec/perf/bulk_data_perf_spec.rb",
      "spec/perf/perf_spec_helper.rb",
      "spec/perf/store_perf_spec.rb",
@@ -217,6 +216,7 @@ Gem::Specification.new do |s|
      "spec/source_spec.rb",
      "spec/source_sync_spec.rb",
      "spec/spec_helper.rb",
+     "spec/stats/record_spec.rb",
      "spec/store_spec.rb",
      "spec/sync_states_spec.rb",
      "spec/test_methods_spec.rb",
@@ -279,7 +279,6 @@ Gem::Specification.new do |s|
      "spec/jobs/source_job_spec.rb",
      "spec/license_spec.rb",
      "spec/model_spec.rb",
-     "spec/monitoring/record_spec.rb",
      "spec/perf/bulk_data_perf_spec.rb",
      "spec/perf/perf_spec_helper.rb",
      "spec/perf/store_perf_spec.rb",
@@ -292,6 +291,7 @@ Gem::Specification.new do |s|
      "spec/source_spec.rb",
      "spec/source_sync_spec.rb",
      "spec/spec_helper.rb",
+     "spec/stats/record_spec.rb",
      "spec/store_spec.rb",
      "spec/sync_states_spec.rb",
      "spec/test_methods_spec.rb",

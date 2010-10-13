@@ -1,32 +1,61 @@
 class RhosyncConsole::Server
+  def docs_render_page(contenturl)
+    @currentpage = "Console"
+    @initialcontent = contenturl
+     @pagetitle = "Application" #H1 title
+     @locals = {
+       :div => "main_box",
+       :links => [ 
+         { :url => url('/homepage'), :title => 'License' },
+         { :url => url('/doc/select'), :selected => true, :title => 'Server Document' },
+         { :url => url('/users'), :title => 'Users' }
+       ]
+     }
+     erb :content
+  end
+
+  def hash_to_params(inhash)
+    outstring = "?"
+    inhash.each do |k,v|
+      outstring << "#{k}=#{CGI.escape(v)}&"
+    end
+    outstring
+  end
+
   get '/docs' do
-    @src_params = []
-    handle_api_error("Can't load list of source attributes") do
-      @src_params = RhosyncApi::get_source_params(
-        session[:server],session[:token],params[:source_id])
+    if params[:xhr] or request.xhr?
+    
+      @src_params = []
+      handle_api_error("Can't load list of source attributes") do
+        @src_params = RhosyncApi::get_source_params(
+          session[:server],session[:token],params[:source_id])
+      end
+      @docs = []
+      @docs_name = ''
+      @back_href = ''
+      @doc_params = doc_params
+      handle_api_error("Can't load list of the documents") do
+        if params[:device_id]
+          @docs_name = "device #{params[:device_id]}"
+          @back_href = url("device?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(params[:device_id])}") 
+          @docs = RhosyncApi::list_client_docs(session[:server],session[:token],params[:source_id],params[:device_id])
+        else   
+          if params[:user_id]=='*'      
+            @docs_name = "app partition"
+            @back_href = url('/')
+          else
+             @docs_name = "user #{params[:user_id]} partition"
+             @back_href = url("user?user_id=#{CGI.escape(params[:user_id])}")
+          end   
+          @docs = RhosyncApi::list_source_docs(session[:server],
+            session[:token],params[:source_id],params[:user_id])
+        end    
+      end
+      erb :docs, :layout => false
+    else
+      docs_render_page url("/docs" + hash_to_params(params))
+      
     end
-    @docs = []
-    @docs_name = ''
-    @back_href = ''
-    @doc_params = doc_params
-    handle_api_error("Can't load list of the documents") do
-      if params[:device_id]
-        @docs_name = "device #{params[:device_id]}"
-        @back_href = url("device?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(params[:device_id])}") 
-        @docs = RhosyncApi::list_client_docs(session[:server],session[:token],params[:source_id],params[:device_id])
-      else   
-        if params[:user_id]=='*'      
-          @docs_name = "app partition"
-          @back_href = url('/')
-        else
-           @docs_name = "user #{params[:user_id]} partition"
-           @back_href = url("user?user_id=#{CGI.escape(params[:user_id])}")
-        end   
-        @docs = RhosyncApi::list_source_docs(session[:server],
-          session[:token],params[:source_id],params[:user_id])
-      end    
-    end
-    erb :docs
   end
   
   get '/doc/select' do

@@ -21,12 +21,12 @@ module Rhosync
     set :public, "#{libdir}/server/public"
     set :static, true
     
-    set :secret, '<changeme>' unless defined? Server.secret
+    # default secret
+    @@secret = '<changeme>'
     
-    use Rack::Session::Cookie, :key => 'rhosync_session',
-                               :expire_after => 31536000,
-                               :secret => Server.secret
-                             
+    # stats middleware disabled by default
+    @@stats = false
+                                                                                         
     # Setup route and mimetype for bulk data downloads
     # TODO: Figure out why "mime :data, 'application/octet-stream'" doesn't work
     Rack::Mime::MIME_TYPES['.data'] = 'application/octet-stream'   
@@ -126,10 +126,26 @@ module Rhosync
         end
       end
     end
+    
+    # hook into new so we can enable middleware
+    def self.new
+      use Rhosync::Stats::Middleware if @@stats == true
+      use Rack::Session::Cookie, 
+            :key => 'rhosync_session',
+            :expire_after => 31536000,
+            :secret => @@secret     
+      super
+    end
+    
+    def self.set(option, value=self, &block)
+      @@stats = value if option == :stats and (value.is_a?(TrueClass) or value.is_a?(FalseClass))
+      @@secret = value if option == :secret and value.is_a?(String)
+      super
+    end
         
     def initialize
       # Whine about default session secret
-      check_default_secret!(Server.secret)
+      check_default_secret!(@@secret)
       super
     end
     

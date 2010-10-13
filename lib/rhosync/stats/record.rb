@@ -29,14 +29,18 @@ module Rhosync
           sum = value
           if current.is_a?(String)
             current,sum = current.split(',')
-            current = current.to_i
-            sum = sum.to_i+value
+            current = current.to_f
+            sum = sum.to_f+value
           end
           "#{current + 1},#{sum}"
         end
         
         def reset(metric)
           Store.db.del(key(metric))
+        end
+        
+        def reset_all
+          Store.flash_data('stat:*')
         end
       
         # Returns the metric data, uses array indexing

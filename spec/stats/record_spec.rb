@@ -27,7 +27,7 @@ describe "Record" do
       end
       time += 1
     end
-    Store.db.zrange('stat:foo', 0, -1).should == ["2,1:11", "2,5:13"]
+    Store.db.zrange('stat:foo', 0, -1).should == ["2.0,1.0:11", "2.0,5.0:13"]
   end
   
   it "should get range of metric values" do
@@ -42,5 +42,12 @@ describe "Record" do
     Store.db.zrange('stat:foo', 0, -1).should == ["2:13", "2:15", "2:17", "2:19"]
     Record.reset('foo')
     Store.db.zrange('stat:foo', 0, -1).should == []
+  end
+  
+  it "should reset all metrics" do
+    Record.add('foo')
+    Record.add('bar')
+    Record.reset_all
+    Store.db.keys('stat:*').should == []
   end
 end

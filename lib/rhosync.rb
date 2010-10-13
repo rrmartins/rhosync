@@ -22,6 +22,7 @@ require 'rhosync/rho_indifferent_access'
 require 'rhosync/jobs/source_job'
 require 'rhosync/jobs/ping_job'
 require 'rhosync/stats/record'
+require 'rhosync/stats/middleware'
 require 'rhosync/bulk_data'
 
 REDIS_URL = 'REDIS' unless defined? REDIS_URL

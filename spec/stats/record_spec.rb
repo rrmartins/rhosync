@@ -27,7 +27,7 @@ describe "Record" do
       end
       time += 1
     end
-    Store.db.zrange('stat:foo', 0, -1).should == ["2,1:11", "2,5:13"]
+    Store.db.zrange('stat:foo', 0, -1).should == ["2.0,1.0:11", "2.0,5.0:13"]
   end
   
   it "should get range of metric values" do

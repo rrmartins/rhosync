@@ -73,48 +73,45 @@ class RhosyncConsole::Server
       end
       erb :select_doc, :layout => false
     else
-      @currentpage = "Console"
-      @pagetitle = "Application" #H1 title
-      params[:dbkey] = CGI::escape(params[:dbkey]) if params[:dbkey]
-      @initialcontent = url("/doc/select?dbkey=#{params[:dbkey]}")
-
-      @locals = {
-        :div => "main_box",
-        :links => [ 
-          { :url => url('/homepage'), :title => 'License' },
-          { :url => url('/doc/select'), :selected => true, :title => 'Server Document' },
-          { :url => url('/users'), :title => 'Users' }
-        ]
-      }
-      erb :content
+      docs_render_page url("/doc/select" + hash_to_params(params))
     end
   end
   
   get '/doc' do
-    @data = {}
-    @is_string = doc_is_string
-    handle_api_error("Can't load document") do
-      @data = RhosyncApi::get_db_doc(session[:server],
-        session[:token],params[:dbkey],@is_string ? :string : '')
+    if params[:xhr] or request.xhr?
+    
+      @data = {}
+      @is_string = doc_is_string
+      handle_api_error("Can't load document") do
+        @data = RhosyncApi::get_db_doc(session[:server],
+          session[:token],params[:dbkey],@is_string ? :string : '')
+      end
+      @back_params = "source_id=#{CGI.escape(params[:source_id])}&user_id=#{CGI.escape(params[:user_id])}"
+      @back_params += "&device_id=#{CGI.escape(params[:device_id])}" if params[:device_id] 
+      @back_href = url("docs?#{doc_params}")
+      erb :doc, :layout => false
+    else
+      docs_render_page url("/doc" + hash_to_params(params))
     end
-    @back_params = "source_id=#{CGI.escape(params[:source_id])}&user_id=#{CGI.escape(params[:user_id])}"
-    @back_params += "&device_id=#{CGI.escape(params[:device_id])}" if params[:device_id] 
-    @back_href = url("docs?#{doc_params}")
-    erb :doc  
+        
   end 
   
   get '/doc/clear' do
-    is_string = doc_is_string    
-    handle_api_error("Can't clear document") do
-      RhosyncApi::set_db_doc(session[:server],session[:token],params[:dbkey],
-        is_string ? '' : {}, is_string ? :string : '')
+    if params[:xhr] or request.xhr?
+      is_string = doc_is_string    
+      handle_api_error("Can't clear document") do
+        RhosyncApi::set_db_doc(session[:server],session[:token],params[:dbkey],
+          is_string ? '' : {}, is_string ? :string : '')
+      end
+      @result_name = "Clear result"
+      @status = "Successfully cleared: [#{CGI.unescape(params[:dbkey])}]"
+      @back_href = params[:user_id] ?
+        url("doc?#{doc_params}&dbkey=#{CGI.escape(params[:dbkey])}") :
+        url("doc/select?dbkey=#{CGI.escape(params[:dbkey])}")     
+      erb :result, :layout => false
+    else
+       docs_render_page url("/doc/clear" + hash_to_params(params))
     end
-    @result_name = "Clear result"
-    @status = "Successfully cleared: [#{CGI.unescape(params[:dbkey])}]"
-    @back_href = params[:user_id] ?
-      url("doc?#{doc_params}&dbkey=#{CGI.escape(params[:dbkey])}") :
-      url("doc/select?dbkey=#{CGI.escape(params[:dbkey])}")     
-    erb :result
   end
   
   post '/doc/upload' do

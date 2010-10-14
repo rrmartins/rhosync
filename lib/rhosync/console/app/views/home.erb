@@ -15,7 +15,7 @@
 	<%unless @sources.nil? %>
 		[
 		<%@sources.each_index do |i|%>
-			<a href="<%=url("docs?source_id=#{@sources[i]}&user_id=*")%>"><%=i==0?'':','%>"<%=@sources[i]%>"</a>
+			<a href='javascript:void(0);' onclick="loadXMLDoc('<%=url("docs?source_id=#{@sources[i]}&user_id=*")%>','main_box');"><%=i==0?'':','%>"<%=@sources[i]%>"</a>
 		<%end%>
 		]
 	<%end%>	

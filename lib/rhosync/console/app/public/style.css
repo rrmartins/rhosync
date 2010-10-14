@@ -1515,7 +1515,9 @@ hr {
 	color:#454555;
 /*	line-height:3px;*/
 	margin-top:10px;
-	overflow:hidden;
+	overflow-x:hidden;
+	overflow-y:auto;
+	max-height: 350px;
 	padding:15px;
 	width:670px;
 }

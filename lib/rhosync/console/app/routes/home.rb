@@ -1,31 +1,39 @@
 class RhosyncConsole::Server
   get '/' do
-    @currentpage = "Console" #which page in menu
-    if login_required
-      @pagetitle = "Login" #H1 title
-      @initialcontent = url('/loginpage')
-
-      @locals = {
-        :div => "main_box",
-        :links => [ 
-        #  { :url => url('/timing/bydevice'), :selected => true, :title => 'By Device' },
-        #  { :url => url('/timing/bysource'), :title => 'By Source' }
-        ]
-      }
+    if params[:xhr] or request.xhr?
+      if login_required
+        redirect url('/loginpage')
+      else
+        redirect url('/homepage')
+      end
     else
-      @pagetitle = "Application" #H1 title
-      @initialcontent = url('/homepage')
+      @currentpage = "Console" #which page in menu
+      if login_required
+        @pagetitle = "Login" #H1 title
+        @initialcontent = url('/loginpage')
 
-      @locals = {
-        :div => "main_box",
-        :links => [ 
-          { :url => url('/homepage'), :selected => true, :title => 'License' },
-          { :url => url('/doc/select'), :title => 'Server Document' },
-          { :url => url('/users'), :title => 'Users' }
-        ]
-      }
+        @locals = {
+          :div => "main_box",
+          :links => [ 
+          #  { :url => url('/timing/bydevice'), :selected => true, :title => 'By Device' },
+          #  { :url => url('/timing/bysource'), :title => 'By Source' }
+          ]
+        }
+      else
+        @pagetitle = "Application" #H1 title
+        @initialcontent = url('/homepage')
+
+        @locals = {
+          :div => "main_box",
+          :links => [ 
+            { :url => url('/homepage'), :selected => true, :title => 'License' },
+            { :url => url('/doc/select'), :title => 'Server Document' },
+            { :url => url('/users'), :title => 'Users' }
+          ]
+        }
+      end
+      erb :content
     end
-    erb :content
   end
   
   get '/loginpage' do

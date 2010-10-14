@@ -1,7 +1,7 @@
 <h1><%=params[:source_id]%></h1>
 <%=show_errors%>
 <div class='panel'>
-	<a href='<%= @back_href%>' class='nav_button'>Back</a>
+	<a href='javascript:void(0);' onclick="loadXMLDoc('<%= @back_href%>','main_box');" class='nav_button'>Back</a>
 </div>
 <h2>Source attributes</h2>
 <div class='panel'>
@@ -22,7 +22,7 @@
 		<%@docs.each do |name,dbkey|%>
 			<tr>
 				<td>:<%=name%></td>
-				<td><a href='<%=url("doc?dbkey=#{CGI.escape(dbkey)}&#{@doc_params}")%>' class='nav_button'><%=dbkey%></a></td>
+				<td><a href='javascript:void(0);' onclick="loadXMLDoc('<%=url("doc?dbkey=#{CGI.escape(dbkey)}&#{@doc_params}")%>','main_box');" class='nav_button'><%=dbkey%></a></td>
 			</tr>	
 		<%end%>
 	</table>

@@ -23,7 +23,7 @@
 
 [
 <%@sources.each_index do |i|%>
-	<a href="<%=url("docs?source_id=#{@sources[i]}&device_id=#{CGI.escape(params[:device_id])}&user_id=#{CGI.escape(params[:user_id])}")%>">
+	<a href='javascript:void(0);' onclick="loadXMLDoc('<%=url("docs?source_id=#{@sources[i]}&device_id=#{CGI.escape(params[:device_id])}&user_id=#{CGI.escape(params[:user_id])}")%>','main_box');">
 		<%=i==0?'':','%>"<%=@sources[i]%>"
 	</a>
 <%end%>

@@ -46,11 +46,20 @@
 		    if(document.getElementById('link7') != null)document.getElementById('link7').className = "no_class";
 		    document.getElementById(elem).className = "selected";
 		}
-
+		
+		function hide_scrollbar() 
+		{
+			var element = document.getElementById('main_box');
+			var height = element.height;
+			var maxHeight = element.style.maxHeight;
+			if(height < maxHeight) {
+				element.style.overflowY = 'hidden';
+			}
+		}
     </script>
 
 </head>
-<body>
+<body onload="hide_scrollbar();">
 	<div class="container"> 
 		<div class="wrapper"> 
 			<div class="header"> 

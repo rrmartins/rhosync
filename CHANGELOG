@@ -1,6 +1,11 @@
-## 2.1.0
+## 2.0.9
 * #5154725 - stats framework
-* #5013521 - new web interface: show statistics & other runtime info
+* #5013521 - new web interface style
+* #5615901 - fixing hsqldata bulk data file format
+* #5672140 - http request timings middleware
+* #5672148 - source adapter execution timings
+* #5620719 - session secret override didn't work
+* #3713049 - added support for Android Cloud to Device Messaging
 
 ## 2.0.8
 * #5185540 - don't try to load licensefile if env var exists

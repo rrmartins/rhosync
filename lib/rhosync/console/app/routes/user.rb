@@ -75,11 +75,17 @@ class RhosyncConsole::Server
   end
   
   get '/user/ping' do
-    @sources = []
-    handle_api_error("Can't load list of user partition sources") do
-      @sources = RhosyncApi::list_sources(session[:server],session[:token],:all)
+    if params[:xhr] or request.xhr?
+    
+      @sources = []
+      handle_api_error("Can't load list of user partition sources") do
+        @sources = RhosyncApi::list_sources(session[:server],session[:token],:all)
+      end
+      erb :ping, :layout => false
+    else
+      render_page url("/user/ping?user_id=#{CGI.escape(params[:user_id])}")
     end
-    erb :ping
+    
   end
   
   post '/user/ping' do

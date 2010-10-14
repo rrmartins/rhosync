@@ -42,7 +42,7 @@ module Rhosync
   class << self
     attr_accessor :base_directory, :app_directory, :data_directory, 
       :vendor_directory, :blackberry_bulk_sync, :redis, :environment,
-      :log_disabled, :license, :bulk_sync_poll_interval
+      :log_disabled, :license, :bulk_sync_poll_interval, :stats
   end
   
   ### Begin Rhosync setup methods  
@@ -71,6 +71,7 @@ module Rhosync
     Rhosync.blackberry_bulk_sync ||= false
     Rhosync.bulk_sync_poll_interval ||= 3600
     Rhosync.log_disabled ||= false
+    Rhosync.stats ||= false
     Rhosync.license = License.new
     
     check_and_add(File.join(Rhosync.app_directory,'sources'))

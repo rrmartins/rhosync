@@ -16,6 +16,7 @@ describe "Rhosync" do
     Rhosync.blackberry_bulk_sync.should == false
     Rhosync.bulk_sync_poll_interval.should == 3600
     Rhosync.environment.should == :development  
+    Rhosync.stats.should == false
     App.is_exist?(@test_app_name).should be_true
   end
   

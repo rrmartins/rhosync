@@ -19,7 +19,6 @@ module RhosyncConsole
     set :public, RhosyncConsole::root_path("app","public")
     set :static, true    
     use Rack::Session::Cookie
-    use Rhosync::Stats::Middleware
   end
 end
 

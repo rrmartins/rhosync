@@ -35,6 +35,20 @@ module Rhosync
           "#{current + 1},#{sum}"
         end
         
+        def update(metric)
+          if Rhosync.stats
+            start = Time.now.to_f
+            # perform the operations
+            yield
+            finish = Time.now.to_f
+            add(metric, finish - start) do |counter, aggregate|
+              save_average(counter, aggregate)
+            end
+          else
+            yield
+          end
+        end
+        
         def reset(metric)
           Store.db.del(key(metric))
         end

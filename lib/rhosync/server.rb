@@ -129,7 +129,10 @@ module Rhosync
     
     # hook into new so we can enable middleware
     def self.new
-      use Rhosync::Stats::Middleware if @@stats == true
+      if @@stats == true
+        use Rhosync::Stats::Middleware 
+        Rhosync.stats = true
+      end
       use Rack::Session::Cookie, 
             :key => 'rhosync_session',
             :expire_after => 31536000,

@@ -20,13 +20,13 @@ class RhosyncConsole::Server
           ]
         }
       else
-        @pagetitle = "Application" #H1 title
+        @pagetitle = "Rhosync Console" #H1 title
         @initialcontent = url('/homepage')
 
         @locals = {
           :div => "main_box",
           :links => [ 
-            { :url => url('/homepage'), :selected => true, :title => 'License' },
+            { :url => url('/homepage'), :selected => true, :title => 'Info' },
             { :url => url('/doc/select'), :title => 'Server Document' },
             { :url => url('/users'), :title => 'Users' }
           ]

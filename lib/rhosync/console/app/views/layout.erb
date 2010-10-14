@@ -47,19 +47,11 @@
 		    document.getElementById(elem).className = "selected";
 		}
 		
-		function hide_scrollbar() 
-		{
-			var element = document.getElementById('main_box');
-			var height = element.height;
-			var maxHeight = element.style.maxHeight;
-			if(height < maxHeight) {
-				element.style.overflowY = 'hidden';
-			}
-		}
+
     </script>
 
 </head>
-<body onload="hide_scrollbar();">
+<body>
 	<div class="container"> 
 		<div class="wrapper"> 
 			<div class="header"> 
@@ -76,8 +68,20 @@
 					</div><!--END col_1 --> 
 					<div class="land_separator"></div> 
 				</div><!--END header_landing --> 
+				<div style="float:left">
+					<%unless login_required %>
+					<%	license = {}
+					 	handle_api_error("Can't get license information") do
+				       license = RhosyncApi::get_license_info(session[:server],session[:token])
+				      end
+				    %>
+						<%="Licensed to #{license['licensee']}: #{license['available']}/#{license['seats']} devices available"%>
+					<%end%>
+					<br/>Rhosync v<%=Rhosync::VERSION%><br/>
+				</div>
 			</div><!--END header -->
 		</div><!--END wrapper -->
 	</div><!-- END container -->
+	
 </body>
 </html>		

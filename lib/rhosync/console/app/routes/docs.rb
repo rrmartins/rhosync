@@ -2,11 +2,11 @@ class RhosyncConsole::Server
   def docs_render_page(contenturl)
     @currentpage = "Console"
     @initialcontent = contenturl
-     @pagetitle = "Application" #H1 title
+     @pagetitle = "Rhosync Console" #H1 title
      @locals = {
        :div => "main_box",
        :links => [ 
-         { :url => url('/homepage'), :title => 'License' },
+         { :url => url('/homepage'), :title => 'Info' },
          { :url => url('/doc/select'), :selected => true, :title => 'Server Document' },
          { :url => url('/users'), :title => 'Users' }
        ]

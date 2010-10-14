@@ -18,6 +18,12 @@ describe "Record" do
     Store.db.zrange('stat:foo', 0, -1).should == ["2:13", "2:15", "2:17", "2:19"]
   end
   
+  it "should add single record" do
+    Time.stub!(:now).and_return { @now += 1; @now }
+    Record.add('foo')
+    Store.db.zrange('stat:foo', 0, -1).should == ["1:10"]
+  end
+  
   it "should add absolute metric value" do
     Time.stub!(:now).and_return { @now += 1; @now }
     time = 0
@@ -28,6 +34,18 @@ describe "Record" do
       time += 1
     end
     Store.db.zrange('stat:foo', 0, -1).should == ["2.0,1.0:11", "2.0,5.0:13"]
+  end
+  
+  it "should update metric" do
+    Rhosync.stats = true
+    Time.stub!(:now).and_return { @now += 1; @now }
+    4.times do
+      Record.update('foo') do
+        # something interesting
+      end
+    end
+    Store.db.zrange('stat:foo', 0, -1).should == ["1,1.0:15", "1,1.0:18", "1,1.0:21"]
+    Rhosync.stats = nil
   end
   
   it "should get range of metric values" do

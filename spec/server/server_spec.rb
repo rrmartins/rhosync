@@ -57,6 +57,14 @@ describe "Server" do
     Rhosync::Server.secret.should == "secure!"
   end
   
+  it "should use Stats::Middleware if stats enabled" do
+    Rhosync::Server.enable :stats
+    Rhosync::Server.new
+    Rhosync.stats.should == true
+    Rhosync.stats = nil
+    Rhosync::Server.disable :stats
+  end
+  
   it "should update session secret to default" do
     Rhosync::Server.set :secret, "<changeme>"
     Rhosync::Server.secret.should == "<changeme>"

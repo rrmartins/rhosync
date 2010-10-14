@@ -11,15 +11,15 @@ module Rhosync
     
     # CUD Operations
     def create(client_id)
-      _process_cud('create',client_id)
+      _measure_and_process_cud('create',client_id)
     end
     
     def update(client_id)
-      _process_cud('update',client_id)
+      _measure_and_process_cud('update',client_id)
     end
     
     def delete(client_id)
-      _process_cud('delete',client_id)
+      _measure_and_process_cud('delete',client_id)
     end
     
     # Read Operation; params are query arguments
@@ -60,9 +60,11 @@ module Rhosync
     
     def do_query(params=nil)
       @source.if_need_refresh do
-        return if _auth_op('login') == false
-        self.read(nil,params)
-        _auth_op('logoff')
+        Stats::Record.update("source:query:#{@source.name}") do
+          return if _auth_op('login') == false
+          self.read(nil,params)
+          _auth_op('logoff')
+        end  
       end
     end
     
@@ -141,6 +143,12 @@ module Rhosync
       @adapter.delete value
       dels ||= {}
       dels[key] = value
+    end
+    
+    def _measure_and_process_cud(operation,client_id)
+      Stats::Record.update("source:#{operation}:#{@source.name}") do
+        _process_cud(operation,client_id)
+      end
     end
     
     def _process_cud(operation,client_id)

@@ -76,4 +76,36 @@ describe "User" do
     @u.delete
     ApiToken.is_exist?(token).should == false
   end
+  
+  describe "User Stats" do
+    
+    before(:each) do
+      Rhosync::Stats::Record.reset('users')
+    end
+    
+    after(:each) do
+      Rhosync::Stats::Record.reset('users')
+    end
+    
+    after(:all) do
+      Store.flash_data('stat:users*')
+    end
+    
+    it "should increment user stats on create" do
+      Time.stub!(:now).and_return(10)
+      Rhosync.stats = true
+      User.create({:login => 'testuser1'})
+      Rhosync::Stats::Record.range('users',0,-1).should == ["1:10"]
+      Rhosync.stats = false
+    end
+  
+    it "should decrement user stats on delete" do
+      Time.stub!(:now).and_return(10)
+      Rhosync.stats = true
+      u = User.create({:login => 'testuser1'})
+      u.delete
+      Rhosync::Stats::Record.range('users',0,-1).should == ["0:10"]
+      Rhosync.stats = false
+    end
+  end
 end

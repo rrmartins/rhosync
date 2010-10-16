@@ -3,11 +3,11 @@ require File.join(File.dirname(__FILE__),'api_helper')
 describe "RhosyncApiStats" do
   it_should_behave_like "ApiHelper"
   
-  before(:all) do
+  before(:each) do
     Rhosync.stats = true
   end
   
-  after(:all) do
+  after(:each) do
     Rhosync.stats = false
   end
   
@@ -62,6 +62,5 @@ describe "RhosyncApiStats" do
     }
     last_response.status.should == 500    
     last_response.body.should == 'Stats not enabled'
-    Rhosync.stats = true
   end
 end

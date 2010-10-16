@@ -302,5 +302,20 @@ describe "RhosyncApi" do
     RestClient.should_receive(:post).once
     RhosyncApi::get_license_info('some_url',@api_token)
   end
+  
+  it "should get stats using direct api call" do
+    Rhosync.stats = true
+    Store.set_value('stat:foo','bar')
+    RhosyncApi::stats('',@api_token,:metric => 'foo').should == 'bar'
+    Rhosync.stats = false
+  end
+  
+  it "should get stats using rest call" do
+    res = mock('HttpResponse')
+    res.stub!(:body).and_return('bar')
+    RestClient.stub(:post).and_return(res)
+    RestClient.should_receive(:post).once.and_return(res)
+    RhosyncApi::stats('some_url',@api_token,:metric => 'foo')
+  end
    
 end  

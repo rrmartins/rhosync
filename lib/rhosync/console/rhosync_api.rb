@@ -172,6 +172,15 @@ module RhosyncApi
       end
     end
     
+    def stats(server,token,params)
+      if directcall?(server) and verify_token(token)
+        Server.stats(params,api_user(token))
+      else  
+        RestClient.post("#{server}/api/stats",
+          {:api_token => token}.merge!(params).to_json, :content_type => :json).body
+      end
+    end
+    
     private
     
     # TODO: Kill this code when rest-client properly 

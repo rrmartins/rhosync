@@ -55,4 +55,36 @@ describe "Client" do
     verify_result(@c.docname(:cd) => @data,
       @s.docname(:md_copy) => @data)
   end
+  
+  describe "Client Stats" do
+    
+    before(:each) do
+      Rhosync::Stats::Record.reset('clients')
+    end
+    
+    after(:each) do
+      Rhosync::Stats::Record.reset('clients')
+    end
+    
+    after(:all) do
+      Store.flash_data('stat:clients*')
+    end
+  
+    it "should increment clients stats on create" do
+      Time.stub!(:now).and_return(10)
+      Rhosync.stats = true
+      Client.create(@c_fields,{:source_name => @s_fields[:name]})
+      Rhosync::Stats::Record.range('clients',0,-1).should == ["1:10"]
+      Rhosync.stats = false
+    end
+  
+    it "should decrement clients stats on delete" do
+      Time.stub!(:now).and_return(10)
+      Rhosync.stats = true
+      c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
+      c.delete
+      Rhosync::Stats::Record.range('clients',0,-1).should == ["0:10"]
+      Rhosync.stats = false
+    end
+  end
 end

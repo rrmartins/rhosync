@@ -24,6 +24,27 @@ describe "Record" do
     Store.db.zrange('stat:foo', 0, -1).should == ["1:10"]
   end
   
+  it "should return type of metric" do
+    Record.add('foo')
+    Record.rtype('foo').should == 'zset'
+  end
+  
+  it "should set string metric" do
+    Record.set_value('foo', 'bar')
+    Store.db.get('stat:foo').should == 'bar'
+  end
+  
+  it "should get string metric" do
+    Store.db.set('stat:foo', 'bar')
+    Record.get_value('foo').should == 'bar'
+  end
+  
+  it "should get keys" do
+    Record.add('foo')
+    Record.add('bar')
+    Record.keys.sort.should == ['bar','foo']
+  end
+  
   it "should add absolute metric value" do
     Time.stub!(:now).and_return { @now += 1; @now }
     time = 0
@@ -45,7 +66,6 @@ describe "Record" do
       end
     end
     Store.db.zrange('stat:foo', 0, -1).should == ["1,1.0:15", "1,1.0:18", "1,1.0:21"]
-    Rhosync.stats = nil
   end
   
   it "should get range of metric values" do

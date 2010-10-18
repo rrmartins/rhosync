@@ -11,10 +11,11 @@ module Rhosync
     set   :clients, :string
     field :admin, :int
     field :token_id, :string
-    
+        
     class << self
       def create(fields={})
         fields[:id] = fields[:login]
+        Rhosync::Stats::Record.add('users') if Rhosync.stats
         super(fields)
       end
     
@@ -41,6 +42,7 @@ module Rhosync
         Client.load(client_id,{:source_name => '*'}).delete
       end
       self.token.delete if self.token
+      Rhosync::Stats::Record.add('users',-1) if Rhosync.stats
       super
     end
     

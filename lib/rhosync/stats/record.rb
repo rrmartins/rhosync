@@ -49,12 +49,26 @@ module Rhosync
           end
         end
         
+        def keys(glob='*')
+          Store.db.keys(key(glob)).collect {|c| c[5..-1]}
+        end
+        
         def reset(metric)
           Store.db.del(key(metric))
         end
         
         def reset_all
           Store.flash_data('stat:*')
+        end
+        
+        # Returns simple string metric
+        def get_value(metric)
+          Store.get_value(key(metric))
+        end
+        
+        # Sets a string metric
+        def set_value(metric, value)
+          Store.set_value(key(metric), value)
         end
       
         # Returns the metric data, uses array indexing
@@ -72,6 +86,11 @@ module Rhosync
         def record_size(metric)
           size = Object.const_get("#{metric.upcase}_RECORD_SIZE") rescue nil
           size || 60 * 24 * 31 #=> 44640 minutes
+        end
+        
+        # Returns redis object type for a record
+        def rtype(metric)
+          Store.db.type(key(metric))
         end
         
         def key(metric)

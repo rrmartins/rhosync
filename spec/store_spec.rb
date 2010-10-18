@@ -40,6 +40,11 @@ describe "Store" do
       Store.get_data(@s.docname(:md)).should == @data
     end
     
+    it "should set_data and get_data" do
+      Store.set_data('foo', @data)
+      Store.get_data('foo').should == @data
+    end
+    
     it "should add simple array data to new set" do
       @data = ['1','2','3']
       Store.put_data(@s.docname(:md),@data).should == true

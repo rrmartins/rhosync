@@ -179,6 +179,9 @@ module Rhosync
         @@db.rename(srckey,dstkey) if @@db.exists(srckey)
       end
       
+      alias_method :set_value, :put_value
+      alias_method :set_data, :put_data
+      
       private
       def _get_redis(server=nil)
         if ENV[REDIS_URL]

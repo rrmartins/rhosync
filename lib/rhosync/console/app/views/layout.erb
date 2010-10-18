@@ -9,6 +9,13 @@
 	<link rel="stylesheet" href="<%=url('home.css')%>" type="text/css" media="screen" /> 
 	<link rel="stylesheet" href="<%=url('style.css')%>" type="text/css" media="screen" /> 
 	<link rel="stylesheet" href="<%=url('ThickBox.css')%>" type="text/css" media="screen" /> 
+	
+	<!--[if IE]><script language="javascript" type="text/javascript" src="<%=url('jqplot/excanvas.js')%>"></script><![endif]-->
+	<script language="javascript" type="text/javascript" src="<%=url('jqplot/jquery-1.4.2.min.js')%>"></script>
+	<script language="javascript" type="text/javascript" src="<%=url('jqplot/jquery.jqplot.min.js')%>"></script>
+	
+	<link rel="stylesheet" type="text/css" href="<%=url('jqplot/jquery.jqplot.min.css')%>" />
+	
     <script type="text/javascript">
 
           function loadXMLDoc(url,id)
@@ -30,6 +37,7 @@
                     if (element != null)
                             {
                                     element.innerHTML=xmlhttp.responseText;
+									parseScript(xmlhttp.responseText);
                             }
                       }
             }
@@ -46,9 +54,40 @@
 		    if(document.getElementById('link7') != null)document.getElementById('link7').className = "no_class";
 		    document.getElementById(elem).className = "selected";
 		}
-		
+
+		function parseScript(_source) {
+			var source = _source;
+			var scripts = new Array();
+
+			// Strip out tags
+			while(source.indexOf("<script") > -1 || source.indexOf("</script") > -1) {
+				var s = source.indexOf("<script");
+				var s_e = source.indexOf(">", s);
+				var e = source.indexOf("</script", s);
+				var e_e = source.indexOf(">", e);
+
+				// Add to scripts array
+				scripts.push(source.substring(s_e+1, e));
+				// Strip from source
+				source = source.substring(0, s) + source.substring(e_e+1);
+			}
+
+			// Loop through every script collected and eval it
+			for(var i=0; i<scripts.length; i++) {
+				try {
+					eval(scripts[i]);
+				}
+				catch(ex) {
+					// do what you want here when a script fails
+				}
+			}
+
+			// Return the cleaned source
+			return source;
+		}		
 
     </script>
+
 
 </head>
 <body>

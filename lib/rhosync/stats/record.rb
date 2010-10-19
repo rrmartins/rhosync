@@ -7,7 +7,7 @@ module Rhosync
         # update the existing member with an incremented value by default.
         # Also supports updating the value with a block (useful for averages)
         def add(metric, value = 1)
-          start = Time.now.to_i
+          start = (Time.now.to_i / resolution(metric)) * resolution(metric)
           current, current_score = 0, start
           range = Store.db.zrevrange(key(metric), 0, 0)
           if !range.empty?
@@ -78,13 +78,13 @@ module Rhosync
         
         # Returns the resolution for a given metric, default 60 seconds
         def resolution(metric)
-          resolution = Object.const_get("#{metric.upcase}_RECORD_RESOLUTION") rescue nil
+          resolution = STATS_RECORD_RESOLUTION rescue nil
           resolution || 60 #=> 1 minute aggregate
         end
         
         # Returns the # of records to save for a given metric
         def record_size(metric)
-          size = Object.const_get("#{metric.upcase}_RECORD_SIZE") rescue nil
+          size = STATS_RECORD_SIZE rescue nil
           size || 60 * 24 * 31 #=> 44640 minutes
         end
         

@@ -1,6 +1,6 @@
 require 'rhosync'
-FOO_RECORD_RESOLUTION = 2
-FOO_RECORD_SIZE = 8
+STATS_RECORD_RESOLUTION = 2
+STATS_RECORD_SIZE = 8
 
 include Rhosync
 include Rhosync::Stats
@@ -27,6 +27,11 @@ describe "Middleware" do
     10.times { @middleware.call(env) }
     metric = 'http:GET:/application:SampleAdapter'
     Record.key(metric).should == "stat:#{metric}"
-    Record.range(metric, 0, -1).should == ["10.0,3.0:19"]
+    Record.range(metric, 0, -1).should == [
+      "2.0,0.600000000000002:12", 
+      "2.0,0.600000000000002:14", 
+      "2.0,0.600000000000002:16", 
+      "2.0,0.600000000000002:18"
+    ]
   end  
 end

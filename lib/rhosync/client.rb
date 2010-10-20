@@ -20,7 +20,11 @@ module Rhosync
       res = super(fields,params)
       user = User.load(fields[:user_id])
       user.clients << res.id
-      Rhosync::Stats::Record.add('clients') if Rhosync.stats
+      if Rhosync.stats
+        Rhosync::Stats::Record.set('clients') { Store.incr('client:count') }
+      else
+        Store.incr('client:count')
+      end
       res
     end
     
@@ -47,7 +51,11 @@ module Rhosync
     def delete
       flash_data('*')
       Rhosync.license.free_seat
-      Rhosync::Stats::Record.add('clients',-1) if Rhosync.stats
+      if Rhosync.stats
+        Rhosync::Stats::Record.set('clients') { Store.decr('client:count') }
+      else
+        Store.decr('client:count')
+      end
       super
     end
     

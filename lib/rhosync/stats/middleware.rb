@@ -12,9 +12,7 @@ module Rhosync
         metric = "http:#{env['REQUEST_METHOD']}:#{env['REQUEST_PATH']}"
         source_id = env['rack.request.query_hash']["source_id"] if env['rack.request.query_hash']
         metric << ":#{source_id}" if source_id
-        Record.add(metric,finish - start) do |counter,aggregate|
-          Record.save_average(counter,aggregate)
-        end
+        Record.save_average(metric,finish - start)
         [status, headers, body]
       end
     end

@@ -15,7 +15,11 @@ module Rhosync
     class << self
       def create(fields={})
         fields[:id] = fields[:login]
-        Rhosync::Stats::Record.add('users') if Rhosync.stats
+        if Rhosync.stats
+          Rhosync::Stats::Record.set('users') { Store.incr('user:count') }
+        else
+          Store.incr('user:count')
+        end     
         super(fields)
       end
     
@@ -42,7 +46,11 @@ module Rhosync
         Client.load(client_id,{:source_name => '*'}).delete
       end
       self.token.delete if self.token
-      Rhosync::Stats::Record.add('users',-1) if Rhosync.stats
+      if Rhosync.stats
+        Rhosync::Stats::Record.set('users') { Store.decr('user:count') }
+      else
+        Store.decr('user:count')
+      end
       super
     end
     

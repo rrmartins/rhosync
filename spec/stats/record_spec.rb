@@ -1,6 +1,6 @@
 require 'rhosync'
-STATS_RECORD_RESOLUTION = 2
-STATS_RECORD_SIZE = 8
+STATS_RECORD_RESOLUTION = 2 unless defined? STATS_RECORD_RESOLUTION
+STATS_RECORD_SIZE = 8 unless defined? STATS_RECORD_SIZE
 
 include Rhosync
 include Rhosync::Stats
@@ -10,6 +10,7 @@ describe "Record" do
   before(:each) do
     @now = 9
     Store.db.flushdb
+    Store.stub!(:lock).and_yield
   end
   
   it "should add metric to the record and trim record size" do
@@ -49,9 +50,7 @@ describe "Record" do
     Time.stub!(:now).and_return { @now += 1; @now }
     time = 0
     4.times do 
-      Record.add('foo',time) do |current,value|
-        Record.save_average(current, value)
-      end
+      Record.save_average('foo',time)
       time += 1
     end
     Store.db.zrange('stat:foo', 0, -1).should == ["2.0,1.0:10", "2.0,5.0:12"]

@@ -6,33 +6,41 @@ module Rhosync
         # Add a value to a metric.  If zset already has a member, 
         # update the existing member with an incremented value by default.
         # Also supports updating the value with a block (useful for averages)
-        def add(metric, value = 1)
+        def set(metric, value = 0)
           start = (Time.now.to_i / resolution(metric)) * resolution(metric)
           current, current_score = 0, start
-          range = Store.db.zrevrange(key(metric), 0, 0)
-          if !range.empty?
-            member = range[0]
-            m_current = member.split(':')[0]
-            m_current_score = Store.db.zscore(key(metric), member).to_i
-            if m_current_score > (start - resolution(metric))
-              Store.db.zrem(key(metric), member)
-              current, current_score = m_current, m_current_score
+          Store.lock(key(metric)) do
+            range = Store.db.zrevrange(key(metric), 0, 0)
+            if !range.empty?
+              member = range[0]
+              m_current = member.split(':')[0]
+              m_current_score = Store.db.zscore(key(metric), member).to_i
+              if m_current_score > (start - resolution(metric))
+                Store.db.zrem(key(metric), member)
+                current, current_score = m_current, m_current_score
+              end
             end
+            value = block_given? ? yield(current, value) : value 
+            Store.db.zadd(key(metric), current_score, "#{value}:#{start}")
+            Store.db.zremrangebyscore(key(metric), 0, start - record_size(metric))
           end
-          value = block_given? ? yield(current, value) : (current.to_i + value) 
-          Store.db.zadd(key(metric), current_score, "#{value}:#{start}")
-          Store.db.zremrangebyscore(key(metric), 0, start - record_size(metric))
+        end
+        
+        def add(metric, value = 1)
+          set(metric,value) { |current,value| current.to_i + value } 
         end
         
         # Saves the accumulated average for a resolution in a metric
-        def save_average(current, value)
-          sum = value
-          if current.is_a?(String)
-            current,sum = current.split(',')
-            current = current.to_f
-            sum = sum.to_f+value
-          end
-          "#{current + 1},#{sum}"
+        def save_average(metric, value)
+          set(metric,value) do |current,value| 
+            sum = value
+            if current.is_a?(String)
+              current,sum = current.split(',')
+              current = current.to_f
+              sum = sum.to_f+value
+            end
+            "#{current + 1},#{sum}"
+          end  
         end
         
         def update(metric)
@@ -41,9 +49,7 @@ module Rhosync
             # perform the operations
             yield
             finish = Time.now.to_f
-            add(metric, finish - start) do |counter, aggregate|
-              save_average(counter, aggregate)
-            end
+            save_average(metric, finish - start)
           else
             yield
           end

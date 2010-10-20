@@ -1,6 +1,6 @@
 require 'rhosync'
-STATS_RECORD_RESOLUTION = 2
-STATS_RECORD_SIZE = 8
+STATS_RECORD_RESOLUTION = 2 unless defined? STATS_RECORD_RESOLUTION
+STATS_RECORD_SIZE = 8 unless defined? STATS_RECORD_SIZE
 
 include Rhosync
 include Rhosync::Stats
@@ -13,6 +13,7 @@ describe "Middleware" do
     app = mock('app')
     app.stub!(:call)
     @middleware = Middleware.new(app)
+    Store.stub!(:lock).and_yield
   end
   
   it "should compute http average" do

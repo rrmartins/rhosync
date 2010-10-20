@@ -63,6 +63,15 @@ describe "Store" do
       Store.get_value('foo').should == 'bar'
     end
     
+    it "should incr a key" do
+      Store.incr('foo').should == 1
+    end
+    
+    it "should decr a key" do
+      Store.set_value('foo', 10)
+      Store.decr('foo').should == 9
+    end
+    
     it "should return true/false if element ismember of a set" do
       Store.put_data('foo',['a'])
       Store.ismember?('foo','a').should == true

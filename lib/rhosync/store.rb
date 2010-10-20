@@ -56,6 +56,14 @@ module Rhosync
       def get_value(dockey)
         @@db.get(dockey) if dockey
       end
+      
+      def incr(dockey)
+        @@db.incr(dockey)
+      end
+      
+      def decr(dockey)
+        @@db.decr(dockey)
+      end
   
       # Retrieves set for given dockey,source,user
       def get_data(dockey,type=Hash)

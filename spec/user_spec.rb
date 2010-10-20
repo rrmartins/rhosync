@@ -1,5 +1,8 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
 
+STATS_RECORD_RESOLUTION = 2 unless defined? STATS_RECORD_RESOLUTION
+STATS_RECORD_SIZE = 8 unless defined? STATS_RECORD_SIZE
+
 describe "User" do
   it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
@@ -10,6 +13,7 @@ describe "User" do
     @u1.id.should == @u.id
     @u1.login.should == @u_fields[:login]
     @u1.email.should == @u_fields[:email]
+    Store.get_value('user:count').should == "1"
   end
   
   it "should delete seats for user's clients" do
@@ -66,6 +70,7 @@ describe "User" do
     @c.put_data(:cd,@data)
     cid = @c.id    
     @u.delete
+    Store.get_value('user:count').should == "0"
     User.is_exist?(@u_fields[:login]).should == false
     Client.is_exist?(cid).should == false
     @c.get_data(:cd).should == {}
@@ -78,6 +83,10 @@ describe "User" do
   end
   
   describe "User Stats" do
+    
+    before(:all) do
+      Store.stub!(:lock).and_yield
+    end
     
     before(:each) do
       Rhosync::Stats::Record.reset('users')
@@ -94,8 +103,9 @@ describe "User" do
     it "should increment user stats on create" do
       Time.stub!(:now).and_return(10)
       Rhosync.stats = true
-      User.create({:login => 'testuser1'})
-      Rhosync::Stats::Record.range('users',0,-1).should == ["1:10"]
+      User.create({:login => 'testuser2'})
+      Rhosync::Stats::Record.range('users',0,-1).should == ["2:10"]
+      Store.get_value('user:count').should == "2"
       Rhosync.stats = false
     end
   
@@ -103,8 +113,10 @@ describe "User" do
       Time.stub!(:now).and_return(10)
       Rhosync.stats = true
       u = User.create({:login => 'testuser1'})
+      Rhosync::Stats::Record.range('users',0,-1).should == ["2:10"]
       u.delete
-      Rhosync::Stats::Record.range('users',0,-1).should == ["0:10"]
+      Rhosync::Stats::Record.range('users',0,-1).should == ["1:10"]
+      Store.get_value('user:count').should == "1"
       Rhosync.stats = false
     end
   end

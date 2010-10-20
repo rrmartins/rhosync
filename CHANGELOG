@@ -1,3 +1,6 @@
+## 2.1.0
+* #4302316 - don't allow set blank admin password
+
 ## 2.0.9
 * #5154725 - stats framework
 * #5013521 - new web interface style

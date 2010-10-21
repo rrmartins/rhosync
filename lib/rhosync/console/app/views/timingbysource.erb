@@ -1,9 +1,0 @@
-<div id="chartdiv" style="height:300px;width:670px; display:none;"></div>
-
-<% @sources.each do |source| %>
-	<a href="javascript:void(0);"
-	onclick="document.getElementById('chartdiv').style.display = '';$.jqplot('chartdiv',<%=source['data'].to_json.gsub(/"/,"'")%>,<%=source['options'].to_json.gsub(/"/,"'")%>).redraw();">
-	<%= source['name'] %>
-	</a> &nbsp;&nbsp;
-<% end%>
-

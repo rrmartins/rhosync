@@ -10,5 +10,5 @@
 <%= erb(:rightboxlinks, :layout => false, :locals => @locals)%>
 
 <script  type="text/javascript">
-	loadXMLDoc('<%= @initialcontent %>','main_box');
+	setTimeout ("loadXMLDoc('<%= @initialcontent %>','main_box');",1);
 </script>

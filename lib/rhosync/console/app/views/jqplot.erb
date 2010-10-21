@@ -1,0 +1,40 @@
+<div id="chartdiv" style="height:295px;width:670px; display:none;"></div>
+<% 
+def fix_json(instring)
+	outstring = instring.gsub(/"/,"'")
+	outstring = outstring.gsub(/('.*?enderer'):'(.*?)'/,'\1:\2')
+	outstring
+end
+
+%>
+
+<% if @displayname.nil? %>
+<script type="text/javascript">
+document.getElementById('chartdiv').style.display = '';plot = $.jqplot('chartdiv',<%=@sources[0]['data'].to_json.gsub(/"/,"'")%>,<%=fix_json(@sources[0]['options'].to_json)%>); plot.redraw();
+</script>
+<%end%>
+
+<br/>
+
+
+
+<% if @sources.length > 1%>
+
+<% @sources.each do |source| %>
+	<% if @displayname == source['name'] %>
+	<script type="text/javascript">
+	document.getElementById('chartdiv').style.display = '';plot = $.jqplot('chartdiv',<%=source['data'].to_json.gsub(/"/,"'")%>,<%=fix_json(source['options'].to_json)%>); plot.redraw();
+	</script>
+	
+	<% end %>
+	
+	<a style="margin-right:5px" href="javascript:void(0);"
+	onclick="loadXMLDoc('<%= url(@uri + '?display='+ source['name'])%>','main_box');">
+	<%= source['name'] %>
+	</a>
+<% end%>
+
+
+<% end %>
+
+<br/><div style="margin-top:3px;">Select and drag to zoom. Double click to reset.</div>

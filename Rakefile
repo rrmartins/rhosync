@@ -56,7 +56,7 @@ begin
     gemspec.authors = ["Rhomobile"]
     gemspec.email = %q{dev@rhomobile.com}
     gemspec.version = Rhosync::VERSION
-    gemspec.files =  FileList["[A-Z]*", "{bench,bin,doc,generators,lib,spec,tasks}/**/*"]
+    gemspec.files =  FileList["[A-Z]*", "{bench,bin,generators,lib,spec,tasks}/**/*"]
 
     # TODO: Due to https://www.pivotaltracker.com/story/show/3417862, we can't use JSON 1.4.3
     gemspec.add_dependency "json", "~>1.4.2"

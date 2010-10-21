@@ -159,12 +159,14 @@ namespace :rhosync do
       system "stty echo"
       exit
     end
-    if new_pass == new_pass_confirm
+    if new_pass == ''
+      puts "\nNew password can't be empty."
+    elsif new_pass == new_pass_confirm
       puts ""
       post("/api/update_user", {:app_name => $appname, :api_token => $token,
         :attributes => {:new_password => new_pass}})
     else
-      puts "\nNew password and confirm didn't match."
+      puts "\nNew password and confirmation must match."
     end
   end
   

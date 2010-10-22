@@ -20,7 +20,7 @@ describe "Middleware" do
     Time.stub!(:now).and_return { @now += 0.3; @now }
     env = {
       'rack.request.query_hash' => {
-        'source_id' => 'SampleAdapter'
+        'source_name' => 'SampleAdapter'
       },
       'REQUEST_METHOD' => 'GET',
       'REQUEST_PATH' => '/application'

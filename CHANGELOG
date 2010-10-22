@@ -1,5 +1,9 @@
 ## 2.1.0
 * #4302316 - don't allow set blank admin password
+* #5672322 - stats for user count
+* #5672316 - stats for device count
+* #5717916 - stats api call
+* #5821277 - http stats by source not showing
 
 ## 2.0.9
 * #5154725 - stats framework

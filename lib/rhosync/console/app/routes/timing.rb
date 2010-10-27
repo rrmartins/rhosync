@@ -44,9 +44,13 @@ class RhosyncConsole::Server
     @sources = []
 
     s = {}
+    usercount = []
 
-    usercount = JSON.parse RhosyncApi::stats(session[:server],session[:token], {:metric => metric, :start => start, :finish => finish})
-
+    begin
+      usercount = JSON.parse RhosyncApi::stats(session[:server],session[:token], {:metric => metric, :start => start, :finish => finish})
+    rescue Exception => e
+      usercount = ["0:#{Time.now.to_i}"]
+    end
     usercount.each do |count|
       user,timestamp = count.split(':')
       user = user.to_i
@@ -159,9 +163,10 @@ class RhosyncConsole::Server
     #name,data,options
     @displayname = params['display']
     names = ["GET","POST"]
-#    handle_api_error("Can't load list of sources") do
-#      names = RhosyncApi::list_sources(session[:server],session[:token],:all)
-#    end
+    handle_api_error("Can't load list of sources") do
+      names = RhosyncApi::list_sources(session[:server],session[:token],:all)
+    end
+    names << "ALL"
     @sources = []
     
     names.each do |name|
@@ -171,7 +176,8 @@ class RhosyncConsole::Server
       options = { :legend => { :show => true }, :title => name }
       s['name'] = name
       
-      keys = JSON.parse RhosyncApi::stats(session[:server],session[:token], :names => "http:#{name}:*")
+      name = "*" if name == "ALL"
+      keys = JSON.parse RhosyncApi::stats(session[:server],session[:token], :names => "http:*:#{name}")
       
       xmin = 9999999999999999
       xmax = -1
@@ -179,6 +185,7 @@ class RhosyncConsole::Server
       ymax = -1
       keys.each do |key|
         method = key.gsub(/http:.*?:/,"")
+        method.gsub!(/:.*/,"") unless name == "*"
         series << {:showLabel => true, :label => method }
         #range = r.zrange(key,0,-1)
         range = JSON.parse RhosyncApi::stats(session[:server],session[:token], {:metric => key, :start => 0, :finish => -1})

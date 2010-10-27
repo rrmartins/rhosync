@@ -1,4 +1,16 @@
-<div id="chartdiv" style="height:295px;width:670px; display:none;"></div>
+<% 
+  s = nil 
+  if @displayname.nil?
+	s = @sources[0]
+  else
+    @sources.each { |source| s = source if source['name'] == @displayname }
+  end
+%>
+  <% if s.nil? or s['data'].length < 1 %>
+    <center>No data for <b><%= s.nil? ? "" : s['name'] %></b></center><br/><br/>
+  <% else %>
+    <div id="chartdiv" style="height:295px;width:670px; display:none;"></div>
+  <%end%>
 <% 
 def fix_json(instring)
 	outstring = instring.gsub(/"/,"'")

@@ -113,9 +113,12 @@ class RhosyncConsole::Server
         range = JSON.parse RhosyncApi::stats(session[:server],session[:token], {:metric => key, :start => 0, :finish => -1})
         thisdata = []
         range.each do |value|
+          count = value.split(',')[0]
           value.gsub!(/.*,/,"")
           thisdata << value.split(":").reverse
           thisdata[-1][0] = thisdata[-1][0].to_i * 1000
+          thisdata[-1][1] = thisdata[-1][1].to_f
+          thisdata[-1][1] /= count.to_f
           
           ymin = thisdata[-1][1].to_f if thisdata[-1][1] && thisdata[-1][1].to_f < ymin
           ymax = thisdata[-1][1].to_f if thisdata[-1][1] && thisdata[-1][1].to_f > ymax
@@ -191,9 +194,12 @@ class RhosyncConsole::Server
         range = JSON.parse RhosyncApi::stats(session[:server],session[:token], {:metric => key, :start => 0, :finish => -1})
         thisdata = []
         range.each do |value|
+          count = value.split(',')[0]
           value.gsub!(/.*,/,"")
           thisdata << value.split(":").reverse
           thisdata[-1][0] = thisdata[-1][0].to_i * 1000
+          thisdata[-1][1] = thisdata[-1][1].to_f
+          thisdata[-1][1] /= count.to_f
           
           ymin = thisdata[-1][1].to_f if thisdata[-1][1] && thisdata[-1][1].to_f < ymin
           ymax = thisdata[-1][1].to_f if thisdata[-1][1] && thisdata[-1][1].to_f > ymax

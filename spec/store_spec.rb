@@ -153,7 +153,7 @@ describe "Store" do
     
     it "should lock key for timeout" do
       doc = "locked_data"
-      Store.db.set "#{doc}:lock", Time.now.to_i+3
+      Store.db.set "lock:#{doc}", Time.now.to_i+3
       Store.should_receive(:sleep).at_least(:once).with(1).and_return { sleep 1 }
       m_lock = Store.get_lock(doc,2)
     end

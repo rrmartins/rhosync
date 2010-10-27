@@ -206,7 +206,7 @@ module Rhosync
       end
       
       def _lock_key(dockey)
-        "#{dockey}:lock"
+        "lock:#{dockey}"
       end
           
       def _is_reserved?(attrib,value) #:nodoc:

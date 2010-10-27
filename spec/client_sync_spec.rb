@@ -444,6 +444,20 @@ describe "ClientSync" do
         "source:#{@a_fields[:name]}:#{@u_fields[:login]}:#{@s_fields[:name]}:md_copy" => @data)
     end
     
+    it "should escape bulk data url" do
+      name = 'a b'
+      data = BulkData.create(:name => bulk_data_docname(@a.id,name),
+        :state => :inprogress,
+        :app_id => @a.id,
+        :user_id => name,
+        :sources => [@s_fields[:name]])
+      puts "data: #{data.inspect}"
+      BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,name))
+      data = BulkData.load(bulk_data_docname(@a.id,name))
+      data.url.should match /a%20b/
+      data.delete
+    end
+    
     it "should return bulk data url for completed bulk data app partition" do
       set_state('test_db_storage' => @data)
       @s.partition = :app

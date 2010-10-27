@@ -26,7 +26,7 @@ describe "MockAdapter" do
   end
 
   it "should return db lock name" do
-    @ma.lock_name.should == "test_db_storage:mock_app_id:mock_user_id:lock"
+    @ma.lock_name.should == "lock:test_db_storage:mock_app_id:mock_user_id"
   end
 
   it "should login" do

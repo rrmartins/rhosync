@@ -46,8 +46,8 @@ class MockAdapter < SourceAdapter
     "test_db_storage:#{@source.app_id}:#{@source.user_id}"
   end
   
-  def lock_name()
-    "#{db_name}:lock"
+  def lock_name
+    "lock:#{db_name}"
   end
   
   private

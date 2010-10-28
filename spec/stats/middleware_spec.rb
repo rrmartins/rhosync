@@ -23,7 +23,7 @@ describe "Middleware" do
         'source_name' => 'SampleAdapter'
       },
       'REQUEST_METHOD' => 'GET',
-      'REQUEST_PATH' => '/application'
+      'PATH_INFO' => '/application'
     }
     10.times { @middleware.call(env) }
     metric = 'http:GET:/application:SampleAdapter'

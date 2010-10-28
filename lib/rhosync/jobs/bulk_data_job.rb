@@ -177,7 +177,7 @@ module Rhosync
     
     def self.compress(archive,file)
       Zip::ZipFile.open(archive, 'w') do |zipfile|
-        zipfile.add(File.basename(file),file)
+        zipfile.add(URI.escape(File.basename(file)),file)
       end
     end
   end

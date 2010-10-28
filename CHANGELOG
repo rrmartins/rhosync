@@ -5,6 +5,7 @@
 * #5717916 - stats api call
 * #5821277 - http stats by source not showing
 * #5899454 - move lock prefix to beginning so we don't return stats keys with it
+* #5822966 - bulk sync data file cannot handle space in the username
 
 ## 2.0.9
 * #5154725 - stats framework

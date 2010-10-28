@@ -14,13 +14,16 @@ Description:
 .container{
 	min-height:100%;
 	position:relative;
+
 }
+
 
 .wrapper{
 	display:block;
 	margin:0 auto 0;
 	overflow:hidden;
 	width:960px;
+
 }
 
 a{
@@ -53,7 +56,7 @@ h1.slogan{
 ****/
 html{
 	font-size: 14px;
-	background:url("images/landing_header.jpg") repeat-x scroll 0 0 transparent;
+	background:url("images/landing_header.jpg") repeat-x scroll 0 0 #bbbbbb;
 }
 body{
 	margin:0;
@@ -76,7 +79,7 @@ body{
 	float:left;
 	height:38px;
 	text-indent:-3000px;
-	width:145px;
+	width:175px;
 }
 .header .logos a.logo_rhomobile{
 	background:url("images/logo_rhosync.png") no-repeat scroll 0 0 transparent;
@@ -91,9 +94,11 @@ body{
 }
 
 .header_landing{
-	background:url("images/header_halo.jpg") no-repeat scroll 50% 0 transparent;
+/*	background:url("images/header_halo.jpg") no-repeat scroll 50% 0 transparent;*/
 	height: 455px;
 	padding-top:85px;
+
+	
 }
 .header_landing .col_1{
 	float:left;

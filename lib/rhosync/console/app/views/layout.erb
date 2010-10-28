@@ -118,19 +118,45 @@
 					<div class="land_separator"></div> 
 				</div><!--END header_landing --> 
 				<div style="float:left">
-					<%unless login_required %>
-					<%	license = {}
-					 	handle_api_error("Can't get license information") do
-				       license = RhosyncApi::get_license_info(session[:server],session[:token])
-				      end
-				    %>
-						<%="Licensed to #{license['licensee']}: #{license['available']}/#{license['seats']} devices available"%>
-					<%end%>
-					<br/>Rhosync v<%=Rhosync::VERSION%><br/>
+					
+					<br/>
 				</div>
 			</div><!--END header -->
 		</div><!--END wrapper -->
 	</div><!-- END container -->
-	
+	<div id="footer">
+				<div class="footer_content">
+					<div id="foot_lefts" class="foot_left">
+						<img src="/console/images/foot_logo_rhosync.png"></a>
+						<p>© 2010 <a href="http://www.rhomobile.com/">Rhomobile</a> All rights reserved.</p>
+					</div>
+					<div class="foot_right">
+						<ul class="ul_footer">
+							<%unless login_required %>
+							<%	license = {}
+							 	handle_api_error("Can't get license information") do
+						       license = RhosyncApi::get_license_info(session[:server],session[:token])
+						      end
+						    %>
+								<%="<li>Licensed to #{license['licensee']}</li><li>|</li><li> #{license['available']}/#{license['seats']} devices available</li>"%>
+							<%end%>
+							<li>|</li>
+							<li>Rhosync v<%=Rhosync::VERSION%></li>
+<!--						<li><a href="http://app.rhohub.com">Home</a></li>
+							<li>|</li>
+							<li><a href="http://app.rhohub.com/how_to_use">How to Use</a></li>
+							<li>|</li>
+							<li><a href="http://app.rhohub.com/pricing">Pricing</a></li>
+							<li>|</li>
+							<li><a class="largea3" target="_blank" href="http://wiki.rhomobile.com/index.php/RhoHub">Docs</a></li>
+							<li>|</li>
+							<li><a href="http://app.rhohub.com/terms">Terms of Service</a></li>
+							<li>|</li>
+							<li><a href="http://www.twitter.com/rhohub">Status</a></li>
+-->						</ul>
+					</div>
+					<br class="clear">
+				</div>
+			</div>
 </body>
 </html>		

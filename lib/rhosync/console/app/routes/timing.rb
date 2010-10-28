@@ -132,7 +132,7 @@ class RhosyncConsole::Server
       #xmin..xmax.step(60) {|x| ticks << x }
 
       options[:axes] = {
-        :yaxis => { :autoscale => true, :min => 0, :max => ymax + (ymax * 0.05), :label  => 'Seconds', :labelRenderer => '$.jqplot.CanvasAxisLabelRenderer'  }, 
+        :yaxis => { :tickOptions => { :formatString =>'%.3f'}, :autoscale => true, :min => 0, :max => ymax + (ymax * 0.05), :label  => 'Seconds', :labelRenderer => '$.jqplot.CanvasAxisLabelRenderer'  }, 
         :xaxis => { :autoscale => true, :renderer=>'$.jqplot.DateAxisRenderer',
           :tickOptions => {:formatString => '%m/%d/%y %H:%M:%S'}}
       }
@@ -213,7 +213,7 @@ class RhosyncConsole::Server
       #xmin..xmax.step(60) {|x| ticks << x }
 
       options[:axes] = {
-        :yaxis => { :autoscale => true, :min => 0, :max => ymax + (ymax * 0.05), :label  => 'Seconds', :labelRenderer => '$.jqplot.CanvasAxisLabelRenderer'  }, 
+        :yaxis => { :tickOptions => { :formatString =>'%.3f'}, :autoscale => true, :min => 0, :max => ymax + (ymax * 0.05), :label  => 'Seconds', :labelRenderer => '$.jqplot.CanvasAxisLabelRenderer'  }, 
         :xaxis => { :autoscale => true, :renderer=>'$.jqplot.DateAxisRenderer',
           :tickOptions => {:formatString => '%m/%d/%y %H:%M:%S'}}
       }

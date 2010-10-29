@@ -47,6 +47,17 @@ describe "RhosyncApi" do
     RhosyncApi::create_user('some_url',@api_token,'testuser1','testpass1').should == "User created"
   end
   
+  it "should update user using direct api call" do
+    RhosyncApi::update_user('',@api_token, {:new_password => '123'})
+    User.authenticate('rhoadmin','123').login.should == 'rhoadmin'
+  end
+
+  it "should update user using rest call" do
+    RestClient.stub(:post)    
+    RestClient.should_receive(:post).once
+    RhosyncApi::update_user('some_url',@api_token, {:new_password => '123'})
+  end
+  
   it "should delete user direct api call" do
     RhosyncApi::create_user('',@api_token,'testuser1','testpass1').should == "User created"
     User.is_exist?('testuser1').should == true

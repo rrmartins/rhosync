@@ -34,6 +34,16 @@ module RhosyncApi
             :content_type => :json)
       end  
     end  
+
+    def update_user(server,token,attributes)
+      if directcall?(server) and verify_token(token)
+        Server.update_user({:attributes => attributes},api_user(token))
+      else  
+        RestClient.post("#{server}/api/update_user",
+          {:api_token => token,:attributes => attributes}.to_json, 
+            :content_type => :json)
+      end  
+    end
     
     def delete_user(server,token,user_id)
       if directcall?(server) and verify_token(token)

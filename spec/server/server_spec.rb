@@ -148,7 +148,7 @@ describe "Server" do
     it "should respond to clientcreate" do
       get "/application/clientcreate?device_type=blackberry"
       last_response.should be_ok
-      last_response.content_type.should == 'application/json'
+      last_response.content_type.should =~ /application\/json/
       id = JSON.parse(last_response.body)['client']['client_id']
       id.length.should == 32
       JSON.parse(last_response.body).should == 
@@ -235,7 +235,7 @@ describe "Server" do
       set_test_data('test_db_storage',data)
       get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
       last_response.should be_ok
-      last_response.content_type.should == 'application/json'
+      last_response.content_type.should =~ /application\/json/
       token = @c.get_value(:page_token)
       JSON.parse(last_response.body).should == [{"version"=>ClientSync::VERSION},{"token"=>token}, 
         {"count"=>2}, {"progress_count"=>0},{"total_count"=>2},{'insert'=>data}]
@@ -286,7 +286,7 @@ describe "Server" do
       params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
         :version => ClientSync::VERSION}
       get "/application/search",params
-      last_response.content_type.should == 'application/json'
+      last_response.content_type.should =~ /application\/json/
       token = @c.get_value(:search_token)
       JSON.parse(last_response.body).should == [[{'version'=>ClientSync::VERSION},{'token'=>token},
         {'source'=>sources[0][:name]},{'count'=>1},{'insert'=>{'1'=>@product1}}]]

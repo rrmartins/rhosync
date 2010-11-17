@@ -18,7 +18,6 @@ begin
     :jobs   => 'spec/jobs/*_spec.rb',
     :stats => 'spec/stats/*_spec.rb',
     :ping   => 'spec/ping/*_spec.rb',
-    :doc    => 'spec/doc/*_spec.rb', 
     :generator => 'spec/generator/*_spec.rb',
     :bench => 'bench/spec/*_spec.rb'
   }
@@ -35,6 +34,12 @@ begin
     t.spec_files = FileList[TYPES.values]
     t.rcov = true
     t.rcov_opts = ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*,json/*']
+  end
+  
+  desc "Run doc generator - dumps out doc/protocol.html"
+  Spec::Rake::SpecTask.new('doc') do |t|
+    t.spec_files = FileList['spec/doc/*_spec.rb']
+    t.rcov = false
   end
   
 rescue LoadError => e

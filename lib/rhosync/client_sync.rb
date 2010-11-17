@@ -53,37 +53,63 @@ module Rhosync
     end
     
     def send_new_page
-      compute_errors_page
-      token,progress_count,total_count = '',0,0
-      res = build_page do |r|
-        progress_count,total_count,r['insert'] = compute_page
-        r['delete'] = compute_deleted_page
-        r['links'] = compute_links_page
-        r['metadata'] = compute_metadata
-      end
-      if res['insert'] or res['delete'] or res['links']
+      token,progress_count,total_count,res = '',0,0,{}
+      if schema_changed?
         token = compute_token(@client.docname(:page_token))
-      else
-        _delete_errors_page 
-      end    
-      @client.put_data(:cd,res['insert'],true)      
-      @client.delete_data(:cd,res['delete'])
+        res = {'schema-changed' => 'true'}
+      else  
+        compute_errors_page
+        res = build_page do |r|
+          progress_count,total_count,r['insert'] = compute_page
+          r['delete'] = compute_deleted_page
+          r['links'] = compute_links_page
+          r['metadata'] = compute_metadata
+        end
+        if res['insert'] or res['delete'] or res['links']
+          token = compute_token(@client.docname(:page_token))
+        else
+          _delete_errors_page 
+        end    
+        @client.put_data(:cd,res['insert'],true)      
+        @client.delete_data(:cd,res['delete'])
+      end
       [token,progress_count,total_count,res]
     end
     
     # Resend token for a client, also sends exceptions
     def resend_page(token=nil)
-      token,progress_count,total_count = '',0,0
-      res = build_page do |r|
-        r['insert'] = @client.get_data(:page)
-        r['delete'] = @client.get_data(:delete_page)
-        r['links'] = @client.get_data(:create_links_page)
-        r['metadata'] = compute_metadata
-        progress_count = @client.get_value(:cd_size).to_i
-        total_count = @client.get_value(:total_count_page).to_i
+      token,progress_count,total_count,res = '',0,0,{}
+      schema_page = @client.get_value(:schema_page)
+      if schema_page
+        res = {'schema-changed' => 'true'}
+      else  
+        res = build_page do |r|
+          r['insert'] = @client.get_data(:page)
+          r['delete'] = @client.get_data(:delete_page)
+          r['links'] = @client.get_data(:create_links_page)
+          r['metadata'] = @client.get_value(:metadata_page)
+          progress_count = @client.get_value(:cd_size).to_i
+          total_count = @client.get_value(:total_count_page).to_i
+        end
       end
       token = @client.get_value(:page_token)
       [token,progress_count,total_count,res]
+    end
+    
+    # Checks if schema changed
+    def schema_changed?
+      schema_sha1 = @source.get_value(:schema_sha1)
+      
+      if @client.get_value(:schema_sha1).nil?
+        @client.put_value(:schema_sha1,schema_sha1)
+        return false
+      elsif @client.get_value(:schema_sha1) == schema_sha1
+        return false
+      end
+      
+      @client.put_value(:schema_sha1,schema_sha1)
+      @client.put_value(:schema_page,schema_sha1)
+      true
     end
     
     # Computes the metadata sha1 and returns metadata if client's sha1 doesn't 
@@ -94,8 +120,10 @@ module Rhosync
       end
       return if @client.get_value(:metadata_sha1) == metadata_sha1
       @client.put_value(:metadata_sha1,metadata_sha1)
+      @client.put_value(:metadata_page,metadata)
       metadata
     end
+    
     
     # Computes diffs between master doc and client doc, trims it to page size, 
     # stores page, and returns page as hash  
@@ -285,6 +313,8 @@ module Rhosync
       if stored_token 
         if token and stored_token == token
           @client.put_value(:page_token,nil)
+          @client.flash_data(:schema_page)
+          @client.flash_data(:metadata_page)
           @client.flash_data(:create_links_page)
           @client.flash_data(:page)
           @client.flash_data(:delete_page)

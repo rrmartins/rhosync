@@ -210,12 +210,12 @@ module Rhosync
     end
     
     # Metadata Operation; source adapter returns json
-    def _get_metadata
-      if @adapter.respond_to?(:metadata)
-        metadata = @adapter.metadata 
-        if metadata
-          @source.put_value(:metadata,metadata)
-          @source.put_value(:metadata_sha1,Digest::SHA1.hexdigest(metadata))
+    def _get_data(method)
+      if @adapter.respond_to?(method)
+        data = @adapter.send(method) 
+        if data
+          @source.put_value(method,data)
+          @source.put_value("#{method}_sha1",Digest::SHA1.hexdigest(data))
         end
       end
     end
@@ -232,7 +232,9 @@ module Rhosync
           @adapter.save(client.docname(:search))
         else
           errordoc = @source.docname(:errors)
-          _get_metadata
+          [:metadata,:schema].each do |method|
+            _get_data(method)
+          end  
           @adapter.do_query(params)
         end
         # operation,sync succeeded, remove errors

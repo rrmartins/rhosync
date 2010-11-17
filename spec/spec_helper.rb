@@ -174,6 +174,24 @@ module TestHelpers
     end
   end
   
+  def mock_schema_method(adapters, &block)
+    adapters.each do |klass|
+      klass.class_eval 'def schema
+        {
+          "property" => {
+            "name" => "string",
+            "brand" => "string"
+          },
+          "version" => "1.0"
+        }.to_json
+      end'
+    end
+    yield
+    adapters.each do |klass|
+      klass.class_eval "def schema; end"
+    end
+  end
+  
   def unzip_file(file,file_dir)
     Zip::ZipFile.open(file) do |zip_file|
       zip_file.each do |f|

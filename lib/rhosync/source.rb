@@ -15,7 +15,6 @@ module Rhosync
     field :queue,:string
     field :query_queue,:string
     field :cud_queue,:string
-    field :schema, :string
     attr_accessor :app_id, :user_id
     validates_presence_of :name #, :source_id
     
@@ -98,6 +97,10 @@ module Rhosync
     # Return the app the source belongs to
     def app
       @app ||= App.load(self.app_id)
+    end
+    
+    def schema
+      @schema ||= self.get_value(:schema)
     end
     
     def read_state

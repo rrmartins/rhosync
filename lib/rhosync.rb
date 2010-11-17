@@ -91,7 +91,8 @@ module Rhosync
       end
       sources = config[:sources] || []
       sources.each do |source_name,fields|
-        if Source.is_exist?(source_name)  
+        check_for_schema_field!(fields)
+        if Source.is_exist?(source_name)
           s = Source.load(source_name,{:app_id => app.name,:user_id => '*'})
           s.update(fields)
         else  
@@ -141,6 +142,13 @@ module Rhosync
       log "WARNING: Change the session secret in config.ru from <changeme> to something secure."
       log "  i.e. running `rake secret` in a rails app will generate a secret you could use.\n\n"
       log "*"*60
+    end
+  end
+  
+  def check_for_schema_field!(fields)
+    if fields['schema']
+      log "ERROR: 'schema' field in settings.yml is not supported anymore, please use source adapter schema method!"
+      exit(1)
     end
   end
 

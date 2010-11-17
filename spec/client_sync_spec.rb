@@ -405,6 +405,92 @@ describe "ClientSync" do
       Store.get_data(@cs.client.docname(:page)).should == {}              
       @c.get_value(:page_token).should be_nil
     end
+    
+    it "should send metadata with page" do
+      expected = {'1'=>@product1}
+      set_state('test_db_storage' => expected)
+      metadata = "{\"foo\":\"bar\"}"
+      mock_metadata_method([SampleAdapter]) do
+        result = @cs.send_cud
+        token = @c.get_value(:page_token)
+        result.should == [{"version"=>ClientSync::VERSION},{"token"=>token}, 
+          {"count"=>1}, {"progress_count"=>0},{"total_count"=>1},
+          {'metadata'=>metadata,'insert'=>expected}]
+        @c.get_value(:metadata_page).should == metadata
+      end
+    end
+    
+    it "should send metadata with resend page" do
+      expected = {'1'=>@product1}
+      set_state('test_db_storage' => expected)
+      mock_metadata_method([SampleAdapter]) do
+        result = @cs.send_cud
+        token = @c.get_value(:page_token)
+        @cs.send_cud.should == [{"version"=>ClientSync::VERSION},{"token"=>token}, 
+          {"count"=>1}, {"progress_count"=>0},{"total_count"=>1},
+          {'metadata'=>"{\"foo\":\"bar\"}",'insert'=>expected}] 
+      end
+    end
+    
+    it "should ack metadata page with ack token" do
+      expected = {'1'=>@product1}
+      set_state('test_db_storage' => expected)
+      mock_metadata_method([SampleAdapter]) do
+        result = @cs.send_cud
+        token = @c.get_value(:page_token)
+        @cs.send_cud(token).should == [{"version"=>ClientSync::VERSION},{"token"=>""}, 
+          {"count"=>0}, {"progress_count"=>1},{"total_count"=>1},{}]
+        @c.get_value(:metadata_page).should be_nil
+      end
+    end
+    
+    it "shouldn't send schema-changed if client schema sha1 is nil" do
+      expected = {'1'=>@product1}
+      set_state('test_db_storage' => expected)
+      mock_schema_method([SampleAdapter]) do
+        result = @cs.send_cud
+        token = @c.get_value(:page_token)
+        result.should ==  [{"version"=>ClientSync::VERSION},{"token"=>token}, 
+          {"count"=>1}, {"progress_count"=>0},{"total_count"=>1},{'insert'=>expected}]
+        @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+      end
+    end
+    
+    it "should send schema-changed instead of page" do
+      mock_schema_method([SampleAdapter]) do
+        @c.put_value(:schema_sha1,'foo')
+        result = @cs.send_cud
+        token = @c.get_value(:page_token)
+        result.should ==  [{"version"=>ClientSync::VERSION},{"token"=>token}, 
+          {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{'schema-changed'=>'true'}]
+        @c.get_value(:schema_page).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+        @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+      end
+    end
+    
+    it "should re-send schema-changed if no token sent" do
+      mock_schema_method([SampleAdapter]) do
+        @c.put_value(:schema_sha1,'foo')
+        result = @cs.send_cud
+        token = @c.get_value(:page_token)
+        @cs.send_cud.should ==  [{"version"=>ClientSync::VERSION},{"token"=>token}, 
+          {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{'schema-changed'=>'true'}]
+        @c.get_value(:schema_page).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+        @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+      end
+    end
+    
+    it "should ack schema-changed with token" do
+      mock_schema_method([SampleAdapter]) do
+        @c.put_value(:schema_sha1,'foo')
+        result = @cs.send_cud
+        token = @c.get_value(:page_token)
+        @cs.send_cud(token).should ==  [{"version"=>ClientSync::VERSION},{"token"=>""}, 
+          {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{}]
+        @c.get_value(:schema_page).should be_nil
+        @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+      end
+    end
   end
   
   describe "bulk data" do
@@ -451,7 +537,6 @@ describe "ClientSync" do
         :app_id => @a.id,
         :user_id => name,
         :sources => [@s_fields[:name]])
-      puts "data: #{data.inspect}"
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,name))
       data = BulkData.load(bulk_data_docname(@a.id,name))
       data.url.should match /a%20b/

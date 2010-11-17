@@ -43,6 +43,18 @@ describe "Rhosync" do
     App.load(@test_app_name).sources.members.should == []
   end
   
+  it "should exit if schema config exists" do
+    config = Rhosync.get_config(get_testapp_path)
+    config[:sources]['FixedSchemaAdapter'].merge!(
+      'schema' => {'property' => 'foo'}
+    )
+    Rhosync.stub!(:get_config).and_return(config)
+    Rhosync.should_receive(:log).once.with(
+      "ERROR: 'schema' field in settings.yml is not supported anymore, please use source adapter schema method!"
+    )
+    lambda { Rhosync.bootstrap(get_testapp_path) }.should raise_error(SystemExit)
+  end
+  
   it "should add associations during bootstrap" do
     Rhosync.bootstrap(get_testapp_path)
     s = Source.load('SampleAdapter',{:app_id => @test_app_name,:user_id => '*'})

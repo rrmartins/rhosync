@@ -127,17 +127,7 @@ describe "Server" do
       @source_config = {
         "sources"=>
         {"FixedSchemaAdapter"=>
-          {"schema"=>
-            {"property"=>
-              {"image_url_cropped"=>"blob,overwrite",
-               "price"=>"string",
-               "brand"=>"string",
-               "name"=>"string",
-               "image_url"=>"blob"},
-             "unique_index"=>{"by_price"=>"price"},
-             "version"=>"1.0",
-             "index"=>{"by_name_brand"=>"name,brand"}},
-           "poll_interval"=>300,
+          {"poll_interval"=>300,
            "sync_type"=>"incremental",
            "belongs_to"=>[{"brand"=>"SampleAdapter"}]},
          "SampleAdapter"=>{"poll_interval"=>300},

@@ -72,6 +72,17 @@ describe "SourceSync" do
       end
     end
     
+    it "should process source adapter schema" do
+      mock_schema_method([SampleAdapter]) do
+        expected = {'1'=>@product1,'2'=>@product2}
+        set_state('test_db_storage' => expected)
+        @ss.process_query
+        verify_result(@s.docname(:md) => expected,
+          @s.docname(:schema) => "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}",
+          @s.docname(:schema_sha1) => "8c148c8c1a66c7baf685c07d58bea360da87981b")
+      end
+    end
+    
     it "should process source adapter with stash" do
       expected = {'1'=>@product1,'2'=>@product2}
       set_state('test_db_storage' => expected)

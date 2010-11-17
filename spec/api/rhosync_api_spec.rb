@@ -168,8 +168,7 @@ describe "RhosyncApi" do
       {"name"=>"has_many", "type"=>"string", "value"=>"FixedSchemaAdapter,brand"},
       {"name"=>"queue", "value"=>nil, "type"=>"string"}, 
       {"name"=>"query_queue", "value"=>nil, "type"=>"string"}, 
-      {"name"=>"cud_queue", "value"=>nil, "type"=>"string"},
-      {"name"=>"schema", "value"=>nil, "type"=>"string"}]
+      {"name"=>"cud_queue", "value"=>nil, "type"=>"string"}]
   end
  
   it "should list source attributes using rest call" do

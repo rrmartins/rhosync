@@ -278,7 +278,6 @@ module Rhosync
       else  
         search_token = @client.get_value(:search_token)
         search_token ||= ''
-        #res,diffsize = compute_search 
         return [] if res.empty?
         [ {'version'=>VERSION},
           {'token' => search_token},

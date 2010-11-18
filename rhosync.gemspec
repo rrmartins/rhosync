@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{rhosync}
-  s.version = "2.0.9"
+  s.version = "2.1.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rhomobile"]
-  s.date = %q{2010-10-14}
+  s.date = %q{2010-11-17}
   s.default_executable = %q{rhosync}
   s.description = %q{RhoSync Synchronization Framework and related command-line utilities}
   s.email = %q{dev@rhomobile.com}
@@ -31,6 +31,7 @@ Gem::Specification.new do |s|
      "bench/benchapp/settings/settings.yml",
      "bench/benchapp/sources/mock_adapter.rb",
      "bench/benchapp/sources/queue_mock_adapter.rb",
+     "bench/benchapp/tmp/restart.txt",
      "bench/lib/bench.rb",
      "bench/lib/bench/cli.rb",
      "bench/lib/bench/logging.rb",
@@ -56,10 +57,6 @@ Gem::Specification.new do |s|
      "bench/spec/result_spec.rb",
      "bench/spec/utils_spec.rb",
      "bin/rhosync",
-     "doc/protocol.html",
-     "doc/public/css/print.css",
-     "doc/public/css/screen.css",
-     "doc/public/css/style.css",
      "generators/rhosync.rb",
      "generators/templates/application/Rakefile",
      "generators/templates/application/application.rb",
@@ -90,6 +87,7 @@ Gem::Specification.new do |s|
      "lib/rhosync/api/reset.rb",
      "lib/rhosync/api/set_db_doc.rb",
      "lib/rhosync/api/set_refresh_time.rb",
+     "lib/rhosync/api/stats.rb",
      "lib/rhosync/api/update_user.rb",
      "lib/rhosync/api/upload_file.rb",
      "lib/rhosync/api_token.rb",
@@ -105,13 +103,26 @@ Gem::Specification.new do |s|
      "lib/rhosync/console/app/helpers/helpers.rb",
      "lib/rhosync/console/app/public/ThickBox.css",
      "lib/rhosync/console/app/public/home.css",
-     "lib/rhosync/console/app/public/images/header_halo copy.jpg",
+     "lib/rhosync/console/app/public/images/foot_logo_rhosync.png",
      "lib/rhosync/console/app/public/images/header_halo.jpg",
      "lib/rhosync/console/app/public/images/land_separator.gif",
      "lib/rhosync/console/app/public/images/landing_header.jpg",
      "lib/rhosync/console/app/public/images/logo_rhosync.png",
      "lib/rhosync/console/app/public/images/rhomobile_rhohub_logo.png",
      "lib/rhosync/console/app/public/images/tabs_separator.png",
+     "lib/rhosync/console/app/public/jqplot/excanvas.min.js",
+     "lib/rhosync/console/app/public/jqplot/jqplot.barRenderer.min.js",
+     "lib/rhosync/console/app/public/jqplot/jqplot.canvasAxisLabelRenderer.js",
+     "lib/rhosync/console/app/public/jqplot/jqplot.canvasAxisTickRenderer.js",
+     "lib/rhosync/console/app/public/jqplot/jqplot.canvasTextRenderer.js",
+     "lib/rhosync/console/app/public/jqplot/jqplot.categoryAxisRenderer.min.js",
+     "lib/rhosync/console/app/public/jqplot/jqplot.cursor.js",
+     "lib/rhosync/console/app/public/jqplot/jqplot.dateAxisRenderer.js",
+     "lib/rhosync/console/app/public/jqplot/jqplot.dateAxisRenderer.min.js",
+     "lib/rhosync/console/app/public/jqplot/jqplot.pointLabels.min.js",
+     "lib/rhosync/console/app/public/jqplot/jquery-1.4.2.min.js",
+     "lib/rhosync/console/app/public/jqplot/jquery.jqplot.min.css",
+     "lib/rhosync/console/app/public/jqplot/jquery.jqplot.min.js",
      "lib/rhosync/console/app/public/main.css",
      "lib/rhosync/console/app/public/reset.css",
      "lib/rhosync/console/app/public/style.css",
@@ -130,6 +141,7 @@ Gem::Specification.new do |s|
      "lib/rhosync/console/app/views/headermenu.erb",
      "lib/rhosync/console/app/views/home.erb",
      "lib/rhosync/console/app/views/index.erb",
+     "lib/rhosync/console/app/views/jqplot.erb",
      "lib/rhosync/console/app/views/layout.erb",
      "lib/rhosync/console/app/views/login.erb",
      "lib/rhosync/console/app/views/newuser.erb",
@@ -191,6 +203,7 @@ Gem::Specification.new do |s|
      "spec/api/rhosync_api_spec.rb",
      "spec/api/set_db_doc_spec.rb",
      "spec/api/set_refresh_time_spec.rb",
+     "spec/api/stats_spec.rb",
      "spec/api/update_user_spec.rb",
      "spec/api/upload_file_spec.rb",
      "spec/api_token_spec.rb",
@@ -277,6 +290,7 @@ Gem::Specification.new do |s|
      "spec/api/rhosync_api_spec.rb",
      "spec/api/set_db_doc_spec.rb",
      "spec/api/set_refresh_time_spec.rb",
+     "spec/api/stats_spec.rb",
      "spec/api/update_user_spec.rb",
      "spec/api/upload_file_spec.rb",
      "spec/api_token_spec.rb",

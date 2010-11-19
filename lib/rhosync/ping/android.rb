@@ -24,6 +24,7 @@ module Rhosync
     end
     
     def self.c2d_message(params)
+      params.reject! {|k,v| v.nil? || v.length == 0}
       data = {}
       data['registration_id'] = params['device_pin']
       data['collapse_key'] = (rand * 100000000).to_i.to_s

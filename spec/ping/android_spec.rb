@@ -42,4 +42,14 @@ describe "Ping Android" do
     actual['collapse_key'] = "RAND_KEY" unless actual['collapse_key'].nil?
     actual.should == expected
   end
+  
+  it "should trim empty or nil params from c2d_message" do
+    expected = {'registration_id' => @c.device_pin, 'collapse_key' => "RAND_KEY",
+      'data.vibrate' => '5', 'data.do_sync' => '', 'data.sound' => "hello.mp3"}
+    params = {"device_pin" => @c.device_pin,
+      "sources" => [], "message" => '', "vibrate" => '5', "sound" => 'hello.mp3'}
+    actual = Android.c2d_message(params)
+    actual['collapse_key'] = "RAND_KEY" unless actual['collapse_key'].nil?
+    actual.should == expected
+  end
 end

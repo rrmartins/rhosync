@@ -100,8 +100,11 @@ module Rhosync
         user = current_user
         if params[:source_name] and user
           @source = Source.load(params[:source_name],
-            {:user_id => user.login,:app_id => APP_NAME}) 
+            {:user_id => user.login,:app_id => APP_NAME})
+          raise "ERROR: Source '#{params[:source_name]}' requested by client doesn't exist.\n" unless @source
+          @source
         else
+          log "ERROR: Can't load source, no source_name provided.\n"
           nil
         end
       end

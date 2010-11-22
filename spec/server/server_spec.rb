@@ -12,9 +12,7 @@ describe "Server" do
 
   include Rack::Test::Methods
   include Rhosync
-  
-  it_should_behave_like "DBObjectsHelper"
-  
+    
   before(:each) do
     require File.join(get_testapp_path,@test_app_name)
     Rhosync.bootstrap(get_testapp_path) do |rhosync|
@@ -28,6 +26,8 @@ describe "Server" do
     Rhosync::Server.use Rack::Static, :urls => ["/data"], 
       :root =>  File.expand_path(File.join(File.dirname(__FILE__),'..','apps','rhotestapp'))
   end
+  
+  it_should_behave_like "DBObjectsHelper"
 
   def app
     @app ||= Rhosync::Server.new
@@ -245,6 +245,12 @@ describe "Server" do
       last_response.should be_ok
       JSON.parse(last_response.body).should == [{"version"=>ClientSync::VERSION},{"token"=>''}, 
         {"count"=>0}, {"progress_count"=>2}, {"total_count"=>2},{}]
+    end
+    
+    it "should return error if source_name is unknown" do
+      get "/application",:client_id => @c.id,:source_name => 'Broken',:version => ClientSync::VERSION
+      last_response.status.should == 500
+      last_response.body.should == "ERROR: Source 'Broken' requested by client doesn't exist.\n"
     end
     
     it "should get deletes json" do

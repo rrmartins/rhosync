@@ -208,6 +208,12 @@ module Rhosync
       log "*"*60
     end
   end
+  
+  def expire_bulk_data(username, partition = :user)
+    name = BulkData.get_name(partition,username)
+    data = BulkData.load(name)
+    data.refresh_time = Time.now.to_i if data
+  end
 
   def unzip_file(file_dir,params)
     uploaded_file = File.join(file_dir, params[:filename])

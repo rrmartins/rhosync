@@ -73,9 +73,7 @@ module Rhosync
     end
     
     def expire_bulk_data(partition = :user)
-      name = BulkData.get_name(partition,current_user.login)
-      data = BulkData.load(name)
-      data.refresh_time = Time.now.to_i if data
+      Rhosync.expire_bulk_data(current_user.login,partition)
     end
   
     def create(name_value_list); end

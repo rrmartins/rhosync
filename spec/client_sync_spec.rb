@@ -491,6 +491,27 @@ describe "ClientSync" do
         @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
       end
     end
+    
+    it "should expire bulk data if schema changed" do
+      docname = bulk_data_docname(@a.id,@u.id)
+      data = BulkData.create(:name => docname,
+        :state => :inprogress,
+        :app_id => @a.id,
+        :user_id => @u.id,
+        :sources => [@s_fields[:name]])
+      data.refresh_time = Time.now.to_i + 600
+      mock_schema_method([SampleAdapter]) do
+        @c.put_value(:schema_sha1,'foo')
+        result = @cs.send_cud
+        token = @c.get_value(:page_token)
+        @cs.send_cud(token).should ==  [{"version"=>ClientSync::VERSION},{"token"=>""}, 
+          {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{}]
+        @c.get_value(:schema_page).should be_nil
+        @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+        data = BulkData.load(docname)
+        data.refresh_time.should <= Time.now.to_i
+      end 
+    end
   end
   
   describe "bulk data" do

@@ -55,6 +55,7 @@ module Rhosync
     def send_new_page
       token,progress_count,total_count,res = '',0,0,{}
       if schema_changed?
+        _expire_bulk_data
         token = compute_token(@client.docname(:page_token))
         res = {'schema-changed' => 'true'}
       else  
@@ -243,6 +244,14 @@ module Rhosync
     end
     
     private
+    
+    # expires the bulk data for the client
+    def _expire_bulk_data
+      [:user,:app].each do |partition|
+        Rhosync.expire_bulk_data(@client.user_id,partition)
+      end
+    end
+    
     def _resend_search_result
       res = @client.get_data(:search_page)
        _format_search_result(res,res.size)

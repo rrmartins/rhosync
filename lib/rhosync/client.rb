@@ -60,6 +60,8 @@ module Rhosync
     end
     
     def update_clientdoc(sources)
+      # TODO: We need to store schema info and data info in bulk data
+      # source masterdoc and source schema might have changed!
       sources.each do |source|
         s = Source.load(source,{:app_id => app_id,:user_id => user_id})
         unless s.sync_type.to_sym == :bulk_sync_only

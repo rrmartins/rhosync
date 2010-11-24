@@ -61,6 +61,16 @@ describe "Client" do
       @s.docname(:md_copy) => @data)
   end
   
+  it "should update client schema_sha1" do
+    set_state(@s.docname(:md_copy) => @data, 
+      @s.docname(:schema_sha1) => 'foobar',
+      @c.docname(:cd) => {'foo' => {'bar' => 'abc'}})
+    @c.update_clientdoc([@s_fields[:name]])
+    verify_result(@c.docname(:cd) => @data,
+      @s.docname(:md_copy) => @data,
+      @c.docname(:schema_sha1) => 'foobar')  
+  end
+  
   describe "Client Stats" do
     
     before(:each) do

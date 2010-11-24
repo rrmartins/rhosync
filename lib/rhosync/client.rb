@@ -66,6 +66,7 @@ module Rhosync
           self.source_name = source
           Store.clone(s.docname(:md_copy),self.docname(:cd))
         end
+        self.put_value(:schema_sha1,s.get_value(:schema_sha1))
       end
     end
     

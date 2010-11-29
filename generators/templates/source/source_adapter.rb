@@ -40,7 +40,7 @@ class <%=class_name%> < SourceAdapter
     # TODO: write some code here if applicable
     # be sure to have a hash key and value for "object"
     # for now, we'll say that its OK to not have a delete operation
-    # raise "Please provide some code to delete a single object in the backend application using the hash values in name_value_list"
+    # raise "Please provide some code to delete a single object in the backend application using the object_id"
   end
  
   def logoff

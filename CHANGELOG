@@ -6,6 +6,12 @@
 * #5821277 - http stats by source not showing
 * #5899454 - move lock prefix to beginning so we don't return stats keys with it
 * #5822966 - bulk sync data file cannot handle space in the username
+* #6450519 - blob sync resend_page doesn't send metadata
+* #4646791 - cryptic error message if client exists, but source name is bogus
+* #6827511 - fill in schema column in bulk sync file sources table
+* #4490679 - support schema method in source adapter (runtime schema for bulk data)
+* #6573429 - if schema changed in any adapter, invalidate bulk data file
+* #7034095 - don't ping device if device_pin is empty or nil
 
 ## 2.0.9
 * #5154725 - stats framework

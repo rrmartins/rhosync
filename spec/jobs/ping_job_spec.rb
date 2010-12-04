@@ -32,4 +32,14 @@ describe "PingJob" do
     lambda { PingJob.perform(params) }.should_not raise_error
   end
   
+  it "should skip ping for empty device_pin" do
+    params = {"user_id" => @u.id, "api_token" => @api_token,
+      "sources" => [@s.name], "message" => 'hello world', 
+      "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3'}
+    @c.device_type = 'blackberry'
+    @c.device_pin = nil
+    PingJob.should_receive(:log).once.with("Skipping ping for non-registered client_id '#{@c.id}'...")
+    lambda { PingJob.perform(params) }.should_not raise_error
+  end
+  
 end

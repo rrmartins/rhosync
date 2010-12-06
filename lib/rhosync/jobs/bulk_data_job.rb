@@ -55,7 +55,7 @@ module Rhosync
       data = source.get_data(:md)
       counter = {}
       columns,qm = [],[]
-      create_table = ["\"object\" varchar"]
+      create_table = ["\"object\" varchar(255) PRIMARY KEY"]
       schema = JSON.parse(source.schema)
       
       db.transaction do |database|
@@ -84,7 +84,7 @@ module Rhosync
         schema['index'].each do |key,value|
           val2 = ""
           value.split(',').each do |col|
-            val2 += ',' if val2.length() > 0
+            val2 += ',' if val2.length > 0
             val2 += "\"#{col}\""
           end
           
@@ -95,7 +95,7 @@ module Rhosync
         schema['unique_index'].each do |key,value|
           val2 = ""
           value.split(',').each do |col|
-            val2 += ',' if val2.length() > 0
+            val2 += ',' if val2.length > 0
             val2 += "\"#{col}\""
           end
         

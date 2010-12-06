@@ -18,7 +18,7 @@ class Application < Rhosync::Base
     # Override this by creating a copy of the file somewhere
     # and returning the path to that file (then don't call super!):
     # i.e. /mnt/myimages/soccer.png
-    def store_blob(blob)
+    def store_blob(obj,field_name,blob)
       super #=> returns blob[:tempfile]
     end
   end

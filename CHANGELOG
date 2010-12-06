@@ -12,6 +12,7 @@
 * #4490679 - support schema method in source adapter (runtime schema for bulk data)
 * #6573429 - if schema changed in any adapter, invalidate bulk data file
 * #7034095 - don't ping device if device_pin is empty or nil
+* #7089047 - fixed application.rb template store_blob method
 
 ## 2.0.9
 * #5154725 - stats framework

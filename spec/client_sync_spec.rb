@@ -1,5 +1,4 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
-require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 describe "ClientSync" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
@@ -11,14 +10,49 @@ describe "ClientSync" do
     before(:each) do
       @cs = ClientSync.new(@s,@c,2)
     end
-
-    describe "cud methods" do
-      it "should handle receive cud" do
-        params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
-        @cs.receive_cud(params)
-        verify_result(@cs.client.docname(:create) => {},
-          @cs.client.docname(:update) => {},
-          @cs.client.docname(:delete) => {})
+    
+    it "should handle send cud if pass_through is set" do
+      data = {'1'=>@product1,'2'=>@product2}
+      expected = {'insert'=>data}
+      set_test_data('test_db_storage',data)
+      @s.pass_through = 'true'
+      @cs.send_cud.should == [{'version'=>ClientSync::VERSION},
+        {'token'=>@c.get_value(:page_token)},
+        {'count'=>data.size},{'progress_count'=>data.size},
+        {'total_count'=>data.size},expected]
+      verify_result(@cs.client.docname(:page) => {},
+        @cs.client.docname(:cd) => {})
+    end
+    
+    it "should return read errors in send cud" do
+      msg = "Error during query"
+      data = {'1'=>@product1,'2'=>@product2}
+      set_test_data('test_db_storage',data,msg,'query error')
+      @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
+        {"token"=>""}, {"count"=>0}, {"progress_count"=>0},{"total_count"=>0}, 
+        {"source-error"=>{"query-error"=>{"message"=>msg}}}]
+    end
+    
+    it "should return login errors in send cud" do
+      @u.login = nil
+      @cs.send_cud.should == [{"version"=>ClientSync::VERSION},{"token"=>""}, 
+        {"count"=>0}, {"progress_count"=>0}, {"total_count"=>0},
+        {'source-error'=>{"login-error"=>{"message"=>"Error logging in"}}}]
+    end
+    
+    it "should return logoff errors in send cud" do
+      msg = "Error logging off"
+      set_test_data('test_db_storage',{},msg,'logoff error')
+      @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
+        {"token"=>@c.get_value(:page_token)}, 
+        {"count"=>1}, {"progress_count"=>0}, {"total_count"=>1}, 
+        {"source-error"=>{"logoff-error"=>{"message"=>msg}}, 
+        "insert"=>{ERROR=>{"name"=>"logoff error", "an_attribute"=>msg}}}]
+    end
+    
+    describe "send errors in send_cud" do
+      it "should handle create errors" do
+        receive_and_send_cud('create')
       end
 
       it "should handle send cud" do

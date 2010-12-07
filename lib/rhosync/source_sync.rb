@@ -22,6 +22,33 @@ module Rhosync
       _measure_and_process_cud('delete',client_id)
     end
     
+    # Pass through CUD to adapter, no data stored
+    def pass_through_cud(cud_params,query_params)
+      res,processed_objects = {},[]
+      begin
+        ['create','update','delete'].each do |op|
+          key,objects = op,cud_params[op]
+          objects.each do |key,value|
+            case op
+            when 'create'
+              @adapter.send(op.to_sym,value)
+            when 'update'
+              value['id'] = key
+              @adapter.send(op.to_sym,value)
+            when 'delete'
+              @adapter.send(op.to_sym,key)
+            end
+            process_objects << key
+          end if objects
+        end
+      rescue Exception => e
+        log "Error in #{op} pass through method: #{e.message}"
+        res['error'] = { 'operation' => op, 'message' => e.message } 
+      end
+      res['processed'] = process_objects
+      res.to_json
+    end
+    
     # Read Operation; params are query arguments
     def read(client_id=nil,params=nil)
       _read('query',client_id,params)
@@ -59,13 +86,15 @@ module Rhosync
     end
     
     def do_query(params=nil)
+      result = nil
       @source.if_need_refresh do
         Stats::Record.update("source:query:#{@source.name}") do
           return if _auth_op('login') == false
-          self.read(nil,params)
+          result = self.read(nil,params)
           _auth_op('logoff')
         end  
       end
+      result
     end
     
     # Enqueue a job for the source based on job type
@@ -225,19 +254,20 @@ module Rhosync
     # Read Operation; params are query arguments
     def _read(operation,client_id,params=nil)
       errordoc = nil
+      result = nil
       begin
         if operation == 'search'
           client = Client.load(client_id,{:source_name => @source.name})
           errordoc = client.docname(:search_errors)
           compute_token(client.docname(:search_token))
-          @adapter.search(params)
+          result = @adapter.search(params)
           @adapter.save(client.docname(:search))
         else
           errordoc = @source.docname(:errors)
           [:metadata,:schema].each do |method|
             _get_data(method)
           end  
-          @adapter.do_query(params)
+          result = @adapter.do_query(params)
         end
         # operation,sync succeeded, remove errors
         Store.lock(errordoc) do
@@ -251,7 +281,7 @@ module Rhosync
           Store.put_data(errordoc,{"#{operation}-error"=>{'message'=>e.message}},true)
         end
       end
-      true
+      result
     end
   end
 end

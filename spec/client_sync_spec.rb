@@ -35,6 +35,19 @@ describe "ClientSync" do
         @cs.client.docname(:cd) => data)
     end
     
+    it "should handle send cud if pass_through is set" do
+      data = {'1'=>@product1,'2'=>@product2}
+      expected = {'insert'=>data}
+      set_test_data('test_db_storage',data)
+      @s.pass_through = 'true'
+      @cs.send_cud.should == [{'version'=>ClientSync::VERSION},
+        {'token'=>@c.get_value(:page_token)},
+        {'count'=>data.size},{'progress_count'=>data.size},
+        {'total_count'=>data.size},expected]
+      verify_result(@cs.client.docname(:page) => {},
+        @cs.client.docname(:cd) => {})
+    end
+    
     it "should return read errors in send cud" do
       msg = "Error during query"
       data = {'1'=>@product1,'2'=>@product2}

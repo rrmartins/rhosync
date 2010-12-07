@@ -12,22 +12,30 @@ module Rhosync
     end
     
     def receive_cud(cud_params={},query_params=nil)
-      _process_blobs(cud_params)
-      processed = 0
-      ['create','update','delete'].each do |op|
-        key,value = op,cud_params[op]
-        processed += _receive_cud(key,value) if value
+      if @source.is_pass_through
+        @source_sync.pass_through_cud(cud_params,query_params) if value
+      else  
+        _process_blobs(cud_params)
+        processed = 0
+        ['create','update','delete'].each do |op|
+          key,value = op,cud_params[op]
+          processed += _receive_cud(key,value) if value
+        end
+        @source_sync.process_cud(@client.id) if processed > 0
       end
-      @source_sync.process_cud(@client.id) if processed > 0
     end
     
     def send_cud(token=nil,query_params=nil)
       res = []
-      if not _ack_token(token)
+      if not _ack_token(token) and not @source.is_pass_through?
         res = resend_page(token)
       else
-        @source_sync.process_query(query_params)
-        res = send_new_page
+        query_result = @source_sync.process_query(query_params)
+        if @source.is_pass_through?
+          res = send_pass_through_data(query_result)
+        else
+          res = send_new_page
+        end
       end
       _format_result(res[0],res[1],res[2],res[3])
     end
@@ -75,6 +83,25 @@ module Rhosync
         @client.delete_data(:cd,res['delete'])
       end
       [token,progress_count,total_count,res]
+    end
+    
+    def send_pass_through_data(data)
+      data ||= {}
+      data.each_key do |object_id| 
+        data[object_id].each { |attrib,value| data[object_id][attrib] = '' if value.nil? }
+      end
+      token = ''
+      compute_errors_page
+      res = build_page do |r|
+        r['insert'] = data
+        r['metadata'] = compute_metadata
+      end
+      if res['insert']
+        token = compute_token(@client.docname(:page_token))
+      else
+        _delete_errors_page 
+      end    
+      [token,0,data.size,res]
     end
     
     # Resend token for a client, also sends exceptions
@@ -271,8 +298,8 @@ module Rhosync
     def _do_search(params={})
       # call source adapter search unless client is sending token for ack
       search_params = params[:search] if params
-      @source_sync.search(@client.id,search_params) if params.nil? or !params[:token]
-      res,diffsize = compute_search
+      res = @source_sync.search(@client.id,search_params) if params.nil? or !params[:token]
+      res,diffsize =  @source.is_pass_through? ? [res,res.size] : compute_search 
       formatted_res = _format_search_result(res,diffsize)      
       @client.flash_data('search*') if diffsize == 0
       formatted_res

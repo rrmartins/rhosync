@@ -15,6 +15,7 @@ module Rhosync
     field :queue,:string
     field :query_queue,:string
     field :cud_queue,:string
+    field :pass_through,:string
     attr_accessor :app_id, :user_id
     validates_presence_of :name #, :source_id
     
@@ -145,6 +146,10 @@ module Rhosync
       yield client_id,params if need_refresh
     end
         
+    def is_pass_through?
+      self.pass_through and self.pass_through == 'true'
+    end
+          
     private
     def self.validate_attributes(params)
       raise ArgumentError.new('Missing required attribute user_id') unless params[:user_id]

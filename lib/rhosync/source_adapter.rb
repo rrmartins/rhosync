@@ -62,7 +62,12 @@ module Rhosync
       @tmp_docname = @source.docname(:md) + get_random_uuid
       @stash_size = 0
       params ? self.query(params) : self.query
-      self.sync
+      if @source.is_pass_through?
+        @result
+      else
+        self.sync
+        true
+      end
     end
     
     def stash_result

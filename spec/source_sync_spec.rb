@@ -105,6 +105,16 @@ describe "SourceSync" do
       end
     end
     
+    it "should process source adapter with pass_through set" do
+      expected = {'1'=>@product1,'2'=>@product2}
+      set_state('test_db_storage' => expected)
+      @s.pass_through = 'true'
+      @ss.process_query.should == expected
+      verify_result(@s.docname(:md) => {},
+        @s.docname(:md_size) => nil)
+      @s.pass_through = nil
+    end
+    
     describe "create" do
       it "should do create where adapter.create returns nil" do
         set_state(@c.docname(:create) => {'2'=>@product2})
@@ -230,7 +240,7 @@ describe "SourceSync" do
         verify_result(@s.docname(:md) => expected, 
           @s.docname(:errors) => {})
       else
-        @ss.search(@c.id).should == true  
+        @ss.search(@c.id).should == expected
         verify_result(@c.docname(:search) => expected,
           @c.docname(:search_errors) => {})
       end
@@ -241,11 +251,11 @@ describe "SourceSync" do
       @ss.should_receive(:log).with("SourceAdapter raised #{operation} exception: #{msg}")
       set_test_data('test_db_storage',{},msg,"#{operation} error")
       if operation == 'query'
-        @ss.read.should == true
+        @ss.read.should be_nil
         verify_result(@s.docname(:md) => {},
           @s.docname(:errors) => {'query-error'=>{'message'=>msg}})
       else
-        @ss.search(@c.id).should == true
+        @ss.search(@c.id).should be_nil
         verify_result(@c.docname(:search) => {}, 
           @c.docname(:search_errors) => {'search-error'=>{'message'=>msg}})
       end

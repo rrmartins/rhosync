@@ -11,6 +11,15 @@ if windows?
 	$redis_zip = "C:/#{$redis_ver}.zip"
 	$redis_dest = "C:/"
 end
+
+def mk_bin_dir(bin_dir)
+  begin
+    mkdir_p bin_dir unless File.exists?(bin_dir)
+  rescue
+    puts "Can't create #{bin_dir}, maybe you need to run command as root?"
+    exit 1
+  end
+end
 	
 class RedisRunner
   
@@ -95,6 +104,9 @@ namespace :redis do
   task :install => [:about, :download, :make] do
   	unless windows?
 	    ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = "#{RedisRunner.prefix}bin"
+	    
+	    mk_bin_dir(bin_dir)
+	    
 	    %w(redis-benchmark redis-cli redis-server).each do |bin|
 	      sh "cp /tmp/redis/#{bin} #{bin_dir}"
 	    end
@@ -173,12 +185,9 @@ namespace :dtach do
       end
 
       ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = "#{RedisRunner.prefix}bin"
-      begin
-        mkdir_p bin_dir
-      rescue
-        puts "Can't create #{bin_dir}, maybe you need to run command as root?"
-        exit 1
-      end
+      
+      mk_bin_dir(bin_dir)
+	    
       Dir.chdir('/tmp/dtach-0.8/')
       sh 'cd /tmp/dtach-0.8/ && ./configure && make'
       sh "cp /tmp/dtach-0.8/dtach #{bin_dir}"

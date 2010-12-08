@@ -173,6 +173,12 @@ namespace :dtach do
       end
 
       ENV['PREFIX'] and bin_dir = "#{ENV['PREFIX']}/bin" or bin_dir = "#{RedisRunner.prefix}bin"
+      begin
+        mkdir_p bin_dir
+      rescue
+        puts "Can't create #{bin_dir}, maybe you need to run command as root?"
+        exit 1
+      end
       Dir.chdir('/tmp/dtach-0.8/')
       sh 'cd /tmp/dtach-0.8/ && ./configure && make'
       sh "cp /tmp/dtach-0.8/dtach #{bin_dir}"

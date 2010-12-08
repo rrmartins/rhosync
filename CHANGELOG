@@ -1,27 +1,4 @@
-## 2.2.0 (not released)
-* backtrace logging in source adapter method exceptions
-* returning string in authenticate instead of true sets the current user login name (Useful for OAuth2)
-* #11904353 - fixed broken 'rake console' task, added new 'rhosync' namespace: 'rake rhosync:console'  
-* #12105115 - removed unnecessary log4r dependency
-* added bundler to manage gem's dependencies, migrated from rspec1 to rspec2  
-* #5687948 - fixed issue "iPhone push specs failed" 						
-* #4614661 - fixed bug "Don't generate credentials argument in source adapters"
-
-## 2.1.2 (2011-03-18)
-* Use server-dir/redis.conf if not found at RedisRunner.prefix (via artemk) 
-* #8471337 - switch client user if it is not equal to current_user
-* Upgrade rest-client dependency which includes cookie escape fix
-* #10097347 - generate cryptographically secure secret key by default
-* Fixed 'application/json; charset=UTF-8' content handling in the server before filter
-* #11017509 - fixed sinatra 1.2 incompatibility with url() helper
-* #4569337 - use redis 2.2.2 by default
-
-## 2.1.1 (2011-01-04)
-* #7679395 - added support for gzipped bulk data files
-* #8167507 - fixed typo in console login page
-* #7025387 - customizable redis.conf for windows
-
-## 2.1.0 (2010-12-14)
+## 2.1.0
 * #4302316 - don't allow set blank admin password
 * #5672322 - stats for user count
 * #5672316 - stats for device count
@@ -37,8 +14,7 @@
 * #7034095 - don't ping device if device_pin is empty or nil
 * #7089047 - fixed application.rb template store_blob method
 * #7055889 - fixed schema tables should have 'object' primary key
-* #7217581 - use REDIS_HOME env var if it exists for rake redis:* tasks
-* #6645553 - detect and run thin if available, fallback to mongrel and die on webrick
+* #6011821 - try to make bin_dir on redis:install and dtach:install
 
 ## 2.0.9 (2010-10-14)
 * #5154725 - stats framework

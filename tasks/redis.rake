@@ -9,7 +9,7 @@ end
 if windows?
 	$redis_ver = "redis-1.2.6-windows"
 	$redis_zip = "C:/#{$redis_ver}.zip"
-	$redis_dest = "C:/"
+	$redis_dest = ENV['REDIS_HOME'] || "C:/"
 end
 
 def mk_bin_dir(bin_dir)

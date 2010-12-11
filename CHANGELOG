@@ -14,6 +14,7 @@
 * #7034095 - don't ping device if device_pin is empty or nil
 * #7089047 - fixed application.rb template store_blob method
 * #7055889 - fixed schema tables should have 'object' primary key
+* #7217581 - use REDIS_HOME env var if it exists for rake redis:* tasks
 
 ## 2.0.9
 * #5154725 - stats framework

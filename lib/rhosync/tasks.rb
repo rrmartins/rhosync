@@ -50,6 +50,35 @@ module Rhosync
     def windows?
       RUBY_PLATFORM =~ /(win|w)32$/
     end
+    
+    def thin?
+      begin
+        require 'thin'
+        'rackup -s thin'
+      rescue LoadError
+        nil
+      end
+    end
+    
+    def mongrel?
+      begin
+        require 'mongrel'
+        'rackup -s mongrel'
+      rescue LoadError
+        nil
+      end
+    end
+    
+    def report_missing_server
+      msg =<<-EOF
+Could not find 'thin' or 'mongrel' on your system.  Please install one:
+  gem install thin
+or
+  gem install mongrel
+EOF
+      puts msg
+      exit 1
+    end
   end
 end
 
@@ -206,13 +235,14 @@ namespace :rhosync do
   
   desc "Start rhosync server"
   task :start => :dtach_installed do
+    cmd = thin? || mongrel? || report_missing_server
     if windows?
       puts 'Starting server in new window...'
-      system('start cmd.exe /c rackup config.ru')
+      system("start cmd.exe /c #{cmd} config.ru")
     else
       puts 'Detach with Ctrl+\  Re-attach with rake rhosync:attach'
       sleep 2
-      sh "dtach -A #{rhosync_socket} rackup config.ru -P #{rhosync_pid}"
+      sh "dtach -A #{rhosync_socket} #{cmd} config.ru -P #{rhosync_pid}"
     end
   end
   

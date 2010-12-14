@@ -9,7 +9,11 @@ end
 if windows?
 	$redis_ver = "redis-1.2.6-windows"
 	$redis_zip = "C:/#{$redis_ver}.zip"
-	$redis_dest = ENV['REDIS_HOME'] || "C:/"
+	$redis_dest = "C:/"
+end
+
+def redis_home
+  ENV['REDIS_HOME'] || File.join($redis_dest,$redis_ver)
 end
 
 def mk_bin_dir(bin_dir)
@@ -52,7 +56,7 @@ class RedisRunner
   def self.start
   	if windows?
   		puts "Starting redis in a new window..."
-  		sh "start #{File.join($redis_dest,$redis_ver,'redis-server')}" rescue
+  		sh "start #{File.join(redis_home,'redis-server')}" rescue
   			"redis-server not installed on your path, please run 'rake redis:install' first."
 		else
       puts 'Detach with Ctrl+\  Re-attach with rake redis:attach'
@@ -135,7 +139,7 @@ namespace :redis do
 	  	require 'net/http'
 	  	require 'zip/zip'
 	  	
-	  	puts "Installing redis to #{$redis_dest}/#{$redis_ver}."
+	  	puts "Installing redis to #{redis_home}."
 	
 	    Net::HTTP.start("servicestack.googlecode.com") do |http|
 	      resp = http.get("/files/#{$redis_ver}.zip")

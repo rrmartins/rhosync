@@ -1,5 +1,6 @@
 require 'sqlite3'
 require 'zip/zip'
+require 'zlib'
 
 module Rhosync
   module BulkDataJob
@@ -153,7 +154,10 @@ module Rhosync
       end
       populate_sources_table(db,sources_refs)
       db.execute_batch(File.open(index,'r').read)
+      db.execute_batch( "VACUUM;");
+      db.close
       compress("#{bulk_data.dbfile}.rzip",bulk_data.dbfile)
+      gzip_compress("#{bulk_data.dbfile}.gzip",bulk_data.dbfile)
     end
     
     def self.create_hsql_data_file(bulk_data,ts)
@@ -166,6 +170,7 @@ module Rhosync
           'com.rhomobile.hsqldata.HsqlData',
           dbfile, hsql_file
         )
+      gzip_compress("#{hsql_file}.data.gzip","#{hsql_file}.data")
     end
     
     def self.get_file_args(bulk_data_name,ts)
@@ -180,5 +185,16 @@ module Rhosync
         zipfile.add(URI.escape(File.basename(file)),file)
       end
     end
+    
+    def self.gzip_compress(archive,file)
+      data = File.new(file, "rb")
+      File.open(archive, 'wb') do |f|
+          gz = Zlib::GzipWriter.new(f)
+          gz.write data.read
+          gz.close
+      end
+      data.close
+    end
+    
   end
 end

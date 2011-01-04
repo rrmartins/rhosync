@@ -96,6 +96,15 @@ section "uninstall"
     Call un.EnvVarUpdate
     Pop $R0
 
+    Push "PATH" 
+    Push "R" 
+    Push "HKLM" 
+    Push "$INSTDIR\redis-1.2.6-windows"
+    Call un.EnvVarUpdate
+    Pop $R0
+
+    DeleteRegValue HKLM "SYSTEM\CurrentControlSet\Control\Session Manager\Environment" REDIS_HOME
+
     RMDir /r /REBOOTOK $INSTDIR
  
 
@@ -172,6 +181,12 @@ Section "Redis" redisSection
   Call EnvVarUpdate
   Pop $R0
 
+  Push "REDIS_HOME" 
+  Push "P" 
+  Push "HKLM" 
+  Push "$INSTDIR\redis-1.2.6-windows"
+  Call EnvVarUpdate
+  Pop $R0
 
   ExecWait '$INSTDIR\redis-1.2.6-windows\redis-service.exe install' $0
   StrCmp $0 "0" continue wrong

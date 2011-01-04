@@ -1,3 +1,8 @@
+## 2.1.1
+* #7679395 - added support for gzipped bulk data files
+* #8167507 - fixed typo in console login page
+* #7025387 - customizable redis.conf for windows
+
 ## 2.1.0
 * #4302316 - don't allow set blank admin password
 * #5672322 - stats for user count

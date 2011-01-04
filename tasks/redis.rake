@@ -56,7 +56,7 @@ class RedisRunner
   def self.start
   	if windows?
   		puts "Starting redis in a new window..."
-  		sh "start #{File.join(redis_home,'redis-server')}" rescue
+  		sh "start #{File.join(redis_home,'redis-server')} #{File.join(redis_home,'redis.conf')}" rescue
   			"redis-server not installed on your path, please run 'rake redis:install' first."
 		else
       puts 'Detach with Ctrl+\  Re-attach with rake redis:attach'

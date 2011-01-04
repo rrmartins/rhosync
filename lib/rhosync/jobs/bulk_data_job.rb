@@ -189,9 +189,9 @@ module Rhosync
     def self.gzip_compress(archive,file)
       data = File.new(file, "rb")
       File.open(archive, 'wb') do |f|
-          gz = Zlib::GzipWriter.new(f)
-          gz.write data.read
-          gz.close
+        gz = Zlib::GzipWriter.new(f)
+        gz.write data.read
+        gz.close
       end
       data.close
     end

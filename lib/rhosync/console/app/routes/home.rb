@@ -37,7 +37,7 @@ class RhosyncConsole::Server
   end
   
   get '/loginpage' do
-    erb :login, :layout => :false
+    erb :login, :layout => false
   end
   
   get '/homepage' do

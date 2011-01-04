@@ -12,7 +12,7 @@ describe "BulkDataJob" do
     delete_data_directory
   end
   
-  it "should create sqlite data file from master document" do
+  it "should create bulk data files from master document" do
     set_state('test_db_storage' => @data)
     docname = bulk_data_docname(@a.id,@u.id)
     expected = { @s_fields[:name] => @data,
@@ -29,7 +29,9 @@ describe "BulkDataJob" do
     verify_result(@s.docname(:md) => @data,@s.docname(:md_copy) => @data)
     validate_db(data,expected).should == true
     File.exists?(data.dbfile+'.rzip').should == true
+    File.exists?(data.dbfile+'.gzip').should == true
     File.exists?(data.dbfile+'.hsqldb.data').should == true
+    File.exists?(data.dbfile+'.hsqldb.data.gzip').should == true
     File.exists?(data.dbfile+'.hsqldb.script').should == true
     File.exists?(data.dbfile+'.hsqldb.properties').should == true
     path = File.join(File.dirname(data.dbfile),'tmp')

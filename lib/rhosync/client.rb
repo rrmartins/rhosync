@@ -59,6 +59,13 @@ module Rhosync
       super
     end
     
+    def switch_user(new_user_id)
+      flash_data('*')
+      User.load(self.user_id).clients.delete(self.id)
+      User.load(new_user_id).clients << self.id
+      self.user_id = new_user_id
+    end
+    
     def update_clientdoc(sources)
       # TODO: We need to store schema info and data info in bulk data
       # source masterdoc and source schema might have changed!

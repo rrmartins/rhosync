@@ -112,7 +112,9 @@ module Rhosync
       def current_client
         if @client.nil? and params[:client_id]
           @client = Client.load(params[:client_id].to_s,
-            params[:source_name] ? {:source_name => current_source.name} : {:source_name => '*'}) 
+            params[:source_name] ? {:source_name => current_source.name} : {:source_name => '*'})
+          @client.switch_user(current_user.login) unless @client.user_id == current_user.login
+          @client
         end  
       end
       

@@ -53,6 +53,18 @@ describe "Client" do
     verify_result(docname => {})
   end
   
+  it "should switch client user and remove existing documents" do
+    docname = @c.docname(:cd)
+    set_state(docname => @data)
+    verify_result(@c.docname(:cd) => @data)
+    User.create({:login => 'user2'})
+    @c.switch_user('user2')    
+    verify_result(@c.docname(:cd) => {},docname => {})
+    @u.clients.members.should == []
+    @c.user_id.should == 'user2'
+    User.load('user2').clients.members.should == [@c.id]
+  end
+  
   it "should create cd as masterdoc clone" do
     set_state(@s.docname(:md_copy) => @data,
       @c.docname(:cd) => {'foo' => {'bar' => 'abc'}})

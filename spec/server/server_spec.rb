@@ -164,6 +164,17 @@ describe "Server" do
       JSON.parse(last_response.body).should == @source_config
       verify_result(@c.docname(:cd) => {})
     end
+    
+    it "should switch client user if client user_id doesn't match session user" do
+      set_test_data('test_db_storage',@data)
+      get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+      JSON.parse(last_response.body).last['insert'].should == @data
+      do_post "/application/clientlogin", "login" => 'user2', "password" => 'testpass'
+      data = {'1'=>@product1,'2'=>@product2}
+      set_test_data('test_db_storage',data)
+      get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+      JSON.parse(last_response.body).last['insert'].should == data
+    end
   end
   
   describe "source routes" do
@@ -252,7 +263,7 @@ describe "Server" do
       last_response.status.should == 500
       last_response.body.should == "ERROR: Source 'Broken' requested by client doesn't exist.\n"
     end
-    
+        
     it "should get deletes json" do
       cs = ClientSync.new(@s,@c,1)
       data = {'1'=>@product1,'2'=>@product2}

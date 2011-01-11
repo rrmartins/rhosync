@@ -36,7 +36,7 @@ class <%=class_name%> < SourceAdapter
     raise "Please provide some code to update a single record in the backend data source using the update_hash"
   end
  
-  def delete(object_id)
+  def delete(delete_hash)
     # TODO: write some code here if applicable
     # be sure to have a hash key and value for "object"
     # for now, we'll say that its OK to not have a delete operation

@@ -1,3 +1,6 @@
+## 2.1.2
+* #8471337 - switch client user if it is not equal to current_user
+
 ## 2.1.1
 * #7679395 - added support for gzipped bulk data files
 * #8167507 - fixed typo in console login page

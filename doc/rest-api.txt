@@ -1,5 +1,5 @@
 [[Category:RhoSyncPdf]]
-The RhoSync API allows you to control, monitor, and debug a running RhoSync application using a simple HTTP API.
+The RhoSync API allows you to control, monitor, and debug a running RhoSync application using a simple REST API.
 
 == API Errors ==
 All API calls will return http 200 and requested data (if applied). Otherwise, API will return http error code and specific error message in the http message body.

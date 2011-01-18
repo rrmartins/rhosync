@@ -69,7 +69,7 @@ class RhosyncConsole::Server
     s['data'] = [thisdata]
     s['options'] = options
     @sources << s
-    erb :jqplot, :layout => :false
+    erb :jqplot, :layout => false
   end
   
   get '/timing/usercount' do
@@ -156,7 +156,7 @@ class RhosyncConsole::Server
     end
     
     @data = [[[1,2],[3,4],[5,6]]].to_json
-    erb :jqplot, :layout => :false
+    erb :jqplot, :layout => false
   end
 
 
@@ -237,6 +237,6 @@ class RhosyncConsole::Server
     end
     
     @data = [[[1,2],[3,4],[5,6]]].to_json
-    erb :jqplot, :layout => :false
+    erb :jqplot, :layout => false
   end
 end

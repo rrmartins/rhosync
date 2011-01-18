@@ -244,7 +244,7 @@ Here's a complete example of how the completed [product adapter might look](http
     	rest_result = RestClient.get("#{@base}.json").body
 
 		if rest_result.code != 200
-		  raise SourceAdapterException.new("Error connecting to service")
+		  raise SourceAdapterException.new("Error connecting!")
 		end
 	    parsed = JSON.parse(rest_result)
 

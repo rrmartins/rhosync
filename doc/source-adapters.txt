@@ -5,13 +5,13 @@ Connecting to a backend service with RhoSync requires that you write a small amo
 
 ## Generate Source Adapter
 
-Adding a new source adapter to your rhosync application is simple:
+Adding a new source adapter to your RhoSync application is simple:
   	
 	:::term
 	$ cd storeserver
   	$ rhosync source product
 
-This will generate a new ruby class called sources/product.rb:
+This will generate a new ruby class called `sources/product.rb`:
 
 	:::ruby
 	class Product < SourceAdapter
@@ -61,7 +61,7 @@ This will generate a new ruby class called sources/product.rb:
 	  end
 	end
 
-It will also add a spec file spec/sources/product_spec.rb and edit settings/settings.yml and add the product adapter to the sources section with some default options:
+It also adds a spec file `spec/sources/product_spec.rb` and updates `settings/settings.yml` with the product adapter to the sources section with some default options:
 
  	:::yaml
 	:sources: 
@@ -69,7 +69,6 @@ It will also add a spec file spec/sources/product_spec.rb and edit settings/sett
     	:poll_interval: 300
 
 ## Source Adapter API
-
 The source adapter interface is described below, your source adapter can use any of these methods to interact with your backend service.
 
 ### `login`

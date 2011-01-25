@@ -116,6 +116,8 @@ Search your backend based on params and build a hash of hashes (optional).  Simi
 	    end
 	  end if parsed
 	end
+
+Next, you will need to add search to your Rhodes application. For details, see the [Rhodes search section](/rhodes/synchronization#filtering-datasets-with-search).
 	
 ### `create(create_hash)`
 Create a new record in the backend (optional).

@@ -41,7 +41,7 @@ If everything went well you should see:
 Defining RhoSync Source Adapters
 ---
 
-Once RhoSync is installed we're ready to build a RhoSync source to integrate with our backend application. To define a RhoSync source you just need to identify a handful of operations to interact with your backend data source: login, query, sync, create, update, delete and logoff. For more information please see the [[RhoSyncWritingApplication|Writing a RhoSync Application]] documentation.  
+Once RhoSync is installed we're ready to build a RhoSync source to integrate with our backend application. To define a RhoSync source you just need to identify a handful of operations to interact with your backend data source: login, query, sync, create, update, delete and logoff. For more information please see the [RhoSync source adapter](/rhosync/source-adapters) documentation.  
 
 From the storemanager-sever directory, generate a source adapter for the product model:
 
@@ -312,4 +312,4 @@ If your back end web service requires authentication, simply add code to the aut
 
 Using RhoSync from Objective C
 ---
-You don't have to use Rhodes to use RhoSync.  For this scenario, we offer an [Objective C client for RhoSync](/rhodes/rhosync-client).
+You don't have to use Rhodes to use RhoSync.  For this scenario, we offer an [Objective C client for RhoSync](/rhosync/client).

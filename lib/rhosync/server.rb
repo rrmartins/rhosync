@@ -166,7 +166,8 @@ module Rhosync
           params.delete("cud")
           params.merge!(cud)
         end
-        if request.env['CONTENT_TYPE'] == 'application/json'
+        #application/json; charset=UTF-8
+        if request.env['CONTENT_TYPE'] && request.env['CONTENT_TYPE'].match(/^application\/json/)
           params.merge!(JSON.parse(request.body.read))
           request.body.rewind
         end      

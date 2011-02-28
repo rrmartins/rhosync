@@ -71,7 +71,7 @@ begin
     gemspec.add_dependency "uuidtools", ">=2.1.1"
     gemspec.add_dependency "redis", "~>2.0.0"
     gemspec.add_dependency "resque", ">=1.9.7"
-    gemspec.add_dependency "rest-client", ">=1.4.2"
+    gemspec.add_dependency "rest-client", "~>1.6.1"
     gemspec.add_dependency "sinatra", "~>1.1"
     gemspec.add_dependency "templater", "~>1.0.0"
     gemspec.add_dependency "rake", ">=0.8.7"

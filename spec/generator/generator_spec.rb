@@ -21,6 +21,7 @@ describe "Generator" do
     end
     
     it "should create new application files" do
+      SecureRandom.should_receive(:hex).with(64).any_number_of_times
       [ 
         'config.ru',
         "application.rb",

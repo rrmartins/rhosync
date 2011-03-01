@@ -36,6 +36,8 @@ module Rhosync
     first_argument :name, :required => true, :desc => "application name"
     
     template :configru do |template|
+      require 'securerandom' rescue nil
+      @secret = SecureRandom.hex(64) rescue '<changeme>'
       template.source = 'config.ru'
       template.destination = "#{name}/config.ru"
     end    

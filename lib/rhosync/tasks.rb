@@ -272,6 +272,16 @@ namespace :rhosync do
       puts "Aborted..."
     end
   end
+  
+  desc "Generate a cryptographically secure secret session key"
+  task :secret do
+    begin
+      require 'securerandom' 
+      puts SecureRandom.hex(64)
+    rescue LoadError
+      puts "Missing secure random generator.  Try running `rake secret` in a rails application instead."
+    end
+  end
 end
 
 task :default => ['rhosync:spec']

@@ -19,7 +19,7 @@ Rhosync::Server.disable :run
 Rhosync::Server.disable :clean_trace
 Rhosync::Server.enable  :raise_errors
 Rhosync::Server.set     :environment, :development
-Rhosync::Server.set     :secret,      '<changeme>'
+Rhosync::Server.set     :secret,      '<%= @secret %>'
 Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
 

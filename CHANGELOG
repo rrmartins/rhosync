@@ -2,6 +2,8 @@
 * Use server-dir/redis.conf if not found at RedisRunner.prefix (via artemk) 
 * #8471337 - switch client user if it is not equal to current_user
 * Upgrade rest-client dependency which includes cookie escape fix
+* #10097347 - generate cryptographically secure secret key by default
+* Fixed 'application/json; charset=UTF-8' content handling in the server before filter
 
 ## 2.1.1
 * #7679395 - added support for gzipped bulk data files

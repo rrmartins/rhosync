@@ -45,6 +45,12 @@ describe "Store" do
       Store.get_data('foo').should == @data
     end
     
+    it "should put_data with simple data" do
+      data = { '1' => { 'hello' => 'world' } }
+      Store.put_data('mydata', data)
+      Store.get_data('mydata').should == data
+    end
+    
     it "should add simple array data to new set" do
       @data = ['1','2','3']
       Store.put_data(@s.docname(:md),@data).should == true

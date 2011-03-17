@@ -141,8 +141,8 @@ namespace :redis do
 	  	
 	  	puts "Installing redis to #{redis_home}."
 	
-	    Net::HTTP.start("servicestack.googlecode.com") do |http|
-	      resp = http.get("/files/#{$redis_ver}-win32-win64.zip")
+	    Net::HTTP.start("cloud.github.com") do |http|
+	      resp = http.get("/downloads/dmajkic/redis/#{$redis_ver}-win32-win64.zip")
 	      open($redis_zip, "wb") do |file|
 	        file.write(resp.body)
 	      end

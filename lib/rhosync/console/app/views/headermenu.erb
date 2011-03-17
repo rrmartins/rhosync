@@ -7,14 +7,14 @@
 	<% end %>
 
 	<% if currentpage == "Console" %>
-		<li id="current"><a href="<%=url("")%>" class="current">Console</a></li> 
+		<li id="current"><a href="<%=url_path("")%>" class="current">Console</a></li> 
 	<% else %>
-		<li ><a href="<%=url("")%>" >Console</a></li> 
+		<li ><a href="<%=url_path("")%>" >Console</a></li> 
 	<% end %>
 	<% if currentpage == "Statistics" %>
-		<li id="current"><a href="<%=url("timing")%>" class="current">Statistics</a></li> 
+		<li id="current"><a href="<%=url_path("timing")%>" class="current">Statistics</a></li> 
 	<% else %>
-		<li ><a href="<%=url("timing")%>" class="">Statistics</a></li> 
+		<li ><a href="<%=url_path("timing")%>" class="">Statistics</a></li> 
 	<% end %>
 	<!--	
 	
@@ -34,8 +34,8 @@
 		<img src="/console/images/tabs_separator.png"/> 
 	</li>
 	<% if session[:token] != nil %> 
-		<li><a href="<%=url("logout")%>" class="logout">Logout</a></li>
+		<li><a href="<%=url_path("logout")%>" class="logout">Logout</a></li>
 	<% else %>
-		<li><a href="<%=url("")%>" class="login">Login</a></li>
+		<li><a href="<%=url_path("")%>" class="login">Login</a></li>
 	<% end %>
 </ul>

@@ -2,33 +2,33 @@ class RhosyncConsole::Server
   get '/' do
     if params[:xhr] or request.xhr?
       if login_required
-        redirect url('/loginpage')
+        redirect url_path('/loginpage')
       else
-        redirect url('/homepage')
+        redirect url_path('/homepage')
       end
     else
       @currentpage = "Console" #which page in menu
       if login_required
         @pagetitle = "Login" #H1 title
-        @initialcontent = url('/loginpage')
+        @initialcontent = url_path('/loginpage')
 
         @locals = {
           :div => "main_box",
           :links => [ 
-          #  { :url => url('/timing/bydevice'), :selected => true, :title => 'By Device' },
-          #  { :url => url('/timing/bysource'), :title => 'By Source' }
+          #  { :url => url_path('/timing/bydevice'), :selected => true, :title => 'By Device' },
+          #  { :url => url_path('/timing/bysource'), :title => 'By Source' }
           ]
         }
       else
         @pagetitle = "Rhosync Console" #H1 title
-        @initialcontent = url('/homepage')
+        @initialcontent = url_path('/homepage')
 
         @locals = {
           :div => "main_box",
           :links => [ 
-            { :url => url('/homepage'), :selected => true, :title => 'Info' },
-            { :url => url('/doc/select'), :title => 'Server Document' },
-            { :url => url('/users'), :title => 'Users' }
+            { :url => url_path('/homepage'), :selected => true, :title => 'Info' },
+            { :url => url_path('/doc/select'), :title => 'Server Document' },
+            { :url => url_path('/users'), :title => 'Users' }
           ]
         }
       end
@@ -56,6 +56,6 @@ class RhosyncConsole::Server
     handle_api_error("Can't reset server") do
       RhosyncApi::reset(session[:server],session[:token])
     end
-    redirect url('/'), 303
+    redirect url_path('/'), 303
   end
 end

@@ -22,7 +22,7 @@
 		<%@docs.each do |name,dbkey|%>
 			<tr>
 				<td>:<%=name%></td>
-				<td><a href='javascript:void(0);' onclick="loadXMLDoc('<%=url("doc?dbkey=#{CGI.escape(dbkey)}&#{@doc_params}")%>','main_box');" class='nav_button'><%=dbkey%></a></td>
+				<td><a href='javascript:void(0);' onclick="loadXMLDoc('<%=url_path("doc?dbkey=#{CGI.escape(dbkey)}&#{@doc_params}")%>','main_box');" class='nav_button'><%=dbkey%></a></td>
 			</tr>	
 		<%end%>
 	</table>

@@ -2,7 +2,7 @@
 <div class='panel'>
 	<%if @data.size > 0%>
 		<div class='panel'>
-			<a href='javascript:void(0);' onclick="loadXMLDoc('<%=url("doc/clear?#{@back_params}&dbkey=#{CGI.escape(params[:dbkey])}")%>','main_box');" class='nav_button'>Clear document</a>
+			<a href='javascript:void(0);' onclick="loadXMLDoc('<%=url_path("doc/clear?#{@back_params}&dbkey=#{CGI.escape(params[:dbkey])}")%>','main_box');" class='nav_button'>Clear document</a>
 		</div>
 		<%if @is_string%>
 			<p>[<%=@data%>]</p>

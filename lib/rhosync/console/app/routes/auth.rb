@@ -18,12 +18,12 @@ class RhosyncConsole::Server
       report_error("Can't login to Rhosync server.")      
       #puts e.message + "\n" + e.backtrace.join("\n")
     end 
-    redirect url('/'), 303
+    redirect url_path('/'), 303
   end
   
   get '/logout' do
     session[:token] = nil
-    redirect url('/'), 303
+    redirect url_path('/'), 303
   end
   
 end

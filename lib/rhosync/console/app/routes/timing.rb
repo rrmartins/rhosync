@@ -3,21 +3,21 @@ require 'json'
 class RhosyncConsole::Server
   get '/timing' do
     if login_required
-      redirect url('/')
+      redirect url_path('/')
       return
     end
     @currentpage = "Statistics"
     @pagetitle = "Statistics" #H1 title
     
-    @initialcontent = url('/timing/usercount')
+    @initialcontent = url_path('/timing/usercount')
     
     @locals = {
       :div => "main_box",
       :links => [ 
-        { :url => url('/timing/usercount'), :selected => true, :title => 'User Count' },
-        { :url => url('/timing/devicecount'), :title => 'Device Count' },
-        { :url => url('/timing/httptiming'), :title => 'HTTP Timing' },
-        { :url => url('/timing/bysource'), :title => 'Source Timing' }
+        { :url => url_path('/timing/usercount'), :selected => true, :title => 'User Count' },
+        { :url => url_path('/timing/devicecount'), :title => 'Device Count' },
+        { :url => url_path('/timing/httptiming'), :title => 'HTTP Timing' },
+        { :url => url_path('/timing/bysource'), :title => 'Source Timing' }
       ]
     }
     

@@ -1,7 +1,7 @@
 <h1>Device: <%=params[:device_id]%></h1>
 <%=show_errors%>
-<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url("user?user_id=#{CGI.escape(params[:user_id])}")%>','main_box');" class='nav_button'>Back</a>
-<a href='<%=url("device/delete?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(params[:device_id])}")%>' class='nav_button'>
+<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url_path("user?user_id=#{CGI.escape(params[:user_id])}")%>','main_box');" class='nav_button'>Back</a>
+<a href='<%=url_path("device/delete?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(params[:device_id])}")%>' class='nav_button'>
 	Delete device
 </a>
 
@@ -23,7 +23,7 @@
 
 [
 <%@sources.each_index do |i|%>
-	<a href='javascript:void(0);' onclick="loadXMLDoc('<%=url("docs?source_id=#{@sources[i]}&device_id=#{CGI.escape(params[:device_id])}&user_id=#{CGI.escape(params[:user_id])}")%>','main_box');">
+	<a href='javascript:void(0);' onclick="loadXMLDoc('<%=url_path("docs?source_id=#{@sources[i]}&device_id=#{CGI.escape(params[:device_id])}&user_id=#{CGI.escape(params[:user_id])}")%>','main_box');">
 		<%=i==0?'':','%>"<%=@sources[i]%>"
 	</a>
 <%end%>

@@ -41,7 +41,7 @@ document.getElementById('chartdiv').style.display = '';plot = $.jqplot('chartdiv
 	<% end %>
 	
 	<a style="margin-right:5px" href="javascript:void(0);"
-	onclick="loadXMLDoc('<%= url(@uri + '?display='+ source['name'])%>','main_box');">
+	onclick="loadXMLDoc('<%= url_path(@uri + '?display='+ source['name'])%>','main_box');">
 	<%= source['name'] %>
 	</a>
 <% end%>

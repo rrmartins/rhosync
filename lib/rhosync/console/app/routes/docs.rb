@@ -6,9 +6,9 @@ class RhosyncConsole::Server
      @locals = {
        :div => "main_box",
        :links => [ 
-         { :url => url('/homepage'), :title => 'Info' },
-         { :url => url('/doc/select'), :selected => true, :title => 'Server Document' },
-         { :url => url('/users'), :title => 'Users' }
+         { :url => url_path('/homepage'), :title => 'Info' },
+         { :url => url_path('/doc/select'), :selected => true, :title => 'Server Document' },
+         { :url => url_path('/users'), :title => 'Users' }
        ]
      }
      erb :content
@@ -37,15 +37,15 @@ class RhosyncConsole::Server
       handle_api_error("Can't load list of the documents") do
         if params[:device_id]
           @docs_name = "device #{params[:device_id]}"
-          @back_href = url("device?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(params[:device_id])}") 
+          @back_href = url_path("device?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(params[:device_id])}") 
           @docs = RhosyncApi::list_client_docs(session[:server],session[:token],params[:source_id],params[:device_id])
         else   
           if params[:user_id]=='*'      
             @docs_name = "app partition"
-            @back_href = url('/')
+            @back_href = url_path('/')
           else
              @docs_name = "user #{params[:user_id]} partition"
-             @back_href = url("user?user_id=#{CGI.escape(params[:user_id])}")
+             @back_href = url_path("user?user_id=#{CGI.escape(params[:user_id])}")
           end   
           @docs = RhosyncApi::list_source_docs(session[:server],
             session[:token],params[:source_id],params[:user_id])
@@ -53,7 +53,7 @@ class RhosyncConsole::Server
       end
       erb :docs, :layout => false
     else
-      docs_render_page url("/docs" + hash_to_params(params))
+      docs_render_page url_path("/docs" + hash_to_params(params))
       
     end
   end
@@ -73,7 +73,7 @@ class RhosyncConsole::Server
       end
       erb :select_doc, :layout => false
     else
-      docs_render_page url("/doc/select" + hash_to_params(params))
+      docs_render_page url_path("/doc/select" + hash_to_params(params))
     end
   end
   
@@ -88,10 +88,10 @@ class RhosyncConsole::Server
       end
       @back_params = "source_id=#{CGI.escape(params[:source_id])}&user_id=#{CGI.escape(params[:user_id])}"
       @back_params += "&device_id=#{CGI.escape(params[:device_id])}" if params[:device_id] 
-      @back_href = url("docs?#{doc_params}")
+      @back_href = url_path("docs?#{doc_params}")
       erb :doc, :layout => false
     else
-      docs_render_page url("/doc" + hash_to_params(params))
+      docs_render_page url_path("/doc" + hash_to_params(params))
     end
         
   end 
@@ -106,11 +106,11 @@ class RhosyncConsole::Server
       @result_name = "Clear result"
       @status = "Successfully cleared: [#{CGI.unescape(params[:dbkey])}]"
       @back_href = params[:user_id] ?
-        url("doc?#{doc_params}&dbkey=#{CGI.escape(params[:dbkey])}") :
-        url("doc/select?dbkey=#{CGI.escape(params[:dbkey])}")     
+        url_path("doc?#{doc_params}&dbkey=#{CGI.escape(params[:dbkey])}") :
+        url_path("doc/select?dbkey=#{CGI.escape(params[:dbkey])}")     
       erb :result, :layout => false
     else
-       docs_render_page url("/doc/clear" + hash_to_params(params))
+       docs_render_page url_path("/doc/clear" + hash_to_params(params))
     end
   end
   
@@ -137,8 +137,8 @@ class RhosyncConsole::Server
     @result_name = "Upload result"
     @status = "Successfully uploadad data to: [#{CGI.unescape(params[:doc])}]"
     @back_href = params[:user_id] ?
-      url("doc?#{doc_params}&dbkey=#{params[:doc]}") :
-      url("doc/select?dbkey=#{params[:doc]}")
+      url_path("doc?#{doc_params}&dbkey=#{params[:doc]}") :
+      url_path("doc/select?dbkey=#{params[:doc]}")
     erb :result
   end
    

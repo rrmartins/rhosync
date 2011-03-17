@@ -5,7 +5,7 @@ class RhosyncConsole::Server
     handle_api_error("Can't create new device") do  
       RhosyncApi::create_client(session[:server],session[:token],params[:user_id])
     end      
-    redirect url("/user?user_id=#{CGI.escape(params[:user_id])}"), 303  
+    redirect url_path("/user?user_id=#{CGI.escape(params[:user_id])}"), 303  
   end
   
   get '/device' do
@@ -25,7 +25,7 @@ class RhosyncConsole::Server
       RhosyncApi::delete_client(session[:server],session[:token],
         params[:user_id],params[:device_id])
     end    
-    redirect url(session[:errors] ? "/device?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(params[:device_id])}" :
+    redirect url_path(session[:errors] ? "/device?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(params[:device_id])}" :
       "/user?user_id=#{CGI.escape(params[:user_id])}"), 303
   end
 end

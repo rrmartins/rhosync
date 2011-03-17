@@ -1,4 +1,4 @@
-	<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url('user/new')%>','main_box');" class='nav_button'>Create User</a>
+	<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url_path('user/new')%>','main_box');" class='nav_button'>Create User</a>
 
 <h2>Registered users</h2>
 <%if is_errors?%>
@@ -6,7 +6,7 @@
 <%else%>
 	[ 	
 	<%@users.each_index do |i|%>
-		<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url("user?user_id=#{CGI.escape(@users[i])}")%>','main_box');"><%=i==0?'':','%>"<%=@users[i]%>"</a>
+		<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url_path("user?user_id=#{CGI.escape(@users[i])}")%>','main_box');"><%=i==0?'':','%>"<%=@users[i]%>"</a>
 	<%end%>
 	]
 <%end%>

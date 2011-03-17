@@ -1,6 +1,6 @@
 <h1>Ping <%=params[:user_id]%></h1>
 <%=show_errors%>
-<form method="POST" action="<%=url('user/ping')%>">
+<form method="POST" action="<%=url_path('user/ping')%>">
   <input type="hidden" name="user_id" value="<%=params[:user_id]%>">
   <table>
 	<tr>

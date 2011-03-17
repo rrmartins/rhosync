@@ -1,27 +1,27 @@
 <h1>User: <%=params[:user_id]%></h1>
 <%=show_errors%>
 <div class="panel">
-	<a href='<%=url("user/delete?user_id=#{CGI.escape(params[:user_id])}")%>' class='nav_button'>Delete user</a>
+	<a href='<%=url_path("user/delete?user_id=#{CGI.escape(params[:user_id])}")%>' class='nav_button'>Delete user</a>
 </div>
 <div class="panel">	
-	<a href='<%=url("user/ping?user_id=#{CGI.escape(params[:user_id])}")%>' class='nav_button'>Ping User</a>
+	<a href='<%=url_path("user/ping?user_id=#{CGI.escape(params[:user_id])}")%>' class='nav_button'>Ping User</a>
 </div>
 <h2>User partition sources</h2>	
 
 [
 <%@sources.each_index do |i|%>
-	<a href='javascript:void(0);' onclick="loadXMLDoc('<%=url("docs?source_id=#{@sources[i]}&user_id=#{CGI.escape(params[:user_id])}")%>','main_box');"><%=i==0?'':','%>"<%=@sources[i]%>"</a>
+	<a href='javascript:void(0);' onclick="loadXMLDoc('<%=url_path("docs?source_id=#{@sources[i]}&user_id=#{CGI.escape(params[:user_id])}")%>','main_box');"><%=i==0?'':','%>"<%=@sources[i]%>"</a>
 <%end%>
 ]
 
 <h2>Registered Devices</h2>
 
-<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url("device/create?user_id=#{CGI.escape(params[:user_id])}")%>','');loadXMLDoc('<%=url("user?user_id=#{CGI.escape(params[:user_id])}")%>','main_box');" class='nav_button'>Create Device</a>
+<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url_path("device/create?user_id=#{CGI.escape(params[:user_id])}")%>','');loadXMLDoc('<%=url_path("user?user_id=#{CGI.escape(params[:user_id])}")%>','main_box');" class='nav_button'>Create Device</a>
 
 <div class="panel">
 [ 	
 <%@devices.each_index do |i|%>
-	<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url("device?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(@devices[i])}")%>','main_box');">
+	<a href="javascript:void(0);" onclick="loadXMLDoc('<%=url_path("device?user_id=#{CGI.escape(params[:user_id])}&device_id=#{CGI.escape(@devices[i])}")%>','main_box');">
 		<%=i==0?'':','%>"<%=@devices[i]%>"
 	</a>
 <%end%>

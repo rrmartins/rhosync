@@ -7,21 +7,21 @@
  		<%="Licensed to #{@license['licensee']} on #{@license['issued']}, available #{@license['available']} of #{@license['seats']} devices"%>
 	<%end%>	
 	<div class='panel'>
-		<a href="<%=url('logout')%>" class='nav_button'>Logout</a>
+		<a href="<%=url_path('logout')%>" class='nav_button'>Logout</a>
 	</div>	
 	<div class='panel'>
-		<a href="<%=url('reset')%>" class='nav_button' onclick="return confirm('Are you sure? Resetting will remove all data. It will also return an error code to all existing devices when they connect!')">Reset</a>
-		<a href="<%=url('doc/select')%>" class='nav_button'>Show server document</a>
+		<a href="<%=url_path('reset')%>" class='nav_button' onclick="return confirm('Are you sure? Resetting will remove all data. It will also return an error code to all existing devices when they connect!')">Reset</a>
+		<a href="<%=url_path('doc/select')%>" class='nav_button'>Show server document</a>
 	</div>
 	<div class='panel'>
-		<a href="<%=url('users')%>" class='nav_button'>Application users</a>
+		<a href="<%=url_path('users')%>" class='nav_button'>Application users</a>
 	</div>
 	<h2>App partition sources</h2>	
 	<div class='panel'>
 		<%unless @sources.nil? %>
 			[
 			<%@sources.each_index do |i|%>
-				<a href="<%=url("docs?source_id=#{@sources[i]}&user_id=*")%>"><%=i==0?'':','%>"<%=@sources[i]%>"</a>
+				<a href="<%=url_path("docs?source_id=#{@sources[i]}&user_id=*")%>"><%=i==0?'':','%>"<%=@sources[i]%>"</a>
 			<%end%>
 			]
 		<%end%>	
@@ -29,7 +29,7 @@
 <% else %>
 	<h1>Login</h1>
 	<%=show_errors%>
-	<form action="<%=url('login')%>" method='POST'>
+	<form action="<%=url_path('login')%>" method='POST'>
 		<table>
 			<tr>
 				<td>Connect to RhoSync:</td>

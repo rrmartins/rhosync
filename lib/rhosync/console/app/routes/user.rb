@@ -6,9 +6,9 @@ class RhosyncConsole::Server
      @locals = {
        :div => "main_box",
        :links => [ 
-         { :url => url('/homepage'), :title => 'Info' },
-         { :url => url('/doc/select'), :title => 'Server Document' },
-         { :url => url('/users'), :selected => true, :title => 'Users' }
+         { :url => url_path('/homepage'), :title => 'Info' },
+         { :url => url_path('/doc/select'), :title => 'Server Document' },
+         { :url => url_path('/users'), :selected => true, :title => 'Users' }
        ]
      }
      erb :content
@@ -23,7 +23,7 @@ class RhosyncConsole::Server
       erb :users, :layout => false
       
     else
-       render_page url("/users")
+       render_page url_path("/users")
      end 
   end
   
@@ -31,7 +31,7 @@ class RhosyncConsole::Server
     if params[:xhr] or request.xhr?
       erb :newuser, :layout => false
     else
-      render_page url("/user/new")
+      render_page url_path("/user/new")
     end 
       
   end
@@ -45,7 +45,7 @@ class RhosyncConsole::Server
           session[:token],params[:login],params[:password])
       end      
     end
-    redirect url(session[:errors] ? '/user/new' : '/users'), 303  
+    redirect url_path(session[:errors] ? '/user/new' : '/users'), 303  
   end
   
   get '/user' do
@@ -63,7 +63,7 @@ class RhosyncConsole::Server
       erb :user, :layout => false
     else
        params[:user_id] = CGI::escape(params[:user_id]) if params[:user_id]
-       render_page url("/user?user_id=#{params[:user_id]}")
+       render_page url_path("/user?user_id=#{params[:user_id]}")
     end     
   end
   
@@ -71,7 +71,7 @@ class RhosyncConsole::Server
     handle_api_error("Can't delete user #{params[:user_id]}") do 
       RhosyncApi::delete_user(session[:server],session[:token],params[:user_id])
     end    
-    redirect url(session[:errors] ? "/user?user_id=#{CGI.escape(params[:user_id])}" : '/users'), 303
+    redirect url_path(session[:errors] ? "/user?user_id=#{CGI.escape(params[:user_id])}" : '/users'), 303
   end
   
   get '/user/ping' do
@@ -83,7 +83,7 @@ class RhosyncConsole::Server
       end
       erb :ping, :layout => false
     else
-      render_page url("/user/ping?user_id=#{CGI.escape(params[:user_id])}")
+      render_page url_path("/user/ping?user_id=#{CGI.escape(params[:user_id])}")
     end
     
   end
@@ -94,6 +94,6 @@ class RhosyncConsole::Server
       RhosyncApi::ping(session[:server],session[:token],params[:user_id],params)
     end
     user = CGI.escape(params[:user_id])
-    redirect url(session[:errors] ? "/user/ping?user_id=#{user}" : "/user?user_id=#{user}"), 303
+    redirect url_path(session[:errors] ? "/user/ping?user_id=#{user}" : "/user?user_id=#{user}"), 303
   end
 end

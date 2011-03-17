@@ -6,7 +6,7 @@
 <%end%>	
 
 <div class='panel'>
-	<a href="<%=url('reset')%>" class='nav_button' onclick="return confirm('Are you sure? Resetting will remove all data. It will also return an error code to all existing devices when they connect!')">Reset</a>
+	<a href="<%=url_path('reset')%>" class='nav_button' onclick="return confirm('Are you sure? Resetting will remove all data. It will also return an error code to all existing devices when they connect!')">Reset</a>
 	
 </div>
 
@@ -15,7 +15,7 @@
 	<%unless @sources.nil? %>
 		[
 		<%@sources.each_index do |i|%>
-			<a href='javascript:void(0);' onclick="loadXMLDoc('<%=url("docs?source_id=#{@sources[i]}&user_id=*")%>','main_box');"><%=i==0?'':','%>"<%=@sources[i]%>"</a>
+			<a href='javascript:void(0);' onclick="loadXMLDoc('<%=url_path("docs?source_id=#{@sources[i]}&user_id=*")%>','main_box');"><%=i==0?'':','%>"<%=@sources[i]%>"</a>
 		<%end%>
 		]
 	<%end%>	

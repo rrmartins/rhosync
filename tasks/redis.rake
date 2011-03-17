@@ -7,7 +7,7 @@ def windows?
 end
 
 if windows?
-	$redis_ver = "redis-1.2.6-windows"
+	$redis_ver = "redis-2.2.2"
 	$redis_zip = "C:/#{$redis_ver}.zip"
 	$redis_dest = "C:/"
 end
@@ -112,7 +112,7 @@ namespace :redis do
 	    mk_bin_dir(bin_dir)
 	    
 	    %w(redis-benchmark redis-cli redis-server).each do |bin|
-	      sh "cp /tmp/redis/#{bin} #{bin_dir}"
+	      sh "cp /tmp/redis/src/#{bin} #{bin_dir}"
 	    end
 	
 	    puts "Installed redis-benchmark, redis-cli and redis-server to #{bin_dir}"
@@ -142,7 +142,7 @@ namespace :redis do
 	  	puts "Installing redis to #{redis_home}."
 	
 	    Net::HTTP.start("servicestack.googlecode.com") do |http|
-	      resp = http.get("/files/#{$redis_ver}.zip")
+	      resp = http.get("/files/#{$redis_ver}-win32-win64.zip")
 	      open($redis_zip, "wb") do |file|
 	        file.write(resp.body)
 	      end
@@ -160,7 +160,7 @@ namespace :redis do
     else
       sh 'rm -rf /tmp/redis/' if File.exists?("#{RedisRunner.redisdir}")
       sh 'git clone git://github.com/antirez/redis.git /tmp/redis -n'
-      sh "cd #{RedisRunner.redisdir} && git reset --hard && git checkout v2.0.4-stable"
+      sh "cd #{RedisRunner.redisdir} && git reset --hard && git checkout 2.2.2"
     end
   end
 

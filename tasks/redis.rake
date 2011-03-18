@@ -9,7 +9,7 @@ end
 if windows?
 	$redis_ver = "redis-2.2.2"
 	$redis_zip = "C:/#{$redis_ver}.zip"
-	$redis_dest = "C:/redis-2.2.2"
+	$redis_dest = "C:/"
 end
 
 def redis_home
@@ -149,14 +149,14 @@ namespace :redis do
 
 	    Zip::ZipFile.open($redis_zip) do |zip_file|
 	    	zip_file.each do |f|
-	    		f_path = File.join($redis_dest, f.name)
+	    		f_path = File.join(redis_home, f.name)
           FileUtils.mkdir_p(File.dirname(f_path))
           zip_file.extract(f, f_path) { true }
     		end
     	end
 
-    	FileUtils.mv Dir.glob(File.join($redis_dest,'32bit','*')), $redis_dest
-    	FileUtils.rm_rf File.join($redis_dest, '64bit')
+    	FileUtils.mv Dir.glob(File.join(redis_home,'32bit','*')), redis_home
+    	FileUtils.rm_rf File.join(redis_home, '64bit')
     	FileUtils.rm_f $redis_zip
     else
       sh 'rm -rf /tmp/redis/' if File.exists?("#{RedisRunner.redisdir}")

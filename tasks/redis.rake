@@ -9,7 +9,7 @@ end
 if windows?
 	$redis_ver = "redis-2.2.2"
 	$redis_zip = "C:/#{$redis_ver}.zip"
-	$redis_dest = "C:/"
+	$redis_dest = "C:/redis-2.2.2"
 end
 
 def redis_home
@@ -136,18 +136,17 @@ namespace :redis do
   desc "Download package"
   task :download do
   	if windows?
-	  	require 'net/http'
-	  	require 'zip/zip'
-	  	
-	  	puts "Installing redis to #{redis_home}."
-	
+      require 'net/http'
+      require 'zip/zip'
+      puts "Installing redis to #{redis_home}."
+
 	    Net::HTTP.start("cloud.github.com") do |http|
 	      resp = http.get("/downloads/dmajkic/redis/#{$redis_ver}-win32-win64.zip")
 	      open($redis_zip, "wb") do |file|
 	        file.write(resp.body)
 	      end
 	    end
-	    
+
 	    Zip::ZipFile.open($redis_zip) do |zip_file|
 	    	zip_file.each do |f|
 	    		f_path = File.join($redis_dest, f.name)
@@ -155,7 +154,9 @@ namespace :redis do
           zip_file.extract(f, f_path) { true }
     		end
     	end
-    	
+
+    	FileUtils.mv Dir.glob(File.join($redis_dest,'32bit','*')), $redis_dest
+    	FileUtils.rm_rf File.join($redis_dest, '64bit')
     	FileUtils.rm_f $redis_zip
     else
       sh 'rm -rf /tmp/redis/' if File.exists?("#{RedisRunner.redisdir}")

@@ -33,9 +33,6 @@ RhoSync uses following other projects:
  Apache 2.2 (http://httpd.apache.org)
  License: Apache License 2.0 (http://www.apache.org/licenses/LICENSE-2.0)
 
- NSIS 2.46 (http://nsis.sourceforge.net)
- License: Common Public License (mixed) (http://nsis.sourceforge.net/License)
-
  thin 1.2.8 (https://github.com/macournoyer/thin)
  License: MIT (https://github.com/macournoyer/thin/blob/master/COPYING)
 

@@ -21,6 +21,7 @@ describe "SourceSync" do
     @u.login = nil
     @ss = SourceSync.new(@s)
     @ss.should_receive(:log).with("SourceAdapter raised login exception: #{msg}")
+    @ss.should_receive(:log).with(anything)
     @ss.process_query
     verify_result(@s.docname(:errors) => {'login-error'=>{'message'=>msg}})
   end
@@ -28,6 +29,7 @@ describe "SourceSync" do
   it "should raise SourceAdapterLogoffException if logoff fails" do
     msg = "Error logging off"
     @ss.should_receive(:log).with("SourceAdapter raised logoff exception: #{msg}")
+    @ss.should_receive(:log).with(anything)
     set_test_data('test_db_storage',{},msg,'logoff error')
     @ss.process_query
     verify_result(@s.docname(:errors) => {'logoff-error'=>{'message'=>msg}})
@@ -239,6 +241,7 @@ describe "SourceSync" do
     def verify_read_operation_with_error(operation)
       msg = "Error during #{operation}"
       @ss.should_receive(:log).with("SourceAdapter raised #{operation} exception: #{msg}")
+      @ss.should_receive(:log).with(anything)
       set_test_data('test_db_storage',{},msg,"#{operation} error")
       if operation == 'query'
         @ss.read.should == true

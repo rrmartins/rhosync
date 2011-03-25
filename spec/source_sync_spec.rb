@@ -239,6 +239,7 @@ describe "SourceSync" do
     def verify_read_operation_with_error(operation)
       msg = "Error during #{operation}"
       @ss.should_receive(:log).with("SourceAdapter raised #{operation} exception: #{msg}")
+      @ss.should_receive(:log).with(anything)
       set_test_data('test_db_storage',{},msg,"#{operation} error")
       if operation == 'query'
         @ss.read.should == true

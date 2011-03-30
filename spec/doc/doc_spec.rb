@@ -289,7 +289,7 @@ eol
       :res_status => last_response.status.to_s,
       :res_content_type => _get_header_text(last_response.headers['Content-Type']),
       :res_content_length => _get_header_text(last_response.headers['Content-Length']),
-      :res_cookie => _get_header_text(last_response.headers['Set-Cookie']),
+      :res_cookie => _get_header_text(last_response.headers['Set-Cookie'].split("\n")[0]),
       :res_body => last_response.body
     }
     last_request.body.rewind

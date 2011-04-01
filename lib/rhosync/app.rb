@@ -21,7 +21,10 @@ module Rhosync
     end
 
     def authenticate(login, password, session)
-      if self.delegate && self.delegate.authenticate(login, password, session)
+      auth_result = self.delegate.authenticate(login, password, session) if self.delegate
+      
+      if auth_result
+        login = auth_result if auth_result.is_a? String
         user = User.load(login) if User.is_exist?(login)
         if not user
           user = User.create(:login => login)

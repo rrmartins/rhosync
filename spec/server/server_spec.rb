@@ -133,6 +133,12 @@ describe "Server" do
       User.is_exist?('newuser').should == true
       @a.users.members.sort.should == ['newuser','testuser']
     end
+    
+    it "should create a different username through delegated authentication" do
+      do_post "/application/clientlogin", "login" => 'newuser', "password" => 'diffuser'
+      User.is_exist?('different').should == true
+      @a.users.members.sort.should == ['different','testuser']
+    end
   end
   
   describe "client management routes" do

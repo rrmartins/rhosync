@@ -4,6 +4,7 @@ class Application < Rhosync::Base
       session[:auth] = "delegated"
       raise RuntimeError.new('server error') if password == 'server error'
       raise LoginException.new('login exception') if password == 'wrongpass'
+      return "different" if password == "diffuser"
       password == 'wrongpassnomsg' ? false : true
     end
     

@@ -1,5 +1,6 @@
 ## 2.2.0 (not released)
 * backtrace logging in source adapter method exceptions
+* returning string in authenticate instead of true sets the current user login name (Useful for OAuth2)
 
 ## 2.1.2 (2011-03-18)
 * Use server-dir/redis.conf if not found at RedisRunner.prefix (via artemk) 

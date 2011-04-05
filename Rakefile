@@ -87,9 +87,15 @@ rescue LoadError
   puts "gem install jeweler\n\n"
 end
 
-desc "Load console environment"
-task :console do
-  sh "irb -rubygems -r #{File.join(File.dirname(__FILE__),'lib','rhosync','server.rb')}"
+namespace :rhosync do
+  desc "Load console environment"
+  task :console do
+    if RedisRunner.running?   
+      sh "irb -rubygems -r #{File.join(File.dirname(__FILE__),'lib','rhosync','server.rb')}"
+    else
+      puts "Redis is not running. Please start it by running 'rake redis:start' command."
+    end  
+  end
 end
 
 desc "Run benchmark scripts"

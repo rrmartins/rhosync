@@ -1,4 +1,5 @@
 ## 2.2.0 (not released)
+* #11904353 - fixed broken 'rake console' task, added new 'rhosync' namespace: 'rake rhosync:console'  
 * backtrace logging in source adapter method exceptions
 * returning string in authenticate instead of true sets the current user login name (Useful for OAuth2)
 

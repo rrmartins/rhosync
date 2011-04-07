@@ -1,8 +1,7 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
 require 'rack/test'
-require 'spec'
-require 'spec/autorun'
-require 'spec/interop/test'
+require 'rspec'
+require 'rspec/autorun'
 
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
@@ -12,7 +11,11 @@ describe "Protocol" do
   
   include Rack::Test::Methods
   include Rhosync
-  
+
+  include TestHelpers # FIXME:
+
+  # FIXME:
+    
   Rhosync.log_disabled = true
   
   before(:each) do

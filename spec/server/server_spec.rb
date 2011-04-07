@@ -1,17 +1,72 @@
-require File.join(File.dirname(__FILE__),'..','spec_helper')
 require 'rack/test'
-require 'spec'
-require 'spec/autorun'
-require 'spec/interop/test'
 
+require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
+# shared_examples_for "TestappHelper" do
+#   before(:all) do
+#     @test_app_name = 'application'
+#   end
+# end
+
 describe "Server" do
-  it_should_behave_like "RhosyncDataHelper"
-  it_should_behave_like "TestappHelper"
+#  it_should_behave_like "RhosyncDataHelper"
 
   include Rack::Test::Methods
+  include TestHelpers
+#  require File.join(File.dirname(__FILE__),'..', 'support', 'shared_examples')
   include Rhosync
+
+#  it_behaves_like "TestappHelper"
+#  shared_examples_for "TestappHelper" do
+#    include TestHelpers
+    before(:all) do
+        @test_app_name = 'application'
+    end
+#  end
+# shared_examples_for "RhosyncDataHelper" do
+#   it_should_behave_like "RhosyncHelper"
+#shared_examples_for "RhosyncHelper" do
+  # before(:each) do
+  #   Store.create
+  #   Store.db.flushdb
+  # end
+#end
+#   it_should_behave_like "TestappHelper"
+  
+  before(:each) do
+    @source = 'Product'
+    @user_id = 5
+    @client_id = 1
+    
+    @product1 = {
+      'name' => 'iPhone',
+      'brand' => 'Apple',
+      'price' => '199.99'
+    }
+    
+    @product2 = {
+      'name' => 'G2',
+      'brand' => 'Android',
+      'price' => '99.99'
+    }
+
+    @product3 = {
+      'name' => 'Fuze',
+      'brand' => 'HTC',
+      'price' => '299.99'
+    }
+    
+    @product4 = {
+      'name' => 'Droid',
+      'brand' => 'Android',
+      'price' => '249.99'
+    }
+        
+    @data = {'1'=>@product1,'2'=>@product2,'3'=>@product3}
+  end
+#end
+
     
   before(:each) do
     require File.join(get_testapp_path,@test_app_name)
@@ -27,7 +82,52 @@ describe "Server" do
       :root =>  File.expand_path(File.join(File.dirname(__FILE__),'..','apps','rhotestapp'))
   end
   
-  it_should_behave_like "DBObjectsHelper"
+#  it_should_behave_like "DBObjectsHelper"
+#shared_examples_for "DBObjectsHelper" do
+#  include TestHelpers  
+
+  before(:each) do
+    @a_fields = { :name => @test_app_name }
+    # @a = App.create(@a_fields)
+    @a = (App.load(@test_app_name) || App.create(@a_fields))
+    @u_fields = {:login => 'testuser'}
+    @u = User.load(@u_fields[:login])     
+    @u = User.create(@u_fields) unless @u
+    @u.password = 'testpass'
+    @c_fields = {
+      :device_type => 'Apple',
+      :device_pin => 'abcd',
+      :device_port => '3333',
+      :user_id => @u.id,
+      :app_id => @a.id 
+    }
+    @s_fields = {
+      :name => 'SampleAdapter',
+      :url => 'http://example.com',
+      :login => 'testuser',
+      :password => 'testpass',
+    }
+    @s_params = {
+      :user_id => @u.id,
+      :app_id => @a.id
+    }
+    @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
+    @s = Source.load(@s_fields[:name],@s_params)
+    @s = Source.create(@s_fields,@s_params) if @s.nil?
+    @s1 = Source.load('FixedSchemaAdapter',@s_params)
+    @s1 = Source.create({:name => 'FixedSchemaAdapter'},@s_params) if @s1.nil?
+    config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
+    @s1.update(config)
+    @r = @s.read_state
+    @a.sources << @s.id
+    @a.sources << @s1.id
+    Source.update_associations(@a.sources.members)
+    @a.users << @u.id
+  end
+#end
+
+
+
 
   def app
     @app ||= Rhosync::Server.new

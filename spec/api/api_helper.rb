@@ -1,12 +1,11 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
 require 'rack/test'
-require 'spec'
-require 'spec/autorun'
-require 'spec/interop/test'
+require 'rspec'
+require 'rspec/autorun'
 
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
-describe "ApiHelper", :shared => true do
+shared_examples_for "ApiHelper" do
   it_should_behave_like "RhosyncDataHelper"
 
   include Rack::Test::Methods

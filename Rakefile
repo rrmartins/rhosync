@@ -1,6 +1,5 @@
 require 'rubygems'
 require 'bundler/setup'
-
 #Bundler.require(:default)
 #require 'bundler'
 #Bundler.setup #(:default, :development)
@@ -58,42 +57,42 @@ end
 desc "Build rhosync gem"
 task :gem => [ 'spec:all', 'clobber_spec:all', :gemspec, :build ]
 
-begin
-  # require 'jeweler'
-  # 
-  # Jeweler::Tasks.new do |gemspec|
-  #   gemspec.name = "rhosync"
-  #   gemspec.summary = %q{RhoSync Synchronization Framework}
-  #   gemspec.description = %q{RhoSync Synchronization Framework and related command-line utilities}
-  #   gemspec.homepage = %q{http://rhomobile.com/products/rhosync}
-  #   gemspec.authors = ["Rhomobile"]
-  #   gemspec.email = %q{dev@rhomobile.com}
-  #   gemspec.version = Rhosync::VERSION
-  #   gemspec.files =  FileList["[A-Z]*", "{bench,bin,generators,lib,spec,tasks}/**/*"]
-  # 
-  #   # TODO: Due to https://www.pivotaltracker.com/story/show/3417862, we can't use JSON 1.4.3
-  #   gemspec.add_dependency "json", "~>1.4.2"
-  #   gemspec.add_dependency "sqlite3-ruby", "~>1.2.5"
-  #   gemspec.add_dependency "rubyzip", "~>0.9.4"
-  #   gemspec.add_dependency "uuidtools", ">=2.1.1"
-  #   gemspec.add_dependency "redis", "~>2.1.1"
-  #   gemspec.add_dependency "resque", "~>1.14.0"
-  #   gemspec.add_dependency "rest-client", "~>1.6.1"
-  #   gemspec.add_dependency "sinatra", "~>1.2"
-  #   gemspec.add_dependency "templater", "~>1.0.0"
-  #   gemspec.add_dependency "rake", ">=0.8.7"
-  #   gemspec.add_development_dependency "log4r", "~>1.1.7"
-  #   gemspec.add_development_dependency "jeweler", ">=1.4.0"
-  #   gemspec.add_development_dependency "rspec", ">=1.3.0"
-  #   gemspec.add_development_dependency "rcov", ">=0.9.8"
-  #   gemspec.add_development_dependency "faker", ">=0.3.1"
-  #   gemspec.add_development_dependency "rack-test", ">=0.5.3"
-  #   gemspec.add_development_dependency "thor", ">=0.13.6"
-  # end
-rescue LoadError
-  puts "Jeweler not available. Install it with: "
-  puts "gem install jeweler\n\n"
-end
+# begin
+#   require 'jeweler'
+#   
+#   Jeweler::Tasks.new do |gemspec|
+#     gemspec.name = "rhosync"
+#     gemspec.summary = %q{RhoSync Synchronization Framework}
+#     gemspec.description = %q{RhoSync Synchronization Framework and related command-line utilities}
+#     gemspec.homepage = %q{http://rhomobile.com/products/rhosync}
+#     gemspec.authors = ["Rhomobile"]
+#     gemspec.email = %q{dev@rhomobile.com}
+#     gemspec.version = Rhosync::VERSION
+#     gemspec.files =  FileList["[A-Z]*", "{bench,bin,generators,lib,spec,tasks}/**/*"]
+#   
+#     # TODO: Due to https://www.pivotaltracker.com/story/show/3417862, we can't use JSON 1.4.3
+#     gemspec.add_dependency "json", "~>1.4.2"
+#     gemspec.add_dependency "sqlite3-ruby", "~>1.2.5"
+#     gemspec.add_dependency "rubyzip", "~>0.9.4"
+#     gemspec.add_dependency "uuidtools", ">=2.1.1"
+#     gemspec.add_dependency "redis", "~>2.1.1"
+#     gemspec.add_dependency "resque", "~>1.14.0"
+#     gemspec.add_dependency "rest-client", "~>1.6.1"
+#     gemspec.add_dependency "sinatra", "~>1.2"
+#     gemspec.add_dependency "templater", "~>1.0.0"
+#     gemspec.add_dependency "rake", ">=0.8.7"
+#     gemspec.add_development_dependency "log4r", "~>1.1.7"
+#     gemspec.add_development_dependency "jeweler", ">=1.4.0"
+#     gemspec.add_development_dependency "rspec", ">=1.3.0"
+#     gemspec.add_development_dependency "rcov", ">=0.9.8"
+#     gemspec.add_development_dependency "faker", ">=0.3.1"
+#     gemspec.add_development_dependency "rack-test", ">=0.5.3"
+#     gemspec.add_development_dependency "thor", ">=0.13.6"
+#   end
+# rescue LoadError
+#   puts "Jeweler not available. Install it with: "
+#   puts "gem install jeweler\n\n"
+# end
 
 namespace :rhosync do
   desc "Load console environment"

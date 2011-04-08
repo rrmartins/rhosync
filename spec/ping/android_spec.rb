@@ -1,8 +1,58 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
 
 describe "Ping Android" do
-  it_should_behave_like "SpecBootstrapHelper"
-  it_should_behave_like "SourceAdapterHelper"
+  include TestHelpers
+  let(:test_app_name) { 'application' }  
+
+  before(:all) do
+    Rhosync.bootstrap(get_testapp_path) do |rhosync|
+      rhosync.vendor_directory = File.join(File.dirname(__FILE__),'..','vendor')
+    end
+  end
+
+  before(:each) do # "RhosyncHelper"
+    Store.create
+    Store.db.flushdb
+  end
+  
+  before(:each) do
+    @a_fields = { :name => test_app_name }
+    # @a = App.create(@a_fields)
+    @a = (App.load(test_app_name) || App.create(@a_fields))
+    @u_fields = {:login => 'testuser'}
+    @u = User.create(@u_fields) 
+    @u.password = 'testpass'
+    @c_fields = {
+      :device_type => 'Apple',
+      :device_pin => 'abcd',
+      :device_port => '3333',
+      :user_id => @u.id,
+      :app_id => @a.id 
+    }
+    @s_fields = {
+      :name => 'SampleAdapter',
+      :url => 'http://example.com',
+      :login => 'testuser',
+      :password => 'testpass',
+    }
+    @s_params = {
+      :user_id => @u.id,
+      :app_id => @a.id
+    }
+    @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
+    @s = Source.load(@s_fields[:name],@s_params)
+    @s = Source.create(@s_fields,@s_params) if @s.nil?
+    @s1 = Source.load('FixedSchemaAdapter',@s_params)
+    @s1 = Source.create({:name => 'FixedSchemaAdapter'},@s_params) if @s1.nil?
+    config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
+    @s1.update(config)
+    @r = @s.read_state
+    @a.sources << @s.id
+    @a.sources << @s1.id
+    Source.update_associations(@a.sources.members)
+    @a.users << @u.id
+  end
+  # ----------------------------------------------
   
   before do
     @params = {"device_pin" => @c.device_pin,

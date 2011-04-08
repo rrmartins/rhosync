@@ -1,0 +1,3 @@
+module Rhosync.gemspec
+  # Your code goes here...
+end

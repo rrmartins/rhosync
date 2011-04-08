@@ -3,73 +3,30 @@ require 'rack/test'
 require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
-# shared_examples_for "TestappHelper" do
-#   before(:all) do
-#     @test_app_name = 'application'
-#   end
-# end
-
 describe "Server" do
-#  it_should_behave_like "RhosyncDataHelper"
-
   include Rack::Test::Methods
-  include TestHelpers
-#  require File.join(File.dirname(__FILE__),'..', 'support', 'shared_examples')
   include Rhosync
+  include TestHelpers
 
-#  it_behaves_like "TestappHelper"
-#  shared_examples_for "TestappHelper" do
-#    include TestHelpers
-    before(:all) do
-        @test_app_name = 'application'
-    end
-#  end
-# shared_examples_for "RhosyncDataHelper" do
-#   it_should_behave_like "RhosyncHelper"
-#shared_examples_for "RhosyncHelper" do
-  # before(:each) do
-  #   Store.create
-  #   Store.db.flushdb
-  # end
-#end
-#   it_should_behave_like "TestappHelper"
-  
-  before(:each) do
-    @source = 'Product'
-    @user_id = 5
-    @client_id = 1
-    
-    @product1 = {
-      'name' => 'iPhone',
-      'brand' => 'Apple',
-      'price' => '199.99'
-    }
-    
-    @product2 = {
-      'name' => 'G2',
-      'brand' => 'Android',
-      'price' => '99.99'
-    }
+  let(:test_app_name) { 'application' }
 
-    @product3 = {
-      'name' => 'Fuze',
-      'brand' => 'HTC',
-      'price' => '299.99'
-    }
-    
-    @product4 = {
-      'name' => 'Droid',
-      'brand' => 'Android',
-      'price' => '249.99'
-    }
-        
-    @data = {'1'=>@product1,'2'=>@product2,'3'=>@product3}
+  let(:source) { 'Product' }
+  let(:user_id) { 5 }
+  let(:client_id)  { 1 }
+  let(:product1) { {'name' => 'iPhone', 'brand' => 'Apple', 'price' => '199.99'} }
+  let(:product2) { {'name' => 'G2', 'brand' => 'Android', 'price' => '99.99'} }
+  let(:product3) { {'name' => 'Fuze', 'brand' => 'HTC', 'price' => '299.99'} }  
+  #let(:product4) { {'name' => 'Droid', 'brand' => 'Android', 'price' => '249.99'} }
+  let(:products)     { {'1' => product1,'2' => product2,'3'=> product3} }
+
+  #it_should_behave_like "RhosyncDataHelper"
+  before(:each) do # "RhosyncHelper"
+    Store.create
+    Store.db.flushdb
   end
-#end
-
-    
+      
   before(:each) do
-    require File.join(get_testapp_path,@test_app_name)
+    require File.join(get_testapp_path, test_app_name)
     Rhosync.bootstrap(get_testapp_path) do |rhosync|
       rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')
     end
@@ -82,17 +39,13 @@ describe "Server" do
       :root =>  File.expand_path(File.join(File.dirname(__FILE__),'..','apps','rhotestapp'))
   end
   
-#  it_should_behave_like "DBObjectsHelper"
-#shared_examples_for "DBObjectsHelper" do
-#  include TestHelpers  
-
+  #it_should_behave_like "DBObjectsHelper"
   before(:each) do
-    @a_fields = { :name => @test_app_name }
+    @a_fields = { :name => test_app_name }
     # @a = App.create(@a_fields)
-    @a = (App.load(@test_app_name) || App.create(@a_fields))
+    @a = (App.load(test_app_name) || App.create(@a_fields))
     @u_fields = {:login => 'testuser'}
-    @u = User.load(@u_fields[:login])     
-    @u = User.create(@u_fields) unless @u
+    @u = User.create(@u_fields) 
     @u.password = 'testpass'
     @c_fields = {
       :device_type => 'Apple',
@@ -124,8 +77,6 @@ describe "Server" do
     Source.update_associations(@a.sources.members)
     @a.users << @u.id
   end
-#end
-
 
 
 
@@ -279,18 +230,18 @@ describe "Server" do
     end
     
     it "should respond to clientreset" do
-      set_state(@c.docname(:cd) => @data)
+      set_state(@c.docname(:cd) => products)
       get "/application/clientreset", :client_id => @c.id,:version => ClientSync::VERSION
       JSON.parse(last_response.body).should == @source_config
       verify_result(@c.docname(:cd) => {})
     end
     
     it "should switch client user if client user_id doesn't match session user" do
-      set_test_data('test_db_storage',@data)
+      set_test_data('test_db_storage',products)
       get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
-      JSON.parse(last_response.body).last['insert'].should == @data
+      JSON.parse(last_response.body).last['insert'].should == products
       do_post "/application/clientlogin", "login" => 'user2', "password" => 'testpass'
-      data = {'1'=>@product1,'2'=>@product2}
+      data = {'1' => product1,'2' => product2}
       set_test_data('test_db_storage',data)
       get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
       JSON.parse(last_response.body).last['insert'].should == data
@@ -309,31 +260,31 @@ describe "Server" do
     end
     
     it "should post records for create" do
-      @product1['_id'] = '1'
-      params = {'create'=>{'1'=>@product1},:client_id => @c.id,:source_name => @s.name,
+      product1['_id'] = '1'
+      params = {'create'=>{'1'=>product1},:client_id => @c.id,:source_name => @s.name,
         :version => ClientSync::VERSION}
       do_post "/application", params
       last_response.should be_ok
       last_response.body.should == ''
-      verify_result("test_create_storage" => {'1'=>@product1})
+      verify_result("test_create_storage" => {'1'=>product1})
     end
     
     it "should post records for update" do
-      params = {'update'=>{'1'=>@product1},:client_id => @c.id,:source_name => @s.name,
+      params = {'update'=>{'1'=>product1},:client_id => @c.id,:source_name => @s.name,
         :version => ClientSync::VERSION}
       do_post "/application", params
       last_response.should be_ok
       last_response.body.should == ''
-      verify_result("test_update_storage" => {'1'=>@product1})
+      verify_result("test_update_storage" => {'1'=>product1})
     end
     
     it "should post records for delete" do
-      params = {'delete'=>{'1'=>@product1},:client_id => @c.id,:source_name => @s.name,
+      params = {'delete'=>{'1'=>product1},:client_id => @c.id,:source_name => @s.name,
         :version => ClientSync::VERSION}
       do_post "/application", params
       last_response.should be_ok
       last_response.body.should == ''
-      verify_result("test_delete_storage" => {'1'=>@product1})
+      verify_result("test_delete_storage" => {'1'=>product1})
     end
     
     it "should handle client posting broken json" do
@@ -352,7 +303,7 @@ describe "Server" do
     
     it "should get inserts json" do
       cs = ClientSync.new(@s,@c,1)
-      data = {'1'=>@product1,'2'=>@product2}
+      data = {'1'=>product1,'2'=>product2}
       set_test_data('test_db_storage',data)
       get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
       last_response.should be_ok
@@ -364,7 +315,7 @@ describe "Server" do
     
     it "should get inserts json and confirm token" do
       cs = ClientSync.new(@s,@c,1)
-      data = {'1'=>@product1,'2'=>@product2}
+      data = {'1' => product1,'2' => product2}
       set_test_data('test_db_storage',data)
       get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
       last_response.should be_ok
@@ -386,7 +337,7 @@ describe "Server" do
         
     it "should get deletes json" do
       cs = ClientSync.new(@s,@c,1)
-      data = {'1'=>@product1,'2'=>@product2}
+      data = {'1'=> product1,'2'=> product2}
       set_test_data('test_db_storage',data)
       
       get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
@@ -409,20 +360,20 @@ describe "Server" do
     it "should get search results" do
       sources = [{:name=>'SampleAdapter'}]
       cs = ClientSync.new(@s,@c,1)
-      Store.put_data('test_db_storage',@data)
+      Store.put_data('test_db_storage',products)
       params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
         :version => ClientSync::VERSION}
       get "/application/search",params
       last_response.content_type.should =~ /application\/json/
       token = @c.get_value(:search_token)
       JSON.parse(last_response.body).should == [[{'version'=>ClientSync::VERSION},{'token'=>token},
-        {'source'=>sources[0][:name]},{'count'=>1},{'insert'=>{'1'=>@product1}}]]
+        {'source'=>sources[0][:name]},{'count'=>1},{'insert'=>{'1'=> product1}}]]
     end
     
     it "should get search results with error" do
       sources = [{:name=>'SampleAdapter'}]
       msg = "Error during search"
-      error = set_test_data('test_db_storage',@data,msg,'search error')
+      error = set_test_data('test_db_storage',products,msg,'search error')
       params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
         :version => ClientSync::VERSION}
       get "/application/search",params
@@ -431,7 +382,7 @@ describe "Server" do
     end
     
     it "should get multiple source search results" do
-      Store.put_data('test_db_storage',@data)
+      Store.put_data('test_db_storage',products)
       sources = [{:name=>'SimpleAdapter'},{:name=>'SampleAdapter'}]
       params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},
         :version => ClientSync::VERSION}
@@ -444,7 +395,7 @@ describe "Server" do
         [{"version"=>ClientSync::VERSION},{'token'=>token1},{"source"=>"SimpleAdapter"}, 
          {"count"=>1}, {"insert"=>{'obj'=>{'foo'=>'bar'}}}],
         [{"version"=>ClientSync::VERSION},{'token'=>token},{"source"=>"SampleAdapter"}, 
-         {"count"=>1}, {"insert"=>{'1'=>@product1}}]]
+         {"count"=>1}, {"insert"=>{'1'=> product1}}]]
     end
   end
     
@@ -458,14 +409,14 @@ describe "Server" do
     end
   
     it "should make initial bulk data request and receive wait" do
-      set_state('test_db_storage' => @data)
+      set_state('test_db_storage' => products)
       get "/application/bulk_data", :partition => :user, :client_id => @c.id
       last_response.should be_ok
       last_response.body.should == {:result => :wait}.to_json
     end
     
     it "should receive url when bulk data is available" do
-      set_state('test_db_storage' => @data)
+      set_state('test_db_storage' => products)
       get "/application/bulk_data", :partition => :user, :client_id => @c.id
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
       get "/application/bulk_data", :partition => :user, :client_id => @c.id
@@ -473,23 +424,23 @@ describe "Server" do
       data = BulkData.load(bulk_data_docname(@a.id,@u.id))
       last_response.body.should == {:result => :url, 
         :url => data.url}.to_json
-      validate_db(data,{@s.name => @data, 'FixedSchemaAdapter' => @data})
+      validate_db(data,{@s.name => products, 'FixedSchemaAdapter' => products})
     end
     
     it "should download bulk data file" do
-      set_state('test_db_storage' => @data)
+      set_state('test_db_storage' => products)
       get "/application/bulk_data", :partition => :user, :client_id => @c.id
       BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
       get "/application/bulk_data", :partition => :user, :client_id => @c.id
       get JSON.parse(last_response.body)["url"]
       last_response.should be_ok
       File.open('test.data','wb') {|f| f.puts last_response.body}
-      validate_db_file('test.data',[@s.name,'FixedSchemaAdapter'],{@s.name => @data, 'FixedSchemaAdapter' => @data})
+      validate_db_file('test.data',[@s.name,'FixedSchemaAdapter'],{@s.name => products, 'FixedSchemaAdapter' => products})
       File.delete('test.data')
     end
   
     it "should receive nop when no sources are available for partition" do
-      set_state('test_db_storage' => @data)
+      set_state('test_db_storage' => products)
       Source.load('SimpleAdapter',@s_params).partition = :user
       get "/application/bulk_data", :partition => :app, :client_id => @c.id
       last_response.should be_ok
@@ -503,11 +454,11 @@ describe "Server" do
     end
     it "should upload blob in multipart post" do
       file1,file2 = 'upload1.txt','upload2.txt'
-      @product1['txtfile-rhoblob'] = file1
-      @product1['_id'] = 'tempobj1'
-      @product2['txtfile-rhoblob'] = file2
-      @product2['_id'] = 'tempobj2'
-      cud = {'create'=>{'1'=>@product1,'2'=>@product2},
+      product1['txtfile-rhoblob'] = file1
+      product1['_id'] = 'tempobj1'
+      product2['txtfile-rhoblob'] = file2
+      product2['_id'] = 'tempobj2'
+      cud = {'create'=>{'1' => product1,'2' => product2},
         :client_id => @c.id,:source_name => @s.name,
         :version => ClientSync::VERSION,
         :blob_fields => ['txtfile-rhoblob']}.to_json

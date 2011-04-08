@@ -2,7 +2,16 @@ require File.join(File.dirname(__FILE__),'..','spec_helper')
 require 'faker'
 
 describe "PerfSpecHelper", :shared => true do
-  it_should_behave_like "SpecBootstrapHelper"
+  #it_should_behave_like "SpecBootstrapHelper"
+  before(:all) do # "TestappHelper"
+    @test_app_name = 'application'
+  end
+  before(:all) do
+    Rhosync.bootstrap(get_testapp_path) do |rhosync|
+      rhosync.vendor_directory = File.join(File.dirname(__FILE__),'..','vendor')
+    end
+  end
+  
   
   def get_test_data(num=1000)
     file = File.join("spec","testdata","#{num}-data.txt")

@@ -1,19 +1,76 @@
-require File.join(File.dirname(__FILE__),'..','spec_helper')
 require 'rack/test'
 require 'rspec'
 require 'rspec/autorun'
 
+require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 
-describe "Protocol" do
-  it_should_behave_like "SpecBootstrapHelper"
-  it_should_behave_like "SourceAdapterHelper"
-  
+describe "Protocol" do  
   include Rack::Test::Methods
-  include Rhosync
+  include Rhosync  
+  include TestHelpers
+  
+  let(:test_app_name) { 'application' }
 
-  include TestHelpers # FIXME:
+  let(:source) { 'Product' }
+  let(:user_id) { 5 }
+  let(:client_id)  { 1 }
+  let(:product1) { {'name' => 'iPhone', 'brand' => 'Apple', 'price' => '199.99'} }
+  let(:product2) { {'name' => 'G2', 'brand' => 'Android', 'price' => '99.99'} }
+  let(:product3) { {'name' => 'Fuze', 'brand' => 'HTC', 'price' => '299.99'} }  
+  let(:product4) { {'name' => 'Droid', 'brand' => 'Android', 'price' => '249.99'} }
+  let(:products)     { {'1' => product1,'2' => product2,'3'=> product3} }
+  
+  before(:all) do
+    Rhosync.bootstrap(get_testapp_path) do |rhosync|
+      rhosync.vendor_directory = File.join(File.dirname(__FILE__),'..','vendor')
+    end
+  end
 
+  #it_should_behave_like "SourceAdapterHelper" => [RhosyncDataHelper", "DBObjectsHelper"]
+  before(:each) do # "RhosyncHelper"
+    Store.create
+    Store.db.flushdb
+  end
+  
+  #  it_should_behave_like "DBObjectsHelper"
+  before(:each) do
+    @a_fields = { :name => test_app_name }
+    # @a = App.create(@a_fields)
+    @a = (App.load(test_app_name) || App.create(@a_fields))
+    @u_fields = {:login => 'testuser'}
+    @u = User.create(@u_fields) 
+    @u.password = 'testpass'
+    @c_fields = {
+      :device_type => 'Apple',
+      :device_pin => 'abcd',
+      :device_port => '3333',
+      :user_id => @u.id,
+      :app_id => @a.id 
+    }
+    @s_fields = {
+      :name => 'SampleAdapter',
+      :url => 'http://example.com',
+      :login => 'testuser',
+      :password => 'testpass',
+    }
+    @s_params = {
+      :user_id => @u.id,
+      :app_id => @a.id
+    }
+    @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
+    @s = Source.load(@s_fields[:name],@s_params)
+    @s = Source.create(@s_fields,@s_params) if @s.nil?
+    @s1 = Source.load('FixedSchemaAdapter',@s_params)
+    @s1 = Source.create({:name => 'FixedSchemaAdapter'},@s_params) if @s1.nil?
+    config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
+    @s1.update(config)
+    @r = @s.read_state
+    @a.sources << @s.id
+    @a.sources << @s1.id
+    Source.update_associations(@a.sources.members)
+    @a.users << @u.id
+  end
   # FIXME:
     
   Rhosync.log_disabled = true
@@ -22,7 +79,7 @@ describe "Protocol" do
     $rand_id ||= 0
     $content_table ||= []
     $content ||= []
-    require File.join(get_testapp_path,@test_app_name)
+    require File.join(get_testapp_path, test_app_name)
     Rhosync.bootstrap(get_testapp_path) do |rhosync|
       rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')
     end
@@ -86,7 +143,7 @@ describe "Protocol" do
   
   ['create','update','delete'].each do |operation|
     it "client #{operation} object(s)" do
-      params = {operation=>{'1'=>@product1},
+      params = {operation=>{'1'=>product1},
                 :client_id => @c.id,
                 :source_name => @s.name}
       do_post "/#{@a.name}", params
@@ -138,9 +195,9 @@ eol
   end
   
   it "client create,update,delete objects" do
-    params = {'create'=>{'1'=>@product1},
-              'update'=>{'2'=>@product2},
-              'delete'=>{'3'=>@product3},
+    params = {'create'=>{'1'=>product1},
+              'update'=>{'2'=>product2},
+              'delete'=>{'3'=>product3},
               :client_id => @c.id,
               :source_name => @s.name}
     do_post "/#{@a.name}", params
@@ -148,8 +205,8 @@ eol
   end
   
   it "server sends link created object" do
-    @product4['link'] = 'test link'
-    params = {'create'=>{'4'=>@product4},
+    product4['link'] = 'test link'
+    params = {'create'=>{'4'=>product4},
               :client_id => @c.id,
               :source_name => @s.name}
     do_post "/#{@a.name}", params
@@ -189,7 +246,7 @@ eol
   
   it "server send insert objects to client" do
     cs = ClientSync.new(@s,@c,1)
-    data = {'1'=>@product1,'2'=>@product2}
+    data = {'1'=>product1,'2'=>product2}
     set_test_data('test_db_storage',data)
     get "/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
     @title,@description = 'insert objects', 'send insert objects'
@@ -198,7 +255,7 @@ eol
   it "server send metadata to client" do
     mock_metadata_method([SampleAdapter]) do
       cs = ClientSync.new(@s,@c,1)
-      set_test_data('test_db_storage',@data)
+      set_test_data('test_db_storage',products)
       get "/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
     end
     @title,@description = 'metadata', 'send metadata'
@@ -206,7 +263,7 @@ eol
   
   it "server send delete objects to client" do 
     cs = ClientSync.new(@s,@c,1)
-    data = {'1'=>@product1,'2'=>@product2}
+    data = {'1'=>product1,'2'=>product2}
     set_test_data('test_db_storage',data)
     get "/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
     token = Store.get_value(@c.docname(:page_token))
@@ -219,11 +276,11 @@ eol
   
   it "server send insert,delete objects to client" do 
     cs = ClientSync.new(@s,@c,1)
-    data = {'1'=>@product1,'2'=>@product2}
+    data = {'1'=>product1,'2'=>product2}
     set_test_data('test_db_storage',data)
     get "/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
     token = Store.get_value(@c.docname(:page_token))
-    set_test_data('test_db_storage',{'1'=>@product1,'3'=>@product3})
+    set_test_data('test_db_storage',{'1'=>product1,'3'=>product3})
     @s.read_state.refresh_time = Time.now.to_i
     get "/#{@a.name}",:client_id => @c.id,:source_name => @s.name,:token => token,
       :version => ClientSync::VERSION
@@ -232,7 +289,7 @@ eol
   
   it "server send search results" do
     sources = [{:name=>'SampleAdapter'}]
-    Store.put_data('test_db_storage',@data)
+    Store.put_data('test_db_storage',products)
     params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
       :version => ClientSync::VERSION}
     get "/#{@a.name}/search",params
@@ -242,7 +299,7 @@ eol
   it "should get search results with error" do
     sources = [{:name=>'SampleAdapter'}]
     msg = "Error during search"
-    error = set_test_data('test_db_storage',@data,msg,'search error')
+    error = set_test_data('test_db_storage',products,msg,'search error')
     params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
       :version => ClientSync::VERSION}
     get "/#{@a.name}/search",params
@@ -250,7 +307,7 @@ eol
   end
   
   it "should get multiple source search results" do
-    Store.put_data('test_db_storage',@data)
+    Store.put_data('test_db_storage',products)
     sources = [{:name=>'SimpleAdapter'},{:name=>'SampleAdapter'}]
     params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},
       :version => ClientSync::VERSION}
@@ -259,7 +316,7 @@ eol
   end  
   
   it "should ack multiple sources search results" do
-    set_test_data('test_db_storage',@data)
+    set_test_data('test_db_storage',products)
     sources = [{'name'=>'SimpleAdapter'},{'name'=>'SampleAdapter'}]
     ClientSync.search_all(@c,{:sources => sources,:search => {'search'=>'bar'}})
     @c.source_name = 'SimpleAdapter'

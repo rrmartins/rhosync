@@ -38,6 +38,7 @@ begin
 
   desc "Run specs in spec/**/*_spec.rb "
   RSpec::Core::RakeTask.new('spec:all') do |t|
+    t.rspec_opts = ["-b", "-c", "-fd"]
     t.pattern = FileList[TYPES.values]
     t.rcov = true
     t.rcov_opts = ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*,json/*']    

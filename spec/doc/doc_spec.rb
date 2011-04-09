@@ -27,8 +27,7 @@ describe "Protocol" do
     end
   end
 
-  #it_should_behave_like "SourceAdapterHelper" => [RhosyncDataHelper", "DBObjectsHelper"]
-  before(:each) do # "RhosyncHelper"
+  before(:each) do
     Store.create
     Store.db.flushdb
   end
@@ -71,7 +70,6 @@ describe "Protocol" do
     Source.update_associations(@a.sources.members)
     @a.users << @u.id
   end
-  # FIXME:
     
   Rhosync.log_disabled = true
   

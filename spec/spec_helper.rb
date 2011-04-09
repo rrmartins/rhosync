@@ -94,9 +94,9 @@ module TestHelpers
         else
           Store.get_value(dockey).should == expected
         end
-      rescue Spec::Expectations::ExpectationNotMetError => e
+      rescue RSpec::Expectations::ExpectationNotMetError => e
         message = "\nVerifying `#{dockey}`\n\n" + e.to_s
-        Kernel::raise(Spec::Expectations::ExpectationNotMetError.new(message))
+        Kernel::raise(RSpec::Expectations::ExpectationNotMetError.new(message))
       end
     end
   end
@@ -205,131 +205,153 @@ module TestHelpers
   end
 end #TestHelpers
 
-# shared_examples_for "RhosyncHelper" do
-#   describe "RhosyncHelper", :shared => true do
-#     before(:each) do
-#       Store.create
-#       Store.db.flushdb
-#     end
-#   end
-# end
-# 
-# shared_examples_for "TestappHelper" do
-#   describe "TestappHelper", :shared => true do
-#     include TestHelpers
-#     before(:all) do
-#       @test_app_name = 'application'
-#     end
-#   end
-# end
-# 
-# shared_examples_for "RhosyncDataHelper" do
-#   describe "RhosyncDataHelper", :shared => true do  
-#     it_behaves_like "RhosyncHelper"
-#     it_should_behave_like "TestappHelper"
-# 
-#     before(:each) do
-#       @source = 'Product'
-#       @user_id = 5
-#       @client_id = 1
-# 
-#       @product1 = {
-#         'name' => 'iPhone',
-#         'brand' => 'Apple',
-#         'price' => '199.99'
-#       }
-# 
-#       @product2 = {
-#         'name' => 'G2',
-#         'brand' => 'Android',
-#         'price' => '99.99'
-#       }
-# 
-#       @product3 = {
-#         'name' => 'Fuze',
-#         'brand' => 'HTC',
-#         'price' => '299.99'
-#       }
-# 
-#       @product4 = {
-#         'name' => 'Droid',
-#         'brand' => 'Android',
-#         'price' => '249.99'
-#       }
-# 
-#       @data = {'1'=>@product1,'2'=>@product2,'3'=>@product3}
-#     end
-#   end  
-# end
-# 
-# shared_examples_for "DBObjectsHelper" do
-#   describe "DBObjectsHelper", :shared => true do
-#     include TestHelpers
-# 
-#     before(:each) do
-#       @a_fields = { :name => @test_app_name }
-#       # @a = App.create(@a_fields)
-#       @a = (App.load(@test_app_name) || App.create(@a_fields))
-#       @u_fields = {:login => 'testuser'}
-#       @u = User.create(@u_fields) 
-#       @u.password = 'testpass'
-#       @c_fields = {
-#         :device_type => 'Apple',
-#         :device_pin => 'abcd',
-#         :device_port => '3333',
-#         :user_id => @u.id,
-#         :app_id => @a.id 
-#       }
-#       @s_fields = {
-#         :name => 'SampleAdapter',
-#         :url => 'http://example.com',
-#         :login => 'testuser',
-#         :password => 'testpass',
-#       }
-#       @s_params = {
-#         :user_id => @u.id,
-#         :app_id => @a.id
-#       }
-#       @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
-#       @s = Source.load(@s_fields[:name],@s_params)
-#       @s = Source.create(@s_fields,@s_params) if @s.nil?
-#       @s1 = Source.load('FixedSchemaAdapter',@s_params)
-#       @s1 = Source.create({:name => 'FixedSchemaAdapter'},@s_params) if @s1.nil?
-#       config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
-#       @s1.update(config)
-#       @r = @s.read_state
-#       @a.sources << @s.id
-#       @a.sources << @s1.id
-#       Source.update_associations(@a.sources.members)
-#       @a.users << @u.id
-#     end
-#   end
-# end
-# 
-# shared_examples_for "SourceAdapterHelper" do
-#   describe "SourceAdapterHelper", :shared => true do
-#     it_should_behave_like "RhosyncDataHelper"
-#     it_should_behave_like "DBObjectsHelper"
-#   end
-# end
-# 
-# shared_examples_for "StorageStateHelper" do
-#   describe "StorageStateHelper", :shared => true do
-#     it_should_behave_like "SourceAdapterHelper"
-# 
-#     before(:each) do
-#       @s.name = 'StorageStateAdapter'
-#     end
-#   end
-# end
-# 
-# shared_examples_for "SpecBootstrapHelper" do
-#   describe "SpecBootstrapHelper", :shared => true do
-#     it_should_behave_like "TestappHelper"
-#     before(:all) do
-#       Rhosync.bootstrap(get_testapp_path) do |rhosync|
-#         rhosync.vendor_directory = File.join(File.dirname(__FILE__),'..','vendor')
-#       end
-#     end
-#   end
-# end
+shared_examples_for "SharedStoreHelper" do
+  include TestHelpers    
+  # "TestappHelper"
+  let(:test_app_name) { 'application' }  
+  # "RhosyncHelper"
+  before(:each) do 
+    Store.create
+    Store.db.flushdb
+  end
+end
+
+shared_examples_for "SharedInitHelper" do
+  include TestHelpers    
+  # "TestappHelper"
+  let(:test_app_name) { 'application' }
+  before(:all) do
+    Rhosync.bootstrap(get_testapp_path) do |rhosync|
+      rhosync.vendor_directory = File.join(File.dirname(__FILE__),'..','vendor')
+    end
+  end
+  # "RhosyncHelper"
+  before(:each) do 
+    Store.create
+    Store.db.flushdb
+  end
+  # "DBObjectsHelper"
+  before(:each) do
+    @a_fields = { :name => test_app_name }
+    @a = (App.load(test_app_name) || App.create(@a_fields))
+    @u_fields = {:login => 'testuser'}
+    @u = User.create(@u_fields) 
+    @u.password = 'testpass'
+    @c_fields = {
+      :device_type => 'Apple',
+      :device_pin => 'abcd',
+      :device_port => '3333',
+      :user_id => @u.id,
+      :app_id => @a.id 
+    }
+    @s_fields = {
+      :name => 'SampleAdapter',
+      :url => 'http://example.com',
+      :login => 'testuser',
+      :password => 'testpass',
+    }
+    @s_params = {
+      :user_id => @u.id,
+      :app_id => @a.id
+    }
+    @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
+    @s = Source.load(@s_fields[:name],@s_params)
+    @s = Source.create(@s_fields,@s_params) if @s.nil?
+    @s1 = Source.load('FixedSchemaAdapter',@s_params)
+    @s1 = Source.create({:name => 'FixedSchemaAdapter'},@s_params) if @s1.nil?
+    config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
+    @s1.update(config)
+    @r = @s.read_state
+    @a.sources << @s.id
+    @a.sources << @s1.id
+    Source.update_associations(@a.sources.members)
+    @a.users << @u.id
+  end
+end
+
+shared_examples_for "SharedInitDataHelper" do
+  include TestHelpers    
+
+  # "TestappHelper"
+  let(:test_app_name) { 'application' }
+  before(:all) do
+    Rhosync.bootstrap(get_testapp_path) do |rhosync|
+      rhosync.vendor_directory = File.join(File.dirname(__FILE__),'..','vendor')
+    end
+  end
+  # "RhosyncHelper"
+  before(:each) do 
+    Store.create
+    Store.db.flushdb
+  end
+  # "DBObjectsHelper"
+  before(:each) do
+    @a_fields = { :name => test_app_name }
+    @a = (App.load(test_app_name) || App.create(@a_fields))
+    @u_fields = {:login => 'testuser'}
+    @u = User.create(@u_fields) 
+    @u.password = 'testpass'
+    @c_fields = {
+      :device_type => 'Apple',
+      :device_pin => 'abcd',
+      :device_port => '3333',
+      :user_id => @u.id,
+      :app_id => @a.id 
+    }
+    @s_fields = {
+      :name => 'SampleAdapter',
+      :url => 'http://example.com',
+      :login => 'testuser',
+      :password => 'testpass',
+    }
+    @s_params = {
+      :user_id => @u.id,
+      :app_id => @a.id
+    }
+    @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
+    @s = Source.load(@s_fields[:name],@s_params)
+    @s = Source.create(@s_fields,@s_params) if @s.nil?
+    @s1 = Source.load('FixedSchemaAdapter',@s_params)
+    @s1 = Source.create({:name => 'FixedSchemaAdapter'},@s_params) if @s1.nil?
+    config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
+    @s1.update(config)
+    @r = @s.read_state
+    @a.sources << @s.id
+    @a.sources << @s1.id
+    Source.update_associations(@a.sources.members)
+    @a.users << @u.id
+  end
+
+  before(:each) do
+    @source = 'Product'
+    @user_id = 5
+    @client_id = 1
+
+    @product1 = {
+      'name' => 'iPhone',
+      'brand' => 'Apple',
+      'price' => '199.99'
+    }
+
+    @product2 = {
+      'name' => 'G2',
+      'brand' => 'Android',
+      'price' => '99.99'
+    }
+
+    @product3 = {
+      'name' => 'Fuze',
+      'brand' => 'HTC',
+      'price' => '299.99'
+    }
+
+    @product4 = {
+      'name' => 'Droid',
+      'brand' => 'Android',
+      'price' => '249.99'
+    }
+
+    @data = {'1'=>@product1,'2'=>@product2,'3'=>@product3}
+  end
+end
+

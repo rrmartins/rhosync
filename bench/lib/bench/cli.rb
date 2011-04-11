@@ -10,7 +10,7 @@ module Bench
       load(script)
       Statistics.new(Bench.concurrency,Bench.iterations,
         Bench.total_time,Bench.sessions).process.print_stats
-      logger.info "Bench completed..."
+      bench_log "Bench completed..."
     end
   end
 end

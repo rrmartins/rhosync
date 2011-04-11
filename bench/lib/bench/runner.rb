@@ -33,7 +33,7 @@ module Bench
         begin 
           threads.each { |t| t.join }
         rescue RestClient::RequestTimeout => e
-          logger.info "Request timed out #{e}"
+          bench_log "Request timed out #{e}"
         end
       end
       Bench.sessions = @sessions

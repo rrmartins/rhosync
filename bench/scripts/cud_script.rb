@@ -1,5 +1,5 @@
 include BenchHelpers
-logger.info "Simulate creating multiple objects"
+bench_log "Simulate creating multiple objects"
 
 Bench.config do |config|
   config.concurrency = 1
@@ -42,19 +42,19 @@ Bench.test do |config,session|
   end
   session.last_result.verify_code(200)
   sleep rand(10)
-  logger.info "#{session.log_prefix} Loop to get available objects..."
+  bench_log "#{session.log_prefix} Loop to get available objects..."
   count = get_all_objects(current_line,config,session,@expected_md,create_objs)
-  logger.info "#{session.log_prefix} Got #{count} available objects..."
+  bench_log "#{session.log_prefix} Got #{count} available objects..."
 end  
 
 Bench.verify do |config,sessions|
   sessions.each do |session|
-    logger.info "#{session.log_prefix} Loop to load all objects..."
+    bench_log "#{session.log_prefix} Loop to load all objects..."
     session.results['create-object'][0].verification_error += 
       verify_numbers(
         @datasize,get_all_objects(
           caller(0)[0].to_s,config,session,@expected_md,nil,0),session,current_line)
-    logger.info "#{session.log_prefix} Loaded all objects..."
+    bench_log "#{session.log_prefix} Loaded all objects..."
   end
   
   sessions.each do |session|

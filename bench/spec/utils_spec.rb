@@ -5,6 +5,7 @@ describe "UtilsSpec" do
   # it_should_behave_like "BenchSpecHelper"
   include Utils
   include Logging
+
   it_behaves_like "BenchSpecHelper" do
     it "should compare two identical hashes" do
       h1 = {'key1' => {'key2' => 'value2'}}
@@ -22,14 +23,13 @@ describe "UtilsSpec" do
     it "should compare_and_log two identical hashes" do
       h1 = {'key1' => {'key2' => 'value2'}}
       h2 = {'key1' => {'key2' => 'value2'}}
-      logger.should_not_receive(:error)
+      Bench::Utils.should_not_receive(:bench_log)
       compare_and_log(h1,h2,'the caller').should == 0
     end
 
     it "should compare_and_log two different hashes" do
       h1 = {'key1' => {'key2' => 'value2'}}
       h2 = {'key1' => {'key2' => 'value3'}}
-      logger.should_receive(:error).exactly(5).times
       compare_and_log(h1,h2,'the caller').should == 1
     end
   end  

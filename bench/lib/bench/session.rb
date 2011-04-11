@@ -33,11 +33,11 @@ module Bench
             result.last_response = send(verb,url,headers)
             @last_result = result  
         end
-        logger.info "#{log_prefix} #{verb.to_s.upcase.gsub(/_/,'')} #{url} #{@last_result.code} #{result.time}"      
+        bench_log "#{log_prefix} #{verb.to_s.upcase.gsub(/_/,'')} #{url} #{@last_result.code} #{result.time}"      
       rescue RestClient::Exception => e
         result.error = e
-        logger.info "#{log_prefix} #{verb.to_s.upcase.gsub(/_/,'')} #{url}"      
-        logger.error "#{log_prefix} #{e.http_code.to_s} #{e.message}\n"
+        bench_log "#{log_prefix} #{verb.to_s.upcase.gsub(/_/,'')} #{url}"      
+        bench_log "#{log_prefix} #{e.http_code.to_s} #{e.message}\n"
         raise e
       end
       @last_result.cookies['rhosync_session'] = 
@@ -47,12 +47,12 @@ module Bench
     end
     
     def _get(url,headers)
-      #logger.info "GET #{url}"
+      #bench_log "GET #{url}"
       RestClient.get(url, headers)
     end
     
     def _post(url,headers)
-      #logger.info "POST #{url}"
+      #bench_log "POST #{url}"
       RestClient.post(url, @body, headers)
     end
     

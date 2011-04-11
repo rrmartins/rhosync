@@ -1,5 +1,5 @@
 include BenchHelpers
-logger.info "Runs simple login,clientcreate,sync session and validates response"
+bench_log "Runs simple login,clientcreate,sync session and validates response"
 
 @datasize = 100
 @expected = Bench.get_test_data(@datasize)

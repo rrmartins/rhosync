@@ -1,4 +1,5 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
+require File.join(File.dirname(__FILE__), '..', 'support', 'shared_examples')
 
 describe "PingJob" do
   it_should_behave_like "SharedInitDataHelper" do

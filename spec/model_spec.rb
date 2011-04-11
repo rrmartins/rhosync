@@ -59,8 +59,8 @@ describe Rhosync::Model do
     end
   
     before(:each) do
-      @xRedisMock = Spec::Mocks::Mock.new
-      @yRedisMock = Spec::Mocks::Mock.new
+      @xRedisMock = RSpec::Mocks::Mock.new
+      @yRedisMock = RSpec::Mocks::Mock.new
       @x = TestType.with_key(1)
       @y = TestType.with_key(1)
       @x.stub!(:redis).and_return(@xRedisMock)
@@ -201,7 +201,7 @@ describe Rhosync::Model do
     end
     
     before do
-      @redisMock = Spec::Mocks::Mock.new
+      @redisMock = RSpec::Mocks::Mock.new
       @x = TestIncrements.with_key(1)
       @x.stub!(:redis).and_return(@redisMock)
     end
@@ -232,7 +232,7 @@ describe Rhosync::Model do
     end
     
     before(:each) do
-      @redisMock = Spec::Mocks::Mock.new
+      @redisMock = RSpec::Mocks::Mock.new
       @x = TestCommands.with_key(1)
       @x.stub!(:redis).and_return(@redisMock)
     end

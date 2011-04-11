@@ -1,4 +1,5 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
+require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 describe "Store" do
     

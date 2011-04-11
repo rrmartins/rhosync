@@ -4,7 +4,7 @@ describe "Rhosync Performance" do
   # it_should_behave_like "SourceAdapterHelper"
   # it_should_behave_like "PerfSpecHelper"
 
-  it_should_behave_like "PerfSpecHelper" do
+  it_should_behave_like  "SharedInitHelper" do #"PerfSpecHelper"
     it "should process get/put for 1000 records (6000 elements)" do
       @data = get_test_data(1000)
       start = start_timer

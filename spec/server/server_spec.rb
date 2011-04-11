@@ -1,7 +1,8 @@
 require 'rack/test'
 
-require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
+require File.join(File.dirname(__FILE__),'..','spec_helper')
+require File.join(File.dirname(__FILE__), '..', 'support', 'shared_examples')
 
 describe "Server" do
   # it_should_behave_like "RhosyncDataHelper"

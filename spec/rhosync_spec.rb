@@ -1,9 +1,10 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
+require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 describe "Rhosync" do
   # it_should_behave_like "RhosyncHelper"
   # it_should_behave_like "TestappHelper"
-  it_should_behave_like "SharedStoreHelper" do
+  it_should_behave_like "SharedHelper" do
     it "should bootstrap Rhosync with block" do
       Rhosync.bootstrap(get_testapp_path) do |rhosync|
         rhosync.vendor_directory = 'foo'

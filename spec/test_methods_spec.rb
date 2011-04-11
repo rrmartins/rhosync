@@ -1,5 +1,6 @@
 require 'rhosync/test_methods'
 require File.join(File.dirname(__FILE__),'spec_helper')
+require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 describe "TestMethods" do
   # include TestHelpers  

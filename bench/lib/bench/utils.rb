@@ -33,12 +33,12 @@ module Bench
     
     def compare_and_log(expected,actual,caller)
       if expected != actual
-        logger.error "#{log_prefix} Verify error at: " + caller
-        logger.error "#{log_prefix} Message diff: "
+        bench_log "#{log_prefix} Verify error at: " + caller
+        bench_log "#{log_prefix} Message diff: "
         compare(:expected,expected,:actual,actual).each do |diff|
-          logger.error "#{log_prefix} Path: #{diff[:path].join('/')}"
-          logger.error "#{log_prefix} Expected: #{diff[:expected].inspect}"
-          logger.error "#{log_prefix} Actual: #{diff[:actual].inspect}"
+          bench_log "#{log_prefix} Path: #{diff[:path].join('/')}"
+          bench_log "#{log_prefix} Expected: #{diff[:expected].inspect}"
+          bench_log "#{log_prefix} Actual: #{diff[:actual].inspect}"
         end
         1
       else

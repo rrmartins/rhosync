@@ -14,8 +14,8 @@ module BenchHelpers
     verification_error = 0
     expected.each do |key,object|
       if !actual or !actual.include?(key) or actual[key]['l'] != key 
-        logger.error "#{session.log_prefix} Verify error at: " + caller
-        logger.error "#{session.log_prefix} Unexpected id for object #{key}"
+        bench_log "#{session.log_prefix} Verify error at: " + caller
+        bench_log "#{session.log_prefix} Unexpected id for object #{key}"
         verification_error += 1
       end
     end
@@ -24,9 +24,9 @@ module BenchHelpers
   
   def verify_numbers(expected,actual,session,caller)
     if expected != actual
-      logger.error "#{session.log_prefix} Verify error at: " + caller
-      logger.error "#{session.log_prefix} Expected #{expected}"
-      logger.error "#{session.log_prefix} Actual  #{actual}"
+      bench_log "#{session.log_prefix} Verify error at: " + caller
+      bench_log "#{session.log_prefix} Expected #{expected}"
+      bench_log "#{session.log_prefix} Actual  #{actual}"
       1
     else
       0
@@ -49,8 +49,8 @@ module BenchHelpers
         session.last_result.verification_error += 
           compare_and_log(expected_md[key],object,caller) 
       else
-        logger.error "#{session.log_prefix} Verify error at: " + caller
-        logger.error "#{session.log_prefix} Unknown object: #{object.inspect}"
+        bench_log "#{session.log_prefix} Verify error at: " + caller
+        bench_log "#{session.log_prefix} Unknown object: #{object.inspect}"
         session.last_result.verification_error += 1
       end
     end

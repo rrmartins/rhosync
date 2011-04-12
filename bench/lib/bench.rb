@@ -1,6 +1,4 @@
-#gem 'sevenwire-rest-client'
 require 'rest_client'
-require 'log4r'
 require 'json'
 require 'zip/zip'
 $:.unshift File.dirname(__FILE__)

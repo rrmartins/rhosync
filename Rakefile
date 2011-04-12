@@ -74,7 +74,6 @@ begin
     gemspec.add_dependency "sinatra", "~>1.2"
     gemspec.add_dependency "templater", "~>1.0.0"
     gemspec.add_dependency "rake", ">=0.8.7"
-    gemspec.add_development_dependency "log4r", "~>1.1.7"
     gemspec.add_development_dependency "jeweler", ">=1.4.0"
     gemspec.add_development_dependency "rspec", ">=1.3.0"
     gemspec.add_development_dependency "rcov", ">=0.9.8"

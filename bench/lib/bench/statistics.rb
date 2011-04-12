@@ -40,17 +40,17 @@ module Bench
     end
     
     def print_stats
-      logger.info "Statistics:"
+      bench_log "Statistics:"
       @rows.each do |marker,row|
-        logger.info "Request %-15s: min: %0.4f, max: %0.4f, avg: %0.4f, err: %d, verification err: %d" % [marker, row[:min], row[:max], average(row), row[:errors], row[:verification_errors]]
+        bench_log "Request %-15s: min: %0.4f, max: %0.4f, avg: %0.4f, err: %d, verification err: %d" % [marker, row[:min], row[:max], average(row), row[:errors], row[:verification_errors]]
       end
-      logger.info "State of MD        : #{Bench.verify_error == 0 ? true : false}"
-      logger.info "Concurrency        : #{@concurrency}"
-      logger.info "Iterations         : #{@iterations}"
-      logger.info "Total Count        : #{@total_count}"
-      logger.info "Total Time         : #{@total_time}"
-      logger.info "Throughput(req/s)  : #{@total_count / @total_time}"
-      logger.info "Throughput(req/min): #{(@total_count / @total_time) * 60.0}"
+      bench_log "State of MD        : #{Bench.verify_error == 0 ? true : false}"
+      bench_log "Concurrency        : #{@concurrency}"
+      bench_log "Iterations         : #{@iterations}"
+      bench_log "Total Count        : #{@total_count}"
+      bench_log "Total Time         : #{@total_time}"
+      bench_log "Throughput(req/s)  : #{@total_count / @total_time}"
+      bench_log "Throughput(req/min): #{(@total_count / @total_time) * 60.0}"
     end
   end
 end

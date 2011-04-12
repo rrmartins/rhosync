@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'log4r'
 $:.unshift File.join(File.dirname(__FILE__),'..')
 $:.unshift File.join(File.dirname(__FILE__),'..','lib')
 require 'bench/logging'

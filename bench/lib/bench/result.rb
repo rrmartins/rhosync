@@ -35,10 +35,10 @@ module Bench
     
     def verify_code(expected)
       if expected != @last_response.code
-        logger.error "#{log_prefix} Verify error at: " + caller(1)[0].to_s
-        logger.error "#{log_prefix} Code diff: "
-        logger.error "#{log_prefix} expected: #{expected.inspect}"
-        logger.error "#{log_prefix} but got:  #{@last_response.code}"
+        bench_log "#{log_prefix} Verify error at: " + caller(1)[0].to_s
+        bench_log "#{log_prefix} Code diff: "
+        bench_log "#{log_prefix} expected: #{expected.inspect}"
+        bench_log "#{log_prefix} but got:  #{@last_response.code}"
         @verification_error += 1
       end
     end

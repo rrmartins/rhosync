@@ -1,5 +1,5 @@
 include BenchHelpers
-logger.info "Run sync session, forces source adapter query on every sync request"
+bench_log "Run sync session, forces source adapter query on every sync request"
 
 @datasize = 100
 @expected = Bench.get_test_data(@datasize)

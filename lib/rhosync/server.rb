@@ -160,6 +160,9 @@ module Rhosync
     Rhosync.log "Rhosync Server v#{Rhosync::VERSION} started..."
 
     before do
+      cache_control :no_cache
+      headers({'pragma'=>'no-cache'})
+
       begin
         if params["cud"]
           cud = JSON.parse(params["cud"])

@@ -9,8 +9,8 @@ describe "TestMethods" do
     
   # The module we're testing
   include Rhosync::TestMethods
-  
-  it_behaves_like "SharedInitDataHelper" do    
+
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     before(:each) do
       Rhosync.bootstrap(get_testapp_path)
       setup_test_for(SampleAdapter,'user1')

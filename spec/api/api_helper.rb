@@ -5,6 +5,10 @@ require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
 require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__), '..', 'support', 'shared_examples')
 
+def app
+  @app ||= Rhosync::Server.new
+end
+
 def compress(path)
   path.sub!(%r[/$],'')
   archive = File.join(path,File.basename(path))+'.zip'

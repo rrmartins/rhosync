@@ -8,7 +8,7 @@ describe "Client" do
   # it_should_behave_like "SpecBootstrapHelper"
   # it_should_behave_like "SourceAdapterHelper"
   
-  it_should_behave_like "SharedInitHelper" do
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => false do
     it "should create client with fields" do
       @c.id.length.should == 32
       @c.device_type.should == @c_fields[:device_type]

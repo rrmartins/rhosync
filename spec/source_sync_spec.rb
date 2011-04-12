@@ -4,7 +4,7 @@ require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 describe "SourceSync" do
   # it_should_behave_like "SpecBootstrapHelper"
   # it_should_behave_like "SourceAdapterHelper"
-  it_should_behave_like "SharedInitDataHelper" do
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     before(:each) do
       @ss = SourceSync.new(@s)
     end

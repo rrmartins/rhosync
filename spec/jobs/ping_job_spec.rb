@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__), '..', 'support', 'shared_examples')
 
 describe "PingJob" do
-  it_should_behave_like "SharedInitDataHelper" do
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     it "should perform apple ping" do
       params = {"user_id" => @u.id, "api_token" => @api_token,
         "sources" => [@s.name], "message" => 'hello world', 

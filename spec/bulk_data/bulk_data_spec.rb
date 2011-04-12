@@ -5,7 +5,7 @@ describe "BulkData" do
   # it_should_behave_like "SpecBootstrapHelper"
   # it_should_behave_like "SourceAdapterHelper"
   
-  it_should_behave_like "SharedInitDataHelper" do
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
       after(:each) do
         delete_data_directory
       end

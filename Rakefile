@@ -1,8 +1,8 @@
 require 'rubygems'
 require 'bundler/setup'
-#Bundler.require(:default)
-#require 'bundler'
-#Bundler.setup #(:default, :development)
+# Bundler.setup (:default, :development)
+
+# Bundler::GemHelper.install_tasks
 
 require 'yaml'
 $:.unshift File.join(File.dirname(__FILE__),'lib')

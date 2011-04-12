@@ -7,7 +7,7 @@ ERROR = '0_broken_object_id' unless defined? ERROR
 
 # Monkey patch to fix the following issue:
 # /Library/Ruby/Gems/1.8/gems/rspec-core-2.5.1/lib/rspec/core/shared_example_group.rb:45:
-# in `ensure_shared_example_group_name_not_taken': Shared example group 'SharedHelper' already exists (ArgumentError)
+# in `ensure_shared_example_group_name_not_taken': Shared example group '...' already exists (ArgumentError)
 module RSpec
   module Core
     module SharedExampleGroup

@@ -5,7 +5,7 @@ describe "Sync Server States" do
   # it_should_behave_like "SpecBootstrapHelper"
   # it_should_behave_like "SourceAdapterHelper"
 
-  it_should_behave_like "SharedInitDataHelper" do
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     before(:each) do    
       @cs = ClientSync.new(@s,@c,2)
     end
@@ -100,6 +100,5 @@ describe "Sync Server States" do
           'test_delete_storage' => {'1'=>@product1})
       end
     end
-  end
-  
+  end  
 end

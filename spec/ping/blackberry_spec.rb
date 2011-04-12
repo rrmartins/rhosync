@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__), '..', 'support', 'shared_examples')
 
 describe "Ping Blackberry" do
-  it_should_behave_like "SharedInitHelper" do
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => false do
     before do
       @params = {"user_id" => @u.id, "api_token" => @api_token,
         "sources" => [@s.name], "message" => 'hello world', 
@@ -12,7 +12,7 @@ describe "Ping Blackberry" do
       post.stub!(:new).and_return(post)
       post.stub!(:body=)
       Net::HTTP::Post.stub!(:new).and_return(post)
-  
+
       @http = mock('http')
       @http.stub!(:request)
       @http.stub!(:start).and_yield(@http)
@@ -29,7 +29,7 @@ describe "Ping Blackberry" do
       Blackberry.should_receive(:log).once.with("Error while sending ping: #{error}")
       lambda { Blackberry.ping(@params) }.should raise_error(SocketError,error)
     end
-  
+
     it "should compute pap_message" do
       expected = <<PAP
 --asdlfkjiurwghasf
@@ -58,5 +58,5 @@ PAP
       actual = Blackberry.pap_message(@params).gsub!(/pushID\:\d+/,'pushID:RAND_ID')
       actual.gsub!(/\r|\n|\s/,"").should == expected.gsub!(/\r|\n|\s/,"")
     end
-  end
+  end        
 end

@@ -5,7 +5,7 @@ describe "Document" do
   # it_should_behave_like "SpecBootstrapHelper"
   # it_should_behave_like "SourceAdapterHelper"
 
-  it_should_behave_like "SharedInitDataHelper" do
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     it "should generate client docname" do
       @c.docname(:foo).should == "client:#{@a.id}:#{@u.id}:#{@c.id}:#{@s_fields[:name]}:foo"
     end

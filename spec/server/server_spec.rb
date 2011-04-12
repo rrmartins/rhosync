@@ -11,7 +11,7 @@ describe "Server" do
   include Rack::Test::Methods
   include Rhosync
 
-  it_behaves_like "SharedInitDataHelper" do    
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     before(:each) do
       require File.join(get_testapp_path,test_app_name)
       Rhosync.bootstrap(get_testapp_path) do |rhosync|

@@ -5,7 +5,7 @@ describe "Source" do
   # it_should_behave_like "SpecBootstrapHelper"
   # it_should_behave_like "SourceAdapterHelper"
 
-  it_should_behave_like "SharedInitHelper" do
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => false do
     it "should create and load source with @s_fields and @s_params" do
       @s.name.should == @s_fields[:name]
       @s.url.should == @s_fields[:url]

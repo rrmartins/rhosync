@@ -2,11 +2,11 @@ require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__), '..', 'support', 'shared_examples')
 
 describe "BulkDataJob" do
-  it_should_behave_like "SharedInitDataHelper" do
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
+
     before(:each) do
       Rhosync.blackberry_bulk_sync = true
     end
-
     after(:each) do
       delete_data_directory
     end

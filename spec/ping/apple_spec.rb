@@ -40,18 +40,24 @@ describe "Ping Apple" do
     end
 
     it "should compute apn_message" do
-      expected = <<-eos
-\000\000 \253\315\000g{"aps":{"vibrate":"5","badge":5,"sound":"hello.mp3","alert":"hello world"},"do_sync":["SampleAdapter"]}
-eos
-      Apple.apn_message(@params).should == expected.strip!
+      expected_hash = {
+        "aps"=>{"vibrate"=>"5", "badge"=>5, "alert"=>"hello world", "sound"=>"hello.mp3"}, 
+        "do_sync"=>["SampleAdapter"] 
+      }
+      apn_message = Apple.apn_message(@params)
+      apn_message.start_with?("\000\000 \253\315\000g").should be_true 
+      JSON.parse(apn_message.sub("\000\000 \253\315\000g","")).should ==  expected_hash
     end
 
     it "should compute apn_message with source array" do
       @params['sources'] << 'SimpleAdapter'
-      expected = <<-eos
-\000\000 \253\315\000w{"aps":{"vibrate":"5","badge":5,"sound":"hello.mp3","alert":"hello world"},"do_sync":["SampleAdapter","SimpleAdapter"]}
-eos
-      Apple.apn_message(@params).should == expected.strip!
+      expected_hash = {
+        "aps"=>{"vibrate"=>"5", "badge"=>5, "alert"=>"hello world", "sound"=>"hello.mp3"}, 
+        "do_sync"=>["SampleAdapter", "SimpleAdapter"] 
+      }
+      apn_message = Apple.apn_message(@params)
+      apn_message.start_with?("\000\000 \253\315\000w").should be_true 
+      JSON.parse(apn_message.sub("\000\000 \253\315\000w","")).should ==  expected_hash
     end
 
     it "should raise SocketError if socket fails" do

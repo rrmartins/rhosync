@@ -2,8 +2,6 @@ require 'rubygems'
 require 'bundler/setup'
 # Bundler.setup (:default, :development)
 
-# Bundler::GemHelper.install_tasks
-
 require 'yaml'
 $:.unshift File.join(File.dirname(__FILE__),'lib')
 require 'rhosync'
@@ -55,8 +53,8 @@ rescue LoadError => e
   puts "gem install rspec rcov\n\n"
 end
 
-desc "Build rhosync gem"
-task :gem => [ 'spec:all', 'clobber_spec:all', :gemspec, :build ]
+# desc "Build rhosync gem"
+# task :gem => [ 'spec:all', 'clobber_spec:all', :gemspec, :build ]
 
 namespace :rhosync do
   desc "Load console environment"
@@ -87,8 +85,9 @@ def ask(msg)
   STDIN.gets.chomp
 end
 
-def bundle_exec(cmd)
-  system "bundle exec #{cmd}"
-end
+# def bundle_exec(cmd)
+#   system "bundle exec #{cmd}"
+# end
 
 load 'tasks/redis.rake'
+Bundler::GemHelper.install_tasks

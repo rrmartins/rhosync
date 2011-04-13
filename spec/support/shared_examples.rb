@@ -2,24 +2,23 @@
 # it_behaves_like "SharedRhosyncHelper", :rhosync_data => true
 shared_examples_for "SharedRhosyncHelper" do |params|
   include TestHelpers    
-
+  
   # "TestappHelper"
   let(:test_app_name) { 'application' }
-
+  
+  # "RhosyncHelper"
   before(:all) do
     Rhosync.bootstrap(get_testapp_path) do |rhosync|
-      rhosync.vendor_directory = File.join(File.dirname(__FILE__),'..','vendor')
+      rhosync.vendor_directory = File.join(File.dirname(__FILE__), '..', '..', 'vendor')
     end
   end
-
-  # "RhosyncHelper"
-  before(:each) do 
+  
+  before(:each) do
+    # "RhosyncHelper" 
     Store.create
     Store.db.flushdb
-  end
-
-  # "DBObjectsHelper"
-  before(:each) do
+        
+    # "DBObjectsHelper"
     @a_fields = { :name => test_app_name }
     @a = (App.load(test_app_name) || App.create(@a_fields))
     @u_fields = {:login => 'testuser'}
@@ -54,10 +53,9 @@ shared_examples_for "SharedRhosyncHelper" do |params|
     @a.sources << @s1.id
     Source.update_associations(@a.sources.members)
     @a.users << @u.id
-  end
-  
-  if params[:rhosync_data] # "RhosyncDataHelper"
-    before(:each) do
+    
+    # "RhosyncDataHelper"  
+    if params && params[:rhosync_data] 
       @source = 'Product'
       @user_id = 5
       @client_id = 1
@@ -93,12 +91,11 @@ shared_examples_for "ApiHelper" do
 
   # it_should_behave_like "RhosyncDataHelper"
   let(:test_app_name) { 'application' }
+  
   before(:each) do
     Store.create
     Store.db.flushdb
-  end
-  
-  before(:each) do
+
     require File.join(get_testapp_path, test_app_name)
     Rhosync.bootstrap(get_testapp_path) do |rhosync|
       rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')
@@ -109,12 +106,8 @@ shared_examples_for "ApiHelper" do
       :secret => "secure!"
     )
     @api_token = User.load('rhoadmin').token_id
-  end
 
-  # it_should_behave_like "DBObjectsHelper"
-  before(:each) do
     @a_fields = { :name => test_app_name }
-    # @a = App.create(@a_fields)
     @a = (App.load(test_app_name) || App.create(@a_fields))
     @u_fields = {:login => 'testuser'}
     @u = User.create(@u_fields) 
@@ -148,9 +141,7 @@ shared_examples_for "ApiHelper" do
     @a.sources << @s1.id
     Source.update_associations(@a.sources.members)
     @a.users << @u.id
-  end
-  
-  before(:each) do
+
     @source = 'Product'
     @user_id = 5
     @client_id = 1

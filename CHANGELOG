@@ -4,7 +4,7 @@
 * #11904353 - fixed broken 'rake console' task, added new 'rhosync' namespace: 'rake rhosync:console'  
 * #12105115 - removed unnecessary log4r dependency
 * added bundler to manage gem's dependencies, migrated from rspec1 to rspec2  
-* #5687948 - fixed bug "iPhone push specs failed" 						
+* #5687948 - fixed issue "iPhone push specs failed" 						
 
 ## 2.1.2 (2011-03-18)
 * Use server-dir/redis.conf if not found at RedisRunner.prefix (via artemk) 

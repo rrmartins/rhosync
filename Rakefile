@@ -56,15 +56,13 @@ end
 # desc "Build rhosync gem"
 # task :gem => [ 'spec:all', 'clobber_spec:all', :gemspec, :build ]
 
-namespace :rhosync do
-  desc "Load console environment"
-  task :console do
-    if RedisRunner.running?   
-      sh "irb -rubygems -r #{File.join(File.dirname(__FILE__),'lib','rhosync','server.rb')}"
-    else
-      puts "Redis is not running. Please start it by running 'rake redis:start' command."
-    end  
-  end
+desc "Load console environment"
+task :console do
+  if RedisRunner.running?   
+    sh "irb -rubygems -r #{File.join(File.dirname(__FILE__),'lib','rhosync','server.rb')}"
+  else
+    puts "Redis is not running. Please start it by running 'rake redis:start' command."
+  end  
 end
 
 desc "Run benchmark scripts"

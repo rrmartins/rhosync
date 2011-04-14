@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'rspec'
 
 # Set environment to test
 ENV['RHO_ENV'] = 'test'
@@ -17,11 +18,11 @@ include Rhosync
 
 require 'rhosync/test_methods'
 
-describe "SpecHelper", :shared => true do
+shared_examples_for "SpecHelper" do
   include Rhosync::TestMethods
   
   before(:each) do
     Store.db.flushdb
     Application.initializer(ROOT_PATH)
-  end
+  end  
 end

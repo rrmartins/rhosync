@@ -62,6 +62,11 @@ module Rhosync
       template.destination = "#{name}/Rakefile"
     end
     
+    template :gemfile do |template|
+      template.source = 'Gemfile'
+      template.destination = "#{name}/Gemfile"
+    end
+    
     template :spec_helper do |template|
       template.source = 'spec/spec_helper.rb'
       template.destination = "#{name}/spec/spec_helper.rb"

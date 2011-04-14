@@ -208,15 +208,15 @@ namespace :rhosync do
   end
   
   begin
-    require 'spec/rake/spectask'
+    require 'rspec/core/rake_task'
     require 'rcov/rcovtask' unless windows?
 
     desc "Run source adapter specs"
     task :spec do
       files = File.join('spec','sources','*_spec.rb')
-      Spec::Rake::SpecTask.new('rhosync:spec') do |t|
-        t.spec_files = FileList[files]
-        t.spec_opts = %w(-fn -b --color)
+      RSpec::Core::RakeTask.new('rhosync:spec') do |t|
+        t.pattern = FileList[files]
+        t.rspec_opts = %w(-fn -b --color)
         unless windows?
           t.rcov = true
           t.rcov_opts = ['--exclude', 'spec/*,gems/*']

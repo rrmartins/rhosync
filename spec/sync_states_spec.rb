@@ -2,9 +2,6 @@ require File.join(File.dirname(__FILE__),'spec_helper')
 require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 describe "Sync Server States" do
-  # it_should_behave_like "SpecBootstrapHelper"
-  # it_should_behave_like "SourceAdapterHelper"
-
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     before(:each) do    
       @cs = ClientSync.new(@s,@c,2)

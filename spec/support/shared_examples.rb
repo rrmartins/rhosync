@@ -1,11 +1,12 @@
-# it_behaves_like "SharedRhosyncHelper", :rhosync_data => false
-# it_behaves_like "SharedRhosyncHelper", :rhosync_data => true
+# When shared examples are called as  
+#   it_behaves_like "SharedRhosyncHelper"
+# then :rhosync_data group (@product1, ..., @data) skipped.
+# To enable this group call examples as
+#   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true
 shared_examples_for "SharedRhosyncHelper" do |params|
-  include TestHelpers    
-  
+  include TestHelpers      
   # "TestappHelper"
-  let(:test_app_name) { 'application' }
-  
+  let(:test_app_name) { 'application' }  
   # "RhosyncHelper"
   before(:all) do
     Rhosync.bootstrap(get_testapp_path) do |rhosync|
@@ -89,7 +90,6 @@ shared_examples_for "ApiHelper" do
   include Rhosync
   include TestHelpers    
 
-  # it_should_behave_like "RhosyncDataHelper"
   let(:test_app_name) { 'application' }
   
   before(:each) do

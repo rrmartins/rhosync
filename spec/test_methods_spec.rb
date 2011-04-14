@@ -3,10 +3,6 @@ require File.join(File.dirname(__FILE__),'spec_helper')
 require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 describe "TestMethods" do
-  # include TestHelpers  
-  # it_should_behave_like "RhosyncHelper"
-  # it_should_behave_like "RhosyncDataHelper"
-    
   # The module we're testing
   include Rhosync::TestMethods
 

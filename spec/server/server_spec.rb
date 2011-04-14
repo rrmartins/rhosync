@@ -5,9 +5,6 @@ require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__), '..', 'support', 'shared_examples')
 
 describe "Server" do
-  # it_should_behave_like "RhosyncDataHelper"
-  # it_should_behave_like "TestappHelper"
-
   include Rack::Test::Methods
   include Rhosync
 

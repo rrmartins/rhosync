@@ -5,10 +5,7 @@ STATS_RECORD_RESOLUTION = 2 unless defined? STATS_RECORD_RESOLUTION
 STATS_RECORD_SIZE = 8 unless defined? STATS_RECORD_SIZE
 
 describe "Client" do
-  # it_should_behave_like "SpecBootstrapHelper"
-  # it_should_behave_like "SourceAdapterHelper"
-  
-  it_behaves_like "SharedRhosyncHelper", :rhosync_data => false do
+  it_behaves_like "SharedRhosyncHelper" do
     it "should create client with fields" do
       @c.id.length.should == 32
       @c.device_type.should == @c_fields[:device_type]

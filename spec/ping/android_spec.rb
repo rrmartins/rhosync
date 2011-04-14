@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__), '..', 'support', 'shared_examples')
 
 describe "Ping Android" do
-  it_behaves_like "SharedRhosyncHelper", :rhosync_data => false do
+  it_behaves_like "SharedRhosyncHelper" do
     before do
       @params = {"device_pin" => @c.device_pin,
         "sources" => [@s.name], "message" => 'hello world', 

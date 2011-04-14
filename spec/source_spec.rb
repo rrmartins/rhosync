@@ -2,10 +2,7 @@ require File.join(File.dirname(__FILE__),'spec_helper')
 require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 describe "Source" do
-  # it_should_behave_like "SpecBootstrapHelper"
-  # it_should_behave_like "SourceAdapterHelper"
-
-  it_behaves_like "SharedRhosyncHelper", :rhosync_data => false do
+  it_behaves_like "SharedRhosyncHelper" do
     it "should create and load source with @s_fields and @s_params" do
       @s.name.should == @s_fields[:name]
       @s.url.should == @s_fields[:url]

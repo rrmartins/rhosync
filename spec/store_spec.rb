@@ -2,10 +2,6 @@ require File.join(File.dirname(__FILE__),'spec_helper')
 require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 describe "Store" do
-    
-  # it_should_behave_like "SpecBootstrapHelper"
-  # it_should_behave_like "SourceAdapterHelper"
-
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     describe "store methods" do
       it "should create db class method" do

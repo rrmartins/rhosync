@@ -2,9 +2,7 @@ require File.join(File.dirname(__FILE__),'spec_helper')
 require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 describe "ReadState" do
-  # it_should_behave_like "SpecBootstrapHelper"
-  # it_should_behave_like "SourceAdapterHelper"
-  it_behaves_like "SharedRhosyncHelper", :rhosync_data => false do
+  it_behaves_like "SharedRhosyncHelper" do
     it "should create refresh with correct id" do
       @r.id.should == "#{@a_fields[:name]}:#{@u_fields[:login]}:#{@s_fields[:name]}"
     end

@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__),'perf_spec_helper')
 
 describe "Rhosync Performance" do
-  it_behaves_like "SharedRhosyncHelper" do
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => false do
     it "should process get/put for 1000 records (6000 elements)" do
       @data = get_test_data(1000)
       start = start_timer

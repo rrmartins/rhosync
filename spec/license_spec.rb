@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__),'spec_helper')
 require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 describe "License" do
-  it_behaves_like "SharedRhosyncHelper" do
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => false do
     before(:each) do
       Store.put_value(License::CLIENT_DOCKEY,nil)
     end

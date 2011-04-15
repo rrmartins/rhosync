@@ -1,7 +1,7 @@
 require File.join(File.dirname(__FILE__),'perf_spec_helper')
 
 describe "BulkData Performance" do
-  it_behaves_like "SharedRhosyncHelper" do
+  it_behaves_like "SharedRhosyncHelper", :rhosync_data => false do
     before(:each) do
       basedir = File.join(File.dirname(__FILE__),'..','apps','rhotestapp')
       Rhosync.bootstrap(basedir) do |rhosync|

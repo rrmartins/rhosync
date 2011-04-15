@@ -1,5 +1,5 @@
 # When shared examples are called as  
-#   it_behaves_like "SharedRhosyncHelper"
+#   it_behaves_like "SharedRhosyncHelper", :rhosync_data => false
 # then :rhosync_data group (@product1, ..., @data) skipped.
 # To enable this group call examples as
 #   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true

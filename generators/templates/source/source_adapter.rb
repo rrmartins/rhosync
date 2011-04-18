@@ -1,7 +1,6 @@
 class <%=class_name%> < SourceAdapter
   def initialize(source,credential=nil) 
     super(source)
-    # #4614661 - fixed bug "Don't generate credentials argument in source adapters"
     log "WARNING: credential parameter is deprecated and should not be used." if credential
   end
  

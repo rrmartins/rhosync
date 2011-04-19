@@ -14,6 +14,9 @@ require 'bench/test_data'
 $:.unshift File.join(File.dirname(__FILE__),'..')
 require 'scripts/helpers'
 
+$:.unshift File.join(File.dirname(__FILE__),'..','..','..','lib')
+require 'rhosync'
+
 # Inspired by Trample: http://github.com/jamesgolick/trample
 
 module Bench

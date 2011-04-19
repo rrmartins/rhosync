@@ -1,10 +1,13 @@
 source 'http://rubygems.org'
 
-gem 'rhosync', '~> 2.2.0' 
-# By default to run application Mongrel web server is used
-gem 'mongrel', '~> 1.1.5'
-# If you prefer you can use Thin web server instead of Mongrel
-# gem 'thin', '1.2.11'
+gem 'rhosync', '~> 2.2.0'
+
+group :development do
+  # By default to run application Mongrel web server is used
+  gem 'mongrel', '~> 1.1.5'
+  # If you prefer you can use Thin web server instead of Mongrel
+  # gem 'thin', '1.2.11'
+end
 
 group :test do
   gem 'rack-test', '>= 0.5.3', :require => "rack/test"

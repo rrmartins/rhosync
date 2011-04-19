@@ -1,7 +1,6 @@
 class <%=class_name%> < SourceAdapter
-  def initialize(source,credential=nil) 
+  def initialize(source) 
     super(source)
-    log "WARNING: credential parameter is deprecated and should not be used." if credential
   end
  
   def login

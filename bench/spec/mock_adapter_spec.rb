@@ -18,7 +18,7 @@ describe "MockAdapter" do
         :app_id => 'mock_app_id'
       }
       @s = Source.create(@s_fields,@s_params)
-      @ma = MockAdapter.new(@s,nil)
+      @ma = MockAdapter.new(@s)
     end
 
     it "should return db name" do

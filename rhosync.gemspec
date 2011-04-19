@@ -21,7 +21,6 @@ Gem::Specification.new do |s|
   s.require_paths = ["lib"]
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.default_executable = %q{rhosync}
   s.rubygems_version = %q{1.5.0}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -39,10 +38,4 @@ Gem::Specification.new do |s|
   s.add_dependency('resque', '~> 1.14.0')
   s.add_dependency('rest-client', '~> 1.6.1')
   s.add_dependency('templater', '~> 1.0.0')
-  s.add_dependency('faker', '>= 0.3.1')
-  s.add_dependency('rack-test', '>= 0.5.3')
-  s.add_dependency('thor', '>= 0.13.6')
-  s.add_dependency('rspec', '~> 2.5.0')
-  s.add_dependency('rcov', '>= 0.9.8')
-
 end

@@ -13,7 +13,7 @@ module Rhosync
   class SourceAdapter
     attr_accessor :session
     
-    def initialize(source,credential=nil)
+    def initialize(source)
       @source = source
     end
     
@@ -24,7 +24,8 @@ module Rhosync
         begin
           source.name.strip! if source.name
           require under_score(source.name)
-          adapter=(Object.const_get(source.name)).new(source,credential) 
+          log "WARNING: credential parameter in Rhosync#create method is deprecated." if credential
+          adapter=(Object.const_get(source.name)).new(source)
         rescue Exception=>e
           log "Failure to create adapter from class #{source.name}: #{e.inspect.to_s}"
           raise e

@@ -3,20 +3,15 @@ PATH
   specs:
     rhosync (2.2.0)
       bundler (~> 1.0)
-      faker (>= 0.3.1)
       json (~> 1.4.2)
-      rack-test (>= 0.5.3)
       rake (>= 0.8.7)
-      rcov (>= 0.9.8)
       redis (~> 2.1.1)
       resque (~> 1.14.0)
       rest-client (~> 1.6.1)
-      rspec (~> 2.5.0)
       rubyzip (~> 0.9.4)
       sinatra (~> 1.2)
       sqlite3-ruby (~> 1.2.5)
       templater (~> 1.0.0)
-      thor (>= 0.13.6)
       uuidtools (>= 2.1.1)
 
 GEM
@@ -72,4 +67,9 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  faker (>= 0.3.1)
+  rack-test (>= 0.5.3)
+  rcov (>= 0.9.8)
   rhosync!
+  rspec (~> 2.5.0)
+  thor (>= 0.13.6)

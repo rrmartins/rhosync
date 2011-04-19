@@ -18,6 +18,10 @@ module Rhosync
       Rhosync.under_score(name)
     end
 
+    def gem_version
+      VERSION
+    end 
+    
     alias_method :module_name, :class_name
   end
   

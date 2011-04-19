@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rhosync', '~> 2.2.0'
+gem 'rhosync', '<%=gem_version%>'
 
 group :development do
   # By default to run application Mongrel web server is used

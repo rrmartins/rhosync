@@ -1,8 +1,22 @@
 require 'rubygems'
+require 'rspec'
 require 'rhosync'
 include Rhosync
 
 ERROR = '0_broken_object_id' unless defined? ERROR
+
+# Monkey patch to fix the following issue:
+# /Library/Ruby/Gems/1.8/gems/rspec-core-2.5.1/lib/rspec/core/shared_example_group.rb:45:
+# in `ensure_shared_example_group_name_not_taken': Shared example group '...' already exists (ArgumentError)
+module RSpec
+  module Core
+    module SharedExampleGroup
+    private
+      def ensure_shared_example_group_name_not_taken(name)
+      end
+    end
+  end
+end
 
 module TestHelpers
   def get_testapp_path
@@ -93,9 +107,9 @@ module TestHelpers
         else
           Store.get_value(dockey).should == expected
         end
-      rescue Spec::Expectations::ExpectationNotMetError => e
+      rescue RSpec::Expectations::ExpectationNotMetError => e
         message = "\nVerifying `#{dockey}`\n\n" + e.to_s
-        Kernel::raise(Spec::Expectations::ExpectationNotMetError.new(message))
+        Kernel::raise(RSpec::Expectations::ExpectationNotMetError.new(message))
       end
     end
   end
@@ -203,118 +217,3 @@ module TestHelpers
     end
   end
 end #TestHelpers
-
-describe "RhosyncHelper", :shared => true do
-  before(:each) do
-    Store.create
-    Store.db.flushdb
-  end
-end
-
-describe "TestappHelper", :shared => true do
-  include TestHelpers
-  before(:all) do
-    @test_app_name = 'application'
-  end
-end
-
-describe "RhosyncDataHelper", :shared => true do  
-  it_should_behave_like "RhosyncHelper"
-  it_should_behave_like "TestappHelper"
-  
-  before(:each) do
-    @source = 'Product'
-    @user_id = 5
-    @client_id = 1
-    
-    @product1 = {
-      'name' => 'iPhone',
-      'brand' => 'Apple',
-      'price' => '199.99'
-    }
-    
-    @product2 = {
-      'name' => 'G2',
-      'brand' => 'Android',
-      'price' => '99.99'
-    }
-
-    @product3 = {
-      'name' => 'Fuze',
-      'brand' => 'HTC',
-      'price' => '299.99'
-    }
-    
-    @product4 = {
-      'name' => 'Droid',
-      'brand' => 'Android',
-      'price' => '249.99'
-    }
-    
-    @data = {'1'=>@product1,'2'=>@product2,'3'=>@product3}
-  end
-end  
-
-describe "DBObjectsHelper", :shared => true do
-  include TestHelpers
-  
-  before(:each) do
-    @a_fields = { :name => @test_app_name }
-    # @a = App.create(@a_fields)
-    @a = (App.load(@test_app_name) || App.create(@a_fields))
-    @u_fields = {:login => 'testuser'}
-    @u = User.create(@u_fields) 
-    @u.password = 'testpass'
-    @c_fields = {
-      :device_type => 'Apple',
-      :device_pin => 'abcd',
-      :device_port => '3333',
-      :user_id => @u.id,
-      :app_id => @a.id 
-    }
-    @s_fields = {
-      :name => 'SampleAdapter',
-      :url => 'http://example.com',
-      :login => 'testuser',
-      :password => 'testpass',
-    }
-    @s_params = {
-      :user_id => @u.id,
-      :app_id => @a.id
-    }
-    @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
-    @s = Source.load(@s_fields[:name],@s_params)
-    @s = Source.create(@s_fields,@s_params) if @s.nil?
-    @s1 = Source.load('FixedSchemaAdapter',@s_params)
-    @s1 = Source.create({:name => 'FixedSchemaAdapter'},@s_params) if @s1.nil?
-    config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
-    @s1.update(config)
-    @r = @s.read_state
-    @a.sources << @s.id
-    @a.sources << @s1.id
-    Source.update_associations(@a.sources.members)
-    @a.users << @u.id
-  end
-end
-
-describe "SourceAdapterHelper", :shared => true do
-  it_should_behave_like "RhosyncDataHelper"
-  it_should_behave_like "DBObjectsHelper"
-end
-
-describe "StorageStateHelper", :shared => true do
-  it_should_behave_like "SourceAdapterHelper"
-  
-  before(:each) do
-    @s.name = 'StorageStateAdapter'
-  end
-end
-
-describe "SpecBootstrapHelper", :shared => true do
-  it_should_behave_like "TestappHelper"
-  before(:all) do
-    Rhosync.bootstrap(get_testapp_path) do |rhosync|
-      rhosync.vendor_directory = File.join(File.dirname(__FILE__),'..','vendor')
-    end
-  end
-end

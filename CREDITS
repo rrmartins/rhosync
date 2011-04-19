@@ -36,3 +36,6 @@ RhoSync uses following other projects:
  thin 1.2.8 (https://github.com/macournoyer/thin)
  License: MIT (https://github.com/macournoyer/thin/blob/master/COPYING)
 
+ bundler 1.0.10 (http://gembundler.com/)
+ License: MIT (http://www.opensource.org/licenses/mit-license.php)
+	

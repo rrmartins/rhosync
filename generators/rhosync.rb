@@ -18,6 +18,10 @@ module Rhosync
       Rhosync.under_score(name)
     end
 
+    def gem_version
+      VERSION
+    end 
+    
     alias_method :module_name, :class_name
   end
   
@@ -60,6 +64,11 @@ module Rhosync
     template :rakefile do |template|
       template.source = 'Rakefile'
       template.destination = "#{name}/Rakefile"
+    end
+    
+    template :gemfile do |template|
+      template.source = 'Gemfile'
+      template.destination = "#{name}/Gemfile"
     end
     
     template :spec_helper do |template|

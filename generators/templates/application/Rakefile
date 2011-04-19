@@ -1,3 +1,6 @@
+require 'rubygems'
+require 'bundler/setup'
+
 begin
   require 'vendor/rhosync/lib/rhosync/tasks'
   require 'vendor/rhosync/lib/rhosync'

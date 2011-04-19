@@ -163,6 +163,9 @@ module Rhosync
     def self.create_hsql_data_file(bulk_data,ts)
       schema,index,dbfile = get_file_args(bulk_data.name,ts)
       hsql_file = dbfile + ".hsqldb"
+      cmd = ['java','-cp', File.join(File.expand_path(Rhosync.vendor_directory),'hsqldata.jar'),
+        'com.rhomobile.hsqldata.HsqlData', dbfile, hsql_file].join(" ")
+      log "Running hsqldata: #{cmd.to_s}"
       raise Exception.new("Error running hsqldata") unless 
         system(
           'java','-cp', 

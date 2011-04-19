@@ -14,6 +14,7 @@ module Rhosync
         
     class << self
       def create(fields={})
+        raise ArgumentError.new("Reserved user id #{fields[:login]}") if fields[:login] && fields[:login] == '__shared__'
         fields[:id] = fields[:login]
         if Rhosync.stats
           Rhosync::Stats::Record.set('users') { Store.incr('user:count') }

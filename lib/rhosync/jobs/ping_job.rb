@@ -13,7 +13,10 @@ module Rhosync
           'device_pin' => client.device_pin)   
         if client.device_type and client.device_type.size > 0 and client.device_pin and client.device_pin.size > 0
           klass = Object.const_get(camelize(client.device_type.downcase))
-          klass.ping(params) if klass
+          if klass
+            params['vibrate'] = params['vibrate'].to_s
+            klass.ping(params) 
+          end
         else
           log "Skipping ping for non-registered client_id '#{client_id}'..."
         end

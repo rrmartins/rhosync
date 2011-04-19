@@ -7,6 +7,14 @@ describe "User" do
   it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
+  it "should not allow user created with reserved login" do
+    Store.get_value('user:count').should == "1"
+    lambda {
+      User.create({:login => '__shared__'})
+      }.should raise_error(ArgumentError, 'Reserved user id __shared__')
+    Store.get_value('user:count').should == "1"
+  end
+  
   it "should create user with fields" do
     @u.id.should == @u_fields[:login]
     @u1 = User.load(@u_fields[:login])

@@ -1,35 +1,12 @@
-require File.join(File.dirname(__FILE__),'..','spec_helper')
 require 'rack/test'
-require 'spec'
-require 'spec/autorun'
-require 'spec/interop/test'
+require 'rspec'
 
 require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','server.rb')
+require File.join(File.dirname(__FILE__),'..','spec_helper')
+require File.join(File.dirname(__FILE__), '..', 'support', 'shared_examples')
 
-describe "ApiHelper", :shared => true do
-  it_should_behave_like "RhosyncDataHelper"
-
-  include Rack::Test::Methods
-  include Rhosync
-  
-  before(:each) do
-    require File.join(get_testapp_path,@test_app_name)
-    Rhosync.bootstrap(get_testapp_path) do |rhosync|
-      rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')
-    end
-    Rhosync::Server.set( 
-      :environment => :test,
-      :run => false,
-      :secret => "secure!"
-    )
-    @api_token = User.load('rhoadmin').token_id
-  end
-
-  def app
-    @app ||= Rhosync::Server.new
-  end
-
-  it_should_behave_like "DBObjectsHelper"
+def app
+  @app ||= Rhosync::Server.new
 end
 
 def compress(path)

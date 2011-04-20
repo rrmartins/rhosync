@@ -8,3 +8,5 @@ log
 doc/protocol.html
 /vendor
 *.rdb
+nbproject/
+examples/simple/settings/apple_push_cert.pem

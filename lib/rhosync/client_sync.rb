@@ -300,7 +300,7 @@ module Rhosync
       search_params = params[:search] if params
       res = @source_sync.search(@client.id,search_params) if params.nil? or !params[:token]
       res,diffsize =  @source.is_pass_through? ? [res,res.size] : compute_search 
-      formatted_res = _format_search_result(res,diffsize)
+      formatted_res = _format_search_result(res,diffsize)      
       @client.flash_data('search*') if diffsize == 0
       formatted_res
     end

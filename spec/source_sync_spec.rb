@@ -33,7 +33,6 @@ describe "SourceSync" do
       @ss.process_query
       verify_result(@s.docname(:errors) => {'logoff-error'=>{'message'=>msg}})
     end
-<<<<<<< HEAD
 
     it "should hold on read on subsequent call of process" do
       expected = {'1'=>@product1}
@@ -72,35 +71,6 @@ describe "SourceSync" do
             @s.docname(:metadata) => "{\"foo\":\"bar\"}",
             @s.docname(:metadata_sha1) => "a5e744d0164540d33b1d7ea616c28f2fa97e754a")
         end
-=======
-    
-    it "should process source adapter with pass_through set" do
-      expected = {'1'=>@product1,'2'=>@product2}
-      set_state('test_db_storage' => expected)
-      @s.pass_through = 'true'
-      @ss.process_query.should == expected
-      verify_result(@s.docname(:md) => {},
-        @s.docname(:md_size) => nil)
-      @s.pass_through = nil
-    end
-    
-    describe "create" do
-      it "should do create where adapter.create returns nil" do
-        set_state(@c.docname(:create) => {'2'=>@product2})
-        @ss.create(@c.id)
-        verify_result(@c.docname(:create_errors) => {},
-          @c.docname(:create_links) => {},
-          @c.docname(:create) => {})
-      end
-    
-      it "should do create where adapter.create returns object link" do
-        @product4['link'] = 'test link'
-        set_state(@c.docname(:create) => {'4'=>@product4})
-        @ss.create(@c.id)
-        verify_result(@c.docname(:create_errors) => {},
-          @c.docname(:create_links) => {'4'=>{'l'=>'backend_id'}},
-          @c.docname(:create) => {})
->>>>>>> draft of handling pass_through adapter
       end
 
       it "should process source adapter schema" do
@@ -121,6 +91,16 @@ describe "SourceSync" do
         @ss.process_query('stash_result' => true)
         verify_result(@s.docname(:md) => expected,
           @s.docname(:md_size) => expected.size.to_s)
+      end
+     
+      it "should process source adapter with pass_through set" do
+        expected = {'1'=>@product1,'2'=>@product2}
+        set_state('test_db_storage' => expected)
+        @s.pass_through = 'true'
+        @ss.process_query.should == expected
+        verify_result(@s.docname(:md) => {},
+          @s.docname(:md_size) => nil)
+        @s.pass_through = nil
       end
 
       it "should call methods in source adapter" do
@@ -220,6 +200,10 @@ describe "SourceSync" do
         it "should do query with no exception" do
           verify_read_operation('query')
         end
+        
+        it "should do query with no exception pass through" do
+          verify_read_operation_pass_through('query')
+        end
 
         it "should do query with exception raised" do
           verify_read_operation_with_error('query')
@@ -230,6 +214,10 @@ describe "SourceSync" do
         it "should do search with no exception" do
           verify_read_operation('search')
         end
+        
+         it "should do search with no exception pass through" do
+            verify_read_operation_pass_through('search')
+          end
 
         it "should do search with exception raised" do
           verify_read_operation_with_error('search')
@@ -257,7 +245,7 @@ describe "SourceSync" do
         Store.put_data(@s.docname(:errors),
           {"#{operation}-error"=>{'message'=>'failed'}},true)
         if operation == 'query'
-          @ss.read.should == true
+          @ss.read.should == true 
           verify_result(@s.docname(:md) => expected, 
             @s.docname(:errors) => {})
         else
@@ -266,7 +254,23 @@ describe "SourceSync" do
             @c.docname(:search_errors) => {})
         end
       end
-<<<<<<< HEAD
+      
+      def verify_read_operation_pass_through(operation)
+        expected = {'1'=>@product1,'2'=>@product2}
+        set_test_data('test_db_storage',expected)
+        Store.put_data(@s.docname(:errors),
+          {"#{operation}-error"=>{'message'=>'failed'}},true)
+        @s.pass_through = 'true'
+        if operation == 'query'
+          @ss.read.should == expected
+          verify_result(@s.docname(:md) => {}, 
+            @s.docname(:errors) => {})
+        else
+          @ss.search(@c.id).should == expected  
+          verify_result(@c.docname(:search) => {},
+            @c.docname(:search_errors) => {})
+        end
+      end
 
       def verify_read_operation_with_error(operation)
         msg = "Error during #{operation}"
@@ -297,39 +301,6 @@ describe "SourceSync" do
       @ss.process_query({'foo'=>'bar'})
       Resque.peek(:abc).should == {"args"=>
         ["query", @s.name, @a.name, @u.login, nil, {'foo'=>'bar'}], "class"=>"Rhosync::SourceJob"}
-=======
-    end
-    
-    def verify_read_operation(operation)
-      expected = {'1'=>@product1,'2'=>@product2}
-      set_test_data('test_db_storage',expected)
-      Store.put_data(@s.docname(:errors),
-        {"#{operation}-error"=>{'message'=>'failed'}},true)
-      if operation == 'query'
-        @ss.read.should == true
-        verify_result(@s.docname(:md) => expected, 
-          @s.docname(:errors) => {})
-      else
-        @ss.search(@c.id).should == expected
-        verify_result(@c.docname(:search) => expected,
-          @c.docname(:search_errors) => {})
-      end
-    end
-    
-    def verify_read_operation_with_error(operation)
-      msg = "Error during #{operation}"
-      @ss.should_receive(:log).with("SourceAdapter raised #{operation} exception: #{msg}")
-      set_test_data('test_db_storage',{},msg,"#{operation} error")
-      if operation == 'query'
-        @ss.read.should be_nil
-        verify_result(@s.docname(:md) => {},
-          @s.docname(:errors) => {'query-error'=>{'message'=>msg}})
-      else
-        @ss.search(@c.id).should be_nil
-        verify_result(@c.docname(:search) => {}, 
-          @c.docname(:search_errors) => {'search-error'=>{'message'=>msg}})
-      end
->>>>>>> draft of handling pass_through adapter
     end
   end
 end

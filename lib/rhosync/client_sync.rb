@@ -12,9 +12,9 @@ module Rhosync
     end
     
     def receive_cud(cud_params={},query_params=nil)
-      if @source.is_pass_through
-        @source_sync.pass_through_cud(cud_params,query_params) if value
-      else  
+      if @source.is_pass_through?
+        @source_sync.pass_through_cud(cud_params,query_params)
+      else
         _process_blobs(cud_params)
         processed = 0
         ['create','update','delete'].each do |op|
@@ -300,7 +300,7 @@ module Rhosync
       search_params = params[:search] if params
       res = @source_sync.search(@client.id,search_params) if params.nil? or !params[:token]
       res,diffsize =  @source.is_pass_through? ? [res,res.size] : compute_search 
-      formatted_res = _format_search_result(res,diffsize)      
+      formatted_res = _format_search_result(res,diffsize)
       @client.flash_data('search*') if diffsize == 0
       formatted_res
     end

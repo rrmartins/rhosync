@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__),'..','..','lib','rhosync','console','rh
 require File.join(File.dirname(__FILE__),'api_helper')
 
 describe "RhosyncApi" do
-  it_should_behave_like "ApiHelper"
+  it_should_behave_like "ApiHelper" do
   
   it "should return api token using direct api call" do
     RhosyncApi::get_token('','rhoadmin','').should == @api_token
@@ -51,15 +51,20 @@ describe "RhosyncApi" do
     RhosyncApi::update_user('',@api_token, {:new_password => '123'})
     User.authenticate('rhoadmin','123').login.should == 'rhoadmin'
   end
+      
+  it "should return api token using rest call" do
+    response = {'set-cookie'=>"rhosync_session=c21...42b64; path=/; expires=Tue, 02-Aug-2011 23:55:19 GMT"}
+    res = mock('HttpResponse')
+    res.stub!(:response).and_return(response)
+    http = mock('NetHttp')
+    http.stub!(:post).and_return(res)
+    Net::HTTP.stub!(:new).and_return(http)
+    RestClient.stub(:post).and_return(@api_token)
 
-    it "should return api token using rest call" do
-      response = {'set-cookie'=>"rhosync_session=c21...42b64; path=/; expires=Tue, 02-Aug-2011 23:55:19 GMT"}
-      res = mock('HttpResponse')
-      res.stub!(:response).and_return(response)
-      http = mock('NetHttp')
-      http.stub!(:post).and_return(res)
-      Net::HTTP.stub!(:new).and_return(http)
-      RestClient.stub(:post).and_return(@api_token)
+    Net::HTTP.should_receive(:new).once
+    RestClient.should_receive(:post).once
+    RhosyncApi::get_token('some_url','rhoadmin','').should == @api_token
+  end
 
   it "should delete user using rect call" do
     RestClient.stub(:post).and_return("User deleted")
@@ -198,6 +203,23 @@ describe "RhosyncApi" do
       "create"=>"client:application:testuser:#{@c.id}:SimpleAdapter:create", 
       "update"=>"client:application:testuser:#{@c.id}:SimpleAdapter:update", 
       "delete"=>"client:application:testuser:#{@c.id}:SimpleAdapter:delete", 
+
+      "page"=>"client:application:testuser:#{@c.id}:SimpleAdapter:page", 
+      "page_token"=>"client:application:testuser:#{@c.id}:SimpleAdapter:page_token", 
+      "delete_page"=>"client:application:testuser:#{@c.id}:SimpleAdapter:delete_page", 
+      "create_links"=>"client:application:testuser:#{@c.id}:SimpleAdapter:create_links", 
+      "create_links_page"=>"client:application:testuser:#{@c.id}:SimpleAdapter:create_links_page", 
+
+      "delete_errors"=>"client:application:testuser:#{@c.id}:SimpleAdapter:delete_errors", 
+      "login_error"=>"client:application:testuser:#{@c.id}:SimpleAdapter:login_error", 
+      "create_errors"=>"client:application:testuser:#{@c.id}:SimpleAdapter:create_errors", 
+      "update_errors"=>"client:application:testuser:#{@c.id}:SimpleAdapter:update_errors", 
+      "logoff_error"=>"client:application:testuser:#{@c.id}:SimpleAdapter:logoff_error", 
+
+      "search"=>"client:application:testuser:#{@c.id}:SimpleAdapter:search",
+      "search_token"=>"client:application:testuser:#{@c.id}:SimpleAdapter:search_token", 
+      "search_errors"=>"client:application:testuser:#{@c.id}:SimpleAdapter:search_errors"}
+    end
 
     it "should list users using direct api call" do
       RhosyncApi::list_users('',@api_token).should == ['testuser']
@@ -345,7 +367,8 @@ describe "RhosyncApi" do
         {"name"=>"has_many", "type"=>"string", "value"=>"FixedSchemaAdapter,brand"},
         {"name"=>"queue", "value"=>nil, "type"=>"string"}, 
         {"name"=>"query_queue", "value"=>nil, "type"=>"string"}, 
-        {"name"=>"cud_queue", "value"=>nil, "type"=>"string"}]
+        {"name"=>"cud_queue", "value"=>nil, "type"=>"string"},
+        {"name"=>"pass_through", "value"=>nil, "type"=>"string"}]
     end
 
     it "should list source attributes using rest call" do

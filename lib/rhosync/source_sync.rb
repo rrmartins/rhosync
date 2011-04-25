@@ -36,16 +36,17 @@ module Rhosync
               value['id'] = key
               @adapter.send(op.to_sym,value)
             when 'delete'
-              @adapter.send(op.to_sym,key)
+              value['id'] = key
+              @adapter.send(op.to_sym,value)
             end
-            process_objects << key
+            processed_objects << key
           end if objects
         end
       rescue Exception => e
-        log "Error in #{op} pass through method: #{e.message}"
-        res['error'] = { 'operation' => op, 'message' => e.message } 
+        log "Error in pass through method: #{e.message}"
+        res['error'] = {'message' => e.message } 
       end
-      res['processed'] = process_objects
+      res['processed'] = processed_objects
       res.to_json
     end
     
@@ -251,7 +252,7 @@ module Rhosync
       end
     end
     
-    # Read Operation; params are query arguments
+   # Read Operation; params are query arguments
     def _read(operation,client_id,params=nil)
       errordoc = nil
       result = nil
@@ -261,12 +262,12 @@ module Rhosync
           errordoc = client.docname(:search_errors)
           compute_token(client.docname(:search_token))
           result = @adapter.search(params)
-          @adapter.save(client.docname(:search))
+          @adapter.save(client.docname(:search)) unless @source.is_pass_through?
         else
           errordoc = @source.docname(:errors)
           [:metadata,:schema].each do |method|
             _get_data(method)
-          end  
+          end
           result = @adapter.do_query(params)
         end
         # operation,sync succeeded, remove errors
@@ -281,7 +282,8 @@ module Rhosync
           Store.put_data(errordoc,{"#{operation}-error"=>{'message'=>e.message}},true)
         end
       end
-      result
+      # pass through expects result hash
+      @source.is_pass_through? ? result : true
     end
   end
 end

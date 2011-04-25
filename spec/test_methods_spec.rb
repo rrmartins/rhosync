@@ -53,6 +53,7 @@ describe "TestMethods" do
     
     it "should include test_create helper when pass through" do
       @s.pass_through = 'true'
+      p test_create(@product4)
       test_create(@product4).should == {'processed' => ["temp-id"]}.to_json
     end
 
@@ -71,7 +72,7 @@ describe "TestMethods" do
     it "should include test_update helper when pass through" do
       record = {'4'=> { 'price' => '199.99' }}
       @s.pass_through = 'true'
-      test_update(record).should == {'processed' => ["temp-id"]}.to_json
+      test_update(record).should == {'processed' => ["4"]}.to_json
       verify_result(@c.docname(:update) => {})
     end
 
@@ -90,7 +91,7 @@ describe "TestMethods" do
     it "should include test_delete helper when pass through" do
       record = {'4'=> { 'price' => '199.99' }}
       @s.pass_through = 'true'
-      test_delete(record).should == {'processed' => ["temp-id"]}.to_json
+      test_delete(record).should == {'processed' => ["4"]}.to_json
       verify_result(@c.docname(:delete) => {})
     end
 

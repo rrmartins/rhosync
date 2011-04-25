@@ -64,7 +64,7 @@ describe "ClientSync" do
       @s.pass_through = 'true'
       @cs.send_cud.should == [{'version'=>ClientSync::VERSION},
         {'token'=>@c.get_value(:page_token)},
-        {'count'=>data.size},{'progress_count'=>data.size},
+        {'count'=>data.size},{'progress_count'=>0},
         {'total_count'=>data.size},expected]
       verify_result(@cs.client.docname(:page) => {},
         @cs.client.docname(:cd) => {})

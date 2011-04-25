@@ -137,6 +137,7 @@ module Rhosync
         @adapter.send operation
       rescue Exception => e
         log "SourceAdapter raised #{operation} exception: #{e}"
+        log e.backtrace.join("\n")
         Store.put_data(edockey,{"#{operation}-error"=>{'message'=>e.message}},true)
         return false
       end
@@ -201,6 +202,7 @@ module Rhosync
           end
         rescue Exception => e
           log "SourceAdapter raised #{operation} exception: #{e}"
+          log e.backtrace.join("\n")
           errors ||= {}
           errors[key] = value
           errors["#{key}-error"] = {'message'=>e.message}
@@ -275,6 +277,7 @@ module Rhosync
       rescue Exception => e
         # store sync,operation exceptions to be sent to all clients for this source/user
         log "SourceAdapter raised #{operation} exception: #{e}"
+        log e.backtrace.join("\n")
         Store.lock(errordoc) do
           Store.put_data(errordoc,{"#{operation}-error"=>{'message'=>e.message}},true)
         end

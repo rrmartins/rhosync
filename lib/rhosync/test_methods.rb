@@ -101,7 +101,7 @@ module Rhosync
     # as shown above
     def test_update(record)
       if @s.is_pass_through?
-        @ss.pass_through_cud({'update'=> {'temp-id' => record}},nil)
+        @ss.pass_through_cud({'update'=> record },nil)
       else
         @c.put_data(:update,record)
         @ss.update(@c.id)
@@ -134,7 +134,7 @@ module Rhosync
     # verified as shown above.
     def test_delete(record)
       if @s.is_pass_through?
-        @ss.pass_through_cud({'delete'=> {'temp-id' => record}},nil)
+        @ss.pass_through_cud({'delete'=> record },nil)
       else
         @c.put_data(:delete,record)
         @ss.delete(@c.id)

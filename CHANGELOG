@@ -1,4 +1,8 @@
 ## 2.2.0 (not released)
+* #11102931 ping api accepts vibrate string and int
+* #7197617 test spec helpers support pass through
+* #11944605 implemented pass through feature
+* #4397476 wrapped login/logoff around cud spec helpers
 * backtrace logging in source adapter method exceptions
 * returning string in authenticate instead of true sets the current user login name (Useful for OAuth2)
 * #11904353 - fixed broken 'rake console' task, added new 'rhosync' namespace: 'rake rhosync:console'  

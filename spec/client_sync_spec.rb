@@ -29,6 +29,15 @@ describe "ClientSync" do
         @cs.client.docname(:update) => {},
         @cs.client.docname(:delete) => {})
     end
+    
+    it "should handle exeptions in receive cud with pass through" do
+      params = {'create'=>{'1'=>@error},'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
+      @s.pass_through = 'true'
+      @cs.receive_cud(params)
+      verify_result(@cs.client.docname(:create) => {},
+        @cs.client.docname(:update) => {},
+        @cs.client.docname(:delete) => {})
+    end
 
     it "should handle send cud" do
       data = {'1'=>@product1,'2'=>@product2}
@@ -57,13 +66,13 @@ describe "ClientSync" do
       @cs.client.docname(:cd) => {})
     end
     
-    it "should handle send cud if pass_through is set" do
-      data = {'1'=>@product1,'2'=>@product2}
-      expected = {'insert'=>data}
-      set_test_data('test_db_storage',data)
+    it "should handle send cud if with pass_through no data" do
+      data = {}
+      expected = {}
+      #set_test_data('test_db_storage',data)
       @s.pass_through = 'true'
       @cs.send_cud.should == [{'version'=>ClientSync::VERSION},
-        {'token'=>@c.get_value(:page_token)},
+        {'token'=>""},
         {'count'=>data.size},{'progress_count'=>0},
         {'total_count'=>data.size},expected]
       verify_result(@cs.client.docname(:page) => {},

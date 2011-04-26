@@ -16,7 +16,7 @@ describe "SourceAdapter" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     before(:each) do
       @s.name = 'SimpleAdapter'
-      @sa = SourceAdapter.create(@s,nil)
+      @sa = SourceAdapter.create(@s)
     end
 
     it "should create SourceAdapter with source" do
@@ -25,7 +25,7 @@ describe "SourceAdapter" do
 
     it "should create and execute SubAdapter that extends BaseAdapter" do
       @s.name = 'SubAdapter'
-      @sa = SourceAdapter.create(@s,nil)
+      @sa = SourceAdapter.create(@s)
       @sa.class.name.should == 'SubAdapter'
       expected = {'1'=>@product1,'2'=>@product2}
       @sa.inject_result expected
@@ -40,7 +40,7 @@ describe "SourceAdapter" do
 
     it "should create SourceAdapter with trailing spaces" do
       @s.name = 'SimpleAdapter '
-      SourceAdapter.create(@s,nil).is_a?(SimpleAdapter).should be_true
+      SourceAdapter.create(@s).is_a?(SimpleAdapter).should be_true
     end
 
     describe "SourceAdapter methods" do
@@ -109,7 +109,6 @@ describe "SourceAdapter" do
           end
         end
       end
-      
     end
   end
 end

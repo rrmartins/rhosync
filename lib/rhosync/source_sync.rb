@@ -24,6 +24,7 @@ module Rhosync
     
     # Pass through CUD to adapter, no data stored
     def pass_through_cud(cud_params,query_params)
+      return if _auth_op('login') == false
       res,processed_objects = {},[]
       begin
         ['create','update','delete'].each do |op|
@@ -46,6 +47,7 @@ module Rhosync
         log "Error in pass through method: #{e.message}"
         res['error'] = {'message' => e.message } 
       end
+      _auth_op('logoff')
       res['processed'] = processed_objects
       res.to_json
     end

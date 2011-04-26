@@ -75,7 +75,7 @@ module Rhosync
         @ss.pass_through_cud({'create'=> {'temp-id' => record}},nil)
       else
         @c.put_data(:create,{'temp-id' => record})
-        @ss.create(@c.id)
+        @ss.process_cud(@c.id)
         links = @c.get_data(:create_links)['temp-id']
         links ? links['l'] : nil
       end
@@ -104,7 +104,7 @@ module Rhosync
         @ss.pass_through_cud({'update'=> record },nil)
       else
         @c.put_data(:update,record)
-        @ss.update(@c.id)
+        @ss.process_cud(@c.id)
       end
     end
     
@@ -137,7 +137,7 @@ module Rhosync
         @ss.pass_through_cud({'delete'=> record },nil)
       else
         @c.put_data(:delete,record)
-        @ss.delete(@c.id)
+        @ss.process_cud(@c.id)
       end
     end
     

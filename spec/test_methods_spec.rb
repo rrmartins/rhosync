@@ -53,7 +53,6 @@ describe "TestMethods" do
     
     it "should include test_create helper when pass through" do
       @s.pass_through = 'true'
-      p test_create(@product4)
       test_create(@product4).should == {'processed' => ["temp-id"]}.to_json
     end
 

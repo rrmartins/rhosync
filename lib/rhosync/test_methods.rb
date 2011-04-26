@@ -45,6 +45,64 @@ module Rhosync
       return @s.is_pass_through? ? res : md
     end
     
+    # Executes the adapter's query method and returns 
+    # the metadata stored in redis
+    # For example, if your source adapter metadata method was:
+    # def metadata
+    #     row1 = { 
+    #       :label => 'Address 1',
+    #       :value => '123 fake street',
+    #       :name => 'address1',
+    #       :type => 'labeledrow' 
+    #     }
+    #     table = { 
+    #       :label => 'Table',
+    #       :type => 'table',
+    #       :children => [ row1, row1, row1 ] 
+    #     }
+    #     view = { 
+    #       :title => 'UI meta panel',
+    #       :type => 'iuipanel',
+    #       :children => [table] 
+    #     }
+    #   return the definition as JSON
+    #    {'index' => view}.to_json
+    # 
+    # test_metadata would return:
+    # { 
+    #   {'index' => view}.to_json
+    # }
+    def test_metadata
+     @ss.process_query
+     return @s.get_value(:metadata)
+    end
+    
+    # Executes the adapter's schema method and returns 
+    # the schema stored in redis
+    # For example, if your source adapter schema method was:
+    # def schema
+    # {
+    #     'version' => '1.0',
+    #     'property' => {
+    #       'name' => 'string',
+    #       'brand' => 'string',
+    #       'price' => 'string',
+    #       'image_url_cropped' => 'blob,overwrite',
+    #       'image_url' => 'blob'
+    #      },
+    #     'index' => {
+    #       'by_name_brand' => 'name,brand'
+    #     },
+    #     'unique_index' => {
+    #       'by_price' => 'price'
+    #     }
+    # }.to_json
+    # test_schema would return the above
+    def test_schema
+      @ss.process_query
+      return @s.get_value(:schema)
+    end
+    
     # Returns any errors stored in redis for the previous source adapter query
     # For example: {"query-error"=>{"message"=>"error connecting to web service!"}}
     def query_errors

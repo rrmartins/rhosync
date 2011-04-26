@@ -26,7 +26,25 @@ describe "TestMethods" do
       @c.user_id.should == 'user1'
       @c.app_id.should == 'application'
     end
-
+    
+    it "should include test_schema helper" do
+      mock_schema_method([SampleAdapter]) do
+        expected = {'1'=>@product1,'2'=>@product2}
+        set_state('test_db_storage' => expected)
+        @ss.process_query
+        test_schema.should == "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}"
+      end
+    end  
+    
+    it "should include test_metadata helper" do
+      mock_metadata_method([SampleAdapter]) do
+        expected = {'1'=>@product1,'2'=>@product2}
+        set_state('test_db_storage' => expected)
+        @ss.process_query
+        test_metadata.should == "{\"foo\":\"bar\"}"
+      end
+    end
+    
     it "should include test_query helper" do
       expected = {'1'=>@product1,'2'=>@product2}
       set_state('test_db_storage' => expected)

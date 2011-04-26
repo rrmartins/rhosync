@@ -9,6 +9,8 @@ module Rhosync
   # raise these to trigger rhosync sending an error to the client
   class SourceAdapterServerTimeoutException < SourceAdapterException; end
   class SourceAdapterServerErrorException < SourceAdapterException; end
+  
+  class SourceAdapterObjectConflictError < SourceAdapterException; end
 
   class SourceAdapter
     attr_accessor :session

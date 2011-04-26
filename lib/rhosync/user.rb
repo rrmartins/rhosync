@@ -16,12 +16,12 @@ module Rhosync
       def create(fields={})
         raise ArgumentError.new("Reserved user id #{fields[:login]}") if fields[:login] && fields[:login] == '__shared__'
         fields[:id] = fields[:login]
+        super(fields)        
         if Rhosync.stats
           Rhosync::Stats::Record.set('users') { Store.incr('user:count') }
         else
           Store.incr('user:count')
         end     
-        super(fields)
       end
     
       def authenticate(login,password)

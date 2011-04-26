@@ -1,6 +1,7 @@
 require File.join(File.dirname(__FILE__),'spec_helper')
 require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
+
 describe "ClientSync" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     it "should raise Argument error if no client or source is provided" do
@@ -11,14 +12,102 @@ describe "ClientSync" do
     before(:each) do
       @cs = ClientSync.new(@s,@c,2)
     end
+    
+    it "should handle receive cud" do
+      params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
+      @cs.receive_cud(params)
+      verify_result(@cs.client.docname(:create) => {},
+        @cs.client.docname(:update) => {},
+        @cs.client.docname(:delete) => {})
+    end
+    
+    it "should handle receive cud with pass through" do
+      params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
+      @s.pass_through = 'true'
+      @cs.receive_cud(params)
+      verify_result(@cs.client.docname(:create) => {},
+        @cs.client.docname(:update) => {},
+        @cs.client.docname(:delete) => {})
+    end
+    
+    it "should handle exeptions in receive cud with pass through" do
+      params = {'create'=>{'1'=>@error},'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
+      @s.pass_through = 'true'
+      @cs.receive_cud(params)
+      verify_result(@cs.client.docname(:create) => {},
+        @cs.client.docname(:update) => {},
+        @cs.client.docname(:delete) => {})
+    end
 
-    describe "cud methods" do
-      it "should handle receive cud" do
-        params = {'create'=>{'1'=>@product1},'update'=>{'2'=>@product2},'delete'=>{'3'=>@product3}}
-        @cs.receive_cud(params)
-        verify_result(@cs.client.docname(:create) => {},
-          @cs.client.docname(:update) => {},
-          @cs.client.docname(:delete) => {})
+    it "should handle send cud" do
+      data = {'1'=>@product1,'2'=>@product2}
+      expected = {'insert'=>data}
+      set_test_data('test_db_storage',data)
+      
+      @cs.send_cud.should == [{'version'=>ClientSync::VERSION},
+        {'token'=>@c.get_value(:page_token)},
+        {'count'=>data.size},{'progress_count'=>0},
+        {'total_count'=>data.size},expected]
+      verify_result(@cs.client.docname(:page) => data,
+        @cs.client.docname(:delete_page) => {},
+        @cs.client.docname(:cd) => data)
+    end
+      
+    it "should handle send cud with pass_through" do
+      data = {'1'=>@product1,'2'=>@product2}
+      expected = {'insert'=>data}
+      set_test_data('test_db_storage',data)
+      @s.pass_through = 'true'
+      @cs.send_cud.should == [{'version'=>ClientSync::VERSION},
+        {'token'=>@c.get_value(:page_token)},
+        {'count'=>data.size},{'progress_count'=>0},
+        {'total_count'=>data.size},expected]
+      verify_result(@cs.client.docname(:page) => {},
+      @cs.client.docname(:cd) => {})
+    end
+    
+    it "should handle send cud if with pass_through no data" do
+      data = {}
+      expected = {}
+      #set_test_data('test_db_storage',data)
+      @s.pass_through = 'true'
+      @cs.send_cud.should == [{'version'=>ClientSync::VERSION},
+        {'token'=>""},
+        {'count'=>data.size},{'progress_count'=>0},
+        {'total_count'=>data.size},expected]
+      verify_result(@cs.client.docname(:page) => {},
+        @cs.client.docname(:cd) => {})
+    end
+    
+    it "should return read errors in send cud" do
+      msg = "Error during query"
+      data = {'1'=>@product1,'2'=>@product2}
+      set_test_data('test_db_storage',data,msg,'query error')
+      @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
+        {"token"=>""}, {"count"=>0}, {"progress_count"=>0},{"total_count"=>0}, 
+        {"source-error"=>{"query-error"=>{"message"=>msg}}}]
+    end
+    
+    it "should return login errors in send cud" do
+      @u.login = nil
+      @cs.send_cud.should == [{"version"=>ClientSync::VERSION},{"token"=>""}, 
+        {"count"=>0}, {"progress_count"=>0}, {"total_count"=>0},
+        {'source-error'=>{"login-error"=>{"message"=>"Error logging in"}}}]
+    end
+    
+    it "should return logoff errors in send cud" do
+      msg = "Error logging off"
+      set_test_data('test_db_storage',{},msg,'logoff error')
+      @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
+        {"token"=>@c.get_value(:page_token)}, 
+        {"count"=>1}, {"progress_count"=>0}, {"total_count"=>1}, 
+        {"source-error"=>{"logoff-error"=>{"message"=>msg}}, 
+        "insert"=>{ERROR=>{"name"=>"logoff error", "an_attribute"=>msg}}}]
+    end
+    
+    describe "send errors in send_cud" do
+      it "should handle create errors" do
+        receive_and_send_cud('create')
       end
 
       it "should handle send cud" do
@@ -92,16 +181,9 @@ describe "ClientSync" do
             {"token"=>""}, {"count"=>0}, {"progress_count"=>0}, {"total_count"=>0},{}]
         end
 
-        def receive_and_send_cud(operation)
-          msg = "Error #{operation} record"
-          op_data = {operation=>{ERROR=>{'an_attribute'=>msg,'name'=>'wrongname'}}}
-          @cs.receive_cud(op_data)
-          @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
-            {"token"=>""}, {"count"=>0}, {"progress_count"=>0}, {"total_count"=>0},
-            {"#{operation}-error"=>{"#{ERROR}-error"=>{"message"=>msg},ERROR=>op_data[operation][ERROR]}}]
-        end
+        
       end
-
+      
       it "should handle receive_cud" do
         set_state(@s.docname(:md) => {'3'=>@product3},
           @c.docname(:cd) => {'3'=>@product3})
@@ -265,6 +347,18 @@ describe "ClientSync" do
         res.should == [[{'version'=>ClientSync::VERSION},{'token'=>token},
           {'source'=>sources[0]['name']},{'count'=>1},{'insert'=>{'1'=>@product1}}]]
         verify_result(@c.docname(:search) => {'1'=>@product1},
+          @c.docname(:search_errors) => {})
+      end
+      
+      it "should handle search all for pass through" do
+        sources = [{'name'=>'SampleAdapter'}]
+        set_state('test_db_storage' => @data)
+        @s.pass_through = 'true'
+        res = ClientSync.search_all(@c,{:sources => sources,:search => {'name' => 'iPhone'}})
+        token = Store.get_value(@cs.client.docname(:search_token))
+        res.should == [[{'version'=>ClientSync::VERSION},{'token'=>token},
+          {'source'=>sources[0]['name']},{'count'=>1},{'insert'=>{'1'=>@product1}}]]
+        verify_result(@c.docname(:search) => {},
           @c.docname(:search_errors) => {})
       end
 
@@ -602,5 +696,13 @@ describe "ClientSync" do
           [{"data_name"=>bulk_data_docname(@a.id,@u.id)}], "class"=>"Rhosync::BulkDataJob"}
       end
      end
+  end
+  def receive_and_send_cud(operation)
+    msg = "Error #{operation} record"
+    op_data = {operation=>{ERROR=>{'an_attribute'=>msg,'name'=>'wrongname'}}}
+    @cs.receive_cud(op_data)
+    @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
+      {"token"=>""}, {"count"=>0}, {"progress_count"=>0}, {"total_count"=>0},
+      {"#{operation}-error"=>{"#{ERROR}-error"=>{"message"=>msg},ERROR=>op_data[operation][ERROR]}}]
   end
 end

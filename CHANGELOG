@@ -21,7 +21,7 @@
 * #8167507 - fixed typo in console login page
 * #7025387 - customizable redis.conf for windows
 
-## 2.1.0 (2010-12-14)
+## 2.1.0
 * #4302316 - don't allow set blank admin password
 * #5672322 - stats for user count
 * #5672316 - stats for device count
@@ -37,8 +37,7 @@
 * #7034095 - don't ping device if device_pin is empty or nil
 * #7089047 - fixed application.rb template store_blob method
 * #7055889 - fixed schema tables should have 'object' primary key
-* #7217581 - use REDIS_HOME env var if it exists for rake redis:* tasks
-* #6645553 - detect and run thin if available, fallback to mongrel and die on webrick
+* #6011821 - try to make bin_dir on redis:install and dtach:install
 
 ## 2.0.9 (2010-10-14)
 * #5154725 - stats framework

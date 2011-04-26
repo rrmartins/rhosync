@@ -41,8 +41,8 @@ module Rhosync
     #   "2"=>{"name"=>"Best", "industry"=>"Software"}
     # }
     def test_query
-      @ss.process_query
-      return md
+      res = @ss.process_query
+      return @s.is_pass_through? ? res : md
     end
     
     # Returns any errors stored in redis for the previous source adapter query
@@ -71,10 +71,14 @@ module Rhosync
     # This will return the result of the adapter's create method.  The master 
     # document (:md) should also contain the new record.
     def test_create(record)
-      @c.put_data(:create,{'temp-id' => record})
-      @ss.create(@c.id)
-      links = @c.get_data(:create_links)['temp-id']
-      links ? links['l'] : nil
+      if @s.is_pass_through?
+        @ss.pass_through_cud({'create'=> {'temp-id' => record}},nil)
+      else
+        @c.put_data(:create,{'temp-id' => record})
+        @ss.process_cud(@c.id)
+        links = @c.get_data(:create_links)['temp-id']
+        links ? links['l'] : nil
+      end
     end
     
     # Returns any errors stored in redis from the previous source adapter create
@@ -96,8 +100,12 @@ module Rhosync
     # NOTE: To test the master document, you will need to run def test_query
     # as shown above
     def test_update(record)
-      @c.put_data(:update,record)
-      @ss.update(@c.id)
+      if @s.is_pass_through?
+        @ss.pass_through_cud({'update'=> record },nil)
+      else
+        @c.put_data(:update,record)
+        @ss.process_cud(@c.id)
+      end
     end
     
     # Returns any errors stored in redis from the previous source adapter update
@@ -125,8 +133,12 @@ module Rhosync
     # NOTE: The master document (:md) will be updated and can be
     # verified as shown above.
     def test_delete(record)
-      @c.put_data(:delete,record)
-      @ss.delete(@c.id)
+      if @s.is_pass_through?
+        @ss.pass_through_cud({'delete'=> record },nil)
+      else
+        @c.put_data(:delete,record)
+        @ss.process_cud(@c.id)
+      end
     end
     
     # Returns any errors stored in redis from the previous source adapter delete

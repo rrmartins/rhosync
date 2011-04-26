@@ -32,6 +32,13 @@ describe "TestMethods" do
       set_state('test_db_storage' => expected)
       test_query.should == expected
     end
+    
+    it "should include test_query helper when pass through" do
+      expected = {'1'=>@product1,'2'=>@product2}
+      set_state('test_db_storage' => expected)
+      @s.pass_through = 'true'
+      test_query.should == expected
+    end
 
     it "should include query_errors helper" do
       expected =  {"query-error"=>{'message'=>'failed'}}
@@ -42,6 +49,11 @@ describe "TestMethods" do
     it "should include test_create helper" do
       @product4['link'] = 'test link'
       test_create(@product4).should == 'backend_id'
+    end
+    
+    it "should include test_create helper when pass through" do
+      @s.pass_through = 'true'
+      test_create(@product4).should == {'processed' => ["temp-id"]}.to_json
     end
 
     it "should include create_errors helper" do
@@ -55,6 +67,13 @@ describe "TestMethods" do
       test_update(record)
       verify_result(@c.docname(:update) => {})
     end
+    
+    it "should include test_update helper when pass through" do
+      record = {'4'=> { 'price' => '199.99' }}
+      @s.pass_through = 'true'
+      test_update(record).should == {'processed' => ["4"]}.to_json
+      verify_result(@c.docname(:update) => {})
+    end
 
     it "should include update_errors helper" do
       expected =  {"update-error"=>{'message'=>'failed'}}
@@ -65,6 +84,13 @@ describe "TestMethods" do
     it "should include test_delete helper" do
       record = {'4'=> { 'price' => '199.99' }}
       test_delete(record)
+      verify_result(@c.docname(:delete) => {})
+    end
+    
+    it "should include test_delete helper when pass through" do
+      record = {'4'=> { 'price' => '199.99' }}
+      @s.pass_through = 'true'
+      test_delete(record).should == {'processed' => ["4"]}.to_json
       verify_result(@c.docname(:delete) => {})
     end
 

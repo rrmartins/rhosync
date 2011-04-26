@@ -92,6 +92,16 @@ describe "SourceSync" do
         verify_result(@s.docname(:md) => expected,
           @s.docname(:md_size) => expected.size.to_s)
       end
+     
+      it "should process source adapter with pass_through set" do
+        expected = {'1'=>@product1,'2'=>@product2}
+        set_state('test_db_storage' => expected)
+        @s.pass_through = 'true'
+        @ss.process_query.should == expected
+        verify_result(@s.docname(:md) => {},
+          @s.docname(:md_size) => nil)
+        @s.pass_through = nil
+      end
 
       it "should call methods in source adapter" do
         mock_metadata_method([SampleAdapter, SimpleAdapter]) do
@@ -190,6 +200,10 @@ describe "SourceSync" do
         it "should do query with no exception" do
           verify_read_operation('query')
         end
+        
+        it "should do query with no exception pass through" do
+          verify_read_operation_pass_through('query')
+        end
 
         it "should do query with exception raised" do
           verify_read_operation_with_error('query')
@@ -200,6 +214,10 @@ describe "SourceSync" do
         it "should do search with no exception" do
           verify_read_operation('search')
         end
+        
+         it "should do search with no exception pass through" do
+            verify_read_operation_pass_through('search')
+          end
 
         it "should do search with exception raised" do
           verify_read_operation_with_error('search')
@@ -227,12 +245,29 @@ describe "SourceSync" do
         Store.put_data(@s.docname(:errors),
           {"#{operation}-error"=>{'message'=>'failed'}},true)
         if operation == 'query'
-          @ss.read.should == true
+          @ss.read.should == true 
           verify_result(@s.docname(:md) => expected, 
             @s.docname(:errors) => {})
         else
           @ss.search(@c.id).should == true  
           verify_result(@c.docname(:search) => expected,
+            @c.docname(:search_errors) => {})
+        end
+      end
+      
+      def verify_read_operation_pass_through(operation)
+        expected = {'1'=>@product1,'2'=>@product2}
+        set_test_data('test_db_storage',expected)
+        Store.put_data(@s.docname(:errors),
+          {"#{operation}-error"=>{'message'=>'failed'}},true)
+        @s.pass_through = 'true'
+        if operation == 'query'
+          @ss.read.should == expected
+          verify_result(@s.docname(:md) => {}, 
+            @s.docname(:errors) => {})
+        else
+          @ss.search(@c.id).should == expected  
+          verify_result(@c.docname(:search) => {},
             @c.docname(:search_errors) => {})
         end
       end

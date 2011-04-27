@@ -1,7 +1,31 @@
-require 'sqlite3'
 require 'zip/zip'
 require 'zlib'
-
+if defined?(JRUBY_VERSION)
+  require 'jdbc/sqlite3'
+  require 'active_record'
+else
+  require 'sqlite3'
+end
+  
+if defined?(JRUBY_VERSION)
+  def execute_batch(queries) 
+    queries.split(';').each do |sql|
+      begin 
+        ActiveRecord::Base.connection.execute("#{sql}\n") unless sql.blank?
+      rescue 
+        ActiveRecord::StatementInvalid log "execute_batch: warning: #{$!}"
+      end 
+    end
+  end
+  def quote_string(str)
+    str.gsub(/'/, "''")
+  end
+    
+  # class Source < ActiveRecord::Base
+  # end
+      
+end  
+    
 module Rhosync
   module BulkDataJob
     @queue = :bulk_data
@@ -38,12 +62,24 @@ module Rhosync
       data = source.get_data(:md)
       counter = {}
       db.transaction do |database|
-        database.prepare("insert into object_values 
-          (source_id,attrib,object,value) values (?,?,?,?)") do |stmt|
+        if defined?(JRUBY_VERSION)
+          ins_query = %Q{insert into object_values (source_id,attrib,object,value) values (?,?,?,?)}.gsub('?', '"%s"')
           data.each do |object_id,object|
             object.each do |attrib,value|
-              counter[attrib] = counter[attrib] ? counter[attrib] + 1 : 1
-              stmt.execute(source.source_id.to_i,attrib,object_id,value)
+              counter[attrib] = counter[attrib] ? counter[attrib] + 1 : 1              
+              # FIXME:  
+              query = (ins_query % [source.source_id.to_i,attrib,object_id,value]).gsub('\'\'','NULL') # ...,'','') =>  
+              ActiveRecord::Base.connection.execute(query)
+            end
+          end
+        else  
+          database.prepare("insert into object_values 
+            (source_id,attrib,object,value) values (?,?,?,?)") do |stmt|
+            data.each do |object_id,object|
+              object.each do |attrib,value|
+                counter[attrib] = counter[attrib] ? counter[attrib] + 1 : 1
+                stmt.execute(source.source_id.to_i,attrib,object_id,value)
+              end
             end
           end
         end
@@ -66,20 +102,37 @@ module Rhosync
           columns << key
           qm << '?'
         end
-        database.execute("CREATE TABLE #{source.name}(
-          #{create_table.join(",")} );")
-        
+
+        if defined?(JRUBY_VERSION)
+          ActiveRecord::Base.connection.execute("CREATE TABLE #{source.name}(#{create_table.join(",")} );") 
+        else  
+          database.execute("CREATE TABLE #{source.name}(#{create_table.join(",")} );")
+        end
+
         # Insert each object as single row in fixed schema table
-        database.prepare("insert into #{source.name} 
-          (object,#{columns.join(',')}) values (?,#{qm.join(',')})") do |stmt|
+        if defined?(JRUBY_VERSION)
+          ins_query = "insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})".gsub('?', '"%s"')
           data.each do |obj,row|
             args = [obj]
             columns.each do |col|
               args << row[col]
-            end  
-            stmt.execute(args)
+            end
+            # FIXME:
+            query = (ins_query % args).gsub('""','NULL')
+            ActiveRecord::Base.connection.execute(query)
+          end          
+        else
+          database.prepare("insert into #{source.name} 
+            (object,#{columns.join(',')}) values (?,#{qm.join(',')})") do |stmt|
+            data.each do |obj,row|
+              args = [obj]
+              columns.each do |col|
+                args << row[col]
+              end
+              stmt.execute(args)
+            end
           end
-        end
+        end    
         
         # Create indexes for specified columns in settings 'index'
         schema['index'].each do |key,value|
@@ -88,8 +141,12 @@ module Rhosync
             val2 += ',' if val2.length > 0
             val2 += "\"#{col}\""
           end
-          
-          database.execute("CREATE INDEX #{key} on #{source.name} (#{val2});")
+
+          if defined?(JRUBY_VERSION)
+            ActiveRecord::Base.connection.execute("CREATE INDEX #{key} on #{source.name} (#{val2});")
+          else
+            database.execute("CREATE INDEX #{key} on #{source.name} (#{val2});")
+          end
         end if schema['index']
         
         # Create unique indexes for specified columns in settings 'unique_index'
@@ -100,7 +157,11 @@ module Rhosync
             val2 += "\"#{col}\""
           end
         
-          database.execute("CREATE UNIQUE INDEX #{key} on #{source.name} (#{val2});")
+          if defined?(JRUBY_VERSION)
+            ActiveRecord::Base.connection.execute("CREATE UNIQUE INDEX #{key} on #{source.name} (#{val2});")
+          else
+            database.execute("CREATE UNIQUE INDEX #{key} on #{source.name} (#{val2});")
+          end
         end if schema['unique_index']
       end
     
@@ -117,13 +178,28 @@ module Rhosync
     
     def self.populate_sources_table(db,sources_refs) 
       db.transaction do |database|
-        database.prepare("insert into sources
-          (source_id,name,sync_priority,partition,sync_type,source_attribs,metadata,schema,blob_attribs,associations) 
-          values (?,?,?,?,?,?,?,?,?,?)") do |stmt|
+        if defined?(JRUBY_VERSION) # FIXME:
+          ins_query = "insert into sources
+            (source_id,name,sync_priority,partition,sync_type,source_attribs,metadata,schema,blob_attribs,associations) 
+            values (?,?,?,?,?,?,?,?,?,?)".gsub('?', "'%s'")
           sources_refs.each do |source_name,ref|
-            s = ref[:source]
-            stmt.execute(s.source_id,s.name,s.priority,s.partition_type,
-              s.sync_type,refs_to_s(ref[:refs]),s.get_value(:metadata),s.schema,s.blob_attribs,s.has_many)
+            s = ref[:source]            
+            params = [s.source_id,s.name,s.priority,s.partition_type,
+              s.sync_type,refs_to_s(ref[:refs]),s.get_value(:metadata),s.schema,s.blob_attribs,s.has_many]          
+            # TODO:
+            query = (ins_query % params).gsub('\'\'','NULL')
+            ActiveRecord::Base.connection.execute(query)
+          end
+          # TODO:
+        else
+          database.prepare("insert into sources
+            (source_id,name,sync_priority,partition,sync_type,source_attribs,metadata,schema,blob_attribs,associations) 
+            values (?,?,?,?,?,?,?,?,?,?)") do |stmt|
+            sources_refs.each do |source_name,ref|
+              s = ref[:source]
+              stmt.execute(s.source_id,s.name,s.priority,s.partition_type,
+                s.sync_type,refs_to_s(ref[:refs]),s.get_value(:metadata),s.schema,s.blob_attribs,s.has_many)
+            end
           end
         end
       end
@@ -133,8 +209,19 @@ module Rhosync
       sources_refs = {}
       schema,index,bulk_data.dbfile = get_file_args(bulk_data.name,ts)
       FileUtils.mkdir_p(File.dirname(bulk_data.dbfile))
-      db = SQLite3::Database.new(bulk_data.dbfile)
-      db.execute_batch(File.open(schema,'r').read)
+
+      if defined?(JRUBY_VERSION) # FIXME:
+        ActiveRecord::Base.establish_connection( 
+          :adapter => "jdbcsqlite3", 
+          :database => "#{bulk_data.dbfile}"
+        )
+        db = ActiveRecord::Base.connection          
+        execute_batch(File.open(schema,'r').read)        
+      else   
+        db = SQLite3::Database.new(bulk_data.dbfile)
+        db.execute_batch(File.open(schema,'r').read)
+      end
+
       src_counter = 1
       bulk_data.sources.members.sort.each do |source_name|
         timer = start_timer("start importing sqlite data for #{source_name}")
@@ -153,9 +240,16 @@ module Rhosync
         lap_timer("finished importing sqlite data for #{source_name}",timer)
       end
       populate_sources_table(db,sources_refs)
-      db.execute_batch(File.open(index,'r').read)
-      db.execute_batch( "VACUUM;");
-      db.close
+      
+      if defined?(JRUBY_VERSION)
+        execute_batch(File.open(index,'r').read)
+        execute_batch( "VACUUM;");
+      else         
+        db.execute_batch(File.open(index,'r').read)
+        db.execute_batch( "VACUUM;");
+        db.close
+      end
+      
       compress("#{bulk_data.dbfile}.rzip",bulk_data.dbfile)
       gzip_compress("#{bulk_data.dbfile}.gzip",bulk_data.dbfile)
     end

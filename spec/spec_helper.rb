@@ -105,6 +105,12 @@ module TestHelpers
         elsif expected.is_a?(Array)
           Store.get_data(dockey,Array).should == expected
         else
+          # FIXME:
+          # begin
+          #   JSON.parse(Store.get_value(dockey)).should == JSON.parse(expected)             
+          # rescue  #JSON::ParserError => e
+          #   Store.get_value(dockey).should == expected
+          # end
           Store.get_value(dockey).should == expected
         end
       rescue RSpec::Expectations::ExpectationNotMetError => e
@@ -118,8 +124,16 @@ module TestHelpers
     validate_db_file(bulk_data.dbfile,bulk_data.sources.members,data)  
   end
     
-  def validate_db_file(dbfile,sources,data)  
-    db = SQLite3::Database.new(dbfile)
+  def validate_db_file(dbfile, sources, data) 
+    if defined?(JRUBY_VERSION)
+      ActiveRecord::Base.establish_connection( 
+        :adapter => "jdbcsqlite3", 
+        :database => "#{dbfile}"
+      )
+      db = ActiveRecord::Base.connection                
+    else    
+      db = SQLite3::Database.new(dbfile)
+    end
     sources.each do |source_name|
       s = Source.load(source_name,{:app_id => APP_NAME,:user_id => @u.login})
       return false unless validate_db_by_name(db,s,data[s.name])
@@ -128,19 +142,21 @@ module TestHelpers
   end
   
   def validate_db_by_name(db,s,data)
+    # Obtain values by their column name. Not needed for active record.
+    db.results_as_hash = true unless defined?(JRUBY_VERSION) 
     db.execute("select source_id,name,sync_priority,partition,
       sync_type,source_attribs,metadata,schema,blob_attribs,associations
-      from sources where name='#{s.name}'").each do |row|
-      return false if row[0].to_s != s.source_id.to_s
-      return false if row[1] != s.name
-      return false if row[2].to_s != s.priority.to_s
-      return false if row[3] != s.partition_type.to_s
-      return false if row[4] != s.sync_type.to_s
-      return false if row[5] != (s.schema ? "" : get_attrib_counter(data))
-      return false if row[6] != s.get_value(:metadata)
-      return false if row[7] != s.schema
-      return false if row[8] != s.blob_attribs
-      return false if row[9] != s.has_many
+      from sources where name='#{s.name}'").each do |row|      
+      return false if row["source_id"].to_s != s.source_id.to_s
+      return false if row["name"] != s.name
+      return false if row["sync_priority"].to_s != s.priority.to_s
+      return false if row["partition"] != s.partition_type.to_s
+      return false if row["sync_type"] != s.sync_type.to_s
+      return false if (row["source_attribs"] ? row["source_attribs"] : '') != (s.schema ? "" : get_attrib_counter(data))
+      return false if row["metadata"] != s.get_value(:metadata)
+      return false if row["schema"] != s.schema
+      return false if (row["blob_attribs"] ? row["blob_attribs"] : "") != s.blob_attribs
+      return false if (row["associations"] ? row["associations"] : "") != s.has_many  
     end
 
     data = json_clone(data)
@@ -150,20 +166,20 @@ module TestHelpers
       schema['property'].each do |key,value|
         columns << key
       end
-      db.execute("select #{columns.join(',')} from #{s.name}") do |row|
-        obj = data[row[0]]
-        columns.each_index do |i|
+      db.execute("select #{columns.join(',')} from #{s.name}").each do |row|
+        obj = data[row["object"]]  
+        columns.each_with_index do |col, i|
           next if i == 0
-          return false if row[i] != obj[columns[i]]
+          return false if row["#{col}"] != obj[columns[i]]
         end
-        data.delete(row[0])
+        data.delete(row["object"])
       end
     else
       db.execute("select * from object_values where source_id=#{s.source_id}").each do |row|
-        object = data[row[2]]
-        return false if object.nil? or object[row[1]] != row[3] or row[0].to_s != s.source_id.to_s
-        object.delete(row[1])
-        data.delete(row[2]) if object.empty?
+        object = data[row["object"]]
+        return false if object.nil? or object[row["attrib"]] != row["value"] or row["source_id"].to_s != s.source_id.to_s
+        object.delete(row["attrib"])
+        data.delete(row["object"]) if object.empty?
       end
     end
     data.empty?

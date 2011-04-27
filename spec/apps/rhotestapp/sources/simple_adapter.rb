@@ -1,6 +1,7 @@
 class SimpleAdapter < SourceAdapter
-  def initialize(source)
-    super(source)
+  # initialize method created by source generator (Rhosync version < 2.2.0)
+  def initialize(source,credential)
+    super(source,credential)
   end
  
   def login

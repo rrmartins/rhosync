@@ -77,24 +77,45 @@ describe "BulkDataJob" do
       end
     end
 
-    it "should create sqlite data with source schema" do
-      set_state('test_db_storage' => @data)
-      mock_schema_method([SampleAdapter]) do
-        docname = bulk_data_docname(@a.id,@u.id)
-        data = BulkData.create(:name => docname,
-          :state => :inprogress,
-          :app_id => @a.id,
-          :user_id => @u.id,
-          :sources => [@s_fields[:name]])
-        BulkDataJob.perform("data_name" => data.name)
-        data = BulkData.load(docname)
-        data.completed?.should == true
-        verify_result(@s.docname(:md) => @data,
-          @s.docname(:schema) => "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}",
-          @s.docname(:md_copy) => @data)
-        validate_db(data,@s.name => @data).should == true
+    if defined?(JRUBY_VERSION)
+      it "should create sqlite data with source schema" do
+        set_state('test_db_storage' => @data)
+        mock_schema_method([SampleAdapter]) do
+          docname = bulk_data_docname(@a.id,@u.id)
+          data = BulkData.create(:name => docname,
+            :state => :inprogress,
+            :app_id => @a.id,
+            :user_id => @u.id,
+            :sources => [@s_fields[:name]])
+          BulkDataJob.perform("data_name" => data.name)
+          data = BulkData.load(docname)
+          data.completed?.should == true
+          verify_result(@s.docname(:md) => @data,
+            @s.docname(:schema) => "{\"property\":{\"name\":\"string\",\"brand\":\"string\"},\"version\":\"1.0\"}",
+            @s.docname(:md_copy) => @data)
+          validate_db(data,@s.name => @data).should == true
+        end
       end
-    end
+    else
+      it "should create sqlite data with source schema" do
+        set_state('test_db_storage' => @data)
+        mock_schema_method([SampleAdapter]) do
+          docname = bulk_data_docname(@a.id,@u.id)
+          data = BulkData.create(:name => docname,
+            :state => :inprogress,
+            :app_id => @a.id,
+            :user_id => @u.id,
+            :sources => [@s_fields[:name]])
+          BulkDataJob.perform("data_name" => data.name)
+          data = BulkData.load(docname)
+          data.completed?.should == true
+          verify_result(@s.docname(:md) => @data,
+            @s.docname(:schema) => "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}",
+            @s.docname(:md_copy) => @data)
+          validate_db(data,@s.name => @data).should == true
+        end
+      end
+    end    
 
     it "should raise exception if hsqldata fails" do
       data = BulkData.create(:name => bulk_data_docname(@a.id,@u.id),

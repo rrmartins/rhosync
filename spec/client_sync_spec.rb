@@ -451,7 +451,11 @@ describe "ClientSync" do
           token = @c.get_value(:page_token)
           result.should ==  [{"version"=>ClientSync::VERSION},{"token"=>token}, 
             {"count"=>1}, {"progress_count"=>0},{"total_count"=>1},{'insert'=>expected}]
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          if defined?(JRUBY_VERSION)
+            @c.get_value(:schema_sha1).should == "a28d2b0aa59b0cc4b8c79bdee5a272c95ae4ef4d"                      
+          else
+            @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          end
         end
       end
 
@@ -462,8 +466,13 @@ describe "ClientSync" do
           token = @c.get_value(:page_token)
           result.should ==  [{"version"=>ClientSync::VERSION},{"token"=>token}, 
             {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{'schema-changed'=>'true'}]
-          @c.get_value(:schema_page).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          if defined?(JRUBY_VERSION)
+            @c.get_value(:schema_page).should == "a28d2b0aa59b0cc4b8c79bdee5a272c95ae4ef4d"
+            @c.get_value(:schema_sha1).should == "a28d2b0aa59b0cc4b8c79bdee5a272c95ae4ef4d"
+          else
+            @c.get_value(:schema_page).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+            @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          end
         end
       end
 
@@ -474,8 +483,14 @@ describe "ClientSync" do
           token = @c.get_value(:page_token)
           @cs.send_cud.should ==  [{"version"=>ClientSync::VERSION},{"token"=>token}, 
             {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{'schema-changed'=>'true'}]
-          @c.get_value(:schema_page).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          if defined?(JRUBY_VERSION)
+            @c.get_value(:schema_page).should == "a28d2b0aa59b0cc4b8c79bdee5a272c95ae4ef4d"
+            @c.get_value(:schema_sha1).should == "a28d2b0aa59b0cc4b8c79bdee5a272c95ae4ef4d"
+          else
+            @c.get_value(:schema_page).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+            @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          end
+          
         end
       end
 
@@ -487,7 +502,11 @@ describe "ClientSync" do
           @cs.send_cud(token).should ==  [{"version"=>ClientSync::VERSION},{"token"=>""}, 
             {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{}]
           @c.get_value(:schema_page).should be_nil
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          if defined?(JRUBY_VERSION)
+            @c.get_value(:schema_sha1).should == "a28d2b0aa59b0cc4b8c79bdee5a272c95ae4ef4d"
+          else
+            @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          end
         end
       end
 
@@ -506,7 +525,11 @@ describe "ClientSync" do
           @cs.send_cud(token).should ==  [{"version"=>ClientSync::VERSION},{"token"=>""}, 
             {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{}]
           @c.get_value(:schema_page).should be_nil
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          if defined?(JRUBY_VERSION)                                  
+            @c.get_value(:schema_sha1).should == "a28d2b0aa59b0cc4b8c79bdee5a272c95ae4ef4d"
+          else
+            @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          end
           data = BulkData.load(docname)
           data.refresh_time.should <= Time.now.to_i
         end 

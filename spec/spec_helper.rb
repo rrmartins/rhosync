@@ -119,7 +119,25 @@ module TestHelpers
   end
     
   def validate_db_file(dbfile,sources,data)  
-    db = SQLite3::Database.new(dbfile)
+    if defined?(JRUBY_VERSION)      
+      db = DBI.connect("DBI:Jdbc:SQLite:#{dbfile}", nil, nil, 'driver' => 'org.sqlite.JDBC')
+      log "!!!-------------!!!: validate_db_file: #{dbfile}" # TODO:
+      db.select_all("select name from sqlite_master").each do |row|
+        log "#{  row[0]}"
+        next if row[0] =~ /index/
+        begin
+          db.select_all("select * from #{row[0]}").each do |tr|
+            log "    #{tr.inspect}"          
+          end
+          log ""
+        rescue 
+        end  
+      end  
+      # p db.select_all("select name from sqlite_master")
+      # p db.execute("select name from sqlite_master")
+    else    
+      db = SQLite3::Database.new(dbfile)
+    end
     sources.each do |source_name|
       s = Source.load(source_name,{:app_id => APP_NAME,:user_id => @u.login})
       return false unless validate_db_by_name(db,s,data[s.name])
@@ -128,19 +146,35 @@ module TestHelpers
   end
   
   def validate_db_by_name(db,s,data)
-    db.execute("select source_id,name,sync_priority,partition,
+    method = defined?(JRUBY_VERSION) ? :select_all : :execute
+    db.send(method, "select source_id,name,sync_priority,partition,
       sync_type,source_attribs,metadata,schema,blob_attribs,associations
       from sources where name='#{s.name}'").each do |row|
+    # db.execute("select source_id,name,sync_priority,partition,
+    #   sync_type,source_attribs,metadata,schema,blob_attribs,associations
+    #   from sources where name='#{s.name}'").each do |row|
+      log "!!!: validate_db_by_name: #{row.inspect}" # TODO:
+      
       return false if row[0].to_s != s.source_id.to_s
+      # log "1: "
       return false if row[1] != s.name
+      # log "2: "
       return false if row[2].to_s != s.priority.to_s
+      # log "3: "
       return false if row[3] != s.partition_type.to_s
+      # log "4: "
       return false if row[4] != s.sync_type.to_s
+      # log "5: "
       return false if row[5] != (s.schema ? "" : get_attrib_counter(data))
+      # log "6: "
       return false if row[6] != s.get_value(:metadata)
+      # log "7: "
       return false if row[7] != s.schema
+      # log "8: "
       return false if row[8] != s.blob_attribs
+      # log "9: "
       return false if row[9] != s.has_many
+      # log "10: "
     end
 
     data = json_clone(data)
@@ -150,7 +184,13 @@ module TestHelpers
       schema['property'].each do |key,value|
         columns << key
       end
-      db.execute("select #{columns.join(',')} from #{s.name}") do |row|
+      
+      log "=====: columns: #{columns.inspect}" # !!!
+      log "=====: select #{columns.join(',')} from #{s.name}"
+      
+      db.send(method, "select #{columns.join(',')} from #{s.name}").each do |row|
+      # db.execute("select #{columns.join(',')} from #{s.name}").each do |row|
+        log "=====: #{row.inspect}"  # !!!
         obj = data[row[0]]
         columns.each_index do |i|
           next if i == 0
@@ -159,7 +199,8 @@ module TestHelpers
         data.delete(row[0])
       end
     else
-      db.execute("select * from object_values where source_id=#{s.source_id}").each do |row|
+      db.send(method, "select * from object_values where source_id=#{s.source_id}").each do |row|
+      # db.execute("select * from object_values where source_id=#{s.source_id}").each do |row|
         object = data[row[2]]
         return false if object.nil? or object[row[1]] != row[3] or row[0].to_s != s.source_id.to_s
         object.delete(row[1])

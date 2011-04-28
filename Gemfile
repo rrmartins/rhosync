@@ -3,6 +3,17 @@ source "http://rubygems.org"
 # Specify your gem's dependencies in rhosync.gemspec
 gemspec
 
+if defined?(JRUBY_VERSION)
+  gem 'jdbc-sqlite3', :require => false
+  gem 'dbi'
+  gem 'dbd-jdbc', :require => 'dbd/Jdbc'
+  gem 'jruby-openssl'
+  gem 'jruby-rack'
+  gem 'warbler'
+else
+  gem 'sqlite3-ruby', '~> 1.2.5', :require => 'sqlite3'
+end
+
 group :development do
   gem 'rspec', '~> 2.5.0'
   gem 'rcov', '>= 0.9.8'

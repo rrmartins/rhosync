@@ -1,6 +1,25 @@
-require 'sqlite3'
 require 'zip/zip'
 require 'zlib'
+
+unless defined?(JRUBY_VERSION)
+  require 'sqlite3'
+else
+  require 'dbi'
+  require 'dbd/jdbc'
+  require 'jdbc/sqlite3'
+
+  #FIXME:
+  def execute_batch(dbh, batch)
+    batch.strip.split(';').each do |sth|
+      dbh.do(sth.strip)
+      # begin
+      #   dbh.do(sth)
+      # rescue  Exception => e
+      #   log "execute_batch: #{e.message}"
+      # end   
+    end
+  end
+end
 
 module Rhosync
   module BulkDataJob
@@ -37,6 +56,7 @@ module Rhosync
     def self.import_data_to_object_values(db,source)
       data = source.get_data(:md)
       counter = {}
+      db['AutoCommit'] = false if defined?(JRUBY_VERSION)
       db.transaction do |database|
         database.prepare("insert into object_values 
           (source_id,attrib,object,value) values (?,?,?,?)") do |stmt|
@@ -46,8 +66,10 @@ module Rhosync
               stmt.execute(source.source_id.to_i,attrib,object_id,value)
             end
           end
+          stmt.finish if defined?(JRUBY_VERSION)
         end
       end
+      db['AutoCommit'] = true if defined?(JRUBY_VERSION)
       counter
     end
     
@@ -58,7 +80,9 @@ module Rhosync
       columns,qm = [],[]
       create_table = ["\"object\" varchar(255) PRIMARY KEY"]
       schema = JSON.parse(source.schema)
+      method = defined?(JRUBY_VERSION) ? :do : :execute
       
+      db['AutoCommit'] = false if defined?(JRUBY_VERSION)
       db.transaction do |database|
         # Create a table with columns specified by 'property' array in settings
         schema['property'].each do |key,value|
@@ -66,20 +90,45 @@ module Rhosync
           columns << key
           qm << '?'
         end
-        database.execute("CREATE TABLE #{source.name}(
-          #{create_table.join(",")} );")
+        # database.execute("CREATE TABLE #{source.name}(#{create_table.join(",")} );")
+        database.send(method, "CREATE TABLE #{source.name}(#{create_table.join(",")} );")
         
         # Insert each object as single row in fixed schema table
-        database.prepare("insert into #{source.name} 
-          (object,#{columns.join(',')}) values (?,#{qm.join(',')})") do |stmt|
+        log "$$$$$$$$$$$$: " + "insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})" if source.name == "FixedSchemaAdapter" 
+
+        # FIXME: !!!
+        if defined?(JRUBY_VERSION) # BUG: !!!
+          query = "insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})".gsub('?',"'%s'")
+          log query
           data.each do |obj,row|
             args = [obj]
             columns.each do |col|
               args << row[col]
-            end  
-            stmt.execute(args)
+            end
+            sth = (query % args).gsub(/''/, "NULL")  
+            log sth   
+            db.execute(sth)
+          end
+        else
+          database.prepare("insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})") do |stmt|
+            data.each do |obj,row|
+              args = [obj]
+              columns.each do |col|
+                args << row[col]
+              end
+              log "$$$$$$$$$$$$: args: #{args.inspect}"  
+              stmt.execute(args)
+            end
+            stmt.finish if defined?(JRUBY_VERSION)
           end
         end
+          
+        # FIXME: !!! 
+        if source.name == "FixedSchemaAdapter"
+          database.execute("select * from FixedSchemaAdapter").each do |tr|
+            log " => #{tr.inspect}"          
+          end          
+        end  
         
         # Create indexes for specified columns in settings 'index'
         schema['index'].each do |key,value|
@@ -89,7 +138,8 @@ module Rhosync
             val2 += "\"#{col}\""
           end
           
-          database.execute("CREATE INDEX #{key} on #{source.name} (#{val2});")
+          # database.execute("CREATE INDEX #{key} on #{source.name} (#{val2});")
+          database.send(method, "CREATE INDEX #{key} on #{source.name} (#{val2});")
         end if schema['index']
         
         # Create unique indexes for specified columns in settings 'unique_index'
@@ -100,9 +150,11 @@ module Rhosync
             val2 += "\"#{col}\""
           end
         
-          database.execute("CREATE UNIQUE INDEX #{key} on #{source.name} (#{val2});")
+          # database.execute("CREATE UNIQUE INDEX #{key} on #{source.name} (#{val2});")
+          database.send(method, "CREATE UNIQUE INDEX #{key} on #{source.name} (#{val2});")
         end if schema['unique_index']
       end
+      db['AutoCommit'] = true if defined?(JRUBY_VERSION)
     
       return {}
     end
@@ -116,6 +168,7 @@ module Rhosync
     end
     
     def self.populate_sources_table(db,sources_refs) 
+      db['AutoCommit'] = false if defined?(JRUBY_VERSION)
       db.transaction do |database|
         database.prepare("insert into sources
           (source_id,name,sync_priority,partition,sync_type,source_attribs,metadata,schema,blob_attribs,associations) 
@@ -125,16 +178,25 @@ module Rhosync
             stmt.execute(s.source_id,s.name,s.priority,s.partition_type,
               s.sync_type,refs_to_s(ref[:refs]),s.get_value(:metadata),s.schema,s.blob_attribs,s.has_many)
           end
+          stmt.finish if defined?(JRUBY_VERSION)          
         end
       end
+      db['AutoCommit'] = true if defined?(JRUBY_VERSION)
     end  
     
     def self.create_sqlite_data_file(bulk_data,ts)
       sources_refs = {}
       schema,index,bulk_data.dbfile = get_file_args(bulk_data.name,ts)
       FileUtils.mkdir_p(File.dirname(bulk_data.dbfile))
-      db = SQLite3::Database.new(bulk_data.dbfile)
-      db.execute_batch(File.open(schema,'r').read)
+
+      if defined?(JRUBY_VERSION) # FIXME:
+        db = DBI.connect("DBI:Jdbc:SQLite:#{bulk_data.dbfile}", nil, nil, 'driver' => 'org.sqlite.JDBC') 
+        execute_batch(db, File.open(schema,'r').read) # FIXME:
+      else   
+        db = SQLite3::Database.new(bulk_data.dbfile)
+        db.execute_batch(File.open(schema,'r').read)
+      end      
+      
       src_counter = 1
       bulk_data.sources.members.sort.each do |source_name|
         timer = start_timer("start importing sqlite data for #{source_name}")
@@ -153,9 +215,17 @@ module Rhosync
         lap_timer("finished importing sqlite data for #{source_name}",timer)
       end
       populate_sources_table(db,sources_refs)
-      db.execute_batch(File.open(index,'r').read)
-      db.execute_batch( "VACUUM;");
-      db.close
+      
+      if defined?(JRUBY_VERSION) # FIXME:
+        execute_batch(db, File.open(index,'r').read)
+        execute_batch(db, "VACUUM;");
+        db.disconnect
+      else
+        db.execute_batch(File.open(index,'r').read)
+        db.execute_batch( "VACUUM;");
+        db.close
+      end
+      
       compress("#{bulk_data.dbfile}.rzip",bulk_data.dbfile)
       gzip_compress("#{bulk_data.dbfile}.gzip",bulk_data.dbfile)
     end

@@ -31,7 +31,6 @@ Gem::Specification.new do |s|
   s.add_dependency("sinatra", '~> 1.2')
   s.add_dependency('rake', '>= 0.8.7')
   s.add_dependency('json', '~> 1.4.2')
-  s.add_dependency('sqlite3-ruby', '~> 1.2.5')
   s.add_dependency('rubyzip', '~> 0.9.4')
   s.add_dependency('uuidtools', '>= 2.1.1')
   s.add_dependency('redis', '~> 2.1.1')

@@ -10,6 +10,11 @@ describe "BulkDataJob" do
     after(:each) do
       delete_data_directory
     end
+    unless defined?(JRUBY_VERSION) # FIXME:      
+      let(:schema_string) { "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}" }
+    else
+      let(:schema_string) { "{\"property\":{\"name\":\"string\",\"brand\":\"string\"},\"version\":\"1.0\"}" }
+    end
 
     it "should create bulk data files from master document" do
       set_state('test_db_storage' => @data)
@@ -88,9 +93,9 @@ describe "BulkDataJob" do
           :sources => [@s_fields[:name]])
         BulkDataJob.perform("data_name" => data.name)
         data = BulkData.load(docname)
-        data.completed?.should == true
+        data.completed?.should == true        
         verify_result(@s.docname(:md) => @data,
-          @s.docname(:schema) => "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}",
+          @s.docname(:schema) => "#{schema_string}",
           @s.docname(:md_copy) => @data)
         validate_db(data,@s.name => @data).should == true
       end

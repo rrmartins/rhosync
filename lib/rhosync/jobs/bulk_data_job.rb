@@ -80,7 +80,6 @@ module Rhosync
       columns,qm = [],[]
       create_table = ["\"object\" varchar(255) PRIMARY KEY"]
       schema = JSON.parse(source.schema)
-      method = defined?(JRUBY_VERSION) ? :do : :execute
       
       db['AutoCommit'] = false if defined?(JRUBY_VERSION)
       db.transaction do |database|
@@ -90,23 +89,36 @@ module Rhosync
           columns << key
           qm << '?'
         end
-        # database.execute("CREATE TABLE #{source.name}(#{create_table.join(",")} );")
-        database.send(method, "CREATE TABLE #{source.name}(#{create_table.join(",")} );")
+        database.execute("CREATE TABLE #{source.name}(#{create_table.join(",")} );")
         
         # Insert each object as single row in fixed schema table
-        log "$$$$$$$$$$$$: " + "insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})" if source.name == "FixedSchemaAdapter" 
+        # log "$$$$$$$$$$$$: " + "insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})" if source.name == "FixedSchemaAdapter" 
+        # FIXME: !!! Should be something like
+        # database.prepare("insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})") do |stmt|
+        #   data.each do |obj,row|
+        #     args = [obj]
+        #     columns.each do |col|
+        #       args << row[col]
+        #     end
+        #     log "$$$$$$$$$$$$: args: #{args.inspect}"  
+        #     stmt.execute(args)
+        #   end
+        #   stmt.finish if defined?(JRUBY_VERSION)
+        # end
 
-        # FIXME: !!!
-        if defined?(JRUBY_VERSION) # BUG: !!!
+        #
+        # TODO: Do not use prepare statements for JRuby/DBI/SQlite3
+        #
+        if defined?(JRUBY_VERSION) # BUG workaround !!!
           query = "insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})".gsub('?',"'%s'")
-          log query
+          # log query # FIXME:
           data.each do |obj,row|
             args = [obj]
             columns.each do |col|
               args << row[col]
             end
             sth = (query % args).gsub(/''/, "NULL")  
-            log sth   
+            # log sth # FIXME:  
             db.execute(sth)
           end
         else
@@ -116,19 +128,10 @@ module Rhosync
               columns.each do |col|
                 args << row[col]
               end
-              log "$$$$$$$$$$$$: args: #{args.inspect}"  
               stmt.execute(args)
             end
-            stmt.finish if defined?(JRUBY_VERSION)
           end
         end
-          
-        # FIXME: !!! 
-        if source.name == "FixedSchemaAdapter"
-          database.execute("select * from FixedSchemaAdapter").each do |tr|
-            log " => #{tr.inspect}"          
-          end          
-        end  
         
         # Create indexes for specified columns in settings 'index'
         schema['index'].each do |key,value|
@@ -138,8 +141,7 @@ module Rhosync
             val2 += "\"#{col}\""
           end
           
-          # database.execute("CREATE INDEX #{key} on #{source.name} (#{val2});")
-          database.send(method, "CREATE INDEX #{key} on #{source.name} (#{val2});")
+          database.execute("CREATE INDEX #{key} on #{source.name} (#{val2});")
         end if schema['index']
         
         # Create unique indexes for specified columns in settings 'unique_index'
@@ -150,8 +152,7 @@ module Rhosync
             val2 += "\"#{col}\""
           end
         
-          # database.execute("CREATE UNIQUE INDEX #{key} on #{source.name} (#{val2});")
-          database.send(method, "CREATE UNIQUE INDEX #{key} on #{source.name} (#{val2});")
+          database.execute("CREATE UNIQUE INDEX #{key} on #{source.name} (#{val2});")
         end if schema['unique_index']
       end
       db['AutoCommit'] = true if defined?(JRUBY_VERSION)

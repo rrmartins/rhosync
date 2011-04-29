@@ -6,6 +6,15 @@ describe "SourceSync" do
     before(:each) do
       @ss = SourceSync.new(@s)
     end
+    unless defined?(JRUBY_VERSION) # FIXME:      
+      let(:schema_string) { "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}" }
+      let(:sha1_value)    { get_sha1(schema_string) }
+      # let(:sha1_value) { '8c148c8c1a66c7baf685c07d58bea360da87981b' }
+    else
+      let(:schema_string) { "{\"property\":{\"name\":\"string\",\"brand\":\"string\"},\"version\":\"1.0\"}" }
+      let(:sha1_value) { get_sha1(schema_string) }
+      # let(:sha1_value) { 'a28d2b0aa59b0cc4b8c79bdee5a272c95ae4ef4d' }
+    end
 
     it "should create SourceSync" do
       @ss.adapter.is_a?(SampleAdapter).should == true
@@ -79,8 +88,8 @@ describe "SourceSync" do
           set_state('test_db_storage' => expected)
           @ss.process_query
           verify_result(@s.docname(:md) => expected,
-            @s.docname(:schema) => "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}",
-            @s.docname(:schema_sha1) => "8c148c8c1a66c7baf685c07d58bea360da87981b")
+            @s.docname(:schema) => "#{schema_string}",
+            @s.docname(:schema_sha1) => "#{sha1_value}")
         end
       end
 

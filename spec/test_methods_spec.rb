@@ -11,6 +11,11 @@ describe "TestMethods" do
       Rhosync.bootstrap(get_testapp_path)
       setup_test_for(SampleAdapter,'user1')
     end
+    unless defined?(JRUBY_VERSION) # FIXME:      
+      let(:schema_string) { "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}" }
+    else
+      let(:schema_string) { "{\"property\":{\"name\":\"string\",\"brand\":\"string\"},\"version\":\"1.0\"}" }
+    end
 
     it "should setup_test_for an adapter and user" do
       @u.is_a?(User).should == true
@@ -32,7 +37,7 @@ describe "TestMethods" do
         expected = {'1'=>@product1,'2'=>@product2}
         set_state('test_db_storage' => expected)
         @ss.process_query
-        test_schema.should == "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}"
+        test_schema.should == "#{schema_string}"
       end
     end  
     

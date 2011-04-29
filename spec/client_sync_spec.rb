@@ -7,8 +7,15 @@ describe "ClientSync" do
     it "should raise Argument error if no client or source is provided" do
       lambda { ClientSync.new(@s,nil,2) }.should raise_error(ArgumentError,'Unknown client')
       lambda { ClientSync.new(nil,@c,2) }.should raise_error(ArgumentError,'Unknown source')
+    end    
+    unless defined?(JRUBY_VERSION) # FIXME:      
+      # let(:sha1) { '8c148c8c1a66c7baf685c07d58bea360da87981b' }
+      let(:sha1) { get_sha1("{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}") }
+    else
+      # let(:sha1) { 'a28d2b0aa59b0cc4b8c79bdee5a272c95ae4ef4d' }
+      let(:sha1) { get_sha1("{\"property\":{\"name\":\"string\",\"brand\":\"string\"},\"version\":\"1.0\"}") }
     end
-
+      
     before(:each) do
       @cs = ClientSync.new(@s,@c,2)
     end
@@ -545,7 +552,7 @@ describe "ClientSync" do
           token = @c.get_value(:page_token)
           result.should ==  [{"version"=>ClientSync::VERSION},{"token"=>token}, 
             {"count"=>1}, {"progress_count"=>0},{"total_count"=>1},{'insert'=>expected}]
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          @c.get_value(:schema_sha1).should == sha1
         end
       end
 
@@ -556,8 +563,8 @@ describe "ClientSync" do
           token = @c.get_value(:page_token)
           result.should ==  [{"version"=>ClientSync::VERSION},{"token"=>token}, 
             {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{'schema-changed'=>'true'}]
-          @c.get_value(:schema_page).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          @c.get_value(:schema_page).should == sha1
+          @c.get_value(:schema_sha1).should == sha1
         end
       end
 
@@ -568,8 +575,8 @@ describe "ClientSync" do
           token = @c.get_value(:page_token)
           @cs.send_cud.should ==  [{"version"=>ClientSync::VERSION},{"token"=>token}, 
             {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{'schema-changed'=>'true'}]
-          @c.get_value(:schema_page).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          @c.get_value(:schema_page).should == sha1
+          @c.get_value(:schema_sha1).should == sha1
         end
       end
 
@@ -581,7 +588,7 @@ describe "ClientSync" do
           @cs.send_cud(token).should ==  [{"version"=>ClientSync::VERSION},{"token"=>""}, 
             {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{}]
           @c.get_value(:schema_page).should be_nil
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          @c.get_value(:schema_sha1).should == sha1
         end
       end
 
@@ -600,7 +607,7 @@ describe "ClientSync" do
           @cs.send_cud(token).should ==  [{"version"=>ClientSync::VERSION},{"token"=>""}, 
             {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{}]
           @c.get_value(:schema_page).should be_nil
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          @c.get_value(:schema_sha1).should == sha1
           data = BulkData.load(docname)
           data.refresh_time.should <= Time.now.to_i
         end 

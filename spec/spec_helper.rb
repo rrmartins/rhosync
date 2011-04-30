@@ -169,7 +169,6 @@ module TestHelpers
       schema['property'].each do |key,value|
         columns << key
       end
-      
       db.execute("select #{columns.join(',')} from #{s.name}").each do |row|
         obj = data[row[0]]
         columns.each_index do |i|

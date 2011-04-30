@@ -202,9 +202,8 @@ module Rhosync
   
       def populate_model(model, fields)
         return model if fields.empty?
-        methods = model.methods
         fields.each do |name,value|
-          model.send("#{name}=", value) if methods.include?(name.to_s)
+          model.send("#{name}=", value) if model.respond_to?(name)
         end
         model
       end

@@ -28,11 +28,20 @@ describe "Middleware" do
     10.times { @middleware.call(env) }
     metric = 'http:GET:/application:SampleAdapter'
     Record.key(metric).should == "stat:#{metric}"
-    Record.range(metric, 0, -1).should == [
-      "2.0,0.600000000000002:12", 
-      "2.0,0.600000000000002:14", 
-      "2.0,0.600000000000002:16", 
-      "2.0,0.600000000000002:18"
-    ]
+    if RUBY_VERSION =~ /1.9/ # FIXME:      
+      Record.range(metric, 0, -1).should == [
+        "2.0,0.6000000000000014:12", 
+        "2.0,0.6000000000000014:14", 
+        "2.0,0.6000000000000014:16", 
+        "2.0,0.6000000000000014:18"
+      ]
+    else
+      Record.range(metric, 0, -1).should == [
+        "2.0,0.600000000000002:12", 
+        "2.0,0.600000000000002:14", 
+        "2.0,0.600000000000002:16", 
+        "2.0,0.600000000000002:18"
+      ]
+    end
   end  
 end

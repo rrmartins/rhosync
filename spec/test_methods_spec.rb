@@ -11,12 +11,12 @@ describe "TestMethods" do
       Rhosync.bootstrap(get_testapp_path)
       setup_test_for(SampleAdapter,'user1')
     end
-    unless defined?(JRUBY_VERSION) # FIXME:      
-      let(:schema_string) { "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}" }
-    else
+    if defined?(JRUBY_VERSION) || RUBY_VERSION =~ /1.9/ # FIXME:      
       let(:schema_string) { "{\"property\":{\"name\":\"string\",\"brand\":\"string\"},\"version\":\"1.0\"}" }
+    else
+      let(:schema_string) { "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}" }
     end
-
+      
     it "should setup_test_for an adapter and user" do
       @u.is_a?(User).should == true
       @s.is_a?(Source).should == true

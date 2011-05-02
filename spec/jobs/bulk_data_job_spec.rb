@@ -10,10 +10,10 @@ describe "BulkDataJob" do
     after(:each) do
       delete_data_directory
     end
-    unless defined?(JRUBY_VERSION) # FIXME:      
-      let(:schema_string) { "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}" }
-    else
+    if defined?(JRUBY_VERSION) || RUBY_VERSION =~ /1.9/ # FIXME:      
       let(:schema_string) { "{\"property\":{\"name\":\"string\",\"brand\":\"string\"},\"version\":\"1.0\"}" }
+    else
+      let(:schema_string) { "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}" }
     end
 
     it "should create bulk data files from master document" do

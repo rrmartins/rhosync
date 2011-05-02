@@ -38,8 +38,10 @@ begin
   RSpec::Core::RakeTask.new('spec:all') do |t|
     t.rspec_opts = ["-b", "-c", "-fd"]
     t.pattern = FileList[TYPES.values]
-    t.rcov = true
-    t.rcov_opts = ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*,json/*']    
+    if RUBY_VERSION < "1.9" # FIXME:
+      t.rcov = true
+      t.rcov_opts = ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*,json/*']    
+    end
   end
   
   desc "Run doc generator - dumps out doc/protocol.html"

@@ -187,6 +187,14 @@ describe "Store" do
         Store.db.exists('key1').should be_false
         Store.db.exists('key2').should be_false      
       end
+
+      it "should raise ArgumentError on put_data with invalid data" do
+        foobar = {'foo'=>'bar'}
+        expect { 
+          Store.put_data('somedoc',{'foo'=>'bar'}) 
+        }.to raise_exception(ArgumentError, "Invalid value object: #{foobar['foo'].inspect}. Hash is expected.")
+      end
+
     end
   end  
 end

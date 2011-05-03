@@ -26,10 +26,8 @@ module Rhosync
           if data.is_a?(Hash)
             @@db.pipelined do
               data.each do |key,value|
-                # FIXME: 1.9
-                method = value.respond_to?(:each_line) ? :each_line : :each                 
-                value.send(method) do |attrib,value| # FIXME: (1.9) value.each do |attrib,value|
-                # value.each_line do |attrib,value| # FIXME: (1.9) value.each do |attrib,value|
+                raise ArgumentError, "Invalid value object: #{value.inspect}. Hash is expected." unless value.is_a?(Hash)   
+                value.each do |attrib,value|
                   unless _is_reserved?(attrib,value)
                     @@db.sadd(dockey,setelement(key,attrib,value))
                   end

@@ -1,3 +1,7 @@
+## 2.1.3
+* #4398193 - ping should only send push messages to unique device pin list
+* #13022667 - settings.yml doesn't work for setting external Redis instances
+
 ## 2.1.2
 * Use server-dir/redis.conf if not found at RedisRunner.prefix (via artemk) 
 * #8471337 - switch client user if it is not equal to current_user
@@ -6,7 +10,6 @@
 * Fixed 'application/json; charset=UTF-8' content handling in the server before filter
 * #11017509 - fixed sinatra 1.2 incompatibility with url() helper
 * #4569337 - use redis 2.2.2 by default
-* #4398193 - ping should only send push messages to unique device pin list
 
 ## 2.1.1
 * #7679395 - added support for gzipped bulk data files

@@ -24,6 +24,7 @@
 * Fixed 'application/json; charset=UTF-8' content handling in the server before filter
 * #11017509 - fixed sinatra 1.2 incompatibility with url() helper
 * #4569337 - use redis 2.2.2 by default
+* #4398193 - ping should only send push messages to unique device pin list
 
 ## 2.1.1 (2011-01-04)
 * #7679395 - added support for gzipped bulk data files

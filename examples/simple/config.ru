@@ -21,7 +21,6 @@ ROOT_PATH = File.expand_path(File.dirname(__FILE__))
 Rhosync::Server.disable :run
 Rhosync::Server.disable :clean_trace
 Rhosync::Server.enable  :raise_errors
-Rhosync::Server.set     :environment, :development
 Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.enable  :stats
 Rhosync::Server.set     :secret, '<changeme>'

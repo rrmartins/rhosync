@@ -34,10 +34,11 @@ describe "Rhosync" do
   end
   
   it "should bootstrap Rhosync with RACK_ENV provided" do
+    env = ENV['RACK_ENV'].dup
     ENV['RACK_ENV'] = 'production'
     Rhosync.bootstrap(get_testapp_path)
     Rhosync.environment.should == :production
-    ENV.delete('RACK_ENV')
+    ENV['RACK_ENV'] = env
   end
   
   it "should bootstrap with existing app" do

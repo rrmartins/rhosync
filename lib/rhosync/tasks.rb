@@ -51,6 +51,11 @@ module Rhosync
       RUBY_PLATFORM =~ /(win|w)32$/
     end
     
+    # FIXME
+    def ruby19?
+      RUBY_VERSION =~ /1.9/ 
+    end
+      
     def thin?
       begin
         require 'thin'
@@ -209,7 +214,7 @@ namespace :rhosync do
   
   begin
     require 'rspec/core/rake_task'
-    require 'rcov/rcovtask' unless windows?
+    require 'rcov/rcovtask' unless (windows? || ruby19?) # FIXME:
     
     desc "Run source adapter specs"
     task :spec do
@@ -217,7 +222,7 @@ namespace :rhosync do
       RSpec::Core::RakeTask.new('rhosync:spec') do |t|
         t.pattern = FileList[files]
         t.rspec_opts = %w(-fn -b --color)
-        unless windows?
+        unless (windows? || ruby19?) # FIXME: 
           t.rcov = true
           t.rcov_opts = ['--exclude', 'spec/*,gems/*']
         end

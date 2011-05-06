@@ -43,11 +43,10 @@ describe "User" do
       @u.token.value.should == token
     end
 
-    it "should maintain only one token for user" do
+    it "should use token provisioned in settings if one" do
       token = @u.create_token
+      token.should == Rhosync.api_token
       ApiToken.is_exist?(token).should == true
-      @u.create_token
-      ApiToken.is_exist?(token).should == false
     end
 
     it "should assign token to existing user" do

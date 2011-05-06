@@ -8,6 +8,7 @@ describe "ApiToken" do
       token.value.length.should == 32
       token.user_id.should == @u.id
       token.user.login.should == @u.login
+      token.delete
     end
   end
 end

@@ -10,7 +10,7 @@
 * added bundler to manage gem's dependencies, migrated from rspec1 to rspec2  
 * #5687948 - fixed issue "iPhone push specs failed" 						
 
-## 2.1.3
+## 2.1.3 (2011-05-05)
 * #4398193 - ping should only send push messages to unique device pin list
 * #13022667 - settings.yml doesn't work for setting external Redis instances
 

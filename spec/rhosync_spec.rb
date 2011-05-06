@@ -23,6 +23,8 @@ describe "Rhosync" do
     Rhosync.bulk_sync_poll_interval.should == 3600
     Rhosync.environment.should == :development  
     Rhosync.stats.should == false
+    Rhosync.appserver.should == 'http://test.rhosync.com'
+    
     App.is_exist?(test_app_name).should be_true
   end
 

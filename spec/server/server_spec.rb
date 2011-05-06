@@ -272,10 +272,9 @@ describe "Server" do
           {"count"=>0}, {"progress_count"=>2}, {"total_count"=>2},{}]
       end
 
-      it "should return error if source_name is unknown" do
+      it "should create source for dynamic adapter if source_name is unknown" do
         get "/application",:client_id => @c.id,:source_name => 'Broken',:version => ClientSync::VERSION
-        last_response.status.should == 500
-        last_response.body.should == "ERROR: Source 'Broken' requested by client doesn't exist.\n"
+        last_response.status.should == 200
       end
 
       it "should get deletes json" do

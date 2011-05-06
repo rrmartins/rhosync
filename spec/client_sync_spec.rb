@@ -9,6 +9,36 @@ describe "ClientSync" do
       lambda { ClientSync.new(nil,@c,2) }.should raise_error(ArgumentError,'Unknown source')
     end
 
+   it "should handle receive cud for dymanic adapter" do
+        params = {'create'=>{'1'=>@product1}}
+        @c.source_name = 'Product2'
+        @cs1 = ClientSync.new(@s2,@c,2)
+      
+        @cs1.receive_cud(params)
+        verify_result(@cs1.client.docname(:create) => {},
+          @cs1.client.docname(:update) => {},
+          @cs1.client.docname(:delete) => {})
+      #end
+    end
+    
+    it "should handle send cud for dymanic adapter" do
+      data = {'1'=>@product1}
+      expected = {'insert'=>data} 
+      stub_request(:post, "http://test.rhosync.com/rhosync/query").with(:headers => {'Content-Type' => 'application/json'}).to_return(:status => 200, :body => data.to_json)
+       
+      @c.source_name = 'Product'
+      @cs1 = ClientSync.new(@s2,@c,2)
+      
+      @cs1.send_cud.should == [{'version'=>ClientSync::VERSION},
+        {'token'=>@c.get_value(:page_token)},
+        {'count'=>data.size},{'progress_count'=>0},
+        {'total_count'=>data.size},expected]
+        
+      verify_result(@cs1.client.docname(:page) => data,
+        @cs1.client.docname(:delete_page) => {},
+        @cs1.client.docname(:cd) => data)
+    end
+      
     before(:each) do
       @cs = ClientSync.new(@s,@c,2)
     end

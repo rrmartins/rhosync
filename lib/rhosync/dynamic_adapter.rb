@@ -1,0 +1,88 @@
+require 'json'
+require 'rest_client'
+require 'uri'
+
+module Rhosync
+  
+  class DynamicAdapter < SourceAdapter
+    attr_accessor :uri, :partition
+    
+    def initialize(source, partition=nil, uri=nil)
+      @source = source
+      @uri = uri || Rhosync.appserver
+      @partition = partition
+      
+      raise ArgumentError.new("Please provide a :uri or set RHOSYNC_URL") unless @uri
+      @uri = URI.parse(@uri)
+
+      @token = Rhosync.api_token || @uri.user
+      @uri.user = nil; @uri = @uri.to_s      
+      raise ArgumentError.new("Please provide a :token or set it in uri") unless @token
+      super(source)
+    end
+    
+    def login
+      #TODO write authentication method
+    end
+    
+    def query(params=nil)
+      @result={}
+      @result = JSON.parse(send_objects('query',@source.name, @partition, params))
+    end
+    
+    def create(create_hash,blob=nil)
+      puts "inside create1"
+      send_objects('create',@source.name, @partition, create_hash)
+    end
+    
+    def update(update_hash)
+      puts "inside update"
+      send_objects('update',@source.name, @partition, update_hash)
+    end
+    
+    def delete(delete_hash)
+      puts "inside delete"
+      send_objects('delete',@source.name, @partition, delete_hash)
+    end
+    
+    #protected
+    
+    def validate_args(action, source_name, partition, obj = {}) # :nodoc:
+      raise ArgumentError.new("Missing object id for #{obj.inspect}") if ['update','delete'].include? action and not obj.has_key?('id')
+      raise ArgumentError.new("Missing source_name.") if source_name.empty?
+      #raise ArgumentError.new("Missing partition for #{model}.") unless partition or partition.blank?
+    end
+
+    def send_objects(action, source_name, partition, obj = {}) # :nodoc:
+      validate_args(action, source_name, partition, obj)
+      process(:post, "/rhosync/#{action}", 
+        {
+          :resource => source_name,
+          :partition => partition,
+          :attributes => obj 
+        }
+      )
+    end
+        
+    def resource(path) # :nodoc:
+      RestClient::Resource.new(@uri)[path]
+    end
+
+    def process(method, path, payload = nil) # :nodoc:
+      headers = api_headers
+      payload  = payload.merge!(:api_token => @token).to_json
+      args     = [method, payload, headers].compact
+      response = resource(path).send(*args)
+      response
+    end
+
+    def api_headers   # :nodoc:
+      {
+        :content_type => :json, 
+        :accept => :json
+      }
+    end
+    
+  end
+  
+end

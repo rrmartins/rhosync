@@ -39,6 +39,8 @@ module Rhosync
       end
 
       def check_api_token
+        log "request_action:#{request_action}"
+        log "params_token:#{params[:api_token]}"
         request_action == 'get_api_token' or 
           (params[:api_token] and ApiToken.is_exist?(params[:api_token]))
       end
@@ -101,7 +103,11 @@ module Rhosync
         if params[:source_name] and user
           @source = Source.load(params[:source_name],
             {:user_id => user.login,:app_id => APP_NAME})
-          raise "ERROR: Source '#{params[:source_name]}' requested by client doesn't exist.\n" unless @source
+             
+          # if source does not exist create one for dynamic adapter
+          @source = Source.create({:name => params[:source_name]},{:app_id => APP_NAME}) unless @source
+          
+          #raise "ERROR: Source '#{params[:source_name]}' requested by client doesn't exist.\n" unless @source
           @source
         else
           log "ERROR: Can't load source, no source_name provided.\n"

@@ -9,7 +9,10 @@
 * #12105115 - removed unnecessary log4r dependency
 * added bundler to manage gem's dependencies, migrated from rspec1 to rspec2  
 * #5687948 - fixed issue "iPhone push specs failed" 						
-* #4614661 - fixed bug "Don't generate credentials argument in source adapters"
+
+## 2.1.3 (2011-05-05)
+* #4398193 - ping should only send push messages to unique device pin list
+* #13022667 - settings.yml doesn't work for setting external Redis instances
 
 ## 2.1.2 (2011-03-18)
 * Use server-dir/redis.conf if not found at RedisRunner.prefix (via artemk) 

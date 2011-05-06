@@ -21,7 +21,7 @@ describe "Rhosync" do
     Rhosync.vendor_directory.should == 'foo'
     Rhosync.blackberry_bulk_sync.should == false
     Rhosync.bulk_sync_poll_interval.should == 3600
-    Rhosync.environment.should == :development  
+    Rhosync.environment.should == :test  
     Rhosync.stats.should == false
     App.is_exist?(test_app_name).should be_true
   end
@@ -32,7 +32,15 @@ describe "Rhosync" do
     Rhosync.environment.should == :production
     ENV.delete('RHO_ENV')
   end
-
+  
+  it "should bootstrap Rhosync with RACK_ENV provided" do
+    env = ENV['RACK_ENV'].dup
+    ENV['RACK_ENV'] = 'production'
+    Rhosync.bootstrap(get_testapp_path)
+    Rhosync.environment.should == :production
+    ENV['RACK_ENV'] = env
+  end
+  
   it "should bootstrap with existing app" do
     app = App.create(:name => test_app_name)
     App.should_receive(:load).once.with(test_app_name).and_return(app)

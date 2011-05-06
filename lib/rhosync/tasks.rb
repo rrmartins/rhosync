@@ -93,7 +93,7 @@ namespace :rhosync do
   
   task :config do
     $settings = load_settings(File.join('settings','settings.yml'))
-    $env = (ENV['RHO_ENV'] || :development).to_sym  
+    $env = (ENV['RHO_ENV'] || ENV['RACK_ENV'] || :development).to_sym  
     uri = URI.parse($settings[$env][:syncserver])
     $url = "#{uri.scheme}://#{uri.host}"
     $url = "#{$url}:#{uri.port}" if uri.port && uri.port != 80

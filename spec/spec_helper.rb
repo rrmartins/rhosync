@@ -2,6 +2,7 @@ require 'rubygems'
 require 'rspec'
 require 'rhosync'
 include Rhosync
+ENV['RACK_ENV'] = 'test'
 
 ERROR = '0_broken_object_id' unless defined? ERROR
 

@@ -51,7 +51,7 @@ module Rhosync
   def bootstrap(basedir)
     config = get_config(basedir)
     #Load environment
-    environment = (ENV['RHO_ENV'] || :development).to_sym     
+    environment = (ENV['RHO_ENV'] || ENV['RACK_ENV'] || :development).to_sym  
     # Initialize Rhosync and Resque
     Rhosync.base_directory = basedir    
     Rhosync.app_directory = get_setting(config,environment,:app_directory)

@@ -8,7 +8,7 @@ else
   require 'dbd/jdbc'
   require 'jdbc/sqlite3'
 
-  #FIXME:
+  # FIXME:
   def execute_batch(dbh, batch)
     batch.strip.split(';').each do |sth|
       dbh.do(sth.strip)
@@ -56,7 +56,7 @@ module Rhosync
     def self.import_data_to_object_values(db,source)
       data = source.get_data(:md)
       counter = {}
-      db['AutoCommit'] = false if defined?(JRUBY_VERSION)
+      db['AutoCommit'] = false if defined?(JRUBY_VERSION) # FIXME:
       db.transaction do |database|
         database.prepare("insert into object_values 
           (source_id,attrib,object,value) values (?,?,?,?)") do |stmt|
@@ -66,10 +66,10 @@ module Rhosync
               stmt.execute(source.source_id.to_i,attrib,object_id,value)
             end
           end
-          stmt.finish if defined?(JRUBY_VERSION)
+          stmt.finish if defined?(JRUBY_VERSION) # FIXME:
         end
       end
-      db['AutoCommit'] = true if defined?(JRUBY_VERSION)
+      db['AutoCommit'] = true if defined?(JRUBY_VERSION) # FIXME:
       counter
     end
     
@@ -81,7 +81,7 @@ module Rhosync
       create_table = ["\"object\" varchar(255) PRIMARY KEY"]
       schema = JSON.parse(source.schema)
       
-      db['AutoCommit'] = false if defined?(JRUBY_VERSION)
+      db['AutoCommit'] = false if defined?(JRUBY_VERSION) # FIXME:
       db.transaction do |database|
         # Create a table with columns specified by 'property' array in settings
         schema['property'].each do |key,value|
@@ -109,16 +109,14 @@ module Rhosync
         #
         # TODO: Do not use prepare statements for JRuby/DBI/SQlite3
         #
-        if defined?(JRUBY_VERSION) # BUG workaround !!!
+        if defined?(JRUBY_VERSION) # FIXME: bug workaround !!!
           query = "insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})".gsub('?',"'%s'")
-          # log query # FIXME:
           data.each do |obj,row|
             args = [obj]
             columns.each do |col|
               args << row[col]
             end
             sth = (query % args).gsub(/''/, "NULL")  
-            # log sth # FIXME:  
             db.execute(sth)
           end
         else
@@ -155,7 +153,7 @@ module Rhosync
           database.execute("CREATE UNIQUE INDEX #{key} on #{source.name} (#{val2});")
         end if schema['unique_index']
       end
-      db['AutoCommit'] = true if defined?(JRUBY_VERSION)
+      db['AutoCommit'] = true if defined?(JRUBY_VERSION) # FIXME:
     
       return {}
     end
@@ -169,7 +167,7 @@ module Rhosync
     end
     
     def self.populate_sources_table(db,sources_refs) 
-      db['AutoCommit'] = false if defined?(JRUBY_VERSION)
+      db['AutoCommit'] = false if defined?(JRUBY_VERSION) # FIXME:
       db.transaction do |database|
         database.prepare("insert into sources
           (source_id,name,sync_priority,partition,sync_type,source_attribs,metadata,schema,blob_attribs,associations) 
@@ -179,10 +177,10 @@ module Rhosync
             stmt.execute(s.source_id,s.name,s.priority,s.partition_type,
               s.sync_type,refs_to_s(ref[:refs]),s.get_value(:metadata),s.schema,s.blob_attribs,s.has_many)
           end
-          stmt.finish if defined?(JRUBY_VERSION)          
+          stmt.finish if defined?(JRUBY_VERSION) # FIXME:           
         end
       end
-      db['AutoCommit'] = true if defined?(JRUBY_VERSION)
+      db['AutoCommit'] = true if defined?(JRUBY_VERSION) # FIXME:
     end  
     
     def self.create_sqlite_data_file(bulk_data,ts)

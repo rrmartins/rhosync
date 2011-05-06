@@ -28,7 +28,12 @@ describe "Middleware" do
     10.times { @middleware.call(env) }
     metric = 'http:GET:/application:SampleAdapter'
     Record.key(metric).should == "stat:#{metric}"
-    if RUBY_VERSION =~ /1.9/ # FIXME:      
+
+    # FIXME:
+    # The conversion algorithm (float to string) currently checks two precisions. 
+    # In Ruby 1.9, it tries 16 digits and if that's not enough it then uses 17. 
+    # In 1.8, it's the same but with 15 and 16.
+    if RUBY_VERSION =~ /1.9/      
       Record.range(metric, 0, -1).should == [
         "2.0,0.6000000000000014:12", 
         "2.0,0.6000000000000014:14", 

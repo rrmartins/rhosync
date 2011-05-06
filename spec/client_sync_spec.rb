@@ -8,13 +8,9 @@ describe "ClientSync" do
       lambda { ClientSync.new(@s,nil,2) }.should raise_error(ArgumentError,'Unknown client')
       lambda { ClientSync.new(nil,@c,2) }.should raise_error(ArgumentError,'Unknown source')
     end    
-    if defined?(JRUBY_VERSION) || RUBY_VERSION =~ /1.9/ # FIXME:      
-      # let(:sha1) { 'a28d2b0aa59b0cc4b8c79bdee5a272c95ae4ef4d' }
-      let(:sha1) { get_sha1("{\"property\":{\"name\":\"string\",\"brand\":\"string\"},\"version\":\"1.0\"}") }
-    else
-      # let(:sha1) { '8c148c8c1a66c7baf685c07d58bea360da87981b' }
-      let(:sha1) { get_sha1("{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}") }
-    end
+
+    let(:mock_schema) { {"property" => { "name" => "string", "brand" => "string" }, "version" => "1.0"} }
+    let(:sha1) { get_sha1(mock_schema.to_json) }
       
     before(:each) do
       @cs = ClientSync.new(@s,@c,2)

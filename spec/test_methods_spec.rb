@@ -11,11 +11,9 @@ describe "TestMethods" do
       Rhosync.bootstrap(get_testapp_path)
       setup_test_for(SampleAdapter,'user1')
     end
-    if defined?(JRUBY_VERSION) || RUBY_VERSION =~ /1.9/ # FIXME:      
-      let(:schema_string) { "{\"property\":{\"name\":\"string\",\"brand\":\"string\"},\"version\":\"1.0\"}" }
-    else
-      let(:schema_string) { "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}" }
-    end
+
+    let(:schema_string) { "{\"property\":{\"brand\":\"string\",\"name\":\"string\"},\"version\":\"1.0\"}" }
+    let(:foo_bar) { "{\"foo\":\"bar\"}" }
       
     it "should setup_test_for an adapter and user" do
       @u.is_a?(User).should == true
@@ -37,7 +35,7 @@ describe "TestMethods" do
         expected = {'1'=>@product1,'2'=>@product2}
         set_state('test_db_storage' => expected)
         @ss.process_query
-        test_schema.should == "#{schema_string}"
+        JSON.parse(test_schema).should == JSON.parse(schema_string)
       end
     end  
     
@@ -46,7 +44,7 @@ describe "TestMethods" do
         expected = {'1'=>@product1,'2'=>@product2}
         set_state('test_db_storage' => expected)
         @ss.process_query
-        test_metadata.should == "{\"foo\":\"bar\"}"
+        JSON.parse(test_metadata).should == JSON.parse(foo_bar)
       end
     end
     

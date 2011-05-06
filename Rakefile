@@ -38,7 +38,7 @@ begin
   RSpec::Core::RakeTask.new('spec:all') do |t|
     t.rspec_opts = ["-b", "-c", "-fd"]
     t.pattern = FileList[TYPES.values]
-    if RUBY_VERSION < "1.9" # FIXME:
+    unless RUBY_VERSION =~ /1.9/ # FIXME: code coverage not working for Ruby 1.9 !!!
       t.rcov = true
       t.rcov_opts = ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*,json/*']    
     end
@@ -84,10 +84,6 @@ def ask(msg)
   print msg
   STDIN.gets.chomp
 end
-
-# def bundle_exec(cmd)
-#   system "bundle exec #{cmd}"
-# end
 
 load 'tasks/redis.rake'
 Bundler::GemHelper.install_tasks

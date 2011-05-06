@@ -28,7 +28,8 @@ Gem::Specification.new do |s|
   ]
 
   s.add_dependency('bundler', '~> 1.0')  
-  s.add_dependency("sinatra", '~> 1.2')
+  s.add_dependency("sinatra", '~> 1.2') # TODO: sinatra 1.2.6 => 150 rspec failures (1.9.2), but 1.2.3 => 33 errors only
+  # s.add_dependency("sinatra", '1.2.3')
   s.add_dependency('rake', '>= 0.8.7')
   s.add_dependency('json', '~> 1.4.2')
   s.add_dependency('rubyzip', '~> 0.9.4')

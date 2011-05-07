@@ -55,6 +55,11 @@ module Rhosync
     def ruby19?
       RUBY_VERSION =~ /1.9/ 
     end
+
+    # FIXME:
+    def jruby?
+      defined?(JRUBY_VERSION)
+    end
       
     def thin?
       begin
@@ -83,6 +88,20 @@ or
 EOF
       puts msg
       exit 1
+    end
+
+    def mizuno?
+      begin
+        require 'mizuno'
+        'jruby -S mizuno'
+      rescue
+        msg =<<-EOF
+Could not find 'mizuno' on your system.  Please install it:
+  jruby -S gem install mizuno
+EOF
+        puts msg
+        exit 1
+      end
     end
   end
 end
@@ -240,10 +259,13 @@ namespace :rhosync do
   
   desc "Start rhosync server"
   task :start => :dtach_installed do
-    cmd = thin? || mongrel? || report_missing_server
+    cmd = (jruby?) ? mizuno? : (thin? || mongrel? || report_missing_server)
     if windows?
       puts 'Starting server in new window...'
       system("start cmd.exe /c #{cmd} config.ru")
+    elsif jruby?
+      puts 'Starting server in jruby environment...'
+      system("#{cmd} config.ru")
     else
       puts 'Detach with Ctrl+\  Re-attach with rake rhosync:attach'
       sleep 2

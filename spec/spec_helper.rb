@@ -121,21 +121,7 @@ module TestHelpers
     
   def validate_db_file(dbfile,sources,data)  
     if defined?(JRUBY_VERSION)      
-      db = DBI.connect("DBI:Jdbc:SQLite:#{dbfile}", nil, nil, 'driver' => 'org.sqlite.JDBC')
-      # log "!!!-------------!!!: validate_db_file: #{dbfile}" # TODO:
-      # db.select_all("select name from sqlite_master").each do |row|
-      #   log "#{  row[0]}"
-      #   next if row[0] =~ /index/
-      #   begin
-      #     db.select_all("select * from #{row[0]}").each do |tr|
-      #       log "    #{tr.inspect}"          
-      #     end
-      #     log ""
-      #   rescue 
-      #   end  
-      # end  
-      # p db.select_all("select name from sqlite_master")
-      # p db.execute("select name from sqlite_master")
+      db = DBI.connect("DBI:Jdbc:SQLite:#{dbfile}", nil, nil, 'driver' => 'org.sqlite.JDBC') #, 'AutoCommit' => false
     else    
       db = SQLite3::Database.new(dbfile)
     end

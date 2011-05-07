@@ -9,15 +9,17 @@ else
   require 'jdbc/sqlite3'
 
   # FIXME:
-  def execute_batch(dbh, batch)
-    batch.strip.split(';').each do |sth|
-      dbh.do(sth.strip)
-      # begin
-      #   dbh.do(sth)
-      # rescue  Exception => e
-      #   log "execute_batch: #{e.message}"
-      # end   
+  module SQLiteMethods
+    # jdbc/sqlite3 has no Database#execute_batch method
+    def execute_batch(batch)
+      batch.strip.split(';').each do |sth|
+        self.do(sth.strip)
+      end
     end
+    # jdbc/sqlite3 instead of 'close' uses disconnect
+    def close
+      self.disconnect
+    end   
   end
 end
 
@@ -90,21 +92,6 @@ module Rhosync
           qm << '?'
         end
         database.execute("CREATE TABLE #{source.name}(#{create_table.join(",")} );")
-        
-        # Insert each object as single row in fixed schema table
-        # log "$$$$$$$$$$$$: " + "insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})" if source.name == "FixedSchemaAdapter" 
-        # FIXME: !!! Should be something like
-        # database.prepare("insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})") do |stmt|
-        #   data.each do |obj,row|
-        #     args = [obj]
-        #     columns.each do |col|
-        #       args << row[col]
-        #     end
-        #     log "$$$$$$$$$$$$: args: #{args.inspect}"  
-        #     stmt.execute(args)
-        #   end
-        #   stmt.finish if defined?(JRUBY_VERSION)
-        # end
 
         #
         # TODO: Do not use prepare statements for JRuby/DBI/SQlite3
@@ -189,12 +176,12 @@ module Rhosync
       FileUtils.mkdir_p(File.dirname(bulk_data.dbfile))
 
       if defined?(JRUBY_VERSION) # FIXME:
-        db = DBI.connect("DBI:Jdbc:SQLite:#{bulk_data.dbfile}", nil, nil, 'driver' => 'org.sqlite.JDBC') 
-        execute_batch(db, File.open(schema,'r').read) # FIXME:
+        db = DBI.connect("DBI:Jdbc:SQLite:#{bulk_data.dbfile}", nil, nil, 'driver' => 'org.sqlite.JDBC') #, 'AutoCommit' => false
+        db.extend(SQLiteMethods) 
       else   
         db = SQLite3::Database.new(bulk_data.dbfile)
-        db.execute_batch(File.open(schema,'r').read)
       end      
+      db.execute_batch(File.open(schema,'r').read)
       
       src_counter = 1
       bulk_data.sources.members.sort.each do |source_name|
@@ -215,15 +202,9 @@ module Rhosync
       end
       populate_sources_table(db,sources_refs)
       
-      if defined?(JRUBY_VERSION) # FIXME:
-        execute_batch(db, File.open(index,'r').read)
-        execute_batch(db, "VACUUM;");
-        db.disconnect
-      else
-        db.execute_batch(File.open(index,'r').read)
-        db.execute_batch( "VACUUM;");
-        db.close
-      end
+      db.execute_batch(File.open(index,'r').read)
+      db.execute_batch("VACUUM;");
+      db.close
       
       compress("#{bulk_data.dbfile}.rzip",bulk_data.dbfile)
       gzip_compress("#{bulk_data.dbfile}.gzip",bulk_data.dbfile)

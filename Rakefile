@@ -38,7 +38,7 @@ begin
   RSpec::Core::RakeTask.new('spec:all') do |t|
     t.rspec_opts = ["-b", "-c", "-fd"]
     t.pattern = FileList[TYPES.values]
-    unless RUBY_VERSION =~ /1.9/ # FIXME: code coverage not working for Ruby 1.9 !!!
+    unless RUBY_VERSION =~ /1.9/ # FIXME: code coverage not working for Ruby 1.9 !!! Use CoverMe instead.
       t.rcov = true
       t.rcov_opts = ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*,json/*']    
     end

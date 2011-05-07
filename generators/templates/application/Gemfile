@@ -2,23 +2,27 @@ source 'http://rubygems.org'
 
 gem 'rhosync', '<%=gem_version%>'
 
-if defined?(JRUBY_VERSION)
+platforms :jruby do
   gem 'jdbc-sqlite3', :require => false
   gem 'dbi'
   gem 'dbd-jdbc', :require => 'dbd/Jdbc'
   gem 'jruby-openssl'
   gem 'jruby-rack'
   gem 'warbler'
-else
+end
+
+platforms :ruby do
   gem 'sqlite3'
 end
 
 group :development do
-  # By default to run application Mongrel web server is used
+  # By default to run application thin web server is used
+  gem 'thin', '1.2.11', :platforms => :ruby
+  # If you prefer you can use Mongrel web server instead of Thin
   # gem 'mongrel', '~> 1.1.5'
-  # If you prefer you can use Thin web server instead of Mongrel
-  # gem 'thin', '1.2.11'
-  gem 'thin', '1.2.11' unless defined?(JRUBY_VERSION)
+
+  # For jruby mizuno web server is used
+  gem 'mizuno',  :platforms => :jruby
 end
 
 group :test do

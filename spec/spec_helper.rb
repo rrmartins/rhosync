@@ -120,11 +120,7 @@ module TestHelpers
   end
     
   def validate_db_file(dbfile,sources,data)  
-    if defined?(JRUBY_VERSION)      
-      db = DBI.connect("DBI:Jdbc:SQLite:#{dbfile}", nil, nil, 'driver' => 'org.sqlite.JDBC') #, 'AutoCommit' => false
-    else    
-      db = SQLite3::Database.new(dbfile)
-    end
+    db = DBAdapter.instance.get_connection(dbfile)    
     sources.each do |source_name|
       s = Source.load(source_name,{:app_id => APP_NAME,:user_id => @u.login})
       return false unless validate_db_by_name(db,s,data[s.name])

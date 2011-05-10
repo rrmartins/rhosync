@@ -1,29 +1,6 @@
 require 'zip/zip'
 require 'zlib'
 
-unless defined?(JRUBY_VERSION)
-  require 'sqlite3'
-else
-  require 'dbi'
-  require 'dbd/jdbc'
-  require 'jdbc/sqlite3'
-
-  # FIXME:
-  module SQLiteMethods
-    # jdbc/sqlite3 has no Database#execute_batch method
-    def execute_batch(batch)
-      batch.strip.split(';').each do |sth|
-        self.do(sth.strip)
-      end
-    end
-    
-    # jdbc/sqlite3 instead of 'close' uses disconnect
-    def close
-      self.disconnect
-    end
-  end
-end
-
 module Rhosync
   module BulkDataJob
     @queue = :bulk_data
@@ -59,7 +36,6 @@ module Rhosync
     def self.import_data_to_object_values(db,source)
       data = source.get_data(:md)
       counter = {}
-      db['AutoCommit'] = false if defined?(JRUBY_VERSION)
       db.transaction do |database|
         database.prepare("insert into object_values 
           (source_id,attrib,object,value) values (?,?,?,?)") do |stmt|
@@ -71,7 +47,6 @@ module Rhosync
           end
         end
       end
-      db['AutoCommit'] = true if defined?(JRUBY_VERSION)
       counter
     end
     
@@ -83,7 +58,6 @@ module Rhosync
       create_table = ["\"object\" varchar(255) PRIMARY KEY"]
       schema = JSON.parse(source.schema)
       
-      db['AutoCommit'] = false if defined?(JRUBY_VERSION) # FIXME:
       db.transaction do |database|
         # Create a table with columns specified by 'property' array in settings
         schema['property'].each do |key,value|
@@ -125,7 +99,6 @@ module Rhosync
           database.execute("CREATE UNIQUE INDEX #{key} on #{source.name} (#{val2});")
         end if schema['unique_index']
       end
-      db['AutoCommit'] = true if defined?(JRUBY_VERSION) # FIXME:
     
       return {}
     end
@@ -139,7 +112,6 @@ module Rhosync
     end
     
     def self.populate_sources_table(db,sources_refs) 
-      db['AutoCommit'] = false if defined?(JRUBY_VERSION)
       db.transaction do |database|
         database.prepare("insert into sources
           (source_id,name,sync_priority,partition,sync_type,source_attribs,metadata,schema,blob_attribs,associations) 
@@ -151,7 +123,6 @@ module Rhosync
           end
         end
       end
-      db['AutoCommit'] = true if defined?(JRUBY_VERSION)          
     end  
     
     def self.create_sqlite_data_file(bulk_data,ts)
@@ -159,12 +130,7 @@ module Rhosync
       schema,index,bulk_data.dbfile = get_file_args(bulk_data.name,ts)
       FileUtils.mkdir_p(File.dirname(bulk_data.dbfile))
 
-      if defined?(JRUBY_VERSION) # FIXME:
-        db = DBI.connect("DBI:Jdbc:SQLite:#{bulk_data.dbfile}", nil, nil, 'driver' => 'org.sqlite.JDBC') #, 'AutoCommit' => false
-        db.extend(SQLiteMethods) 
-      else   
-        db = SQLite3::Database.new(bulk_data.dbfile)
-      end      
+      db = DBAdapter.instance.get_connection(bulk_data.dbfile)    
       db.execute_batch(File.open(schema,'r').read)
       
       src_counter = 1

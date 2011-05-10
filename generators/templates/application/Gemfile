@@ -18,8 +18,6 @@ end
 group :development do
   # By default to run application thin web server is used
   gem 'thin', '1.2.11', :platforms => :ruby
-  # If you prefer you can use Mongrel web server instead of Thin
-  # gem 'mongrel', '~> 1.1.5'
 
   # For jruby mizuno web server is used
   gem 'mizuno',  :platforms => :jruby

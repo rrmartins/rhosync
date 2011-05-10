@@ -16,10 +16,11 @@ else
         self.do(sth.strip)
       end
     end
+    
     # jdbc/sqlite3 instead of 'close' uses disconnect
     def close
       self.disconnect
-    end   
+    end
   end
 end
 
@@ -58,7 +59,7 @@ module Rhosync
     def self.import_data_to_object_values(db,source)
       data = source.get_data(:md)
       counter = {}
-      db['AutoCommit'] = false if defined?(JRUBY_VERSION) # FIXME:
+      db['AutoCommit'] = false if defined?(JRUBY_VERSION)
       db.transaction do |database|
         database.prepare("insert into object_values 
           (source_id,attrib,object,value) values (?,?,?,?)") do |stmt|
@@ -68,10 +69,9 @@ module Rhosync
               stmt.execute(source.source_id.to_i,attrib,object_id,value)
             end
           end
-          stmt.finish if defined?(JRUBY_VERSION) # FIXME:
         end
       end
-      db['AutoCommit'] = true if defined?(JRUBY_VERSION) # FIXME:
+      db['AutoCommit'] = true if defined?(JRUBY_VERSION)
       counter
     end
     
@@ -93,28 +93,13 @@ module Rhosync
         end
         database.execute("CREATE TABLE #{source.name}(#{create_table.join(",")} );")
 
-        #
-        # TODO: Do not use prepare statements for JRuby/DBI/SQlite3
-        #
-        if defined?(JRUBY_VERSION) # FIXME: bug workaround !!!
-          query = "insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})".gsub('?',"'%s'")
+        database.prepare("insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})") do |stmt|
           data.each do |obj,row|
             args = [obj]
-            columns.each do |col|
-              args << row[col]
-            end
-            sth = (query % args).gsub(/''/, "NULL")  
-            db.execute(sth)
-          end
-        else
-          database.prepare("insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})") do |stmt|
-            data.each do |obj,row|
-              args = [obj]
-              columns.each do |col|
-                args << row[col]
-              end
-              stmt.execute(args)
-            end
+            columns.each { |col| args << row[col] }
+            # FIXME: The * is used to expand an array into individual arguments for 'execute' method.
+            # JRuby (1.6.0) won't work without asterisk, but MRI and 1.9.2 are both doing well! 
+            stmt.execute(*args) # FIXME: !!! 
           end
         end
         
@@ -154,7 +139,7 @@ module Rhosync
     end
     
     def self.populate_sources_table(db,sources_refs) 
-      db['AutoCommit'] = false if defined?(JRUBY_VERSION) # FIXME:
+      db['AutoCommit'] = false if defined?(JRUBY_VERSION)
       db.transaction do |database|
         database.prepare("insert into sources
           (source_id,name,sync_priority,partition,sync_type,source_attribs,metadata,schema,blob_attribs,associations) 
@@ -164,10 +149,9 @@ module Rhosync
             stmt.execute(s.source_id,s.name,s.priority,s.partition_type,
               s.sync_type,refs_to_s(ref[:refs]),s.get_value(:metadata),s.schema,s.blob_attribs,s.has_many)
           end
-          stmt.finish if defined?(JRUBY_VERSION) # FIXME:           
         end
       end
-      db['AutoCommit'] = true if defined?(JRUBY_VERSION) # FIXME:
+      db['AutoCommit'] = true if defined?(JRUBY_VERSION)          
     end  
     
     def self.create_sqlite_data_file(bulk_data,ts)

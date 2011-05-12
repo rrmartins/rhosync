@@ -28,6 +28,7 @@ GEM
     highline (1.6.1)
     i18n (0.5.0)
     jdbc-sqlite3 (3.6.14.2.056-java)
+    jetty-rackup (0.2.0)
     jruby-jars (1.6.1)
     jruby-openssl (0.7.4)
       bouncy-castle-java
@@ -88,6 +89,7 @@ DEPENDENCIES
   dbi
   faker (>= 0.3.1)
   jdbc-sqlite3
+  jetty-rackup
   jruby-openssl
   jruby-rack
   rack-test (>= 0.5.3)

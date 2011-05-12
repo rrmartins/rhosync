@@ -19,8 +19,10 @@ group :development do
   # By default to run application thin web server is used
   gem 'thin', '1.2.11', :platforms => :ruby
 
-  # For jruby mizuno web server is used
-  gem 'mizuno',  :platforms => :jruby
+  # For jruby jetty-rackup web server is used
+  gem 'jetty-rackup',  :platforms => :jruby
+  # Alternative for jruby
+  # gem 'mizuno',  :platforms => :jruby
 end
 
 group :test do

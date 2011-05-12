@@ -10,27 +10,28 @@ module Bench
     end
     
     def test(concurrency,iterations,&block)
-      thread_id = 0
+      thread_id = -1
       total_time = time do
         concurrency.times do
           sleep rand(2)
           thread = Thread.new(block) do |t|
-            tid, iteration = thread_id,0
+            thread_id += 1
+            tid, iteration = thread_id, 0
             iterations.times do
               s = Session.new(tid,iteration)
               @sessions << s
               begin
-                yield Bench,s
+                yield Bench, s
               rescue Exception => e
                 puts "error running script: #{e.inspect}"
-              end    
+              end
               iteration += 1
             end
           end
-          thread_id += 1    
+
           threads << thread
         end
-        begin 
+        begin
           threads.each { |t| t.join }
         rescue RestClient::RequestTimeout => e
           bench_log "Request timed out #{e}"
@@ -38,7 +39,6 @@ module Bench
       end
       Bench.sessions = @sessions
       Bench.total_time = total_time
-    end    
+    end
   end
-end  
-  
+end

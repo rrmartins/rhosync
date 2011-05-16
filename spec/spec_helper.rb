@@ -3,6 +3,7 @@ require 'webmock/rspec'
 require 'rspec'
 require 'rhosync'
 include Rhosync
+ENV['RACK_ENV'] = 'test'
 
 ERROR = '0_broken_object_id' unless defined? ERROR
 
@@ -151,7 +152,7 @@ module TestHelpers
       schema['property'].each do |key,value|
         columns << key
       end
-      db.execute("select #{columns.join(',')} from #{s.name}") do |row|
+      db.execute("select #{columns.join(',')} from #{s.name}").each do |row|
         obj = data[row[0]]
         columns.each_index do |i|
           next if i == 0

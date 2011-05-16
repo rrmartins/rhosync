@@ -102,11 +102,9 @@ shared_examples_for "ApiHelper" do
     Rhosync.bootstrap(get_testapp_path) do |rhosync|
       rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')
     end
-    Rhosync::Server.set( 
-      :environment => :test,
-      :run => false,
-      :secret => "secure!"
-    )
+    Rhosync::Server.set :environment, :test
+    Rhosync::Server.set :run, false
+    Rhosync::Server.set :secret, "secure!"
     @api_token = User.load('rhoadmin').token_id
 
     @a_fields = { :name => test_app_name }

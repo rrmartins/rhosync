@@ -12,10 +12,6 @@
     
 :development:
   :licensefile: settings/license.key
-  :iphonecertfile: settings/apple_fake_cert.pem
-  :iphonepassphrase: certpassword
-  :iphoneserver: gateway.sandbox.push.apple.com
-  :iphoneport: 2195
   :bulk_sync_poll_interval: 3600
   :redis: localhost:6379
   :syncserver: http://localhost:9292/application/
@@ -23,6 +19,10 @@
   :api_token: b6f22608fa8b4acf84e844808845e2fe
 :test: 
   :licensefile: settings/license.key
+  :iphonecertfile: settings/apple_fake_cert.pem
+  :iphonepassphrase: certpassword
+  :iphoneserver: gateway.sandbox.push.apple.com
+  :iphoneport: 2195  
   :bulk_sync_poll_interval: 3600
   :redis: localhost:6379
   :syncserver: http://localhost:9292/application/

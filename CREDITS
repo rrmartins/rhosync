@@ -15,9 +15,6 @@ RhoSync uses following other projects:
  sqlite3-ruby 1.2.5 (http://github.com/luislavena/sqlite3-ruby)
  License: MIT-like (https://github.com/luislavena/sqlite3-ruby/blob/master/LICENSE)
 
- log4r 1.1.7 (http://log4r.rubyforge.org/)
- License: GNU LGPLv3 (http://log4r.rubyforge.org/license.html)
-
  uuidtools 2.1.1 (https://github.com/sporkmonger/uuidtools/)
  License: MIT-like (https://github.com/sporkmonger/uuidtools/blob/master/LICENSE)
 

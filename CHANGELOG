@@ -8,7 +8,10 @@
 * #11904353 - fixed broken 'rake console' task, added new 'rhosync' namespace: 'rake rhosync:console'  
 * #12105115 - removed unnecessary log4r dependency
 * added bundler to manage gem's dependencies, migrated from rspec1 to rspec2  
-* #5687948 - fixed issue "iPhone push specs failed" 						
+* #5687948 - fixed issue "iPhone push specs failed"
+* #12854737 - string vs. symbol problem in ruby 1.9 model.rb (contribute to ruby 1.9 support)
+* #11692191 - ruby 1.9 support
+* #2020980 - Test on JRuby. Code reworked to fully support JRuby platform.
 
 ## 2.1.3 (2011-05-05)
 * #4398193 - ping should only send push messages to unique device pin list

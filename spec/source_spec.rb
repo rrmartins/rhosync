@@ -16,8 +16,8 @@ describe "Source" do
     @s.cud_queue.should be_nil
     @s.app_id.should == @s_params[:app_id]
     @s.user_id.should == @s_params[:user_id]
-    @s.sync_type.should == :incremental
-    @s.partition_type.should == :user
+    @s.sync_type.should == 'incremental'
+    @s.partition_type.should == 'user'
     @s.poll_interval.should == 300
   
     @s1 = Source.load(@s.id,@s_params)

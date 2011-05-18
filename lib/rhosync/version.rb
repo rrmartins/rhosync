@@ -1,3 +1,3 @@
 module Rhosync
-  VERSION = '2.1.3'
+  VERSION = '2.1.4'
 end

@@ -8,3 +8,6 @@ log
 doc/protocol.html
 /vendor
 *.rdb
+*.bak
+.buildpath
+.project

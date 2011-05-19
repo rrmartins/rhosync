@@ -19,6 +19,7 @@ describe "Source" do
     @s.sync_type.should == 'incremental'
     @s.partition_type.should == 'user'
     @s.poll_interval.should == 300
+#    puts "#{@s.inspect()}" # FIXME:
   
     @s1 = Source.load(@s.id,@s_params)
     @s1.name.should == @s_fields[:name]
@@ -30,6 +31,7 @@ describe "Source" do
     @s1.poll_interval.should == 300
     @s1.app_id.should == @s_params[:app_id]
     @s1.user_id.should == @s_params[:user_id]
+#    puts "#{@s1.inspect()}" # FIXME:
   end
   
   it "should create source with user" do
@@ -39,6 +41,17 @@ describe "Source" do
   it "should create source with app and document" do
     @s.app.name.should == @a_fields[:name]
     @s.docname(:md).should == "source:#{@s.app.id}:#{@u.id}:#{@s_fields[:name]}:md"
+  end
+  
+  it 'should return values that set by setter method' do
+    @s.login = "shurab"
+    @s.login.should == "shurab"
+    @s.poll_interval = 350
+    @s.poll_interval.should == 350
+    @s.poll_interval = nil
+    @s.poll_interval.should == nil
+    @s.url = nil
+    @s.url.should be_nil  
   end
     
   it "should delete source" do
@@ -70,6 +83,7 @@ describe "Source" do
     @s_fields[:cud_queue] = :cud
     Source.create(@s_fields,@s_params)
     s = Source.load(@s_fields[:name],@s_params)
+#    puts "#{s.inspect()}" # FIXME:
     s.queue.should == 'default'
     s.query_queue.should == 'query'
     s.cud_queue.should == 'cud'

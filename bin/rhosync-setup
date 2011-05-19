@@ -1,0 +1,82 @@
+# TODO: This is not production ready!
+
+# 1. install packages
+yes | apt-get update
+yes | apt-get install build-essential libopenssl-ruby 
+yes | apt-get install libcurl4-openssl-dev
+yes | apt-get install apache2-prefork-dev apache2-mpm-prefork
+yes | apt-get install rubygems
+gem install rhosync SystemTimer --no-ri --no-rdoc
+gem install passenger --no-ri --no-rdoc
+yes | /var/lib/gems/1.8/bin/passenger-install-apache2-module
+
+# 2. load passenger
+echo "
+LoadModule passenger_module /var/lib/gems/1.8/gems/passenger-3.0.7/ext/apache2/mod_passenger.so
+PassengerRoot /var/lib/gems/1.8/gems/passenger-3.0.7
+PassengerRuby /usr/bin/ruby1.8
+" > /etc/apache2/mods-available/passenger.load
+
+a2enmod passenger
+/etc/init.d/apache2 restart
+
+# 3. create rhosync app
+cd /var/www/
+/var/lib/gems/1.8/bin/rhosync app rhosyncapp1
+cd rhosyncapp1/
+mkdir public
+chown -R www-data:www-data /var/www/rhosyncapp1
+touch /etc/apache2/sites-available/rhosyncapp1
+echo "
+<VirtualHost *:80>
+   ServerName $1
+   DocumentRoot /var/www/rhosyncapp1/public
+   <Directory /var/www/rhosyncapp1/public>
+      AllowOverride all
+      Options -MultiViews
+   </Directory>
+</VirtualHost>
+" > /etc/apache2/sites-available/rhosyncapp1
+
+# 4. enable rhosync app
+a2ensite rhosyncapp1
+/etc/init.d/apache2 reload
+
+# 5. install redis and init service
+cd /root/
+wget http://redis.googlecode.com/files/redis-2.2.5.tar.gz
+tar -xzf redis-2.2.5.tar.gz 
+cd redis-2.2.5/src/
+make; make install
+mkdir /usr/local/etc/redis
+mkdir /usr/local/redis
+
+
+wget https://gist.github.com/raw/947446/5c4b6325f892e9da477715e4935f081497957cd7/redis
+wget https://gist.github.com/raw/947485/b179e16045be76a554e2073f9c8d3dcfd073a11d/redis.conf
+adduser --system --no-create-home --disabled-login --disabled-password --group redis
+mv redis /etc/init.d/redis
+chmod +x /etc/init.d/redis
+mv redis.conf /usr/local/etc/redis/
+chown -R redis:redis /usr/local/etc/redis
+chown -R redis:redis /usr/local/redis
+
+touch /var/log/redis.log
+chown redis:redis /var/log/redis.log
+update-rc.d -f redis defaults
+
+/etc/init.d/redis start
+
+cd /root/
+rm -rf redis-*
+
+# 6. setup resque
+wget https://gist.github.com/raw/947510/78a36272f92aa0c67a120a36fd69ea600159676a/resque
+mv resque /etc/init.d/resque
+chmod +x /etc/init.d/resque
+
+touch /var/log/resque.log
+chown www-data:www-data /var/log/resque.log
+update-rc.d -f resque defaults
+
+/etc/init.d/resque start

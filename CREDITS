@@ -3,7 +3,7 @@ RhoSync uses following other projects:
  Ruby language 1.8.7 (http://www.ruby-lang.org/en/downloads/)
  License: GPL or Ruby own license (http://www.ruby-lang.org/en/about/license.txt)
 
- Redis 1.2.6 or 2.2.2 (http://redis.io)
+ Redis 2.2.x (http://redis.io)
  License: BSD (https://github.com/antirez/redis/blob/master/COPYING)
 
  Resque 1.13.0 (https://github.com/defunkt/resque)
@@ -14,9 +14,6 @@ RhoSync uses following other projects:
 
  sqlite3-ruby 1.2.5 (http://github.com/luislavena/sqlite3-ruby)
  License: MIT-like (https://github.com/luislavena/sqlite3-ruby/blob/master/LICENSE)
-
- log4r 1.1.7 (http://log4r.rubyforge.org/)
- License: GNU LGPLv3 (http://log4r.rubyforge.org/license.html)
 
  uuidtools 2.1.1 (https://github.com/sporkmonger/uuidtools/)
  License: MIT-like (https://github.com/sporkmonger/uuidtools/blob/master/LICENSE)

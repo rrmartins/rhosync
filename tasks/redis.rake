@@ -7,7 +7,7 @@ def windows?
 end
 
 if windows?
-	$redis_ver = "redis-2.2.2"
+	$redis_ver = "redis-2.2.6"
 	$redis_zip = "C:/#{$redis_ver}.zip"
 	$redis_dest = "C:/"
 end
@@ -80,7 +80,7 @@ namespace :redis do
 
   desc 'About redis'
   task :about do
-    puts "\nSee http://code.google.com/p/redis/ for information about redis.\n\n"
+    puts "\nSee http://redis.io/ for information about redis.\n\n"
   end
 
   desc 'Start redis'
@@ -161,7 +161,7 @@ namespace :redis do
     else
       sh 'rm -rf /tmp/redis/' if File.exists?("#{RedisRunner.redisdir}")
       sh 'git clone git://github.com/antirez/redis.git /tmp/redis -n'
-      sh "cd #{RedisRunner.redisdir} && git reset --hard && git checkout 2.2.2"
+      sh "cd #{RedisRunner.redisdir} && git reset --hard && git checkout 2.2.6"
     end
   end
 

@@ -48,6 +48,15 @@ describe "User" do
       token.should == Rhosync.api_token
       ApiToken.is_exist?(token).should == true
     end
+    
+    it "should delete token if one exists" do
+      token = @u.create_token
+      token.should == Rhosync.api_token
+      ApiToken.is_exist?(token).should == true
+      token = @u.create_token
+      ApiToken.is_exist?(token).should == true
+      @u.delete
+    end
 
     it "should assign token to existing user" do
       token = @u.create_token

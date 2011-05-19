@@ -31,17 +31,14 @@ module Rhosync
     end
     
     def create(create_hash,blob=nil)
-      puts "inside create1"
       send_objects('create',@source.name, @partition, create_hash)
     end
     
     def update(update_hash)
-      puts "inside update"
       send_objects('update',@source.name, @partition, update_hash)
     end
     
     def delete(delete_hash)
-      puts "inside delete"
       send_objects('delete',@source.name, @partition, delete_hash)
     end
     

@@ -4,16 +4,15 @@ require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 describe "ClientSync" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
-    it "should raise Argument error if no client or source is provided" do
+    it "should raise Argument error if no client is provided" do
       lambda { ClientSync.new(@s,nil,2) }.should raise_error(ArgumentError,'Unknown client')
-      lambda { ClientSync.new(nil,@c,2) }.should raise_error(ArgumentError,'Unknown source')
     end
 
    it "should handle receive cud for dymanic adapter" do
         params = {'create'=>{'1'=>@product1}}
         @c.source_name = 'Product2'
         @cs1 = ClientSync.new(@s2,@c,2)
-      
+        stub_request(:post, "http://test.rhosync.com/rhosync/create").with(:headers => {'Content-Type' => 'application/json'}).to_return(:body => {:id => 5})
         @cs1.receive_cud(params)
         verify_result(@cs1.client.docname(:create) => {},
           @cs1.client.docname(:update) => {},
@@ -21,7 +20,7 @@ describe "ClientSync" do
       #end
     end
     
-    it "should handle send cud for dymanic adapter" do
+    it "should handle send cud for dynamic adapter" do
       data = {'1'=>@product1}
       expected = {'insert'=>data} 
       stub_request(:post, "http://test.rhosync.com/rhosync/query").with(:headers => {'Content-Type' => 'application/json'}).to_return(:status => 200, :body => data.to_json)

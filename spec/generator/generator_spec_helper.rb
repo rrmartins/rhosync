@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'rspec'
 require 'templater/spec/helpers'
 require 'rhosync'
 require File.join(File.dirname(__FILE__),'..','..','generators','rhosync')

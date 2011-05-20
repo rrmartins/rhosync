@@ -12,12 +12,12 @@ module Rhosync
       @uri = uri || Rhosync.appserver
       @partition = partition
       
-      raise ArgumentError.new("Please provide a :uri or set RHOSYNC_URL") unless @uri
+      raise Exception.new("Please provide a :uri or set RHOSYNC_URL") unless @uri
       @uri = URI.parse(@uri)
-
+      
       @token = Rhosync.api_token || @uri.user
       @uri.user = nil; @uri = @uri.to_s      
-      raise ArgumentError.new("Please provide a :token or set it in uri") unless @token
+      raise Exception.new("Please provide a :token or set it in uri") unless @token
       super(source)
     end
     

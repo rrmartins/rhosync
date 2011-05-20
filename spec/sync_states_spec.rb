@@ -5,6 +5,7 @@ describe "Sync Server States" do
   it_should_behave_like "SourceAdapterHelper"
   
   before(:each) do    
+    @s = Source.load(@s_fields[:name],@s_params)
     @cs = ClientSync.new(@s,@c,2)
   end
   

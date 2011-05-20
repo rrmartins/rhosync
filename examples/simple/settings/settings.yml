@@ -2,7 +2,7 @@
   SimpleAdapter:
     :poll_interval: 300
   SampleAdapter:
-    :partition_type: app    
+    #:partition_type: app    
     :poll_interval: 500
 
 :development:

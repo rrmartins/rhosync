@@ -91,15 +91,11 @@ module Rhosync
         app = App.create(:name => app_name)
       end
       sources = config[:sources] || []
+      Source.delete_all
       sources.each do |source_name,fields|
         check_for_schema_field!(fields)
-        if Source.is_exist?(source_name)
-          s = Source.load(source_name,{:app_id => app.name,:user_id => '*'})
-          s.update(fields)
-        else  
-          fields[:name] = source_name
-          Source.create(fields,{:app_id => app.name})
-        end
+        fields[:name] = source_name
+        Source.create(fields,{:app_id => app.name})
         unless app.sources.members.include?(source_name)
           app.sources << source_name
         end

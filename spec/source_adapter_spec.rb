@@ -16,6 +16,7 @@ describe "SourceAdapter" do
   it_should_behave_like "SourceAdapterHelper"
   
   before(:each) do
+    @s = Source.load(@s_fields[:name],@s_params)
     @s.name = 'SimpleAdapter'
     @sa = SourceAdapter.create(@s,nil)
   end
@@ -37,6 +38,7 @@ describe "SourceAdapter" do
     @s_fields[:name] = 'Broken'
     broken_source = Source.create(@s_fields,@s_params)
     lambda { SourceAdapter.create(broken_source) }.should raise_error(Exception)
+    broken_source.delete
   end
   
   it "should create SourceAdapter with trailing spaces" do

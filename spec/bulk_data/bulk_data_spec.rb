@@ -4,6 +4,10 @@ describe "BulkData" do
   it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
+  before(:each) do
+    @s = Source.load(@s_fields[:name],@s_params)
+  end
+  
   after(:each) do
     delete_data_directory
   end

@@ -5,6 +5,7 @@ describe "SourceSync" do
   it_should_behave_like "SourceAdapterHelper"
   
   before(:each) do
+    @s = Source.load(@s_fields[:name],@s_params)
     @ss = SourceSync.new(@s)
   end
   
@@ -51,7 +52,7 @@ describe "SourceSync" do
     @ss.process_query
     verify_result(@s.docname(:md) => expected)    
   end
-
+  
   it "should never call read on any call of process" do
     @s.poll_interval = -1
     Store.put_data('test_db_storage',{'1'=>@product1})
@@ -207,7 +208,7 @@ describe "SourceSync" do
     
     describe "app-level partitioning" do
       it "should create app-level masterdoc with '__shared__' docname" do
-        @s1 = Source.load(@s_fields[:name],@s_params)
+        @s1 = Source.load(@s_fields[:name],{:user_id => "testuser",:app_id => @a.id})
         @s1.partition = :app
         @ss1 = SourceSync.new(@s1)
         expected = {'1'=>@product1,'2'=>@product2}

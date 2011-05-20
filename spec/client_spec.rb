@@ -7,6 +7,10 @@ describe "Client" do
   it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
+  before(:each) do
+    @s = Source.load(@s_fields[:name],@s_params)
+  end
+  
   it "should create client with fields" do
     @c.id.length.should == 32
     @c.device_type.should == @c_fields[:device_type]

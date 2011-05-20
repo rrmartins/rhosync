@@ -10,6 +10,7 @@ describe "ClientSync" do
   end
   
   before(:each) do
+    @s = Source.load(@s_fields[:name],@s_params)
     @cs = ClientSync.new(@s,@c,2)
   end
   
@@ -341,7 +342,7 @@ describe "ClientSync" do
       token1.should be_nil
       Store.get_data(@c.docname(:search)).should == {}
     end
-    
+     
   end
   
   describe "page methods" do
@@ -354,40 +355,40 @@ describe "ClientSync" do
       Store.get_value(@cs.client.docname(:cd_size)).to_i.should == 0
       Store.get_data(@cs.client.docname(:page)).should == @expected      
     end
-
+  
     it "appends diff to the client document" do
       @cd = {'3'=>@product3}  
       Store.put_data(@c.docname(:cd),@cd)
       Store.get_data(@c.docname(:cd)).should == @cd
-
+  
       @page = {'1'=>@product1,'2'=>@product2}
       @expected = {'1'=>@product1,'2'=>@product2,'3'=>@product3}
-
+  
       Store.put_data(@c.docname(:cd),@page,true).should == true
       Store.get_data(@c.docname(:cd)).should == @expected
     end
-
+  
     it "should return deleted objects in the client document" do
       Store.put_data(@s.docname(:md),@data).should == true
       Store.get_data(@s.docname(:md)).should == @data
-
+  
       @cd = {'1'=>@product1,'2'=>@product2,'3'=>@product3,'4'=>@product4}  
       Store.put_data(@cs.client.docname(:cd),@cd)
       Store.get_data(@cs.client.docname(:cd)).should == @cd
-
+  
       @expected = {'4'=>@product4}
       @cs.compute_deleted_page.should == @expected
       Store.get_data(@cs.client.docname(:delete_page)).should == @expected
     end  
-
+  
     it "should delete objects from client document" do
       Store.put_data(@s.docname(:md),@data).should == true
       Store.get_data(@s.docname(:md)).should == @data
-
+  
       @cd = {'1'=>@product1,'2'=>@product2,'3'=>@product3,'4'=>@product4}  
       Store.put_data(@cs.client.docname(:cd),@cd)
       Store.get_data(@cs.client.docname(:cd)).should == @cd
-
+  
       Store.delete_data(@cs.client.docname(:cd),@cs.compute_deleted_page).should == true
       Store.get_data(@cs.client.docname(:cd)).should == @data 
     end

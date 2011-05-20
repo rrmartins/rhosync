@@ -4,6 +4,10 @@ describe "SourceJob" do
   it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
+  before(:each) do
+    @s = Source.load(@s_fields[:name],@s_params)
+  end
+  
   it "should perform process_query" do
     set_state('test_db_storage' => @data)  
     SourceJob.perform('query',@s.id,@s.app_id,@s.user_id,nil,nil)

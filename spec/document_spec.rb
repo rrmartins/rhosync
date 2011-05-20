@@ -4,6 +4,10 @@ describe "Document" do
   it_should_behave_like "SpecBootstrapHelper"
   it_should_behave_like "SourceAdapterHelper"
   
+  before(:each) do
+    @s = Source.load(@s_fields[:name],@s_params)
+  end
+  
   it "should generate client docname" do
     @c.docname(:foo).should == "client:#{@a.id}:#{@u.id}:#{@c.id}:#{@s_fields[:name]}:foo"
   end

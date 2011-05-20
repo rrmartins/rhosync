@@ -1,21 +1,31 @@
 module Rhosync
   class Source < Model
-    field :source_id,:integer
-    field :name,:string
-    field :url,:string
-    field :login,:string
-    field :password,:string
-    field :priority,:integer
-    field :callback_url,:string
-    field :poll_interval,:integer
-    field :partition_type,:string
-    field :sync_type,:string
-    field :belongs_to,:string
-    field :has_many,:string
-    field :queue,:string
-    field :query_queue,:string
-    field :cud_queue,:string
-    field :pass_through,:string
+    field :test_id,:string # FIXME: dummy field
+    @@source_data = {}
+    
+    [:name, :url, :login, :password, :callback_url, :partition_type, :sync_type, 
+      :queue, :query_queue, :cud_queue, :belongs_to, :has_many].each do |attrib|
+      define_method("#{attrib}=") do |value|
+        return @@source_data[id.to_sym][attrib.to_sym] = value if @@source_data[id.to_sym]
+        instance_variable_set(:"@#{attrib}", value)
+      end
+      define_method("#{attrib}") do
+        return @@source_data[id.to_sym][attrib.to_sym] if @@source_data[id.to_sym]
+        instance_variable_get(:"@#{attrib}")
+      end
+    end
+
+    [:source_id, :priority, :poll_interval].each do |attrib|
+       define_method("#{attrib}=") do |value|
+         return @@source_data[id.to_sym][attrib.to_sym] = value.to_i if id && @@source_data[id.to_sym]
+         instance_variable_set(:"@#{attrib}", value.to_i)
+       end
+      define_method("#{attrib}") do
+        return @@source_data[id.to_sym][attrib.to_sym] if id && @@source_data[id.to_sym]
+        instance_variable_get(:"@#{attrib}")
+      end
+     end
+          
     attr_accessor :app_id, :user_id
     validates_presence_of :name #, :source_id
     
@@ -36,15 +46,30 @@ module Rhosync
         
     def self.create(fields,params)
       fields = fields.with_indifferent_access # so we can access hash keys as symbols
-      # validate_attributes(params)
       fields[:id] = fields[:name]
       set_defaults(fields)
-      super(fields,params)
+      obj = super(fields,params)  # FIXME:      
+      h = {}
+      fields.each do |name,value|
+        if obj.respond_to?(name)
+          h[name.to_sym] = value  
+        end
+      end
+      @@source_data[obj.id.to_sym] = h
+      obj      
     end
     
     def self.load(id,params)
       validate_attributes(params)
-      super(id,params)
+      obj = super(id,params)
+      if obj
+        if @@source_data[obj.id.to_sym]
+          @@source_data[obj.id.to_sym].each do |k,v|
+            obj.send "#{k.to_s}=".to_sym, v.to_s          
+          end
+        end  
+      end
+      obj
     end
     
     def self.update_associations(sources)
@@ -59,7 +84,8 @@ module Rhosync
               attrib = entry.keys[0]
               model = entry[attrib]
               owner = Source.load(model, params)
-              owner.has_many = owner.has_many.length > 0 ? owner.has_many+',' : ''
+              owner.has_many ||= ''
+              owner.has_many = owner.has_many+',' if owner.has_many.length > 0
               owner.has_many += [source,attrib].join(',')
             end
           else
@@ -116,8 +142,10 @@ module Rhosync
     end
     
     def delete
+      ref_to_data = id.to_sym
       flash_data('*')
       super
+      @@source_data[ref_to_data] = nil if ref_to_data
     end
     
     def partition
@@ -144,10 +172,6 @@ module Rhosync
         check
       end
       yield client_id,params if need_refresh
-    end
-        
-    def is_pass_through?
-      self.pass_through and self.pass_through == 'true'
     end
           
     private

@@ -59,14 +59,15 @@ module Rhosync
       res
     end
 
-    def update(attribs)
-      self.class.fields.each do |field|
-        if field[:name] != 'name' and field[:name] != 'rho__id'
-          redis.del field_key(field[:name]) 
-        end  
-      end    
-      self.class.populate_attributes(self,attribs)
-    end
+    # TODO: not used anymore
+    # def update(attribs)
+    #   self.class.fields.each do |field|
+    #     if field[:name] != 'name' and field[:name] != 'rho__id'
+    #       redis.del field_key(field[:name]) 
+    #     end  
+    #   end    
+    #   self.class.populate_attributes(self,attribs)
+    # end
       
   protected
     def prefix #:nodoc:

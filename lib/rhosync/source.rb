@@ -226,18 +226,5 @@ module Rhosync
       raise ArgumentError.new('Missing required attribute user_id') unless params[:user_id]
       raise ArgumentError.new('Missing required attribute app_id') unless params[:app_id]
     end
-      
-    def source_exist?
-      @@model_data[rho__id.to_sym];
-    end  
-
-    def source_get(attr_name)
-      @@model_data[rho__id.to_sym][attr_name.to_sym]
-    end
-    
-    def source_set(attr_name, value)
-      @@model_data[rho__id.to_sym][attr_name.to_sym] = value
-    end
-
   end
 end

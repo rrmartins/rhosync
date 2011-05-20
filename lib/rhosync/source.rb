@@ -1,30 +1,31 @@
 module Rhosync
   class Source < Model
     field :test_id,:string # FIXME: dummy field
-    @@source_data = {}
-    
+#    attr_accessor :rho__id
+            
     [:name, :url, :login, :password, :callback_url, :partition_type, :sync_type, 
       :queue, :query_queue, :cud_queue, :belongs_to, :has_many].each do |attrib|
       define_method("#{attrib}=") do |value|
-        return @@source_data[id.to_sym][attrib.to_sym] = value if @@source_data[id.to_sym]
+        return source_set(attrib, value) if source_exist?
         instance_variable_set(:"@#{attrib}", value)
       end
       define_method("#{attrib}") do
-        return @@source_data[id.to_sym][attrib.to_sym] if @@source_data[id.to_sym]
+        return source_get(attrib)  if source_exist?
         instance_variable_get(:"@#{attrib}")
       end
     end
 
     [:source_id, :priority, :poll_interval].each do |attrib|
-       define_method("#{attrib}=") do |value|
-         return @@source_data[id.to_sym][attrib.to_sym] = value.to_i if id && @@source_data[id.to_sym]
-         instance_variable_set(:"@#{attrib}", value.to_i)
-       end
+      define_method("#{attrib}=") do |value|
+        value = (value.nil?) ? nil : value.to_i 
+        return source_set(attrib, value) if source_exist?
+        instance_variable_set(:"@#{attrib}", value)
+      end
       define_method("#{attrib}") do
-        return @@source_data[id.to_sym][attrib.to_sym] if id && @@source_data[id.to_sym]
+        return source_get(attrib)  if source_exist?
         instance_variable_get(:"@#{attrib}")
       end
-     end
+    end
           
     attr_accessor :app_id, :user_id
     validates_presence_of :name #, :source_id
@@ -45,28 +46,45 @@ module Rhosync
     end
         
     def self.create(fields,params)
+#      log "create - 1: #{fields.inspect}, #{params.inspect}"
       fields = fields.with_indifferent_access # so we can access hash keys as symbols
       fields[:id] = fields[:name]
       set_defaults(fields)
       obj = super(fields,params)  # FIXME:      
-      h = {}
+#      log "create - 2: #{obj.inspect}"
+      s_data = {}
       fields.each do |name,value|
-        if obj.respond_to?(name)
-          h[name.to_sym] = value  
-        end
+        s_data[name.to_sym] = value if obj.respond_to?(name)
       end
-      @@source_data[obj.id.to_sym] = h
-      obj      
+      @@source_data[obj.rho__id.to_sym] = s_data
+#      puts "create - 3: #{obj.inspect}"
+#      puts "create - 4: #{@@source_data[obj.rho__id.to_sym].inspect}"
+      obj
     end
     
     def self.load(id,params)
+#      log "load - 1: #{id}, #{params.inspect}" # FIXME:
       validate_attributes(params)
       obj = super(id,params)
-      if obj
-        if @@source_data[obj.id.to_sym]
-          @@source_data[obj.id.to_sym].each do |k,v|
+#      log "load - 2: #{id}, #{obj.inspect}" # FIXME:
+#      log "load - 3: #{@@source_data.inspect}" unless obj # FIXME:
+#      if obj.nil? && @@source_data[id.to_sym]
+##        log "load - 3-1: #{@@source_data[id.to_sym].inspect}" # FIXME:
+##        obj = self.new
+##        log "load - 3-2: #{obj.inspect}" # FIXME:
+#      end
+      if obj 
+        obj.rho__id = id unless obj.rho__id # FIXME
+#        log "load - 4: #{obj.rho__id}" # FIXME
+        if @@source_data[obj.rho__id.to_sym]
+          @@source_data[obj.rho__id.to_sym].each do |k,v|
+#            log "--- #{k.to_sym} => #{v.to_s}"
+#            obj.instance_variable_set(:"@#{k}", v.to_s)
             obj.send "#{k.to_s}=".to_sym, v.to_s          
           end
+#          log "load - 5: #{obj.inspect}" # FIXME:
+#          puts "load - 5: #{obj.inspect}" # FIXME:
+#          puts "load - 6: #{@@source_data[obj.rho__id.to_sym].inspect}" # FIXME:
         end  
       end
       obj
@@ -142,10 +160,9 @@ module Rhosync
     end
     
     def delete
-      ref_to_data = id.to_sym
       flash_data('*')
       super
-      @@source_data[ref_to_data] = nil if ref_to_data
+      @@source_data[rho__id.to_sym] = nil if  source_exist?
     end
     
     def partition
@@ -179,5 +196,20 @@ module Rhosync
       raise ArgumentError.new('Missing required attribute user_id') unless params[:user_id]
       raise ArgumentError.new('Missing required attribute app_id') unless params[:app_id]
     end
+    
+    @@source_data = {}
+    
+    def source_exist?
+      @@source_data[rho__id.to_sym];
+    end  
+
+    def source_get(attr_name)
+      @@source_data[rho__id.to_sym][attr_name.to_sym]
+    end
+    
+    def source_set(attr_name, value)
+      @@source_data[rho__id.to_sym][attr_name.to_sym] = value
+    end
+
   end
 end

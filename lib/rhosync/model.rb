@@ -111,8 +111,7 @@ module Rhosync
       end
       
       def load(id, params={})
-        return unless self.is_exist?(id)
-        populate_attributes(self.with_key(id),params)
+        populate_attributes(self.with_key(id),params) if self.is_exist?(id)
       end
       
       def populate_attributes(obj,attribs)

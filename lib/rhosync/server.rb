@@ -88,7 +88,13 @@ module Rhosync
       end
 
       def api_user
-        request_action == 'get_api_token' ? current_user : ApiToken.load(params[:api_token]).user
+        if request_action == 'get_api_token'
+          current_user
+        else
+          u = ApiToken.load(params[:api_token])
+          raise "Wrong API token!" unless u
+          u.user 
+        end
       end
 
       def current_app

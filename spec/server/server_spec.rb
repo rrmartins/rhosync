@@ -277,6 +277,7 @@ describe "Server" do
       end
 
       it "should get deletes json" do
+        @s = Source.load(@s_fields[:name],@s_params)
         cs = ClientSync.new(@s,@c,1)
         data = {'1'=>@product1,'2'=>@product2}
         set_test_data('test_db_storage',data)

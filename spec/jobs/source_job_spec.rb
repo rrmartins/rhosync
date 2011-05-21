@@ -3,6 +3,10 @@ require File.join(File.dirname(__FILE__), '..', 'support', 'shared_examples')
 
 describe "SourceJob" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
+    before(:each) do
+      @s = Source.load(@s_fields[:name],@s_params)
+    end
+    
     it "should perform process_query" do
       set_state('test_db_storage' => @data)  
       SourceJob.perform('query',@s.id,@s.app_id,@s.user_id,nil,nil)

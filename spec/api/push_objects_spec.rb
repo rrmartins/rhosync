@@ -13,6 +13,7 @@ describe "RhosyncApiPushObjects" do
     it "should push updates to existing objects to rhosync's :md" do
       data = {'1' => @product1, '2' => @product2, '3' => @product3}
       update = {'price' => '0.99', 'new_field' => 'value'}
+      @s = Source.load(@s_fields[:name],@s_params)
       set_state(@s.docname(:md) => data)
       update.each do |key,value|
         data['2'][key] = value

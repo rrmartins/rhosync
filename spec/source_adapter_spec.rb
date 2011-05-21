@@ -15,6 +15,7 @@ end
 describe "SourceAdapter" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     before(:each) do
+      @s = Source.load(@s_fields[:name],@s_params)
       @s.name = 'SimpleAdapter'
       @sa = SourceAdapter.create(@s)
     end

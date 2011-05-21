@@ -4,6 +4,7 @@ require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 describe "SourceSync" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     before(:each) do
+      @s = Source.load(@s_fields[:name],@s_params)
       @ss = SourceSync.new(@s)
     end
 

@@ -122,8 +122,8 @@ module Rhosync
           values (?,?,?,?,?,?,?,?,?,?)") do |stmt|
           sources_refs.each do |source_name,ref|
             s = ref[:source]
-            stmt.execute(s.source_id,s.name,s.priority,s.partition_type,
-              s.sync_type,refs_to_s(ref[:refs]),s.get_value(:metadata),s.schema,s.blob_attribs,s.has_many)
+            stmt.execute(s.source_id,s.name,s.priority,s.partition_type.to_s,
+              s.sync_type.to_s,refs_to_s(ref[:refs]),s.get_value(:metadata),s.schema,s.blob_attribs,s.has_many)
           end
         end
       end

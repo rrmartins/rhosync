@@ -3,41 +3,12 @@ require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 describe "Sync Server States" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
-    before(:each) do    
+    before(:each) do   
+      @s = Source.load(@s_fields[:name],@s_params) 
       @cs = ClientSync.new(@s,@c,2)
     end
 
-    # describe "do initial sync" do
-    #   it "should sync with backend, setup masterdoc, clientdoc, and page documents" do
-    #     expected = {'1'=>@product1,'2'=>@product2}
-    #     set_test_data(@s.docname(:md),@data)
-    #     Store.put_value(@s.docname(:md_size),@data.size)
-    #     @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
-    #       {"token"=>@c.get_value(:page_token)}, 
-    #       {"count"=>2}, {"progress_count"=>0},{"total_count"=>3},{'insert'=>expected}]
-    #     verify_result(@s.docname(:md) => @data,
-    #       @cs.client.docname(:page) => expected,
-    #       @cs.client.docname(:cd) => expected)
-    #   end
-    # end
-
     describe "client creates objects" do
-      # it "should send link if source adapter create returns object id" do
-      #   exp_links = {'temp1'=>{'l'=>'1'}}
-      #   result = {'1'=>@product1}
-      #   set_test_data(@s.docname(:md),result)
-      #   Store.put_value(@s.docname(:md_size),result.size)
-      #   @cs.receive_cud({'create'=>{'temp1'=>@product1}})
-      #   verify_result(@c.docname(:create_links) => exp_links,
-      #     @s.docname(:md) => result)
-      #   Store.delete_data(@s.docname(:md),{"1"=>{"rhomobile.rhoclient"=>"1"}})
-      #   @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
-      #     {"token"=>@c.get_value(:page_token)}, 
-      #     {"count"=>0}, {"progress_count"=>1},{"total_count"=>1},{'links'=>exp_links}]
-      #   result['1'].delete('rhomobile.rhoclient')
-      #   verify_result(@cs.client.docname(:page) => {},
-      #     @cs.client.docname(:cd) => result)
-      # end
 
       it "should create object and create link for client" do
         @product1['link'] = 'temp1'

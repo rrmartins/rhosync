@@ -1,95 +1,118 @@
 module Rhosync
-  class Source < Model
-    field :test_id,:string # FIXME: dummy field
-#    attr_accessor :rho__id
-            
-    [:name, :url, :login, :password, :callback_url, :partition_type, :sync_type, 
-      :queue, :query_queue, :cud_queue, :belongs_to, :has_many].each do |attrib|
-      define_method("#{attrib}=") do |value|
-        return source_set(attrib, value) if source_exist?
-        instance_variable_set(:"@#{attrib}", value)
+  class MemoryModel
+    @@model_data = {}
+    @@string_fields = []
+    @@integer_fields = []
+    attr_accessor :id
+    
+    class << self
+      attr_accessor :validates_presence
+    
+      def define_fields(string_fields = [], integer_fields = [])
+        @@string_fields,@@integer_fields = string_fields,integer_fields
+        integer_fields.each do |attrib|
+          define_method("#{attrib}=") do |value|
+            value = (value.nil?) ? nil : value.to_i 
+            instance_variable_set(:"@#{attrib}", value)
+          end
+          define_method("#{attrib}") do
+            instance_variable_get(:"@#{attrib}")
+          end
+        end
+        string_fields.each do |attrib|
+          define_method("#{attrib}=") do |value|
+            instance_variable_set(:"@#{attrib}", value)
+          end
+          define_method("#{attrib}") do
+            instance_variable_get(:"@#{attrib}")
+          end
+        end
+        @@string_fields << :id
+        @@string_fields << :rho__id
       end
-      define_method("#{attrib}") do
-        return source_get(attrib)  if source_exist?
-        instance_variable_get(:"@#{attrib}")
+        
+      def validates_presence_of(*names)
+        self.validates_presence ||= []
+        names.each do |name|
+          self.validates_presence << name
+        end
       end
-    end
+      
+      def is_exist?(id)
+        !@@model_data[id.to_sym].nil?
+      end
 
-    [:source_id, :priority, :poll_interval].each do |attrib|
-      define_method("#{attrib}=") do |value|
-        value = (value.nil?) ? nil : value.to_i 
-        return source_set(attrib, value) if source_exist?
-        instance_variable_set(:"@#{attrib}", value)
-      end
-      define_method("#{attrib}") do
-        return source_get(attrib)  if source_exist?
-        instance_variable_get(:"@#{attrib}")
+      def class_prefix(classname)
+        classname.to_s.
+          sub(%r{(.*::)}, '').
+          gsub(/([A-Z]+)([A-Z][a-z])/,'\1_\2').
+          gsub(/([a-z\d])([A-Z])/,'\1_\2').
+          downcase
       end
     end
-          
-    attr_accessor :app_id, :user_id
-    validates_presence_of :name #, :source_id
+    
+    def to_array
+      res = []
+      @@string_fields.each do |field|
+        res << {"name" => field, "value" => send(field.to_sym), "type" => "string"}
+      end
+      @@integer_fields.each do |field|
+        res << {"name" => field, "value" => send(field.to_sym), "type" => "integer"}
+      end
+      res
+    end
+  end
+  
+  class Source < MemoryModel
+    attr_accessor :app_id, :user_id, :rho__id
+            
+    validates_presence_of :name
     
     include Document
     include LockOps
+    
+    # source fields
+    define_fields([:name, :url, :login, :password, :callback_url, :partition_type, :sync_type, 
+      :queue, :query_queue, :cud_queue, :belongs_to, :has_many, :pass_through], 
+      [:source_id, :priority, :poll_interval])
+    
+    def initialize(fields)
+      fields.each do |name,value|
+        arg = "#{name}=".to_sym
+        self.send(arg, value) if self.respond_to?(arg)
+      end
+    end
   
     def self.set_defaults(fields)
       fields[:url] ||= ''
       fields[:login] ||= ''
       fields[:password] ||= ''
       fields[:priority] ||= 3
-      fields[:partition_type] ||= :user
+      fields[:partition_type] = fields[:partition_type] ? fields[:partition_type].to_sym : :user
       fields[:poll_interval] ||= 300
-      fields[:sync_type] ||= :incremental
+      fields[:sync_type] = fields[:sync_type] ? fields[:sync_type].to_sym : :incremental
+      fields[:id] = fields[:name]
+      fields[:rho__id] = fields[:name]
       fields[:belongs_to] = fields[:belongs_to].to_json if fields[:belongs_to]
       fields[:schema] = fields[:schema].to_json if fields[:schema]
     end
         
     def self.create(fields,params)
-#      log "create - 1: #{fields.inspect}, #{params.inspect}"
       fields = fields.with_indifferent_access # so we can access hash keys as symbols
-      fields[:id] = fields[:name]
       set_defaults(fields)
-      obj = super(fields,params)  # FIXME:      
-#      log "create - 2: #{obj.inspect}"
-      s_data = {}
-      fields.each do |name,value|
-        s_data[name.to_sym] = value if obj.respond_to?(name)
-      end
-      @@source_data[obj.rho__id.to_sym] = s_data
-#      puts "create - 3: #{obj.inspect}"
-#      puts "create - 4: #{@@source_data[obj.rho__id.to_sym].inspect}"
+      obj = new(fields)
+      obj.assign_args(params)
+      @@model_data[obj.rho__id.to_sym] = obj
       obj
     end
     
-    def self.load(id,params)
-#      log "load - 1: #{id}, #{params.inspect}" # FIXME:
+    def self.load(obj_id,params)
       validate_attributes(params)
-      obj = super(id,params)
-#      log "load - 2: #{id}, #{obj.inspect}" # FIXME:
-#      log "load - 3: #{@@source_data.inspect}" unless obj # FIXME:
-#      if obj.nil? && @@source_data[id.to_sym]
-##        log "load - 3-1: #{@@source_data[id.to_sym].inspect}" # FIXME:
-##        obj = self.new
-##        log "load - 3-2: #{obj.inspect}" # FIXME:
-#      end
-      if obj 
-        obj.rho__id = id unless obj.rho__id # FIXME
-#        log "load - 4: #{obj.rho__id}" # FIXME
-        if @@source_data[obj.rho__id.to_sym]
-          @@source_data[obj.rho__id.to_sym].each do |k,v|
-#            log "--- #{k.to_sym} => #{v.to_s}"
-#            obj.instance_variable_set(:"@#{k}", v.to_s)
-            obj.send "#{k.to_s}=".to_sym, v.to_s          
-          end
-#          log "load - 5: #{obj.inspect}" # FIXME:
-#          puts "load - 5: #{obj.inspect}" # FIXME:
-#          puts "load - 6: #{@@source_data[obj.rho__id.to_sym].inspect}" # FIXME:
-        end  
-      end
+      obj = @@model_data[obj_id.to_sym]
+      obj.assign_args(params) if obj
       obj
     end
-    
+      
     def self.update_associations(sources)
       params = {:app_id => APP_NAME,:user_id => '*'}
       sources.each { |source| Source.load(source, params).has_many = nil }
@@ -113,6 +136,16 @@ module Rhosync
       end
     end
     
+    def self.delete_all
+      @@model_data.each { |k,v| v.delete }
+      @@model_data = {}
+    end
+
+    def assign_args(params)
+      self.user_id = params[:user_id]
+      self.app_id = params[:app_id]    
+    end
+      
     def blob_attribs
       return '' unless self.schema
       schema = JSON.parse(self.schema)
@@ -127,7 +160,7 @@ module Rhosync
     def update(fields)
       fields = fields.with_indifferent_access # so we can access hash keys as symbols
       self.class.set_defaults(fields)
-      super(fields)
+      #super(fields)
     end
     
     def clone(src_doctype,dst_doctype)
@@ -151,8 +184,7 @@ module Rhosync
     def read_state
       id = {:app_id => self.app_id,:user_id => user_by_partition,
         :source_name => self.name}
-      @read_state ||= ReadState.load(id)
-      @read_state ||= ReadState.create(id)   
+      ReadState.load(id) || ReadState.create(id)  
     end
     
     def doc_suffix(doctype)
@@ -161,8 +193,7 @@ module Rhosync
     
     def delete
       flash_data('*')
-      super
-      @@source_data[rho__id.to_sym] = nil if  source_exist?
+      @@model_data.delete(rho__id.to_sym) if rho__id
     end
     
     def partition
@@ -190,25 +221,27 @@ module Rhosync
       end
       yield client_id,params if need_refresh
     end
+    
+    def is_pass_through?
+      self.pass_through and self.pass_through == 'true'
+    end
           
     private
     def self.validate_attributes(params)
       raise ArgumentError.new('Missing required attribute user_id') unless params[:user_id]
       raise ArgumentError.new('Missing required attribute app_id') unless params[:app_id]
     end
-    
-    @@source_data = {}
-    
+      
     def source_exist?
-      @@source_data[rho__id.to_sym];
+      @@model_data[rho__id.to_sym];
     end  
 
     def source_get(attr_name)
-      @@source_data[rho__id.to_sym][attr_name.to_sym]
+      @@model_data[rho__id.to_sym][attr_name.to_sym]
     end
     
     def source_set(attr_name, value)
-      @@source_data[rho__id.to_sym][attr_name.to_sym] = value
+      @@model_data[rho__id.to_sym][attr_name.to_sym] = value
     end
 
   end

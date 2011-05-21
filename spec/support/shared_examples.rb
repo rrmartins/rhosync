@@ -43,10 +43,8 @@ shared_examples_for "SharedRhosyncHelper" do |params|
       :app_id => @a.id
     }
     @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
-    @s = Source.load(@s_fields[:name],@s_params)
-    @s = Source.create(@s_fields,@s_params) if @s.nil?
+    @s = Source.create(@s_fields,@s_params)
     @s1 = Source.load('FixedSchemaAdapter',@s_params)
-    @s1 = Source.create({:name => 'FixedSchemaAdapter'},@s_params) if @s1.nil?
     config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
     @s1.update(config)
     @r = @s.read_state
@@ -128,10 +126,8 @@ shared_examples_for "ApiHelper" do
       :app_id => @a.id
     }
     @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
-    @s = Source.load(@s_fields[:name],@s_params)
-    @s = Source.create(@s_fields,@s_params) if @s.nil?
+    @s = Source.create(@s_fields,@s_params)
     @s1 = Source.load('FixedSchemaAdapter',@s_params)
-    @s1 = Source.create({:name => 'FixedSchemaAdapter'},@s_params) if @s1.nil?
     config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
     @s1.update(config)
     @r = @s.read_state

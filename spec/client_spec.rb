@@ -6,6 +6,10 @@ STATS_RECORD_SIZE = 8 unless defined? STATS_RECORD_SIZE
 
 describe "Client" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => false do
+    before(:each) do
+      @s = Source.load(@s_fields[:name],@s_params)
+    end
+    
     it "should create client with fields" do
       @c.id.length.should == 32
       @c.device_type.should == @c_fields[:device_type]

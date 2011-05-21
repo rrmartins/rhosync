@@ -10,6 +10,7 @@ describe "ClientSync" do
     end
 
     before(:each) do
+      @s = Source.load(@s_fields[:name],@s_params)
       @cs = ClientSync.new(@s,@c,2)
     end
     

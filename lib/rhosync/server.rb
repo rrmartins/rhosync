@@ -92,7 +92,7 @@ module Rhosync
           current_user
         else
           u = ApiToken.load(params[:api_token])
-          raise "Wrong API token!" unless u
+          raise "Wrong API token - #{params[:api_token].inspect}" unless u
           u.user 
         end
       end

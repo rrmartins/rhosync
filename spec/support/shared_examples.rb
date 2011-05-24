@@ -45,6 +45,7 @@ shared_examples_for "SharedRhosyncHelper" do |params|
     @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
     @s = Source.create(@s_fields,@s_params)
     @s1 = Source.load('FixedSchemaAdapter',@s_params)
+    @s2 = Source.load('Product2',@s_params)
     config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
     @s1.update(config)
     @r = @s.read_state

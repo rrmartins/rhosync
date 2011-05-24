@@ -4,7 +4,7 @@ PATH
     rhosync (2.2.0)
       bundler (~> 1.0)
       json (~> 1.4.2)
-      rake (>= 0.8.7)
+      rake (= 0.8.7)
       redis (~> 2.1.1)
       resque (~> 1.14.0)
       rest-client (~> 1.6.1)

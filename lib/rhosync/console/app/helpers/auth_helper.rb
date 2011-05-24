@@ -13,6 +13,10 @@ class RhosyncConsole::Server
     def verify_presence_of(param,message)
       report_error(message) if params[param].nil? or params[param].length == 0
     end
+    
+    def verify_format_of(param,message)
+      report_error(message) if params[param].nil? or params[param] !~ /^(http|https):\/\//
+    end
       
   end   
 end

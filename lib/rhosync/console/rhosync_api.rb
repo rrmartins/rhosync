@@ -25,6 +25,16 @@ module RhosyncApi
       end
     end
     
+    def save_adapter(server,token,adapter_url)
+      if directcall?(server) and verify_token(token)
+        Server.save_adapter({:attributes => {'adapter_url' => adapter_url}},nil)
+      else  
+        RestClient.post("#{server}/api/save_adapter",
+          {:api_token => token,:attributes => {:adapter_url => adapter_url}}.to_json, 
+            :content_type => :json)
+      end
+    end
+    
     def create_user(server,token,login,password)
       if directcall?(server) and verify_token(token)
         Server.create_user({:attributes => {'login' => login, 'password' => password}},nil)
@@ -90,6 +100,15 @@ module RhosyncApi
       else
         JSON.parse(RestClient.post("#{server}/api/get_client_params", 
           {:api_token => token, :client_id => client_id}.to_json, :content_type => :json).body)
+      end
+    end
+    
+    def get_adapter(server,token)
+      if directcall?(server) and verify_token(token)
+        JSON.parse(Server.get_adapter({},nil))
+      else
+        JSON.parse(RestClient.post("#{server}/api/get_adapter", 
+          {:api_token => token}.to_json, :content_type => :json).body)
       end
     end
     

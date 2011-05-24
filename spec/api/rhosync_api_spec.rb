@@ -8,6 +8,30 @@ describe "RhosyncApi" do
     RhosyncApi::get_token('','rhoadmin','').should == @api_token
   end
   
+  it "should get adapter using direct api call" do
+     RhosyncApi::get_adapter('',@api_token)
+     Rhosync.appserver.should == "http://test.rhosync.com"
+  end 
+
+   it "should get adapter using rest call" do
+     res = mock('HttpResponse')
+     res.stub!(:body).and_return(["http://test.rhosync.com"].to_json)
+     RestClient.stub(:post).and_return(res)
+     RestClient.should_receive(:post).once
+     RhosyncApi::get_adapter('some_url',@api_token).should == ["http://test.rhosync.com"]
+   end
+   
+  it "should save adapter using direct api call" do
+    RhosyncApi::save_adapter('',@api_token,'http://test.com')
+    Rhosync.appserver.should == 'http://test.com'
+  end 
+  
+  it "should save adapter using rest call" do
+    RestClient.stub(:post).and_return("adpater url saved")
+    RestClient.should_receive(:post).once
+    RhosyncApi::save_adapter('some_url',@api_token,'http://test.com').should == "adpater url saved"
+  end
+  
   it "should return api token using rest call" do
     response = {'set-cookie'=>"rhosync_session=c21...42b64; path=/; expires=Tue, 02-Aug-2011 23:55:19 GMT"}
     res = mock('HttpResponse')
@@ -41,7 +65,7 @@ describe "RhosyncApi" do
     @a.users.members.sort.should == [@u.login, 'testuser1']    
   end 
   
-  it "should create user using rect call" do
+  it "should create user using rest call" do
     RestClient.stub(:post).and_return("User created")
     RestClient.should_receive(:post).once
     RhosyncApi::create_user('some_url',@api_token,'testuser1','testpass1').should == "User created"
@@ -66,7 +90,7 @@ describe "RhosyncApi" do
     RhosyncApi::get_token('some_url','rhoadmin','').should == @api_token
   end
 
-  it "should delete user using rect call" do
+  it "should delete user using rest call" do
     RestClient.stub(:post).and_return("User deleted")
     RestClient.should_receive(:post).once
     RhosyncApi::delete_user('some_url',@api_token,'testuser1').should == "User deleted"

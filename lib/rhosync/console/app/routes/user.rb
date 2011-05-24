@@ -8,6 +8,7 @@ class RhosyncConsole::Server
        :links => [ 
          { :url => url_path('/homepage'), :title => 'Info' },
          { :url => url_path('/doc/select'), :title => 'Server Document' },
+         { :url => url_path('/adapter'), :title => 'Adapter URL' },
          { :url => url_path('/users'), :selected => true, :title => 'Users' }
        ]
      }
@@ -34,6 +35,23 @@ class RhosyncConsole::Server
       render_page url_path("/user/new")
     end 
       
+  end
+  
+  get '/user/edit' do
+   if params[:xhr] or request.xhr?
+     erb :edituser, :layout => false
+   else
+     render_page url_path("/user/edit")
+   end
+  end
+  
+  post '/user/update' do
+      params.merge!({:login => 'rhoadmin'})
+      handle_api_error("Can't update admin password") do  
+        RhosyncApi::update_user(session[:server],
+          session[:token],params)
+      end      
+    redirect url_path(session[:errors] ? '/user/edit' : '/users'), 303
   end
   
   post '/user/create' do

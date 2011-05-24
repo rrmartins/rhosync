@@ -12,11 +12,14 @@ module Rhosync
       @uri = uri || Rhosync.appserver
       @partition = partition
       
-      raise Exception.new("Please provide a :uri or set RHOSYNC_URL") unless @uri
-      @uri = URI.parse(@uri)
+      if @uri
+        @uri = URI.parse(@uri)
+        user = @uri.user
+        @uri.user = nil
+        @uri = @uri.to_s 
+      end
       
-      @token = Rhosync.api_token || @uri.user
-      @uri.user = nil; @uri = @uri.to_s      
+      @token = Rhosync.api_token || user   
       raise Exception.new("Please provide a :token or set it in uri") unless @token
       super(source)
     end
@@ -45,6 +48,7 @@ module Rhosync
     #protected
     
     def validate_args(action, source_name, partition, obj = {}) # :nodoc:
+      raise Exception.new("Please set uri in your settings or through console") unless @uri
       raise ArgumentError.new("Missing object id for #{obj.inspect}") if ['update','delete'].include? action and not obj.has_key?('id')
       raise ArgumentError.new("Missing source_name.") if source_name.empty?
       #raise ArgumentError.new("Missing partition for #{model}.") unless partition or partition.blank?

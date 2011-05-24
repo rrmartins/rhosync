@@ -1,0 +1,13 @@
+<h1>Set Adapter URL</h1>
+<%=show_errors%>
+<form action="<%=url_path('/adapter/create')%>" method='POST'>
+	<table>
+		<tr>
+			<td>adapter url:&nbsp;</td>
+			<td><input style='padding-left:5px' name='adapter_url' value='<%=@adapter%>'/></td>
+		</tr>
+	</table>
+	<br/>
+	<input type='submit' value='Add'/>
+	<a href='javascript:void(0);' onclick="loadXMLDoc('<%=url_path('users')%>','main_box')">Back</a>
+</form>

@@ -12,14 +12,38 @@ describe "RhosyncApi" do
       RhosyncApi::get_token('','rhoadmin','').should == @api_token
     end
   
-    it "should return api token using rest call" do
-      response = {'set-cookie'=>"rhosync_session=c21...42b64; path=/; expires=Tue, 02-Aug-2011 23:55:19 GMT"}
-      res = mock('HttpResponse')
-      res.stub!(:response).and_return(response)
-      http = mock('NetHttp')
-      http.stub!(:post).and_return(res)
-      Net::HTTP.stub!(:new).and_return(http)
-      RestClient.stub(:post).and_return(@api_token)
+  it "should get adapter using direct api call" do
+     RhosyncApi::get_adapter('',@api_token)
+     Rhosync.appserver.should == "http://test.rhosync.com"
+  end 
+
+   it "should get adapter using rest call" do
+     res = mock('HttpResponse')
+     res.stub!(:body).and_return(["http://test.rhosync.com"].to_json)
+     RestClient.stub(:post).and_return(res)
+     RestClient.should_receive(:post).once
+     RhosyncApi::get_adapter('some_url',@api_token).should == ["http://test.rhosync.com"]
+   end
+   
+  it "should save adapter using direct api call" do
+    RhosyncApi::save_adapter('',@api_token,'http://test.com')
+    Rhosync.appserver.should == 'http://test.com'
+  end 
+  
+  it "should save adapter using rest call" do
+    RestClient.stub(:post).and_return("adpater url saved")
+    RestClient.should_receive(:post).once
+    RhosyncApi::save_adapter('some_url',@api_token,'http://test.com').should == "adpater url saved"
+  end
+  
+  it "should return api token using rest call" do
+    response = {'set-cookie'=>"rhosync_session=c21...42b64; path=/; expires=Tue, 02-Aug-2011 23:55:19 GMT"}
+    res = mock('HttpResponse')
+    res.stub!(:response).and_return(response)
+    http = mock('NetHttp')
+    http.stub!(:post).and_return(res)
+    Net::HTTP.stub!(:new).and_return(http)
+    RestClient.stub(:post).and_return(@api_token)
     
       Net::HTTP.should_receive(:new).once
       RestClient.should_receive(:post).once

@@ -13,10 +13,13 @@ PATH
       sqlite3-ruby (~> 1.2.5)
       templater (~> 1.0.0)
       uuidtools (>= 2.1.1)
+      webmock
 
 GEM
   remote: http://rubygems.org/
   specs:
+    addressable (2.2.5)
+    crack (0.1.8)
     diff-lcs (1.1.2)
     extlib (0.9.15)
     faker (0.9.5)
@@ -62,6 +65,9 @@ GEM
     uuidtools (2.1.2)
     vegas (0.1.8)
       rack (>= 1.0.0)
+    webmock (1.6.2)
+      addressable (>= 2.2.2)
+      crack (>= 0.1.7)
 
 PLATFORMS
   ruby

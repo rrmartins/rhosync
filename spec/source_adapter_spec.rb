@@ -23,20 +23,15 @@ describe "SourceAdapter" do
     it "should create SourceAdapter with source" do
       @sa.class.name.should == @s.name
     end
-
-    it "should create and execute SubAdapter that extends BaseAdapter" do
-      @s.name = 'SubAdapter'
-      @sa = SourceAdapter.create(@s)
-      @sa.class.name.should == 'SubAdapter'
-      expected = {'1'=>@product1,'2'=>@product2}
-      @sa.inject_result expected
-      @sa.query.should == expected
+    
+    it "should create DynamicAdapter" do
+      @sa1 = SourceAdapter.create(@s2)
+      @sa1.class.name.should == 'Rhosync::DynamicAdapter'
     end
-
-    it "should fail to create SourceAdapter" do
-      @s_fields[:name] = 'Broken'
-      broken_source = Source.create(@s_fields,@s_params)
-      lambda { SourceAdapter.create(broken_source) }.should raise_error(Exception)
+    
+    it "should capture exception in create" do
+      DynamicAdapter.should_receive(:new).once.and_raise(Exception)
+      lambda { @sa1 = SourceAdapter.create(@s2) }.should raise_error(Exception)
     end
 
     it "should create SourceAdapter with trailing spaces" do

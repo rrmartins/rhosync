@@ -15,6 +15,8 @@
   :bulk_sync_poll_interval: 3600
   :redis: localhost:6379
   :syncserver: http://localhost:9292/application/
+  :appserver: http://test.rhosync.com
+  :api_token: b6f22608fa8b4acf84e844808845e2fe
 :test: 
   :licensefile: settings/license.key
   :iphonecertfile: settings/apple_fake_cert.pem
@@ -24,6 +26,8 @@
   :bulk_sync_poll_interval: 3600
   :redis: localhost:6379
   :syncserver: http://localhost:9292/application/
+  :appserver: http://test.rhosync.com
+  :api_token: b6f22608fa8b4acf84e844808845e2fe
 :production: 
   :licensefile: settings/license.key
   :bulk_sync_poll_interval: 3600

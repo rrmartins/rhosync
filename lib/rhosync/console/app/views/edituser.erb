@@ -1,0 +1,13 @@
+<h1>Edit admin</h1>
+<%=show_errors%>
+<form action="<%=url_path('/user/update')%>" method='POST'>
+	<table>
+		<tr>
+			<td>Password:</td>
+			<td><input name='password'/></td>
+		</tr>
+	</table>
+	<br/>
+	<input type='submit' value='Add'/>
+	<a href='javascript:void(0);' onclick="loadXMLDoc('<%=url_path('users')%>','main_box')">Back</a>
+</form>

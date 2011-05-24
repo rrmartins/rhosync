@@ -28,6 +28,7 @@ class RhosyncConsole::Server
           :links => [ 
             { :url => url_path('/homepage'), :selected => true, :title => 'Info' },
             { :url => url_path('/doc/select'), :title => 'Server Document' },
+            { :url => url_path('/adapter'), :title => 'Adapter URL' },
             { :url => url_path('/users'), :title => 'Users' }
           ]
         }

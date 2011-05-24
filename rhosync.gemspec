@@ -38,4 +38,5 @@ Gem::Specification.new do |s|
   s.add_dependency('resque', '~> 1.14.0')
   s.add_dependency('rest-client', '~> 1.6.1')
   s.add_dependency('templater', '~> 1.0.0')
+  s.add_dependency('webmock')
 end

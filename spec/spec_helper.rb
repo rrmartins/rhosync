@@ -1,4 +1,5 @@
 require 'rubygems'
+require 'webmock/rspec'
 require 'rspec'
 require 'rhosync'
 include Rhosync

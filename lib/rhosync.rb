@@ -25,6 +25,7 @@ require 'rhosync/rho_indifferent_access'
 require 'rhosync/jobs/source_job'
 require 'rhosync/jobs/ping_job'
 require 'rhosync/bulk_data'
+require 'rhosync/dynamic_adapter'
 
 REDIS_URL = 'REDIS' unless defined? REDIS_URL
   
@@ -43,7 +44,7 @@ module Rhosync
   class << self
     attr_accessor :base_directory, :app_directory, :data_directory, 
       :vendor_directory, :blackberry_bulk_sync, :redis, :environment,
-      :log_disabled, :license, :bulk_sync_poll_interval, :stats
+      :log_disabled, :license, :bulk_sync_poll_interval, :stats, :appserver, :api_token
   end
   
   ### Begin Rhosync setup methods  
@@ -60,6 +61,8 @@ module Rhosync
     Rhosync.blackberry_bulk_sync = get_setting(config,environment,:blackberry_bulk_sync,false)
     Rhosync.bulk_sync_poll_interval = get_setting(config,environment,:bulk_sync_poll_interval,3600)
     Rhosync.redis = get_setting(config,environment,:redis,false)
+    Rhosync.appserver = get_setting(config,environment,:appserver,false)
+    Rhosync.api_token = ENV['API_TOKEN'] || get_setting(config,environment,:api_token,false)
     Rhosync.log_disabled = get_setting(config,environment,:log_disabled,false)
     Rhosync.environment = environment    
     yield self if block_given?

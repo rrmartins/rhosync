@@ -1,11 +1,10 @@
-RhoSync
+RhoSync App Integration Server
 -------------------------------------------------------------
-RhoSync 2.0 is a redis-powered implementation of the RhoSync synchronization system.
+RhoSync is an app integration server which keeps enterprise data current and available on users’ devices.
 
-DOCS
+More Info
 -------------------------------------------------------------
-  * Intro to Rhodes & Rhosync: <http://wiki.rhomobile.com/index.php/Rhomobile>
-  * RhoSync 2.0:               <http://wiki.rhomobile.com/index.php/RhoSync_2.0>
-  * Tutorial:                  <http://wiki.rhomobile.com/index.php/Tutorial> 
+  * Intro to Rhodes & RhoSync: <http://docs.rhomobile.com>
+  * RhoSync:               	   <http://docs.rhomobile.com/rhosync/introduction>
+  * Tutorial:                  <http://docs.rhomobile.com/rhosync/tutorial> 
   * RDoc (still rough):        <http://rdoc.info/projects/rhomobile/rhosync>
-  * Client/Server Protocol:    See doc/protocol.html

@@ -8,7 +8,6 @@ require 'rhosync_api'
 module RhosyncConsole  
   class << self
     ROOT_DIR = File.dirname(File.expand_path(__FILE__)) unless defined? ROOT_DIR
-
     def root_path(*args)
       File.join(ROOT_DIR, *args)
     end
@@ -20,6 +19,7 @@ module RhosyncConsole
     set :static, true    
     use Rack::Session::Cookie
     before do
+      HEROKU_NAV = ENV['INSTANCE_ID'] ? RestClient.get('http://nav.heroku.com/v1/providers/header') : nil
       headers['Expires'] = 'Sun, 19 Nov 1978 05:00:00 GMT'
       headers['Cache-Control'] = 'no-store, no-cache, must-revalidate'  
       headers['Pramga'] = 'no-cache'

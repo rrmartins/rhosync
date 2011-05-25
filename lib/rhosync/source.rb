@@ -169,12 +169,12 @@ module Rhosync
     
     # Return the user associated with a source
     def user
-      @user ||= User.load(self.user_id)
+      @user = User.load(self.user_id)
     end
     
     # Return the app the source belongs to
     def app
-      @app ||= App.load(self.app_id)
+      @app = App.load(self.app_id)
     end
     
     def schema

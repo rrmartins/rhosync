@@ -1,3 +1,6 @@
+## 2.1.6
+* #13830841 - fixed issue where current_user.login doesn't match @source.user_id
+
 ## 2.1.5
 * #13578473 - fixed "undefined method `user_id' for nil:NilClass" error in server.rb
 

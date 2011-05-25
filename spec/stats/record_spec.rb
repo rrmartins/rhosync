@@ -1,4 +1,5 @@
 require 'rhosync'
+require File.join(File.dirname(__FILE__),'..','spec_helper')
 STATS_RECORD_RESOLUTION = 2 unless defined? STATS_RECORD_RESOLUTION
 STATS_RECORD_SIZE = 8 unless defined? STATS_RECORD_SIZE
 

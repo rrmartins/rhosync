@@ -187,6 +187,12 @@ describe "Server" do
         get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
         JSON.parse(last_response.body).last['insert'].should == data
       end
+      
+      it "should return error on routes if client doesn't exist" do
+        get "/application",:client_id => "missingclient",:source_name => @s.name,:version => ClientSync::VERSION
+        last_response.body.should == "Unknown client"
+        last_response.status.should == 500
+      end
     end
 
     describe "source routes" do

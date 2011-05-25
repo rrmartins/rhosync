@@ -1,3 +1,6 @@
+## 2.1.5
+* #13578473 - fixed "undefined method `user_id' for nil:NilClass" error in server.rb
+
 ## 2.1.4
 * #13354369 - bug fix "rhosync bootstrap process shouldn't store sources in redis"
 

@@ -119,7 +119,9 @@ module Rhosync
         if @client.nil? and params[:client_id]
           @client = Client.load(params[:client_id].to_s,
             params[:source_name] ? {:source_name => current_source.name} : {:source_name => '*'})
-          @client.switch_user(current_user.login) unless @client.user_id == current_user.login
+          if @client and current_user and @client.user_id != current_user.login
+            @client.switch_user(current_user.login) 
+          end
           @client
         end  
       end
@@ -210,25 +212,33 @@ module Rhosync
     end
 
     post '/application/clientlogin' do
-      logout
-      do_login
+      catch_all do      
+        logout
+        do_login
+      end
     end
 
     get '/application/clientcreate' do
-      content_type :json
-      client = Client.create(:user_id => current_user.id,:app_id => current_app.id)
-      client.update_fields(params)
-      { "client" => { "client_id" =>  client.id.to_s } }.merge!(source_config).to_json
+      catch_all do 
+        content_type :json
+        client = Client.create(:user_id => current_user.id,:app_id => current_app.id)
+        client.update_fields(params)
+        { "client" => { "client_id" =>  client.id.to_s } }.merge!(source_config).to_json
+      end
     end
 
     post '/application/clientregister' do
-      current_client.update_fields(params)
-      source_config.to_json
+      catch_all do 
+        current_client.update_fields(params)
+        source_config.to_json
+      end
     end
 
     get '/application/clientreset' do
-      ClientSync.reset(current_client)
-      source_config.to_json
+      catch_all do 
+        ClientSync.reset(current_client)
+        source_config.to_json
+      end
     end
 
     # Member routes

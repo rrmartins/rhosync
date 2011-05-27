@@ -60,7 +60,7 @@ module Bench
             File.delete(filename)
           end
         rescue RestClient::RequestTimeout => e
-q          bench_log "Request timed out #{e}"
+          bench_log "Request timed out #{e}"
         end
       end
       Bench.sessions = @sessions

@@ -10,35 +10,62 @@ module Bench
     end
     
     def test(concurrency,iterations,&block)
-      thread_id = 0
+#      total_time = time do
+#        0.upto(concurrency - 1) do |thread_id|
+#          sleep rand(2)                    
+#          threads << Thread.new(block) do |t|
+#            0.upto(iterations - 1) do |iteration|
+#              s = Session.new(thread_id, iteration)
+#              @sessions << s
+#              begin
+#                yield Bench,s
+#              rescue Exception => e
+#                puts "error running script: #{e.inspect}"
+#                puts e.backtrace.join("\n")
+#              end
+#            end
+#          end
+#        end
+#        begin 
+#          threads.each { |t| t.join }
+#        rescue RestClient::RequestTimeout => e
+#          bench_log "Request timed out #{e}"
+#        end
+#      end
+#      Bench.sessions = @sessions
+#      Bench.total_time = total_time      
       total_time = time do
-        concurrency.times do
-          sleep rand(2)
-          thread = Thread.new(block) do |t|
-            tid, iteration = thread_id,0
-            iterations.times do
-              s = Session.new(tid,iteration)
-              @sessions << s
+        0.upto(concurrency - 1) do |thread_id|
+          sleep rand(2)                    
+          threads << Process.fork do
+            pid = $$ # child process id
+            0.upto(iterations - 1) do |iteration|
+              s = Session.new(thread_id, iteration)
               begin
                 yield Bench,s
               rescue Exception => e
                 puts "error running script: #{e.inspect}"
-              end    
-              iteration += 1
+                puts e.backtrace.join("\n")
+              end
+              File.open("/tmp/runner.#{pid}", "w+") { |f| Marshal.dump(s, f) }
             end
           end
-          thread_id += 1    
-          threads << thread
         end
         begin 
-          threads.each { |t| t.join }
+          res = Process.waitall # returning an array of pid/status pairs
+          res.each do |ps| 
+            filename = "/tmp/runner.#{ps[0]}"
+            s = Marshal.load(File.open(filename))
+            @sessions << s
+            File.delete(filename)
+          end
         rescue RestClient::RequestTimeout => e
-          bench_log "Request timed out #{e}"
+q          bench_log "Request timed out #{e}"
         end
       end
       Bench.sessions = @sessions
       Bench.total_time = total_time
-    end    
+    end
   end
 end  
   

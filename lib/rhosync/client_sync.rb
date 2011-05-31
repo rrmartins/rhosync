@@ -3,10 +3,13 @@ module Rhosync
     attr_accessor :source,:client,:p_size,:source_sync
     
     VERSION = 3
+    UNKNOWN_CLIENT = "Unknown client"
+    UNKNOWN_SOURCE = "Unknown source"
+    
     
     def initialize(source,client,p_size=nil)
-      raise ArgumentError.new('Unknown client') unless client
-      raise ArgumentError.new('Unknown source') unless source
+      raise ArgumentError.new(UNKNOWN_CLIENT) unless client
+      raise ArgumentError.new(UNKNOWN_SOURCE) unless source
       @source,@client,@p_size = source,client,p_size ? p_size.to_i : 500
       @source_sync = SourceSync.new(@source)
     end
@@ -226,6 +229,7 @@ module Rhosync
       end
     
       def search_all(client,params=nil)
+        raise ArgumentError.new(UNKNOWN_CLIENT) unless client
         return [] unless params[:sources]
         res = []
         params[:sources].each do |source|
@@ -241,6 +245,7 @@ module Rhosync
       end
       
       def bulk_data(partition,client)
+        raise ArgumentError.new(UNKNOWN_CLIENT) unless client
         name = BulkData.get_name(partition,client.user_id)
         data = BulkData.load(name)
         

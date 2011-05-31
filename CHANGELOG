@@ -1,5 +1,5 @@
 ## 2.1.7
-* 
+* #14021681 - check for client on client_sync class methods
 
 ## 2.1.6
 * #13830841 - fixed issue where current_user.login doesn't match @source.user_id

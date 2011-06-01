@@ -18,8 +18,8 @@ module RhosyncConsole
     set :public, RhosyncConsole::root_path("app","public")
     set :static, true    
     use Rack::Session::Cookie
+    HEROKU_NAV = ENV['INSTANCE_ID'] ? RestClient.get('http://nav.heroku.com/v1/providers/header') : nil
     before do
-      HEROKU_NAV = ENV['INSTANCE_ID'] ? RestClient.get('http://nav.heroku.com/v1/providers/header') : nil
       headers['Expires'] = 'Sun, 19 Nov 1978 05:00:00 GMT'
       headers['Cache-Control'] = 'no-store, no-cache, must-revalidate'  
       headers['Pramga'] = 'no-cache'

@@ -15,6 +15,7 @@
 
 ## 2.1.7 (2011-05-31)
 * #14021681 - check for client on client_sync class methods
+* #14082861 - expose Store.lock timeout to high-level functions
 
 ## 2.1.6 (2011-05-25)
 * #13830841 - fixed issue where current_user.login doesn't match @source.user_id

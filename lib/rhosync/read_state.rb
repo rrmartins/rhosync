@@ -1,6 +1,6 @@
 module Rhosync  
   class ReadState < Model
-    field :refresh_time,:integer
+    field :refresh_time, :integer
   
     def self.create(fields)
       fields[:id] = get_id(fields)

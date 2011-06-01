@@ -12,7 +12,7 @@ module Rhosync
     end
     
     def user
-      @user ||= User.load(self.user_id)
+      User.load(self.user_id)
     end
   end
 end

@@ -8,27 +8,60 @@ module Bench
       @threads = []
       @sessions = []
     end
-    
+
     def test(concurrency,iterations,&block)
-      thread_id = 0
       total_time = time do
-        concurrency.times do
-          sleep rand(2)
-          thread = Thread.new(block) do |t|
-            tid, iteration = thread_id,0
-            iterations.times do
-              s = Session.new(tid,iteration)
+        0.upto(concurrency - 1) do |thread_id|
+          sleep rand(2)                    
+          threads << Process.fork do
+            pid = $$ # child process id
+            0.upto(iterations - 1) do |iteration|
+              s = Session.new(thread_id, iteration)
+              begin
+                yield Bench,s
+              rescue Exception => e
+                puts "error running script: #{e.inspect}"
+                puts e.backtrace.join("\n")
+              end
+              File.open("/tmp/runner_#{iteration}.#{pid}", "w+") { |f| Marshal.dump(s, f) }
+            end
+          end
+        end
+        begin 
+          @pid_stats = Process.waitall # returning an array of pid/status pairs
+        rescue RestClient::RequestTimeout => e
+          bench_log "Request timed out #{e}"
+        end
+      end
+      @pid_stats.each do |ps|
+        0.upto(iterations - 1) do |iteration|
+          filename = "/tmp/runner_#{iteration}.#{ps[0]}"
+          s = Marshal.load(File.open(filename))
+          @sessions << s
+          File.delete(filename)
+        end
+      end
+      Bench.sessions = @sessions
+      Bench.total_time = total_time
+    end
+
+=begin
+    def test(concurrency,iterations,&block)
+      total_time = time do
+        0.upto(concurrency - 1) do |thread_id|
+          sleep rand(2)                    
+          threads << Thread.new(block) do |t|
+            0.upto(iterations - 1) do |iteration|
+              s = Session.new(thread_id, iteration)
               @sessions << s
               begin
                 yield Bench,s
               rescue Exception => e
                 puts "error running script: #{e.inspect}"
-              end    
-              iteration += 1
+                puts e.backtrace.join("\n")
+              end
             end
           end
-          thread_id += 1    
-          threads << thread
         end
         begin 
           threads.each { |t| t.join }
@@ -38,7 +71,8 @@ module Bench
       end
       Bench.sessions = @sessions
       Bench.total_time = total_time
-    end    
+    end      
+=end      
   end
 end  
   

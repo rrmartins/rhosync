@@ -16,9 +16,18 @@ describe "SourceAdapter" do
   it_should_behave_like "SourceAdapterHelper"
   
   before(:each) do
-    @s = Source.load(@s_fields[:name],@s_params)
-    @s.name = 'SimpleAdapter'
+    @s = Source.load('SimpleAdapter',@s_params)
     @sa = SourceAdapter.create(@s,nil)
+  end
+  
+  def setup_adapter(name)
+    fields = {
+      :name => name,
+      :url => 'http://example.com',
+      :login => 'testuser',
+      :password => 'testpass',
+    }
+    Source.create(fields,@s_params)
   end
   
   it "should create SourceAdapter with source" do
@@ -26,8 +35,8 @@ describe "SourceAdapter" do
   end
   
   it "should create and execute SubAdapter that extends BaseAdapter" do
-    @s.name = 'SubAdapter'
-    @sa = SourceAdapter.create(@s,nil)
+    sub = setup_adapter('SubAdapter')
+    @sa = SourceAdapter.create(sub,nil)
     @sa.class.name.should == 'SubAdapter'
     expected = {'1'=>@product1,'2'=>@product2}
     @sa.inject_result expected
@@ -35,15 +44,14 @@ describe "SourceAdapter" do
   end
   
   it "should fail to create SourceAdapter" do
-    @s_fields[:name] = 'Broken'
-    broken_source = Source.create(@s_fields,@s_params)
+    broken_source = setup_adapter('Broken')    
     lambda { SourceAdapter.create(broken_source) }.should raise_error(Exception)
     broken_source.delete
   end
   
   it "should create SourceAdapter with trailing spaces" do
-    @s.name = 'SimpleAdapter '
-    SourceAdapter.create(@s,nil).is_a?(SimpleAdapter).should be_true
+    s = setup_adapter('SimpleAdapter ')
+    SourceAdapter.create(s,nil).is_a?(SimpleAdapter).should be_true
   end
     
   describe "SourceAdapter methods" do

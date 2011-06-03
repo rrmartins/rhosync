@@ -65,6 +65,7 @@ describe "Record" do
       end
     end
     Store.db.zrange('stat:foo', 0, -1).should == ["1,1.0:14", "1,1.0:18", "1,1.0:20"]
+    Rhosync.stats = false
   end
   
   it "should get range of metric values" do

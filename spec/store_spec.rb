@@ -159,9 +159,16 @@ describe "Store" do
     
     it "should lock key for timeout" do
       doc = "locked_data"
-      Store.db.set "lock:#{doc}", Time.now.to_i+3
-      Store.should_receive(:sleep).at_least(:once).with(1).and_return { sleep 1 }
-      m_lock = Store.get_lock(doc,2)
+      lock = Time.now.to_i+3
+      Store.db.set "lock:#{doc}", lock
+      Store.should_receive(:sleep).at_least(:once).with(1).and_return { sleep 1; Store.release_lock(doc,lock); }
+      Store.get_lock(doc,4)
+    end
+
+    it "should raise exception if lock expires" do
+      doc = "locked_data"
+      Store.get_lock(doc)
+      lambda { sleep 2; Store.get_lock(doc,4,true) }.should raise_error(StoreLockException,"Lock \"lock:locked_data\" expired before it was released")
     end
     
     it "should lock document in block" do

@@ -1,4 +1,7 @@
 module Rhosync
+  
+  class StoreLockException < RuntimeError; end
+  
   class Store
     RESERVED_ATTRIB_NAMES = ["attrib_type", "id"] unless defined? RESERVED_ATTRIB_NAMES
     @@db = nil
@@ -145,23 +148,52 @@ module Rhosync
         release_lock(dockey,m_lock)
         res
       end
-    
-      def get_lock(dockey,timeout=0)
+      
+      #TODO: expose to higher level API
+      def get_lock(dockey,timeout=0,raise_on_expire=false)
         lock_key = _lock_key(dockey)
         current_time = Time.now.to_i   
         ts = current_time+timeout+1
-        if not @@db.setnx(lock_key,ts)
-          loop do 
-            if @@db.get(lock_key).to_i <= current_time and 
-              @@db.getset(lock_key,ts).to_i <= current_time
-              break
+        loop do 
+          if not @@db.setnx(lock_key,ts)
+            if raise_on_expire
+              if @@db.get(lock_key).to_i <= current_time
+                # lock expired before operation which set it up completed
+                # this process cannot continue without corrupting locked data 
+                raise StoreLockException, "Lock \"#{lock_key}\" expired before it was released"
+              end
+            else  
+              if @@db.get(lock_key).to_i <= current_time and 
+                @@db.getset(lock_key,ts).to_i <= current_time
+                # previous lock expired and we replaced it with our own
+                break
+              end
             end
             sleep(1)
             current_time = Time.now.to_i
+          else
+            break #no lock was set, so we set ours and leaving
           end
         end
         return ts
       end
+    
+      # def get_lock(dockey,timeout=0)
+      #   lock_key = _lock_key(dockey)
+      #   current_time = Time.now.to_i   
+      #   ts = current_time+timeout+1
+      #   if not @@db.setnx(lock_key,ts)
+      #     loop do 
+      #       if @@db.get(lock_key).to_i <= current_time and 
+      #         @@db.getset(lock_key,ts).to_i <= current_time
+      #         break
+      #       end
+      #       sleep(1)
+      #       current_time = Time.now.to_i
+      #     end
+      #   end
+      #   return ts
+      # end
       
       # Due to redis bug #140, setnx always returns true so this doesn't work
       # def get_lock(dockey,timeout=0)

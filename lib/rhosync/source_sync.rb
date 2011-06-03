@@ -75,7 +75,7 @@ module Rhosync
         @source.app_id,@source.user_id,client_id,params)
     end
     
-    def push_objects(objects,timeout=10)
+    def push_objects(objects,timeout=10,raise_on_expire=false)
       @source.lock(:md,timeout) do |s|
         doc = @source.get_data(:md)
         objects.each do |id,obj|
@@ -87,7 +87,7 @@ module Rhosync
       end      
     end    
 
-    def push_deletes(objects,timeout=10)
+    def push_deletes(objects,timeout=10,raise_on_expire=false)
       @source.lock(:md,timeout) do |s|
         doc = @source.get_data(:md)
         objects.each do |id|

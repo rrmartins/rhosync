@@ -37,6 +37,7 @@ module Rhosync
             else  
               name = self.name
             end
+            @@model_data[name.to_sym] ||= {} # TODO: shouldn't be nil here
             @@model_data[name.to_sym][attrib] = value
           end
           define_method("#{attrib}") do

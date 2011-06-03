@@ -3,8 +3,8 @@
 # source documents when source_sync and client_sync
 # need to access them
 module LockOps
-  def lock(doc,timeout=0)
-    Store.lock(docname(doc),timeout) do
+  def lock(doc,timeout=0,raise_on_expire=false)
+    Store.lock(docname(doc),timeout,raise_on_expire=false) do
       yield self
     end
   end

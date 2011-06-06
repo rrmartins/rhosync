@@ -7,28 +7,45 @@ module Rhosync
     
     class << self
       attr_accessor :validates_presence
+      
+      def create(fields,params)
+        if self.validates_presence
+          self.validates_presence.each do |field|
+            raise ArgumentError.new("Missing required field '#{field}'") unless fields[field]
+          end
+        end
+      end
     
       def define_fields(string_fields = [], integer_fields = [])
         @@string_fields,@@integer_fields = string_fields,integer_fields
         integer_fields.each do |attrib|
           define_method("#{attrib}=") do |value|
             value = (value.nil?) ? nil : value.to_i 
-            instance_variable_set(:"@#{attrib}", value)
+            @@model_data[self.name.to_sym][attrib.to_sym] = value
           end
           define_method("#{attrib}") do
-            instance_variable_get(:"@#{attrib}")
+            @@model_data[self.name.to_sym][attrib.to_sym]
           end
         end
         string_fields.each do |attrib|
           define_method("#{attrib}=") do |value|
-            instance_variable_set(:"@#{attrib}", value)
+            attrib = attrib.to_sym
+            name = nil
+            if attrib == :name
+              instance_variable_set(:@name, value)
+              name = value
+            else  
+              name = self.name
+            end
+            @@model_data[name.to_sym] ||= {} # TODO: shouldn't be nil here
+            @@model_data[name.to_sym][attrib] = value
           end
           define_method("#{attrib}") do
-            instance_variable_get(:"@#{attrib}")
+            @@model_data[instance_variable_get(:@name).to_sym][attrib.to_sym]
           end
+          # we have separate methods for this
+          @@integer_fields << :poll_interval unless @@integer_fields.include?(:poll_interval)
         end
-        @@string_fields << :id
-        @@string_fields << :rho__id
       end
         
       def validates_presence_of(*names)
@@ -64,7 +81,7 @@ module Rhosync
   end
   
   class Source < MemoryModel
-    attr_accessor :app_id, :user_id, :rho__id
+    attr_accessor :app_id, :user_id
             
     validates_presence_of :name
     
@@ -72,11 +89,11 @@ module Rhosync
     include LockOps
     
     # source fields
-    define_fields([:name, :url, :login, :password, :callback_url, :partition_type, :sync_type, 
-      :queue, :query_queue, :cud_queue, :belongs_to, :has_many, :pass_through], 
-      [:source_id, :priority, :poll_interval])
+    define_fields([:id, :rho__id, :name, :url, :login, :password, :callback_url, :partition_type, :sync_type, 
+      :queue, :query_queue, :cud_queue, :belongs_to, :has_many, :pass_through], [:source_id, :priority])
     
     def initialize(fields)
+      self.name = fields['name'] || fields[:name]
       fields.each do |name,value|
         arg = "#{name}=".to_sym
         self.send(arg, value) if self.respond_to?(arg)
@@ -99,17 +116,22 @@ module Rhosync
         
     def self.create(fields,params)
       fields = fields.with_indifferent_access # so we can access hash keys as symbols
+      super(fields,params)
+      @@model_data[fields[:name].to_sym] = {}
       set_defaults(fields)
       obj = new(fields)
       obj.assign_args(params)
-      @@model_data[obj.rho__id.to_sym] = obj
       obj
     end
-    
+          
     def self.load(obj_id,params)
       validate_attributes(params)
-      obj = @@model_data[obj_id.to_sym]
-      obj.assign_args(params) if obj
+      model_hash = @@model_data[obj_id.to_sym]
+      obj = new(model_hash) if model_hash
+      if obj
+        obj = obj.dup
+        obj.assign_args(params) 
+      end
       obj
     end
       
@@ -137,13 +159,14 @@ module Rhosync
     end
     
     def self.delete_all
-      @@model_data.each { |k,v| v.delete }
+      params = {:app_id => APP_NAME,:user_id => '*'}
+      @@model_data.each { |k,v| Source.load(k,params).delete }
       @@model_data = {}
     end
 
     def assign_args(params)
       self.user_id = params[:user_id]
-      self.app_id = params[:app_id]    
+      self.app_id = params[:app_id]   
     end
       
     def blob_attribs
@@ -160,25 +183,33 @@ module Rhosync
     def update(fields)
       fields = fields.with_indifferent_access # so we can access hash keys as symbols
       self.class.set_defaults(fields)
-      #super(fields)
     end
     
     def clone(src_doctype,dst_doctype)
       Store.clone(docname(src_doctype),docname(dst_doctype))
     end
     
+    def poll_interval
+      value = Store.get_value(poll_interval_key)
+      value ? value.to_i : nil
+    end
+    
+    def poll_interval=(interval)
+      Store.put_value(poll_interval_key, interval)
+    end
+    
     # Return the user associated with a source
     def user
-      @user = User.load(self.user_id)
+      User.load(self.user_id)
     end
     
     # Return the app the source belongs to
     def app
-      @app = App.load(self.app_id)
+      App.load(self.app_id)
     end
     
     def schema
-      @schema ||= self.get_value(:schema)
+      self.get_value(:schema)
     end
     
     def read_state
@@ -193,6 +224,7 @@ module Rhosync
     
     def delete
       flash_data('*')
+      flash_data(poll_interval_key)
       @@model_data.delete(rho__id.to_sym) if rho__id
     end
     
@@ -227,6 +259,10 @@ module Rhosync
     end
           
     private
+    def poll_interval_key
+      "source:#{self.name}:poll_interval"
+    end
+    
     def self.validate_attributes(params)
       raise ArgumentError.new('Missing required attribute user_id') unless params[:user_id]
       raise ArgumentError.new('Missing required attribute app_id') unless params[:app_id]

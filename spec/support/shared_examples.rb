@@ -38,14 +38,21 @@ shared_examples_for "SharedRhosyncHelper" do |params|
       :login => 'testuser',
       :password => 'testpass',
     }
+    @s1_fields = {
+      :name => 'FixedSchemaAdapter',
+      :url => 'http://example.com',
+      :login => 'testuser',
+      :password => 'testpass',
+    }
     @s_params = {
       :user_id => @u.id,
       :app_id => @a.id
     }
     @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
     @s = Source.create(@s_fields,@s_params)
-    @s1 = Source.load('FixedSchemaAdapter',@s_params)
+    @s1 = Source.create(@s1_fields,@s_params)
     @s2 = Source.create({:name=> 'Product2'},@s_params)
+    @s1.belongs_to = [{'brand' => 'SampleAdapter'}].to_json    
     config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
     @s1.update(config)
     @r = @s.read_state
@@ -122,13 +129,21 @@ shared_examples_for "ApiHelper" do
       :login => 'testuser',
       :password => 'testpass',
     }
+    @s1_fields = {
+      :name => 'FixedSchemaAdapter',
+      :url => 'http://example.com',
+      :login => 'testuser',
+      :password => 'testpass',
+    }
     @s_params = {
       :user_id => @u.id,
       :app_id => @a.id
     }
     @c = Client.create(@c_fields,{:source_name => @s_fields[:name]})
     @s = Source.create(@s_fields,@s_params)
-    @s1 = Source.load('FixedSchemaAdapter',@s_params)
+    @s1 = Source.create(@s1_fields,@s_params)
+    @s2 = Source.create({:name=> 'Product2'},@s_params)
+    @s1.belongs_to = [{'brand' => 'SampleAdapter'}].to_json    
     config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
     @s1.update(config)
     @r = @s.read_state

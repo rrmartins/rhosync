@@ -39,8 +39,6 @@ module Rhosync
       end
 
       def check_api_token
-        log "request_action:#{request_action}"
-        log "params_token:#{params[:api_token]}"
         request_action == 'get_api_token' or 
           (params[:api_token] and ApiToken.is_exist?(params[:api_token]))
       end

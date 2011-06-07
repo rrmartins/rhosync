@@ -5,7 +5,7 @@ module Rhosync
     field :device_type,:string
     field :device_pin,:string
     field :device_port,:string
-    
+    field :phone_id,:string
     field :user_id,:string
     field :app_id,:string
     attr_accessor :source_name
@@ -80,7 +80,7 @@ module Rhosync
     end
     
     def update_fields(params)
-      [:device_type,:device_pin,:device_port].each do |setting|
+      [:device_type,:device_pin,:device_port,:phone_id].each do |setting|
         self.send "#{setting}=".to_sym, params[setting].to_s if params[setting]
       end
     end

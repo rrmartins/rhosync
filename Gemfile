@@ -9,7 +9,6 @@ platforms :jruby do
   gem 'dbd-jdbc', :require => 'dbd/Jdbc'
   gem 'jruby-openssl'
   gem 'jruby-rack'
-  gem 'jetty-rackup'
   gem 'warbler'
 end
 

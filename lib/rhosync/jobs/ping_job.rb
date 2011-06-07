@@ -20,7 +20,7 @@ module Rhosync
               phone_ids << client.phone_id
               send_push = true
             end
-          if client.device_pin and client.device_pin.size > 0
+          elsif client.device_pin and client.device_pin.size > 0
             unless device_pins.include? client.device_pin   
               device_pins << client.device_pin
               send_push = true

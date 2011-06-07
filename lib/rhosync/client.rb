@@ -6,7 +6,6 @@ module Rhosync
     field :device_pin,:string
     field :device_port,:string
     field :phone_id,:string
-    
     field :user_id,:string
     field :app_id,:string
     attr_accessor :source_name

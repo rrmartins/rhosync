@@ -14,13 +14,12 @@ module Rhosync
         params.merge!('device_port' => client.device_port, 'device_pin' => client.device_pin, 'phone_id' => client.phone_id)
         send_push = false
         if client.device_type and client.device_type.size > 0
-          # if client.phone_id and client.phone_id.size > 0
-          #             unless phone_ids.include? client.phone_id   
-          #               phone_ids << client.phone_id
-          #               send_push = true
-          #             end
-          if client.device_pin and client.device_pin.size > 0
-            puts 'found device id'
+          if client.phone_id and client.phone_id.size > 0
+            unless phone_ids.include? client.phone_id   
+              phone_ids << client.phone_id
+              send_push = true
+            end
+          elsif client.device_pin and client.device_pin.size > 0
             unless device_pins.include? client.device_pin   
               device_pins << client.device_pin
               send_push = true
@@ -29,7 +28,6 @@ module Rhosync
             log "Skipping ping for non-registered client_id '#{client_id}'..."
             next
           end
-          puts "send push: #{send_push}"
           if send_push
             klass = Object.const_get(camelize(client.device_type.downcase)) 
             if klass

@@ -11,6 +11,7 @@ describe "RhosyncApiGetClientParams" do
         {"name"=>"device_pin", "value"=>"abcd", "type"=>"string"}, 
         {"name"=>"device_port", "value"=>"3333", "type"=>"string"}, 
         {"name"=>"user_id", "value"=>"testuser", "type"=>"string"}, 
+        {"name"=>"phone_id", "value"=>nil, "type"=>"string"},
         {"name"=>"app_id", "value"=>"application", "type"=>"string"}].sort{|x,y| x['name']<=>y['name']}
     end
   end  

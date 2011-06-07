@@ -83,5 +83,21 @@ describe "PingJob" do
       PingJob.should_receive(:log).twice.with(/Dropping ping request for client/)
       lambda { PingJob.perform(params) }.should_not raise_error
     end
+    
+    it "should drop ping if it's already in user's phone id list and device pin is different" do
+      params = {"user_id" => @u.id, "api_token" => @api_token,
+        "sources" => [@s.name], "message" => 'hello world', 
+        "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3'}
+      @c.phone_id = '3'
+      @c_fields.merge!(:phone_id => '3')
+      # another client with the same phone id..
+      @c1 = Client.create(@c_fields,{:source_name => @s_fields[:name]})
+      #  yet another...
+      @c2 = Client.create(@c_fields,{:source_name => @s_fields[:name]})
+
+      Apple.should_receive(:ping).with({'device_pin' => @c.device_pin, 'phone_id' => @c.phone_id, 'device_port' => @c.device_port}.merge!(params))
+      PingJob.should_receive(:log).twice.with(/Dropping ping request for client/)
+      lambda { PingJob.perform(params) }.should_not raise_error
+    end
   end  
 end

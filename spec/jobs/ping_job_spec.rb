@@ -7,7 +7,7 @@ describe "PingJob" do
     it "should perform apple ping with integer parameters" do
       params = {"user_id" => @u.id, "api_token" => @api_token,
         "sources" => [@s.name], "message" => 'hello world', 
-        "vibrate" => 5, "badge" => '5', "sound" => 'hello.mp3'}
+        "vibrate" => 5, "badge" => '5', "sound" => 'hello.mp3',"phone_id"=>nil}
 
       scrubbed_params = params.dup
       scrubbed_params['vibrate'] = '5'
@@ -20,7 +20,7 @@ describe "PingJob" do
     it "should perform blackberry ping with integer parameters" do
       params = {"user_id" => @u.id, "api_token" => @api_token,
         "sources" => [@s.name], "message" => 'hello world', 
-        "vibrate" => 5, "badge" => '5', "sound" => 'hello.mp3'}
+        "vibrate" => 5, "badge" => '5', "sound" => 'hello.mp3',"phone_id"=>nil}
 
       scrubbed_params = params.dup
       scrubbed_params['vibrate'] = '5'
@@ -34,7 +34,7 @@ describe "PingJob" do
     it "should perform apple ping" do
       params = {"user_id" => @u.id, "api_token" => @api_token,
         "sources" => [@s.name], "message" => 'hello world', 
-        "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3'}
+        "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3',"phone_id"=>nil}
       Apple.should_receive(:ping).once.with({'device_pin' => @c.device_pin,
         'device_port' => @c.device_port}.merge!(params))
       PingJob.perform(params)
@@ -43,7 +43,7 @@ describe "PingJob" do
     it "should perform blackberry ping" do
       params = {"user_id" => @u.id, "api_token" => @api_token,
         "sources" => [@s.name], "message" => 'hello world', 
-        "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3'}
+        "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3',"phone_id"=>nil}
       @c.device_type = 'blackberry'
       Blackberry.should_receive(:ping).once.with({'device_pin' => @c.device_pin,
         'device_port' => @c.device_port}.merge!(params))
@@ -72,7 +72,7 @@ describe "PingJob" do
     it "should drop ping if it's already in user's device pin list" do
       params = {"user_id" => @u.id, "api_token" => @api_token,
         "sources" => [@s.name], "message" => 'hello world', 
-        "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3'}
+        "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3',"phone_id"=>nil}
 
       # another client with the same device pin ...
       @c1 = Client.create(@c_fields,{:source_name => @s_fields[:name]})

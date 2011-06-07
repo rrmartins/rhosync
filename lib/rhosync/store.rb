@@ -143,13 +143,12 @@ module Rhosync
       
       # Lock a given key and release when provided block is finished
       def lock(dockey,timeout=0,raise_on_expire=false)
-        m_lock = get_lock(dockey,timeout)
+        m_lock = get_lock(dockey,timeout,raise_on_expire)
         res = yield
         release_lock(dockey,m_lock)
         res
       end
       
-      #TODO: expose to higher level API
       def get_lock(dockey,timeout=0,raise_on_expire=false)
         lock_key = _lock_key(dockey)
         current_time = Time.now.to_i   

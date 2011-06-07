@@ -2,7 +2,7 @@ require File.join(File.dirname(__FILE__),'spec_helper')
 require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 
 
-describe "ClientSync" do
+describe "DynamicAdapter" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     
     it "should query dynamic adapter service" do

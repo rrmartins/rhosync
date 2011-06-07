@@ -15,9 +15,18 @@ end
 describe "SourceAdapter" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     before(:each) do
-      @s = Source.load(@s_fields[:name],@s_params)
-      @s.name = 'SimpleAdapter'
-      @sa = SourceAdapter.create(@s)
+      @s = Source.load('SimpleAdapter',@s_params)
+      @sa = SourceAdapter.create(@s,nil)
+    end
+
+    def setup_adapter(name)
+      fields = {
+        :name => name,
+        :url => 'http://example.com',
+        :login => 'testuser',
+        :password => 'testpass',
+      }
+      Source.create(fields,@s_params)
     end
 
     it "should create SourceAdapter with source" do
@@ -34,9 +43,15 @@ describe "SourceAdapter" do
       lambda { @sa1 = SourceAdapter.create(@s2) }.should raise_error(Exception)
     end
 
+    it "should fail to create SourceAdapter" do
+      broken_source = setup_adapter('Bro-ken')    
+      lambda { SourceAdapter.create(broken_source) }.should raise_error(Exception)
+      broken_source.delete
+    end
+
     it "should create SourceAdapter with trailing spaces" do
-      @s.name = 'SimpleAdapter '
-      SourceAdapter.create(@s).is_a?(SimpleAdapter).should be_true
+      s = setup_adapter('SimpleAdapter ')
+      SourceAdapter.create(s,nil).is_a?(SimpleAdapter).should be_true
     end
 
     describe "SourceAdapter methods" do

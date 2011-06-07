@@ -149,7 +149,6 @@ module Rhosync
         res
       end
       
-      #TODO: expose to higher level API
       def get_lock(dockey,timeout=0,raise_on_expire=false)
         lock_key = _lock_key(dockey)
         current_time = Time.now.to_i   

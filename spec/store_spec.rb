@@ -168,6 +168,13 @@ describe "Store" do
        	Store.get_lock(doc)
        	lambda { sleep 2; Store.get_lock(doc,4,true) }.should raise_error(StoreLockException,"Lock \"lock:locked_data\" expired before it was released")
       end
+      
+      it "should acquire lock if it expires" do
+       	doc = "locked_data"
+       	Store.get_lock(doc)
+       	sleep 2
+       	Store.get_lock(doc,1).should > Time.now.to_i
+      end
 
       it "should lock document in block" do
         doc = "locked_data"

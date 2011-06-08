@@ -32,7 +32,6 @@ module Rhosync
       data['data.alert'] = params['message'] if params['message']
       data['data.vibrate'] = params['vibrate'] if params['vibrate']
       data['data.sound'] = params['sound'] if params['sound']
-      data['phone_id'] = params['phone_id'] if params['phone_id']
       data
     end
   end

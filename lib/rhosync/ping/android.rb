@@ -16,6 +16,9 @@ module Rhosync
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         res = http.request(req)
+        puts "response below"
+        puts res
+        puts res.body.inspect
 
       rescue Exception => error
         log "Error while sending ping: #{error}"
@@ -32,7 +35,6 @@ module Rhosync
       data['data.alert'] = params['message'] if params['message']
       data['data.vibrate'] = params['vibrate'] if params['vibrate']
       data['data.sound'] = params['sound'] if params['sound']
-      data['phone_id'] = params['phone_id'] if params['phone_id']
       data
     end
   end

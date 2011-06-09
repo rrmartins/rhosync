@@ -16,9 +16,6 @@ module Rhosync
         http.use_ssl = true
         http.verify_mode = OpenSSL::SSL::VERIFY_NONE
         res = http.request(req)
-        puts "response below"
-        puts res
-        puts res.body.inspect
 
       rescue Exception => error
         log "Error while sending ping: #{error}"

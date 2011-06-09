@@ -114,7 +114,7 @@ module Rhosync
   def create_admin_user
     unless User.is_exist?('rhoadmin')
       admin = User.create({:login => 'rhoadmin', :admin => 1})
-      admin.password = ''
+      admin.password = ENV['PSWRD'] || ''
       admin.create_token
     end
   end

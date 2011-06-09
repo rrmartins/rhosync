@@ -38,6 +38,7 @@ class RhosyncConsole::Server
   end
   
   get '/loginpage' do
+    halt 401 if ENV['INSTANCE_ID']
     erb :login, :layout => false
   end
   

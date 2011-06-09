@@ -13,7 +13,6 @@ module Rhosync
         client = Client.load(client_id,{:source_name => '*'})
         params.merge!('device_port' => client.device_port, 'device_pin' => client.device_pin, 'phone_id' => client.phone_id)
         send_push = false
-        puts "params: #{params}"
         if client.device_type and client.device_type.size > 0
           if client.phone_id and client.phone_id.size > 0
             unless phone_ids.include? client.phone_id   

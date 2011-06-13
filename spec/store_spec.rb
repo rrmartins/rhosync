@@ -171,6 +171,30 @@ describe "Store" do
       lambda { sleep 2; Store.get_lock(doc,4,true) }.should raise_error(StoreLockException,"Lock \"lock:locked_data\" expired before it was released")
     end
     
+    it "should raise lock expires exception on global setting" do
+      doc = "locked_data"
+      Store.get_lock(doc)
+      Rhosync.raise_on_expired_lock = true
+      lambda { sleep 2; Store.get_lock(doc,4) }.should raise_error(StoreLockException,"Lock \"lock:locked_data\" expired before it was released")
+      Rhosync.raise_on_expired_lock = false
+    end
+    
+    it "should acquire lock if it expires" do
+     	doc = "locked_data"
+     	Store.get_lock(doc)
+     	sleep 2
+     	Store.get_lock(doc,1).should > Time.now.to_i
+    end
+    
+    it "should use global lock duration" do
+      doc = "locked_data"
+      Rhosync.lock_duration = 2
+     	Store.get_lock(doc)
+     	Store.should_receive(:sleep).exactly(3).times.with(1).and_return { sleep 1 }
+      Store.get_lock(doc)
+     	Rhosync.lock_duration = nil
+    end
+        
     it "should lock document in block" do
       doc = "locked_data"
       Store.lock(doc,0) do

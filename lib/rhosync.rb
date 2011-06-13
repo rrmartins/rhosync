@@ -63,6 +63,7 @@ module Rhosync
     Rhosync.redis = get_setting(config,environment,:redis,false)
     Rhosync.log_disabled = get_setting(config,environment,:log_disabled,false)
     Rhosync.raise_on_expired_lock = get_setting(config,environment,:raise_on_expired_lock,false)
+    Rhosync.lock_duration = get_setting(config,environment,:lock_duration)
     Rhosync.environment = environment    
     yield self if block_given?
     Store.create(Rhosync.redis)

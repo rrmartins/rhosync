@@ -3,6 +3,7 @@
 * #14082861 - expose Store.lock timeout to high-level functions
 * #14082589 - fixed source loading so a unique instance is loaded
 * #14124195 - concurrency issue under load for same user via push_objects api
+* #14511763 - added global options `raise_on_expired_lock` (true/false) and `lock_duration` (sec) settings
 
 ## 2.1.6
 * #13830841 - fixed issue where current_user.login doesn't match @source.user_id

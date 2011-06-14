@@ -14,7 +14,7 @@ describe "RhosyncApiPushObjects" do
       data = {'1' => @product1, '2' => @product2, '3' => @product3}
       update = {'price' => '0.99', 'new_field' => 'value'}
       @s = Source.load(@s_fields[:name],@s_params)
-      set_state(@s.docname(:md) => data)
+      set_state(@s.docname(:md) => data,@s.docname(:md_size) => '3')
       update.each do |key,value|
         data['2'][key] = value
       end

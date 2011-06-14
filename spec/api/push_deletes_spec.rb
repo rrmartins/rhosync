@@ -6,7 +6,7 @@ describe "RhosyncApiPushDeletes" do
     it "should delete object from :md" do
       data = {'1' => @product1, '2' => @product2, '3' => @product3}
       @s = Source.load(@s_fields[:name],@s_params)
-      set_state(@s.docname(:md) => data)
+      set_state(@s.docname(:md) => data,@s.docname(:md_size) => '3')
       data.delete('2')
       post "/api/push_deletes", :api_token => @api_token, 
         :user_id => @u.id, :source_id => @s_fields[:name], :objects => ['2']

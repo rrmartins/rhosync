@@ -78,23 +78,27 @@ module Rhosync
     def push_objects(objects,timeout=10,raise_on_expire=false)
       @source.lock(:md,timeout,raise_on_expire) do |s|
         doc = @source.get_data(:md)
+        orig_doc_size = doc.size
         objects.each do |id,obj|
           doc[id] ||= {}
           doc[id].merge!(obj)
         end  
+        diff_count = doc.size - orig_doc_size
         @source.put_data(:md,doc)
-        @source.update_count(:md_size,doc.size)
+        @source.update_count(:md_size,diff_count)
       end      
     end    
 
     def push_deletes(objects,timeout=10,raise_on_expire=false)
       @source.lock(:md,timeout,raise_on_expire) do |s|
         doc = @source.get_data(:md)
+        orig_doc_size = doc.size
         objects.each do |id|
           doc.delete(id)
         end  
+        diff_count = doc.size - orig_doc_size
         @source.put_data(:md,doc)
-        @source.update_count(:md_size,doc.size)
+        @source.update_count(:md_size,diff_count)
       end      
     end
     

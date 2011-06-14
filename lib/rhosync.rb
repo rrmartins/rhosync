@@ -44,7 +44,8 @@ module Rhosync
   class << self
     attr_accessor :base_directory, :app_directory, :data_directory, 
       :vendor_directory, :blackberry_bulk_sync, :redis, :environment,
-      :log_disabled, :license, :bulk_sync_poll_interval, :stats, :appserver, :api_token
+      :log_disabled, :license, :bulk_sync_poll_interval, :stats, :appserver, :api_token,
+      :raise_on_expired_lock, :lock_duration
   end
   
   ### Begin Rhosync setup methods  
@@ -64,6 +65,7 @@ module Rhosync
     Rhosync.appserver = get_setting(config,environment,:appserver,false)
     Rhosync.api_token = ENV['API_TOKEN'] || get_setting(config,environment,:api_token,false)
     Rhosync.log_disabled = get_setting(config,environment,:log_disabled,false)
+    Rhosync.raise_on_expired_lock = get_setting(config,environment,:raise_on_expired_lock,false)
     Rhosync.environment = environment    
     yield self if block_given?
     Store.create(Rhosync.redis)
@@ -72,9 +74,6 @@ module Rhosync
     Rhosync.app_directory ||= Rhosync.base_directory
     Rhosync.data_directory ||= File.join(Rhosync.base_directory,'data')
     Rhosync.vendor_directory ||= File.join(Rhosync.base_directory,'vendor')
-    Rhosync.blackberry_bulk_sync ||= false
-    Rhosync.bulk_sync_poll_interval ||= 3600
-    Rhosync.log_disabled ||= false
     Rhosync.stats ||= false
     Rhosync.license = License.new
     

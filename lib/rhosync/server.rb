@@ -56,6 +56,15 @@ module Rhosync
       def login_required
         current_user.nil?
       end
+      
+      def get_api_token(params, user)
+        puts " calloing do_get_api_token" + params.inspect + " user " + user.inspect
+        if user and user.admin == 1 and user.token
+          user.token.value 
+        else
+          raise ApiException.new(422, "Invalid/missing API user")
+        end
+      end    
 
       def login
         if params[:login] == 'rhoadmin'
@@ -66,7 +75,6 @@ module Rhosync
         if user
           session[:login] = user.login
           session[:app_name] = APP_NAME
-          true
         else
           false
         end
@@ -215,7 +223,11 @@ module Rhosync
     # Collection routes
     post '/login' do
       logout
-      do_login
+      puts " we are here in login , params : " + params.inspect + ", response : " + response.inspect + " , instance " + self.inspect
+      res = do_login
+      puts "res is " + res.inspect
+      res
+      get_api_token(params, current_user)
     end
 
     post '/application/clientlogin' do
@@ -283,6 +295,7 @@ module Rhosync
       post "/api/#{name}" do
         if check_api_token
           begin
+            puts " we are here and params are " + params.inspect + ", user is : " + api_user.inspect + " self : " + self.inspect
             yield params,api_user
           rescue ApiException => ae
             throw :halt, [ae.error_code, ae.message]  
@@ -295,8 +308,13 @@ module Rhosync
         end
       end
     end
+    
+    Dir[File.join(File.dirname(__FILE__),'api','**','get_api_token.rb')].each { |api| load api } 
   end
 end
 
 include Rhosync
-Dir[File.join(File.dirname(__FILE__),'api','**','*.rb')].each { |api| load api }
+Dir[File.join(File.dirname(__FILE__),'api/admin','**','*.rb')].each { |api| load api }
+Dir[File.join(File.dirname(__FILE__),'api/client','**','*.rb')].each { |api| load api }
+Dir[File.join(File.dirname(__FILE__),'api/user','**','*.rb')].each { |api| load api }
+Dir[File.join(File.dirname(__FILE__),'api/source','**','*.rb')].each { |api| load api }

@@ -308,13 +308,11 @@ module Rhosync
         end
       end
     end
-    
-    Dir[File.join(File.dirname(__FILE__),'api','**','get_api_token.rb')].each { |api| load api } 
   end
 end
 
 include Rhosync
-Dir[File.join(File.dirname(__FILE__),'api/admin','**','*.rb')].each { |api| load api }
-Dir[File.join(File.dirname(__FILE__),'api/client','**','*.rb')].each { |api| load api }
-Dir[File.join(File.dirname(__FILE__),'api/user','**','*.rb')].each { |api| load api }
-Dir[File.join(File.dirname(__FILE__),'api/source','**','*.rb')].each { |api| load api }
+Dir[File.join(File.dirname(__FILE__),'api','**','*.rb')].each { |api| load api }
+#Dir[File.join(File.dirname(__FILE__),'api/client','**','*.rb')].each { |api| load api }
+#Dir[File.join(File.dirname(__FILE__),'api/user','**','*.rb')].each { |api| load api }
+#Dir[File.join(File.dirname(__FILE__),'api/source','**','*.rb')].each { |api| load api }

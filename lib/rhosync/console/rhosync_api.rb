@@ -11,7 +11,7 @@ module RhosyncApi
       if directcall?(server)
         Server.get_api_token(nil,User.authenticate(login,password))
       else  
-        cookie = login(server,login,password)
+        cookie = do_login(server,login,password)
         RestClient.post("#{server}/api/get_api_token",'',{:cookies => cookie})
       end
     end
@@ -217,7 +217,7 @@ module RhosyncApi
     # res = RestClient.post("#{server}/login",
     #           {:login => login, :password => password}.to_json, :content_type => :json)
     # RestClient.post("#{server}/api/get_api_token",'',{:cookies => res.cookies})      
-    def login(server,login,password)
+    def do_login(server,login,password)
       uri = URI.parse(server)
       http = Net::HTTP.new(uri.host,uri.port)
       res,data = http.post( '/login', 

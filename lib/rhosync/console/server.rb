@@ -22,7 +22,7 @@ module RhosyncConsole
     before do
       headers['Expires'] = 'Sun, 19 Nov 1978 05:00:00 GMT'
       headers['Cache-Control'] = 'no-store, no-cache, must-revalidate'  
-      headers['Pramga'] = 'no-cache'
+      headers['Pragma'] = 'no-cache'
     end
     
   end

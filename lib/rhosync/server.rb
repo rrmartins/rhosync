@@ -39,7 +39,7 @@ module Rhosync
       end
 
       def check_api_token
-        request_action == 'get_api_token' or 
+        request_action == 'login' or request_action == 'get_api_token' or 
           (params[:api_token] and ApiToken.is_exist?(params[:api_token]))
       end
 
@@ -55,16 +55,7 @@ module Rhosync
 
       def login_required
         current_user.nil?
-      end
-      
-      def get_api_token(params, user)
-        puts " calloing do_get_api_token" + params.inspect + " user " + user.inspect
-        if user and user.admin == 1 and user.token
-          user.token.value 
-        else
-          raise ApiException.new(422, "Invalid/missing API user")
-        end
-      end    
+      end  
 
       def login
         if params[:login] == 'rhoadmin'
@@ -222,13 +213,16 @@ module Rhosync
 
     # Collection routes
     post '/login' do
-      logout
-      puts " we are here in login , params : " + params.inspect + ", response : " + response.inspect + " , instance " + self.inspect
-      res = do_login
-      puts "res is " + res.inspect
-      res
-      get_api_token(params, current_user)
+      puts "calling the /login method is deprecated, use api/admin/login"
+      call env.merge('PATH_INFO' => "/api/admin/login")
     end
+    
+    #post '/api/admin/login' do
+    #  puts "calling the new login function "
+    #  logout
+    #  do_login
+    #  do_get_api_token(params, current_user)
+    #end
 
     post '/application/clientlogin' do
       catch_all do      
@@ -293,18 +287,33 @@ module Rhosync
 
     def self.api(name)
       post "/api/#{name}" do
-        if check_api_token
-          begin
-            puts " we are here and params are " + params.inspect + ", user is : " + api_user.inspect + " self : " + self.inspect
-            yield params,api_user
-          rescue ApiException => ae
-            throw :halt, [ae.error_code, ae.message]  
-          rescue Exception => e
-            log e.message + "\n" + e.backtrace.join("\n")
-            throw :halt, [500, e.message]
+        puts "calling the api/name version is deprecated"
+        call env.merge('PATH_INFO' => "/api/admin/#{name}")
+      end
+      
+      if "#{name}" == 'login' 
+        puts " we are here in login eval "
+        post "/api/admin/login" do
+          puts " we are calling normal function LOGIN "
+          logout
+          do_login
+          do_get_api_token(params, current_user)
+        end
+      else
+        post "/api/admin/#{name}" do
+          if check_api_token
+            begin
+              puts "calling the normal function namespace/name" 
+              yield params,api_user
+            rescue ApiException => ae
+              throw :halt, [ae.error_code, ae.message]  
+            rescue Exception => e
+              log e.message + "\n" + e.backtrace.join("\n")
+              throw :halt, [500, e.message]
+            end
+          else
+            throw :halt, [422, "No API token provided"]
           end
-        else
-          throw :halt, [422, "No API token provided"]
         end
       end
     end
@@ -313,6 +322,3 @@ end
 
 include Rhosync
 Dir[File.join(File.dirname(__FILE__),'api','**','*.rb')].each { |api| load api }
-#Dir[File.join(File.dirname(__FILE__),'api/client','**','*.rb')].each { |api| load api }
-#Dir[File.join(File.dirname(__FILE__),'api/user','**','*.rb')].each { |api| load api }
-#Dir[File.join(File.dirname(__FILE__),'api/source','**','*.rb')].each { |api| load api }

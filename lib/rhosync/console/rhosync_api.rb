@@ -11,8 +11,7 @@ module RhosyncApi
       if directcall?(server)
         Server.get_api_token(nil,User.authenticate(login,password))
       else  
-        cookie = do_login(server,login,password)
-        RestClient.post("#{server}/api/get_api_token",'',{:cookies => cookie})
+        do_login(server,login,password)
       end
     end
     
@@ -20,7 +19,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         JSON.parse(Server.list_users(nil,api_user(token)))
       else  
-        JSON.parse(RestClient.post("#{server}/api/list_users",
+        JSON.parse(RestClient.post("#{server}/api/user/list_users",
             {:api_token => token}.to_json, :content_type => :json).body)
       end
     end
@@ -29,7 +28,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         Server.save_adapter({:attributes => {'adapter_url' => adapter_url}},nil)
       else  
-        RestClient.post("#{server}/api/save_adapter",
+        RestClient.post("#{server}/api/source/save_adapter",
           {:api_token => token,:attributes => {:adapter_url => adapter_url}}.to_json, 
             :content_type => :json)
       end
@@ -39,7 +38,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         Server.create_user({:attributes => {'login' => login, 'password' => password}},nil)
       else  
-        RestClient.post("#{server}/api/create_user",
+        RestClient.post("#{server}/api/user/create_user",
           {:api_token => token,:attributes => {:login => login, :password => password}}.to_json, 
             :content_type => :json)
       end  
@@ -49,7 +48,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         Server.update_user({:attributes => attributes},api_user(token))
       else  
-        RestClient.post("#{server}/api/update_user",
+        RestClient.post("#{server}/api/user/update_user",
           {:api_token => token,:attributes => attributes}.to_json, 
             :content_type => :json)
       end  
@@ -59,7 +58,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         Server.delete_user({:user_id => user_id},nil)
       else
-        RestClient.post("#{server}/api/delete_user",
+        RestClient.post("#{server}/api/user/delete_user",
           {:api_token => token, :user_id => user_id}.to_json, 
            :content_type => :json)
       end    
@@ -69,7 +68,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         JSON.parse(Server.list_clients({:user_id => user_id},nil))
       else
-        JSON.parse(RestClient.post("#{server}/api/list_clients", 
+        JSON.parse(RestClient.post("#{server}/api/client/list_clients", 
           {:api_token => token, :user_id => user_id}.to_json, :content_type => :json).body)
       end
     end
@@ -78,7 +77,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         Server.create_client({:user_id => user_id},nil)
       else  
-        RestClient.post("#{server}/api/create_client",
+        RestClient.post("#{server}/api/client/create_client",
           {:api_token => token, :user_id => user_id}.to_json, 
            :content_type => :json).body
       end
@@ -88,7 +87,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         Server.delete_client({:user_id => user_id,:client_id => client_id},nil)
       else
-        RestClient.post("#{server}/api/delete_client",
+        RestClient.post("#{server}/api/client/delete_client",
           {:api_token => token, :user_id => user_id, 
            :client_id => client_id}.to_json, :content_type => :json)    
       end     
@@ -98,7 +97,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         JSON.parse(Server.get_client_params({:client_id => client_id},nil))
       else
-        JSON.parse(RestClient.post("#{server}/api/get_client_params", 
+        JSON.parse(RestClient.post("#{server}/api/client/get_client_params", 
           {:api_token => token, :client_id => client_id}.to_json, :content_type => :json).body)
       end
     end
@@ -107,7 +106,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         JSON.parse(Server.get_adapter({},nil))
       else
-        JSON.parse(RestClient.post("#{server}/api/get_adapter", 
+        JSON.parse(RestClient.post("#{server}/api/source/get_adapter", 
           {:api_token => token}.to_json, :content_type => :json).body)
       end
     end
@@ -116,7 +115,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         JSON.parse(Server.list_sources({:partition_type => partition.to_s},nil))
       else  
-        JSON.parse(RestClient.post("#{server}/api/list_sources", 
+        JSON.parse(RestClient.post("#{server}/api/source/list_sources", 
           {:api_token => token, :partition_type => partition}.to_json, :content_type => :json).body)
       end
     end
@@ -125,7 +124,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         JSON.parse(Server.get_source_params({:source_id => source_id},nil))
       else  
-        JSON.parse(RestClient.post("#{server}/api/get_source_params", 
+        JSON.parse(RestClient.post("#{server}/api/source/get_source_params", 
           {:api_token => token, :source_id => source_id}.to_json, :content_type => :json).body)
       end
     end
@@ -134,7 +133,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         JSON.parse(Server.list_source_docs({:source_id => source_id, :user_id => user_id},nil))
       else  
-        JSON.parse(RestClient.post("#{server}/api/list_source_docs", 
+        JSON.parse(RestClient.post("#{server}/api/source/list_source_docs", 
           {:api_token => token, :source_id => source_id, :user_id => user_id}.to_json, :content_type => :json).body)
       end
     end  
@@ -143,7 +142,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         JSON.parse(Server.list_client_docs({:source_id => source_id, :client_id => client_id},nil))
       else  
-        JSON.parse(RestClient.post("#{server}/api/list_client_docs", 
+        JSON.parse(RestClient.post("#{server}/api/client/list_client_docs", 
           {:api_token => token, :source_id => source_id, :client_id => client_id}.to_json, :content_type => :json).body)
       end    
     end  
@@ -154,7 +153,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         res = Server.get_db_doc({:doc => doc, :data_type => data_type},nil)
       else
-        res = RestClient.post("#{server}/api/get_db_doc", 
+        res = RestClient.post("#{server}/api/source/get_db_doc", 
           {:api_token => token, :doc => doc, :data_type => data_type}.to_json, :content_type => :json).body
       end 
       data_type=='' ? JSON.parse(res) : res
@@ -165,7 +164,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         Server.set_db_doc({:doc => doc, :data => data, :data_type => data_type},nil)
       else  
-        RestClient.post("#{server}/api/set_db_doc", 
+        RestClient.post("#{server}/api/source/set_db_doc", 
          {:api_token => token, :doc => doc, :data => data, :data_type => data_type}.to_json, :content_type => :json)
       end   
     end
@@ -174,7 +173,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         Server.reset({:api_token => token},api_user(token))
       else  
-        RestClient.post("#{server}/api/reset",
+        RestClient.post("#{server}/api/admin/reset",
           {:api_token => token}.to_json, :content_type => :json)
       end
     end
@@ -188,7 +187,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         Server.ping(ping_params,nil)
       else  
-        RestClient.post("#{server}/api/ping",ping_params.to_json, :content_type => :json)
+        RestClient.post("#{server}/api/client/ping",ping_params.to_json, :content_type => :json)
       end  
     end
 
@@ -196,7 +195,7 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         JSON.parse(Server.get_license_info(nil,nil))
       else  
-        JSON.parse(RestClient.post("#{server}/api/get_license_info",
+        JSON.parse(RestClient.post("#{server}/api/admin/get_license_info",
           {:api_token => token}.to_json, :content_type => :json).body)
       end
     end
@@ -205,26 +204,17 @@ module RhosyncApi
       if directcall?(server) and verify_token(token)
         Server.stats(params,api_user(token))
       else  
-        RestClient.post("#{server}/api/stats",
+        RestClient.post("#{server}/api/admin/stats",
           {:api_token => token}.merge!(params).to_json, :content_type => :json).body
       end
     end
     
     private
     
-    # TODO: Kill this code when rest-client properly 
-    # escapes cookie strings on MAC/LINUX AND WINDOWS
-    # res = RestClient.post("#{server}/login",
-    #           {:login => login, :password => password}.to_json, :content_type => :json)
-    # RestClient.post("#{server}/api/get_api_token",'',{:cookies => res.cookies})      
     def do_login(server,login,password)
-      uri = URI.parse(server)
-      http = Net::HTTP.new(uri.host,uri.port)
-      res,data = http.post( '/login', 
-        {:login => login, :password => password}.to_json, 
-        {'Content-Type' => 'application/json'} )
-      cookie = res.response['set-cookie'].split('; ')[0].split('=')
-      {cookie[0] => cookie[1]}
+      RestClient.post("#{server}/api/admin/admin",
+        {:login => login, :password => password}.to_json,
+         :content_type => :json).body
     end
     
     def directcall?(server)

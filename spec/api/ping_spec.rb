@@ -7,7 +7,7 @@ describe "RhosyncApiPing" do
         "sources" => [@s.name], "message" => 'hello world', 
         "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3'}
       PingJob.should_receive(:perform).once.with(params)
-      post "/api/ping", params
+      post "/api/client/ping", params
       last_response.should be_ok
     end
 
@@ -16,7 +16,7 @@ describe "RhosyncApiPing" do
         "async" => "true","sources" => [@s.name], "message" => 'hello world', 
         "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3'}
       PingJob.should_receive(:enqueue).once.with(params)
-      post "/api/ping", params
+      post "/api/client/ping", params
       last_response.should be_ok
     end
   end  

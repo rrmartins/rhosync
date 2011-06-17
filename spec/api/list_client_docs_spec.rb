@@ -3,7 +3,7 @@ require File.join(File.dirname(__FILE__),'api_helper')
 describe "RhosyncApiListClientDocs" do
   it_should_behave_like "ApiHelper" do
     it "should list client documents" do
-      post "/api/list_client_docs", {:api_token => @api_token,
+      post "/api/client/list_client_docs", {:api_token => @api_token,
         :source_id => "SimpleAdapter", :client_id => @c.id}
       JSON.parse(last_response.body).should == {
         "cd"=>"client:application:testuser:#{@c.id}:SimpleAdapter:cd", 

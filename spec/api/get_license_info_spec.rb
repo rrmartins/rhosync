@@ -4,7 +4,7 @@ describe "RhosyncApiGetLicenseInfo" do
   it_should_behave_like "ApiHelper" do
     it "should get license info" do
       true.should == true
-      post "/api/get_license_info", {:api_token => @api_token}
+      post "/api/admin/get_license_info", {:api_token => @api_token}
       JSON.parse(last_response.body).should == {
         "available" => 9, 
         "issued" => "Fri Apr 23 17:20:13 -0700 2010", 

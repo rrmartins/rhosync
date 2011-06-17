@@ -5,7 +5,7 @@ describe "RhosyncApiCreateUser" do
     it "should create user" do
       params = {:api_token => @api_token,
         :attributes => {:login => 'testuser1', :password => 'testpass1'}}
-      post "/api/create_user", params
+      post "/api/user/create_user", params
       last_response.should be_ok
       User.load(params[:attributes][:login]).login.should == params[:attributes][:login]
       User.authenticate(params[:attributes][:login],

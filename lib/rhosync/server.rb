@@ -315,7 +315,14 @@ module Rhosync
       
       if "#{name}" == 'login' 
         post "/api/#{namespace}/login" do
-          yield params, self
+          begin
+            yield params, self
+          rescue ApiException => ae
+            throw :halt, [ae.error_code, ae.message]  
+          rescue Exception => e
+            log e.message + "\n" + e.backtrace.join("\n")
+            throw :halt, [500, e.message]
+          end
         end
       else
         post "/api/#{namespace}/#{name}" do

@@ -13,7 +13,7 @@ describe "RhosyncApiStats" do
     it "should retrieve metric names" do
       Store.set_value('stat:foo', '1')
       Store.set_value('stat:bar', '2')
-      post "/api/stats", {
+      post "/api/admin/stats", {
         :api_token => @api_token, 
         :names => '*'
       }
@@ -24,7 +24,7 @@ describe "RhosyncApiStats" do
     it "should retrieve range metric" do
       Store.db.zadd('stat:foo', 2, "1:2")
       Store.db.zadd('stat:foo', 3, "1:3")
-      post "/api/stats", {
+      post "/api/admin/stats", {
         :api_token => @api_token, 
         :metric => 'foo', 
         :start => 0,
@@ -36,7 +36,7 @@ describe "RhosyncApiStats" do
 
     it "should retrieve string metric" do
       Store.db.set('stat:foo', 'bar')
-      post "/api/stats", {
+      post "/api/admin/stats", {
         :api_token => @api_token, 
         :metric => 'foo'
       }
@@ -45,7 +45,7 @@ describe "RhosyncApiStats" do
     end
 
     it "should raise error on unknown metric" do
-      post "/api/stats", {
+      post "/api/admin/stats", {
         :api_token => @api_token, 
         :metric => 'foo'
       }
@@ -55,7 +55,7 @@ describe "RhosyncApiStats" do
 
     it "should raise error if stats not enabled" do
       Rhosync.stats = false
-      post "/api/stats", {
+      post "/api/admin/stats", {
         :api_token => @api_token, 
         :metric => 'foo'
       }

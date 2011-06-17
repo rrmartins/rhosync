@@ -5,10 +5,10 @@ describe "RhosyncApiDeleteUser" do
     it "should delete user" do
       params = {:api_token => @api_token,
         :attributes => {:login => 'testuser1', :password => 'testpass1'}}
-      post "/api/create_user", params
+      post "/api/user/create_user", params
       last_response.should be_ok
       User.is_exist?(params[:attributes][:login]).should == true
-      post "/api/delete_user", {:api_token => @api_token, 
+      post "/api/user/delete_user", {:api_token => @api_token, 
         :user_id => params[:attributes][:login]}  
         last_response.should be_ok
       User.is_exist?(params[:attributes][:login]).should == false

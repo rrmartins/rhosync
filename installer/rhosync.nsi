@@ -99,7 +99,7 @@ section "uninstall"
     Push "PATH" 
     Push "R" 
     Push "HKLM" 
-    Push "$INSTDIR\redis-2.2.6"
+    Push "$INSTDIR\redis-2.2.10"
     Call un.EnvVarUpdate
     Pop $R0
 
@@ -170,25 +170,25 @@ Section "Redis" redisSection
  
   SetOutPath $INSTDIR
  
-  File /r "redis-2.2.6"
+  File /r "redis-2.2.10"
  
   ;add to path here
 
   Push "PATH" 
   Push "P" 
   Push "HKLM" 
-  Push "$INSTDIR\redis-2.2.6"
+  Push "$INSTDIR\redis-2.2.10"
   Call EnvVarUpdate
   Pop $R0
 
   Push "REDIS_HOME" 
   Push "P" 
   Push "HKLM" 
-  Push "$INSTDIR\redis-2.2.6"
+  Push "$INSTDIR\redis-2.2.10"
   Call EnvVarUpdate
   Pop $R0
 
-  ExecWait '$INSTDIR\redis-2.2.6\redis-service.exe install' $0
+  ExecWait '$INSTDIR\redis-2.2.10\redis-service.exe install' $0
   StrCmp $0 "0" continue wrong
 
   wrong:

@@ -4,7 +4,7 @@ source "http://rubygems.org"
 gemspec
 
 group :development do
-  gem 'rspec', '~> 2.5.0'
+  gem 'rspec', '>= 2.6.0'
   gem 'rcov', '>= 0.9.8'
   gem 'faker', '>= 0.3.1'
   gem 'rack-test', '>= 0.5.3', :require => 'rack/test'

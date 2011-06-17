@@ -1,4 +1,4 @@
-## 2.2.0 (not released)
+## 3.0 (not released)
 * #11102931 ping api accepts vibrate string and int
 * #7197617 test spec helpers support pass through
 * #11944605 implemented pass through feature
@@ -9,7 +9,7 @@
 * #12105115 - removed unnecessary log4r dependency
 * added bundler to manage gem's dependencies, migrated from rspec1 to rspec2  
 * #5687948 - fixed issue "iPhone push specs failed" 
-* use redis 2.2.6 by default						
+* use redis 2.2.10 by default						
 * #13616807 - Rake task spec:all fails for enterprise ruby (ree)
 * #13776713 - Rake -v 0.9.0 breaks rhosync rake tasks
 * #14514773 - REST API push_object, push_deletes :md_size count fix  

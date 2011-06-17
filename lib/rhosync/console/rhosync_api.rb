@@ -241,7 +241,7 @@ module RhosyncApi
   end
   
   class Server
-    def self.api(method_name,&block)
+    def self.api(method_name,namespace = nil, &block)
       self.class.send(:define_method, method_name, &block)
     end  
   end

@@ -1,7 +1,6 @@
 class RhosyncConsole::Server
   post '/login' do
     begin
-      puts "calling the login here " + session[:server].to_s
       session[:errors] = nil      
       session[:login] = params[:login]
       session[:connect] = params[:connect]    

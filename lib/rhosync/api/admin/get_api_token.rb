@@ -1,10 +1,11 @@
-Server.api :get_api_token do |params,user|
-    puts " we are in get_api_token and " + self.inspect
+Server.api :get_api_token, :admin do |params,user|
+    warning_message = "API method 'get_api_token' is deprecated.
+      Use 'login' method only, it returns api token in response's body"
+    params[:warning] = warning_message unless params.nil?
     do_get_api_token(params, user)
 end
 
 def do_get_api_token(params, user)
-  puts " calloing do_get_api_token" + params.inspect + " user " + user.inspect
   if user and user.admin == 1 and user.token
     user.token.value 
   else

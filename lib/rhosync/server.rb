@@ -141,6 +141,26 @@ module Rhosync
           throw :halt, [500, e.message]
         end
       end
+      
+      def execute_api_call
+        if check_api_token
+          begin
+            res = yield params,api_user
+            if params.has_key? :warning
+              Rhosync.log params[:warning]
+              response.headers['Warning'] = params[:warning]
+            end
+            res
+          rescue ApiException => ae
+            throw :halt, [ae.error_code, ae.message]  
+          rescue Exception => e
+            log e.message + "\n" + e.backtrace.join("\n")
+            throw :halt, [500, e.message]
+          end
+        else
+          throw :halt, [422, "No API token provided"]
+        end
+      end
     end
     
     # hook into new so we can enable middleware
@@ -213,16 +233,11 @@ module Rhosync
 
     # Collection routes
     post '/login' do
-      puts "calling the /login method is deprecated, use api/admin/login"
+      warning_message = "Use of the '/login' is deprecated. You should use '/api/admin/login' instead"
+      response.headers['Warning'] = warning_message
+      Rhosync.log warning_message
       call env.merge('PATH_INFO' => "/api/admin/login")
     end
-    
-    #post '/api/admin/login' do
-    #  puts "calling the new login function "
-    #  logout
-    #  do_login
-    #  do_get_api_token(params, current_user)
-    #end
 
     post '/application/clientlogin' do
       catch_all do      
@@ -285,35 +300,26 @@ module Rhosync
       end
     end
 
-    def self.api(name)
+    def self.api(name, namespace = nil, &block)
       post "/api/#{name}" do
-        puts "calling the api/name version is deprecated"
-        call env.merge('PATH_INFO' => "/api/admin/#{name}")
+        namespace_val = namespace.nil? ? "<namespace>" : "#{namespace}"
+        warning_message = "Use of the api/#{name} is deprecated. You should use api/#{namespace_val}/#{name} instead."
+        response.headers['Warning'] = warning_message
+        Rhosync.log warning_message
+        if namespace != nil  
+          call env.merge('PATH_INFO' => "/api/#{namespace}/#{name}")
+        else
+          execute_api_call &block
+        end
       end
       
       if "#{name}" == 'login' 
-        puts " we are here in login eval "
-        post "/api/admin/login" do
-          puts " we are calling normal function LOGIN "
-          logout
-          do_login
-          do_get_api_token(params, current_user)
+        post "/api/#{namespace}/login" do
+          yield params, self
         end
       else
-        post "/api/admin/#{name}" do
-          if check_api_token
-            begin
-              puts "calling the normal function namespace/name" 
-              yield params,api_user
-            rescue ApiException => ae
-              throw :halt, [ae.error_code, ae.message]  
-            rescue Exception => e
-              log e.message + "\n" + e.backtrace.join("\n")
-              throw :halt, [500, e.message]
-            end
-          else
-            throw :halt, [422, "No API token provided"]
-          end
+        post "/api/#{namespace}/#{name}" do
+          execute_api_call &block
         end
       end
     end

@@ -1,4 +1,4 @@
-Server.api :get_license_info do |params,user|
+Server.api :get_license_info, :admin do |params,user|
   {:rhosync_version => Rhosync.license.rhosync_version, 
    :licensee => Rhosync.license.licensee, 
    :seats => Rhosync.license.seats, 

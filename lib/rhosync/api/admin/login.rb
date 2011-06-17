@@ -1,7 +1,11 @@
-Server.api :login do |params,user|
-    puts " we are here in login " + params['instance'].inspect
-    
-    logout
-    do_login
-    do_get_api_token(params, user)
+Server.api :login, :admin do |params,server|
+    token = ''
+    begin 
+      server.logout
+      server.do_login
+      token = do_get_api_token(params, server.current_user)
+    rescue ApiException => e
+      token = ''
+    end
+    token
 end

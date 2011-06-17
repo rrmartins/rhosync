@@ -11,6 +11,6 @@ end
 
 group :test do
   gem 'rack-test', '>= 0.5.3', :require => "rack/test"
-  gem 'rspec', '~> 2.5.0'
+  gem 'rspec', '~> 2.6.0'
   gem 'rcov', '>= 0.9.8'
 end

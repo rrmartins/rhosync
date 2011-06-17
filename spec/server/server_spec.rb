@@ -37,7 +37,7 @@ describe "Server" do
 
     it "should fail to login if wrong content-type" do
       post "/login", {"login" => 'rhoadmin', "password" => ''}.to_json, {'CONTENT_TYPE'=>'application/x-www-form-urlencoded'} 
-      last_response.should be_ok
+      last_response.should_not be_ok
     end
 
     it "should login as rhoadmin user" do

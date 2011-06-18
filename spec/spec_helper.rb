@@ -121,7 +121,7 @@ module TestHelpers
   end
     
   def validate_db_file(dbfile,sources,data)  
-    db = SQLite3::Database.new(dbfile)
+    db = DBAdapter.instance.get_connection(dbfile)    
     sources.each do |source_name|
       s = Source.load(source_name,{:app_id => APP_NAME,:user_id => @u.login})
       return false unless validate_db_by_name(db,s,data[s.name])
@@ -133,6 +133,7 @@ module TestHelpers
     db.execute("select source_id,name,sync_priority,partition,
       sync_type,source_attribs,metadata,schema,blob_attribs,associations
       from sources where name='#{s.name}'").each do |row|
+      
       return false if row[0].to_s != s.source_id.to_s
       return false if row[1] != s.name
       return false if row[2].to_s != s.priority.to_s
@@ -218,4 +219,9 @@ module TestHelpers
       end
     end
   end
+
+  def get_sha1(str)
+    Digest::SHA1.hexdigest(str)
+  end    
+     
 end #TestHelpers

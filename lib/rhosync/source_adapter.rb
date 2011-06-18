@@ -19,12 +19,14 @@ module Rhosync
       @source = source
     end
     
-    # Returns an instance of a SourceAdapter by source name
     def self.create(source,credential=nil)
       adapter=nil
       if source
         begin
-          source.name.strip! if source.name
+          if source.name
+            source.name = source.name.dup if source.name.frozen?
+            source.name.strip!
+          end
           if Object.const_defined?(source.name)
             require under_score(source.name)
             adapter=(Object.const_get(source.name)).new(source)
@@ -42,7 +44,7 @@ module Rhosync
       end
       adapter
     end
-    
+
     def login; end
   
     def query(params=nil); end

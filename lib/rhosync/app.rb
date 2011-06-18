@@ -17,7 +17,8 @@ module Rhosync
     end
     
     def can_authenticate?
-      self.delegate && self.delegate.singleton_methods.include?("authenticate")
+      # TODO: optimize it!
+      self.delegate && self.delegate.singleton_methods.map(&:to_sym).include?(:authenticate)
     end
 
     def authenticate(login, password, session)

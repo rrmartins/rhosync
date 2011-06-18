@@ -25,6 +25,7 @@ Rhosync::Server.set     :secret,      '<changeme>'
 Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
 
+$:.unshift ROOT_PATH # FIXME:
 # Load our rhosync application
 require 'application'
 

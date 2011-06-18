@@ -13,7 +13,11 @@
 * #13616807 - Rake task spec:all fails for enterprise ruby (ree)
 * #13776713 - Rake -v 0.9.0 breaks rhosync rake tasks
 * #14514773 - REST API push_object, push_deletes :md_size count fix  
-
+* #5687948  - fixed issue "iPhone push specs failed"
+* #12854737 - string vs. symbol problem in ruby 1.9 model.rb (contribute to ruby 1.9 support)
+* #11692191 - ruby 1.9 support
+* #2020980  - Test on JRuby. Code reworked to fully support JRuby platform.
+ 
 ## 2.1.7 (2011-05-31)
 * #14021681 - check for client on client_sync class methods
 * #14082861 - expose Store.lock timeout to high-level functions

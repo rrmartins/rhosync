@@ -34,7 +34,6 @@ describe "Source" do
       @s1.poll_interval.should == 300
       @s1.app_id.should == @s_params[:app_id]
       @s1.user_id.should == @s_params[:user_id]
-  #    puts "#{@s1.inspect()}" # FIXME:
     end
   
     it "should create source with user" do

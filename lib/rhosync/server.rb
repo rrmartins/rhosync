@@ -142,6 +142,19 @@ module Rhosync
         end
       end
       
+      def mark_deprecated_call_and_reroute(name, namespace, *params)
+        namespace_val = namespace.nil? ? "<namespace>" : "#{namespace}"
+        http_method = request.get? ? "GET" : "POST"
+        warning_message = "Use of the #{http_method} #{request.route} is deprecated. Use #{http_method} /api/#{namespace_val}/#{name} instead."
+        response.headers['Warning'] = warning_message
+        Rhosync.log warning_message
+        if namespace != nil  
+          call env.merge('PATH_INFO' => "/api/#{namespace}/#{name}")
+        else
+          yield *params
+        end
+      end
+      
       def execute_api_call
         if check_api_token
           begin
@@ -233,84 +246,55 @@ module Rhosync
 
     # Collection routes
     post '/login' do
-      warning_message = "Use of the '/login' is deprecated. You should use '/api/admin/login' instead"
-      response.headers['Warning'] = warning_message
-      Rhosync.log warning_message
-      call env.merge('PATH_INFO' => "/api/admin/login")
-    end
-
-    post '/application/clientlogin' do
-      catch_all do      
-        logout
-        do_login
-      end
-    end
-
-    get '/application/clientcreate' do
-      catch_all do 
-        content_type :json
-        client = Client.create(:user_id => current_user.id,:app_id => current_app.id)
-        client.update_fields(params)
-        { "client" => { "client_id" =>  client.id.to_s } }.merge!(source_config).to_json
-      end
-    end
-
-    post '/application/clientregister' do
-      catch_all do 
-        current_client.update_fields(params)
-        source_config.to_json
-      end
-    end
-
-    get '/application/clientreset' do
-      catch_all do 
-        ClientSync.reset(current_client)
-        source_config.to_json
-      end
+      mark_deprecated_call_and_reroute(:login, :admin, self, params)
+      #warning_message = "Use of the '/login' is deprecated. You should use '/api/admin/login' instead"
+      #response.headers['Warning'] = warning_message
+      #Rhosync.log warning_message
+      #call env.merge('PATH_INFO' => "/api/admin/login")
     end
 
     # Member routes
     get '/application' do
-      catch_all do
-        content_type :json
-        res = current_client_sync.send_cud(params[:token],params[:query]).to_json
-        res
-      end
+      mark_deprecated_call_and_reroute(:query, :application, self, params)
+    #  catch_all do
+    #    content_type :json
+    #    res = current_client_sync.send_cud(params[:token],params[:query]).to_json
+    #    res
+    #  end
     end
 
     post '/application' do
-      catch_all do
-        current_client_sync.receive_cud(params)
-        status 200
-      end
+      mark_deprecated_call_and_reroute(:queue_updates, :application, self, params)
+    #  catch_all do
+    #    current_client_sync.receive_cud(params)
+    #    status 200
+    #  end
     end
 
-    get '/application/bulk_data' do
-      catch_all do
-        content_type :json
-        data = ClientSync.bulk_data(params[:partition].to_sym,current_client)
-        data.to_json
+    def self.app_api_get(name, namespace = nil, &block)
+      get "/application/#{name}" do
+        mark_deprecated_call_and_reroute(name, namespace, self, params, &block)
+      end
+        
+      get "/api/#{namespace}/#{name}" do
+        puts " calling the new get function "
+        yield self, params
       end
     end
-
-    get '/application/search' do
-      catch_all do
-        content_type :json
-        ClientSync.search_all(current_client,params).to_json
+    
+    def self.app_api_post(name, namespace = nil, &block)
+      post "/application/#{name}" do
+        mark_deprecated_call_and_reroute(name, namespace, self, params, &block)
+      end
+      
+      post "/api/#{namespace}/#{name}" do
+        yield self, params
       end
     end
-
+      
     def self.api(name, namespace = nil, &block)
       post "/api/#{name}" do
-        namespace_val = namespace.nil? ? "<namespace>" : "#{namespace}"
-        warning_message = "Use of the api/#{name} is deprecated. You should use api/#{namespace_val}/#{name} instead."
-        response.headers['Warning'] = warning_message
-        Rhosync.log warning_message
-        if namespace != nil  
-          call env.merge('PATH_INFO' => "/api/#{namespace}/#{name}")
-        else
-          execute_api_call &block
-        end
+        mark_deprecated_call_and_reroute(name, namespace, &block)
       end
       
       if "#{name}" == 'login' 

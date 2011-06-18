@@ -1,4 +1,4 @@
-Server.api :stats do |params,user|
+Server.api :stats, :admin do |params,user|
   if Rhosync.stats == true
     names = params[:names]
     if names

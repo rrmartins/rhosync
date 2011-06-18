@@ -37,17 +37,11 @@ describe "RhosyncApi" do
   end
   
   it "should return api token using rest call" do
-    response = {'set-cookie'=>"rhosync_session=c21...42b64; path=/; expires=Tue, 02-Aug-2011 23:55:19 GMT"}
     res = mock('HttpResponse')
-    res.stub!(:response).and_return(response)
-    http = mock('NetHttp')
-    http.stub!(:post).and_return(res)
-    Net::HTTP.stub!(:new).and_return(http)
-    RestClient.stub(:post).and_return(@api_token)
-    
-      Net::HTTP.should_receive(:new).once
-      RestClient.should_receive(:post).once
-      RhosyncApi::get_token('some_url','rhoadmin','').should == @api_token
+    res.stub!(:body).and_return(@api_token)
+    RestClient.stub(:post).and_return(res)
+    RestClient.should_receive(:post).once
+    RhosyncApi::get_token('some_url','rhoadmin','').should == @api_token
     end
   
     it "should list users using direct api call" do
@@ -78,20 +72,6 @@ describe "RhosyncApi" do
     it "should update user using direct api call" do
       RhosyncApi::update_user('',@api_token, {:new_password => '123'})
       User.authenticate('rhoadmin','123').login.should == 'rhoadmin'
-    end
-      
-    it "should return api token using rest call" do
-      response = {'set-cookie'=>"rhosync_session=c21...42b64; path=/; expires=Tue, 02-Aug-2011 23:55:19 GMT"}
-      res = mock('HttpResponse')
-      res.stub!(:response).and_return(response)
-      http = mock('NetHttp')
-      http.stub!(:post).and_return(res)
-      Net::HTTP.stub!(:new).and_return(http)
-      RestClient.stub(:post).and_return(@api_token)
-
-      Net::HTTP.should_receive(:new).once
-      RestClient.should_receive(:post).once
-      RhosyncApi::get_token('some_url','rhoadmin','').should == @api_token
     end
 
     it "should delete user using rect call" do

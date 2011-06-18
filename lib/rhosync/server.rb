@@ -39,7 +39,7 @@ module Rhosync
       end
 
       def check_api_token
-        request_action == 'get_api_token' or 
+        request_action == 'login' or request_action == 'get_api_token' or 
           (params[:api_token] and ApiToken.is_exist?(params[:api_token]))
       end
 
@@ -55,7 +55,7 @@ module Rhosync
 
       def login_required
         current_user.nil?
-      end
+      end  
 
       def login
         if params[:login] == 'rhoadmin'
@@ -66,7 +66,6 @@ module Rhosync
         if user
           session[:login] = user.login
           session[:app_name] = APP_NAME
-          true
         else
           false
         end
@@ -142,6 +141,26 @@ module Rhosync
           throw :halt, [500, e.message]
         end
       end
+      
+      def execute_api_call
+        if check_api_token
+          begin
+            res = yield params,api_user
+            if params.has_key? :warning
+              Rhosync.log params[:warning]
+              response.headers['Warning'] = params[:warning]
+            end
+            res
+          rescue ApiException => ae
+            throw :halt, [ae.error_code, ae.message]  
+          rescue Exception => e
+            log e.message + "\n" + e.backtrace.join("\n")
+            throw :halt, [500, e.message]
+          end
+        else
+          throw :halt, [422, "No API token provided"]
+        end
+      end
     end
     
     # hook into new so we can enable middleware
@@ -214,8 +233,10 @@ module Rhosync
 
     # Collection routes
     post '/login' do
-      logout
-      do_login
+      warning_message = "Use of the '/login' is deprecated. You should use '/api/admin/login' instead"
+      response.headers['Warning'] = warning_message
+      Rhosync.log warning_message
+      call env.merge('PATH_INFO' => "/api/admin/login")
     end
 
     post '/application/clientlogin' do
@@ -279,19 +300,33 @@ module Rhosync
       end
     end
 
-    def self.api(name)
+    def self.api(name, namespace = nil, &block)
       post "/api/#{name}" do
-        if check_api_token
+        namespace_val = namespace.nil? ? "<namespace>" : "#{namespace}"
+        warning_message = "Use of the api/#{name} is deprecated. You should use api/#{namespace_val}/#{name} instead."
+        response.headers['Warning'] = warning_message
+        Rhosync.log warning_message
+        if namespace != nil  
+          call env.merge('PATH_INFO' => "/api/#{namespace}/#{name}")
+        else
+          execute_api_call &block
+        end
+      end
+      
+      if "#{name}" == 'login' 
+        post "/api/#{namespace}/login" do
           begin
-            yield params,api_user
+            yield params, self
           rescue ApiException => ae
             throw :halt, [ae.error_code, ae.message]  
           rescue Exception => e
             log e.message + "\n" + e.backtrace.join("\n")
             throw :halt, [500, e.message]
           end
-        else
-          throw :halt, [422, "No API token provided"]
+        end
+      else
+        post "/api/#{namespace}/#{name}" do
+          execute_api_call &block
         end
       end
     end

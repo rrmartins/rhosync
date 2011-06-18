@@ -5,7 +5,7 @@ describe "RhosyncApiGetSourceParams" do
   it_should_behave_like "ApiHelper" do
   
     it "should list source attributes" do
-      post "/api/get_source_params", {:api_token => @api_token, :source_id =>"SampleAdapter"}
+      post "/api/source/get_source_params", {:api_token => @api_token, :source_id =>"SampleAdapter"}
       result = JSON.parse(last_response.body).sort {|x,y| y["name"] <=> x["name"] }
       result.should == [
         {"name"=>"rho__id", "value"=>"SampleAdapter", "type"=>"string"}, 

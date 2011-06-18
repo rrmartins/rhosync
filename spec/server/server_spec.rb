@@ -31,23 +31,14 @@ describe "Server" do
       last_response.body.match(Rhosync::VERSION)[0].should == Rhosync::VERSION
     end
 
-    it "should login without app_name" do
-      do_post "/login", "login" => @u_fields[:login], "password" => 'testpass'
-      last_response.should be_ok
-    end
-
     it "should login if content-type contains extra parameters" do
-      User.load('new_user').should be_nil
-      post "/login", {"login" => 'new_user', "password" => 'testpass'}.to_json, {'CONTENT_TYPE'=>'application/json; charset=UTF-8'} 
+      post "/login", {"login" => 'rhoadmin', "password" => ''}.to_json, {'CONTENT_TYPE'=>'application/json; charset=UTF-8'} 
       last_response.should be_ok
-      User.load('new_user').should_not be_nil
     end
 
-    it "should failt to login if wrong content-type" do
-      User.load('unknown').should be_nil
-      post "/login", {"login" => 'unknown', "password" => 'testpass'}.to_json, {'CONTENT_TYPE'=>'application/x-www-form-urlencoded'} 
-      last_response.should be_ok
-      User.load('unknown').should be_nil
+    it "should fail to login if wrong content-type" do
+      post "/login", {"login" => 'rhoadmin', "password" => ''}.to_json, {'CONTENT_TYPE'=>'application/x-www-form-urlencoded'} 
+      last_response.should_not be_ok
     end
 
     it "should login as rhoadmin user" do

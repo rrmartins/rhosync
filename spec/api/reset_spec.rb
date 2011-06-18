@@ -18,5 +18,5 @@ describe "RhosyncApiReset" do
       User.authenticate('rhoadmin','').should_not be_nil
       load File.join(Rhosync.base_directory,test_app_name+'.rb')
     end
-  end  
+  end
 end

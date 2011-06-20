@@ -4,6 +4,7 @@ require 'erb'
 require 'json'
 require 'fileutils'
 require 'rhosync'
+require 'x_domain_session_wrapper'
 
 module Rhosync
   
@@ -173,6 +174,7 @@ module Rhosync
             :key => 'rhosync_session',
             :expire_after => 31536000,
             :secret => @@secret     
+      use XDomainSessionWrapper
       super
     end
     

@@ -38,8 +38,10 @@ begin
   RSpec::Core::RakeTask.new('spec:all') do |t|
     t.rspec_opts = ["-b", "-c", "-fd"]
     t.pattern = FileList[TYPES.values]
-    t.rcov = true
-    t.rcov_opts = ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*,json/*']    
+    unless RUBY_VERSION =~ /1.9/ # FIXME: code coverage not working for Ruby 1.9 !!! Use CoverMe instead.
+      t.rcov = true
+      t.rcov_opts = ['--exclude', 'spec/*,gems/*,apps/*,bench/spec/*,json/*']    
+    end
   end
   
   desc "Run doc generator - dumps out doc/protocol.html"
@@ -73,10 +75,6 @@ def ask(msg)
   print msg
   STDIN.gets.chomp
 end
-
-# def bundle_exec(cmd)
-#   system "bundle exec #{cmd}"
-# end
 
 load 'tasks/redis.rake'
 Bundler::GemHelper.install_tasks

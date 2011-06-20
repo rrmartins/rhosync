@@ -137,22 +137,42 @@ describe "Store" do
         Store.get_keys('doc1:1:1:1:*').sort.should == expected
       end
 
-      it "should lock document" do
-        doc = "locked_data"
-        m_lock = Store.get_lock(doc)
-        pid = Process.fork do
-          Store.db = Redis.new
-          t_lock = Store.get_lock(doc)
-          Store.put_data(doc,{'1'=>@product1},true)
-          Store.release_lock(doc,t_lock) 
-          Process.exit(0)
+      if defined?(JRUBY_VERSION)
+        # FIXME:
+        it "should lock document" do
+          doc = "locked_data"
+          m_lock = Store.get_lock(doc)
+          t = Thread.new do
+            Store.db = Redis.new
+            t_lock = Store.get_lock(doc)
+            Store.put_data(doc,{'1'=>@product1},true)
+            Store.release_lock(doc,t_lock) 
+          end
+          Store.put_data(doc,{'2'=>@product2},true)
+          Store.get_data(doc).should == {'2'=>@product2}
+          Store.release_lock(doc,m_lock)
+          t.join
+          m_lock = Store.get_lock(doc)
+          Store.get_data(doc).should == {'1'=>@product1,'2'=>@product2}
         end
-        Store.put_data(doc,{'2'=>@product2},true)
-        Store.get_data(doc).should == {'2'=>@product2}
-        Store.release_lock(doc,m_lock)
-        Process.waitpid(pid)
-        m_lock = Store.get_lock(doc)
-        Store.get_data(doc).should == {'1'=>@product1,'2'=>@product2}
+      else
+        it "should lock document" do
+          doc = "locked_data"
+          m_lock = Store.get_lock(doc)
+          pid = Process.fork do
+            Store.db = Redis.new
+            t_lock = Store.get_lock(doc)
+            Store.put_data(doc,{'1'=>@product1},true)
+            Store.release_lock(doc,t_lock) 
+            Process.exit(0)
+          end
+          Store.put_data(doc,{'2'=>@product2},true)
+          Store.get_data(doc).should == {'2'=>@product2}
+          Store.release_lock(doc,m_lock)
+          Process.waitpid(pid)
+          m_lock = Store.get_lock(doc)
+          Store.get_data(doc).should == {'1'=>@product1,'2'=>@product2}
+        end
       end
 
       it "should lock key for timeout" do
@@ -218,6 +238,14 @@ describe "Store" do
         Store.db.exists('key1').should be_false
         Store.db.exists('key2').should be_false      
       end
+
+      it "should raise ArgumentError on put_data with invalid data" do
+        foobar = {'foo'=>'bar'}
+        expect { 
+          Store.put_data('somedoc',{'foo'=>'bar'}) 
+        }.to raise_exception(ArgumentError, "Invalid value object: #{foobar['foo'].inspect}. Hash is expected.")
+      end
+
     end
   end  
 end

@@ -29,6 +29,7 @@ module Rhosync
           if data.is_a?(Hash)
             @@db.pipelined do
               data.each do |key,value|
+                raise ArgumentError, "Invalid value object: #{value.inspect}. Hash is expected." unless value.is_a?(Hash)   
                 value.each do |attrib,value|
                   unless _is_reserved?(attrib,value)
                     @@db.sadd(dockey,setelement(key,attrib,value))

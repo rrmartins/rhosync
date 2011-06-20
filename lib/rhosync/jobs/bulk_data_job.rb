@@ -1,4 +1,3 @@
-require 'sqlite3'
 require 'zip/zip'
 require 'zlib'
 
@@ -66,18 +65,15 @@ module Rhosync
           columns << key
           qm << '?'
         end
-        database.execute("CREATE TABLE #{source.name}(
-          #{create_table.join(",")} );")
-        
-        # Insert each object as single row in fixed schema table
-        database.prepare("insert into #{source.name} 
-          (object,#{columns.join(',')}) values (?,#{qm.join(',')})") do |stmt|
+        database.execute("CREATE TABLE #{source.name}(#{create_table.join(",")} );")
+
+        database.prepare("insert into #{source.name} (object,#{columns.join(',')}) values (?,#{qm.join(',')})") do |stmt|
           data.each do |obj,row|
             args = [obj]
-            columns.each do |col|
-              args << row[col]
-            end  
-            stmt.execute(args)
+            columns.each { |col| args << row[col] }
+            # FIXME: The * is used to expand an array into individual arguments for 'execute' method.
+            # JRuby (1.6.0) won't work without asterisk, but MRI and 1.9.2 are both doing well! 
+            stmt.execute(*args) # FIXME: !!! 
           end
         end
         
@@ -133,8 +129,10 @@ module Rhosync
       sources_refs = {}
       schema,index,bulk_data.dbfile = get_file_args(bulk_data.name,ts)
       FileUtils.mkdir_p(File.dirname(bulk_data.dbfile))
-      db = SQLite3::Database.new(bulk_data.dbfile)
+
+      db = DBAdapter.instance.get_connection(bulk_data.dbfile)    
       db.execute_batch(File.open(schema,'r').read)
+      
       src_counter = 1
       bulk_data.sources.members.sort.each do |source_name|
         timer = start_timer("start importing sqlite data for #{source_name}")
@@ -153,9 +151,11 @@ module Rhosync
         lap_timer("finished importing sqlite data for #{source_name}",timer)
       end
       populate_sources_table(db,sources_refs)
+      
       db.execute_batch(File.open(index,'r').read)
-      db.execute_batch( "VACUUM;");
+      db.execute_batch("VACUUM;");
       db.close
+      
       compress("#{bulk_data.dbfile}.rzip",bulk_data.dbfile)
       gzip_compress("#{bulk_data.dbfile}.gzip",bulk_data.dbfile)
     end

@@ -1,4 +1,5 @@
 #!/usr/bin/env ruby
+require 'rubygems'
 require 'bundler'
 Bundler.require
 
@@ -24,6 +25,7 @@ Rhosync::Server.set     :secret,      '<%= @secret %>'
 Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
 
+$:.unshift ROOT_PATH # FIXME:
 # Load our rhosync application
 require 'application'
 

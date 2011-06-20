@@ -8,16 +8,15 @@ describe "ClientSync" do
       lambda { ClientSync.new(@s,nil,2) }.should raise_error(ArgumentError,'Unknown client')
     end
 
-   it "should handle receive cud for dymanic adapter" do
-        params = {'create'=>{'1'=>@product1}}
-        @c.source_name = 'Product2'
-        @cs1 = ClientSync.new(@s2,@c,2)
-        stub_request(:post, "http://test.rhosync.com/rhosync/create").with(:headers => {'Content-Type' => 'application/json'}).to_return(:body => {:id => 5})
-        @cs1.receive_cud(params)
-        verify_result(@cs1.client.docname(:create) => {},
-          @cs1.client.docname(:update) => {},
-          @cs1.client.docname(:delete) => {})
-      #end
+    it "should handle receive cud for dymanic adapter" do
+      params = {'create'=>{'1'=>@product1}}
+      @c.source_name = 'Product2'
+      @cs1 = ClientSync.new(@s2,@c,2)
+      stub_request(:post, "http://test.rhosync.com/rhosync/create").with(:headers => {'Content-Type' => 'application/json'}).to_return(:body => {:id => 5})
+      @cs1.receive_cud(params)
+      verify_result(@cs1.client.docname(:create) => {},
+        @cs1.client.docname(:update) => {},
+        @cs1.client.docname(:delete) => {})
     end
     
     it "should handle send cud for dynamic adapter" do
@@ -37,6 +36,9 @@ describe "ClientSync" do
         @cs1.client.docname(:delete_page) => {},
         @cs1.client.docname(:cd) => data)
     end
+
+    let(:mock_schema) { {"property" => { "name" => "string", "brand" => "string" }, "version" => "1.0"} }
+    let(:sha1) { get_sha1(mock_schema.to_json) }
       
     before(:each) do
       @s = Source.load(@s_fields[:name],@s_params)
@@ -575,7 +577,7 @@ describe "ClientSync" do
           token = @c.get_value(:page_token)
           result.should ==  [{"version"=>ClientSync::VERSION},{"token"=>token}, 
             {"count"=>1}, {"progress_count"=>0},{"total_count"=>1},{'insert'=>expected}]
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          @c.get_value(:schema_sha1).should == sha1
         end
       end
 
@@ -586,8 +588,8 @@ describe "ClientSync" do
           token = @c.get_value(:page_token)
           result.should ==  [{"version"=>ClientSync::VERSION},{"token"=>token}, 
             {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{'schema-changed'=>'true'}]
-          @c.get_value(:schema_page).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          @c.get_value(:schema_page).should == sha1
+          @c.get_value(:schema_sha1).should == sha1
         end
       end
 
@@ -598,8 +600,8 @@ describe "ClientSync" do
           token = @c.get_value(:page_token)
           @cs.send_cud.should ==  [{"version"=>ClientSync::VERSION},{"token"=>token}, 
             {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{'schema-changed'=>'true'}]
-          @c.get_value(:schema_page).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          @c.get_value(:schema_page).should == sha1
+          @c.get_value(:schema_sha1).should == sha1
         end
       end
 
@@ -611,7 +613,7 @@ describe "ClientSync" do
           @cs.send_cud(token).should ==  [{"version"=>ClientSync::VERSION},{"token"=>""}, 
             {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{}]
           @c.get_value(:schema_page).should be_nil
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          @c.get_value(:schema_sha1).should == sha1
         end
       end
 
@@ -630,7 +632,7 @@ describe "ClientSync" do
           @cs.send_cud(token).should ==  [{"version"=>ClientSync::VERSION},{"token"=>""}, 
             {"count"=>0}, {"progress_count"=>0},{"total_count"=>0},{}]
           @c.get_value(:schema_page).should be_nil
-          @c.get_value(:schema_sha1).should == '8c148c8c1a66c7baf685c07d58bea360da87981b'
+          @c.get_value(:schema_sha1).should == sha1
           data = BulkData.load(docname)
           data.refresh_time.should <= Time.now.to_i
         end 

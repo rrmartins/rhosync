@@ -25,6 +25,7 @@ require 'rhosync/rho_indifferent_access'
 require 'rhosync/jobs/source_job'
 require 'rhosync/jobs/ping_job'
 require 'rhosync/bulk_data'
+require 'rhosync/db_adapter'
 require 'rhosync/dynamic_adapter'
 
 REDIS_URL = 'REDIS' unless defined? REDIS_URL

@@ -12,6 +12,7 @@ rescue LoadError
   require 'rhosync'
 end
 
+$:.unshift File.join(File.dirname(__FILE__), "..") # FIXME:
 # Load our rhosync application
 require 'application'
 include Rhosync

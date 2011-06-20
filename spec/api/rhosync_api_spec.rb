@@ -485,7 +485,8 @@ describe "RhosyncApi" do
     end  
 
     it "should reset and re-create rhoadmin user with bootstrap using direct api call" do
-      Store.put_data('somedoc',{'foo'=>'bar'})
+      # Store.put_data('somedoc',{'foo'=>'bar'})
+      Store.put_data('somedoc',{'1' => {'foo'=>'bar'}})
       RhosyncApi::reset('',@api_token).should == "DB reset"
       App.is_exist?(test_app_name).should == true
       Store.get_data('somedoc').should == {}

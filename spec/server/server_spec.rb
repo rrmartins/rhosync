@@ -11,6 +11,7 @@ describe "Server" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     before(:each) do
       require File.join(get_testapp_path,test_app_name)
+
       Rhosync.bootstrap(get_testapp_path) do |rhosync|
         rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')
       end

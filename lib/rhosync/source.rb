@@ -160,7 +160,7 @@ module Rhosync
     
     def self.delete_all
       params = {:app_id => APP_NAME,:user_id => '*'}
-      @@model_data.each { |k,v| Source.load(k,params).delete }
+      @@model_data.each { |k,v| Source.load(k,params).flash_store_data }
       @@model_data = {}
     end
 
@@ -221,10 +221,14 @@ module Rhosync
     def doc_suffix(doctype)
       "#{user_by_partition}:#{self.name}:#{doctype.to_s}"
     end
-    
-    def delete
+
+    def flash_store_data
       flash_data('*')
       flash_data(poll_interval_key)
+    end
+
+    def delete
+      flash_store_data
       @@model_data.delete(rho__id.to_sym) if rho__id
     end
     
@@ -267,5 +271,6 @@ module Rhosync
       raise ArgumentError.new('Missing required attribute user_id') unless params[:user_id]
       raise ArgumentError.new('Missing required attribute app_id') unless params[:app_id]
     end
+
   end
 end

@@ -9,6 +9,34 @@ module Bench
       @sessions = []
     end
 
+    def test(concurrency,iterations,&block)
+      total_time = time do
+        0.upto(concurrency - 1) do |thread_id|
+          sleep rand(2)
+          threads << Thread.new(block) do |t|
+            0.upto(iterations - 1) do |iteration|
+              s = Session.new(thread_id, iteration)
+              @sessions << s
+              begin
+                yield Bench,s
+              rescue Exception => e
+                puts "error running script: #{e.inspect}"
+                puts e.backtrace.join("\n")
+              end
+            end
+          end
+        end
+        begin
+          threads.each { |t| t.join }
+        rescue RestClient::RequestTimeout => e
+          bench_log "Request timed out #{e}"
+        end
+      end
+      Bench.sessions = @sessions
+      Bench.total_time = total_time
+    end
+
+=begin
     if defined?(JRUBY_VERSION)
       def test(concurrency,iterations,&block)
         total_time = time do
@@ -73,6 +101,7 @@ module Bench
         Bench.total_time = total_time
       end
     end
-        
+=end
+
   end
 end

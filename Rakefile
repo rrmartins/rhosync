@@ -6,6 +6,7 @@ require 'yaml'
 $:.unshift File.join(File.dirname(__FILE__),'lib')
 require 'rhosync'
 
+include Rake::DSL
 task :default => 'spec:all'
 task :spec => 'spec:spec'
 

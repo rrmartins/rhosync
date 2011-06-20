@@ -231,14 +231,11 @@ module RhosyncApi
   end
   
   class Server
-    def self.api(method_name,namespace = nil, &block)
-      self.class.send(:define_method, method_name, &block)
+    def self.api(method_name,namespace = nil, verb = :post, &block)
+      self.class.send(:define_method, method_name, &block) unless namespace == :application
     end  
     
-    def self.app_api_post(method_name, namespace = nil)
-      # this is not used in RhosyncAPI::Server
-    end
-    def self.app_api_get(method_name, namespace = nil)
+    def self.app_api(method_name, namespace = nil, verb = :post, &block)
       # this is not used in RhosyncAPI::Server
     end
   end

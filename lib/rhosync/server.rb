@@ -87,7 +87,7 @@ module Rhosync
       end
 
       def api_user
-        if request_action == 'get_api_token'
+        if request_action == 'get_api_token' or request_action == 'login'
           current_user
         else
           u = ApiToken.load(params[:api_token])
@@ -136,6 +136,8 @@ module Rhosync
       def catch_all
         begin
           yield
+        rescue ApiException => ae
+          throw :halt, [ae.error_code, ae.message]
         rescue Exception => e
           log e.message + e.backtrace.join("\n")
           throw :halt, [500, e.message]
@@ -155,20 +157,15 @@ module Rhosync
         end
       end
       
-      def execute_api_call
-        if check_api_token
-          begin
-            res = yield params,api_user
+      def execute_api_call(client_call = false)
+        if client_call or check_api_token
+          catch_all do
+            res = yield params, (client_call ? current_user : api_user), self
             if params.has_key? :warning
               Rhosync.log params[:warning]
               response.headers['Warning'] = params[:warning]
             end
             res
-          rescue ApiException => ae
-            throw :halt, [ae.error_code, ae.message]  
-          rescue Exception => e
-            log e.message + "\n" + e.backtrace.join("\n")
-            throw :halt, [500, e.message]
           end
         else
           throw :halt, [422, "No API token provided"]
@@ -232,7 +229,7 @@ module Rhosync
     end
 
     %w[get post].each do |verb|
-      send(verb, "/application*") do
+      send(verb, "/*application*") do
         unless request_action == 'clientlogin'
           throw :halt, [401, "Not authenticated"] if login_required
         end
@@ -247,71 +244,26 @@ module Rhosync
     # Collection routes
     post '/login' do
       mark_deprecated_call_and_reroute(:login, :admin, self, params)
-      #warning_message = "Use of the '/login' is deprecated. You should use '/api/admin/login' instead"
-      #response.headers['Warning'] = warning_message
-      #Rhosync.log warning_message
-      #call env.merge('PATH_INFO' => "/api/admin/login")
     end
 
     # Member routes
     get '/application' do
       mark_deprecated_call_and_reroute(:query, :application, self, params)
-    #  catch_all do
-    #    content_type :json
-    #    res = current_client_sync.send_cud(params[:token],params[:query]).to_json
-    #    res
-    #  end
     end
 
     post '/application' do
       mark_deprecated_call_and_reroute(:queue_updates, :application, self, params)
-    #  catch_all do
-    #    current_client_sync.receive_cud(params)
-    #    status 200
-    #  end
-    end
-
-    def self.app_api_get(name, namespace = nil, &block)
-      get "/application/#{name}" do
-        mark_deprecated_call_and_reroute(name, namespace, self, params, &block)
-      end
-        
-      get "/api/#{namespace}/#{name}" do
-        puts " calling the new get function "
-        yield self, params
-      end
-    end
-    
-    def self.app_api_post(name, namespace = nil, &block)
-      post "/application/#{name}" do
-        mark_deprecated_call_and_reroute(name, namespace, self, params, &block)
-      end
-      
-      post "/api/#{namespace}/#{name}" do
-        yield self, params
-      end
     end
       
-    def self.api(name, namespace = nil, &block)
-      post "/api/#{name}" do
+    def self.api(name, namespace = nil, verb = :post, &block)
+      old_api_prefix = (namespace == :application) ? :application : :api
+      client_call = (namespace == :application) ? true : false
+      send verb, "/#{old_api_prefix}/#{name}" do
         mark_deprecated_call_and_reroute(name, namespace, &block)
       end
       
-      if "#{name}" == 'login' 
-        post "/api/#{namespace}/login" do
-          begin
-            yield params, self
-          rescue ApiException => ae
-            throw :halt, [ae.error_code, ae.message]  
-          rescue Exception => e
-            log e.message + "\n" + e.backtrace.join("\n")
-            throw :halt, [500, e.message]
-          end
-        end
-      else
-        post "/api/#{namespace}/#{name}" do
-          execute_api_call &block
-        end
+      send verb, "/api/#{namespace}/#{name}" do
+        execute_api_call client_call, &block
       end
     end
   end

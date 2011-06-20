@@ -174,7 +174,7 @@ eol
       :description => @description,
       :rand_id => $rand_id,
       :req_method => 'POST',
-      :req_url => '/application',
+      :req_url => '/api/application/queue_updates',
       :req_query_string => '',
       :req_content_type => "multipart/form-data; boundary=----------XnJLe9ZIbbGUYtzPQJ16u1",
       :req_content_length => 833,

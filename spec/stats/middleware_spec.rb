@@ -24,10 +24,10 @@ describe "Middleware" do
         'source_name' => 'SampleAdapter'
       },
       'REQUEST_METHOD' => 'GET',
-      'PATH_INFO' => '/application'
+      'PATH_INFO' => '/api/application/query'
     }
     10.times { @middleware.call(env) }
-    metric = 'http:GET:/application:SampleAdapter'
+    metric = 'http:GET:/api/application/query:SampleAdapter'
     Record.key(metric).should == "stat:#{metric}"
 
     # FIXME:

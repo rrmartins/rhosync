@@ -5,3 +5,4 @@ Server.api :get_license_info, :admin do |params,user|
    :issued => Rhosync.license.issued,
    :available => Rhosync.license.available }.to_json
 end
+

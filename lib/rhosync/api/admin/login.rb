@@ -1,4 +1,4 @@
-Server.api :login, :admin do |params,server|
+Server.api :login, :admin do |params,user,server|
     token = ''
     server.logout
     server.do_login

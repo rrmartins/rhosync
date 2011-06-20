@@ -1,4 +1,4 @@
-Server.app_api_post :clientlogin, :application do |server,params|
+Server.api :clientlogin, :application, :post do |params,user,server|
   server.catch_all do      
     server.logout
     server.do_login

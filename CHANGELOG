@@ -19,6 +19,7 @@
 * #2020980  - Test on JRuby. Code reworked to fully support JRuby platform.
 * #14087743 - Merging the /login and /get_api_token methods.  
 * #14713569 - Moving all Server REST API calls into namespaces. 
+* #3174947  - RESTful routes for client management
  
 ## 2.1.7 (2011-05-31)
 * #14021681 - check for client on client_sync class methods

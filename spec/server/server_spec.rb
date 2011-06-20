@@ -32,22 +32,22 @@ describe "Server" do
     end
 
     it "should login if content-type contains extra parameters" do
-      post "/login", {"login" => 'rhoadmin', "password" => ''}.to_json, {'CONTENT_TYPE'=>'application/json; charset=UTF-8'} 
+      post "/api/admin/login", {"login" => 'rhoadmin', "password" => ''}.to_json, {'CONTENT_TYPE'=>'application/json; charset=UTF-8'} 
       last_response.should be_ok
     end
 
     it "should fail to login if wrong content-type" do
-      post "/login", {"login" => 'rhoadmin', "password" => ''}.to_json, {'CONTENT_TYPE'=>'application/x-www-form-urlencoded'} 
+      post "/api/admin/login", {"login" => 'rhoadmin', "password" => ''}.to_json, {'CONTENT_TYPE'=>'application/x-www-form-urlencoded'} 
       last_response.should_not be_ok
     end
 
     it "should login as rhoadmin user" do
-      post "/login", "login" => 'rhoadmin', "password" => ''
+      post "/api/admin/login", "login" => 'rhoadmin', "password" => ''
       last_response.should be_ok
     end
 
     it "should respond with 401 to /:app_name" do
-      get "/application"
+      get "/api/application/query"
       last_response.status.should == 401
     end
 
@@ -79,47 +79,47 @@ describe "Server" do
 
     describe "helpers" do 
       before(:each) do
-        do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
+        do_post "/api/application/clientlogin", "login" => @u.login, "password" => 'testpass'
       end
 
       it "should return nil if params[:source_name] is missing" do
-        get "/application"
+        get "/api/application/query"
         last_response.status.should == 500
       end
     end
 
     describe "auth routes" do
       it "should login user with correct username,password" do
-        do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
+        do_post "/api/application/clientlogin", "login" => @u.login, "password" => 'testpass'
         last_response.should be_ok
       end
 
       it "should return 401 and LoginException messsage from authenticate" do
-        do_post "/application/clientlogin", "login" => @u.login, "password" => 'wrongpass'
+        do_post "/api/application/clientlogin", "login" => @u.login, "password" => 'wrongpass'
         last_response.status.should == 401
         last_response.body.should == 'login exception'
       end
 
       it "should return 500 and Exception messsage from authenticate" do
-        do_post "/application/clientlogin", "login" => @u.login, "password" => 'server error'
+        do_post "/api/application/clientlogin", "login" => @u.login, "password" => 'server error'
         last_response.status.should == 500
         last_response.body.should == 'server error'
       end
 
       it "should return 401 and no messsage from authenticate if no exception raised" do
-        do_post "/application/clientlogin", "login" => @u.login, "password" => 'wrongpassnomsg'
+        do_post "/api/application/clientlogin", "login" => @u.login, "password" => 'wrongpassnomsg'
         last_response.status.should == 401
         last_response.body.should == ''
       end
 
       it "should create unknown user through delegated authentication" do
-        do_post "/application/clientlogin", "login" => 'newuser', "password" => 'testpass'
+        do_post "/api/application/clientlogin", "login" => 'newuser', "password" => 'testpass'
         User.is_exist?('newuser').should == true
         @a.users.members.sort.should == ['newuser','testuser']
       end
 
       it "should create a different username through delegated authentication" do
-        do_post "/application/clientlogin", "login" => 'newuser', "password" => 'diffuser'
+        do_post "/api/application/clientlogin", "login" => 'newuser', "password" => 'diffuser'
         User.is_exist?('different').should == true
         @a.users.members.sort.should == ['different','testuser']
       end
@@ -127,7 +127,7 @@ describe "Server" do
 
     describe "client management routes" do
       before(:each) do
-        do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
+        do_post "/api/application/clientlogin", "login" => @u.login, "password" => 'testpass'
         @source_config = {
           "sources"=>
           {"FixedSchemaAdapter"=>
@@ -140,7 +140,7 @@ describe "Server" do
       end
 
       it "should respond to clientcreate" do
-        get "/application/clientcreate?device_type=blackberry"
+        get "/api/application/clientcreate?device_type=blackberry"
         last_response.should be_ok
         last_response.content_type.should =~ /application\/json/
         id = JSON.parse(last_response.body)['client']['client_id']
@@ -153,7 +153,7 @@ describe "Server" do
       end
 
       it "should respond to clientregister" do
-        do_post "/application/clientregister", 
+        do_post "/api/application/clientregister", 
           "device_type" => "iPhone", "device_pin" => 'abcd', "client_id" => @c.id
         last_response.should be_ok
         JSON.parse(last_response.body).should == @source_config
@@ -164,24 +164,24 @@ describe "Server" do
 
       it "should respond to clientreset" do
         set_state(@c.docname(:cd) => @data)
-        get "/application/clientreset", :client_id => @c.id,:version => ClientSync::VERSION
+        get "/api/application/clientreset", :client_id => @c.id,:version => ClientSync::VERSION
         JSON.parse(last_response.body).should == @source_config
         verify_result(@c.docname(:cd) => {})
       end
 
       it "should switch client user if client user_id doesn't match session user" do
         set_test_data('test_db_storage',@data)
-        get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+        get "/api/application/query",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
         JSON.parse(last_response.body).last['insert'].should == @data
-        do_post "/application/clientlogin", "login" => 'user2', "password" => 'testpass'
+        do_post "/api/application/clientlogin", "login" => 'user2', "password" => 'testpass'
         data = {'1'=>@product1,'2'=>@product2}
         set_test_data('test_db_storage',data)
-        get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+        get "/api/application/query",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
         JSON.parse(last_response.body).last['insert'].should == data
       end
       
       it "should return error on routes if client doesn't exist" do
-        get "/application",:client_id => "missingclient",:source_name => @s.name,:version => ClientSync::VERSION
+        get "/api/application/query",:client_id => "missingclient",:source_name => @s.name,:version => ClientSync::VERSION
         last_response.body.should == "Unknown client"
         last_response.status.should == 500
       end
@@ -189,11 +189,11 @@ describe "Server" do
 
     describe "source routes" do
       before(:each) do
-        do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
+        do_post "/api/application/clientlogin", "login" => @u.login, "password" => 'testpass'
       end
 
       it "should return 404 message with version < 3" do
-        get "/application",:source_name => @s.name,:version => 2
+        get "/api/application/query",:source_name => @s.name,:version => 2
         last_response.status.should == 404
         last_response.body.should == "Server supports version 3 or higher of the protocol."
       end
@@ -202,7 +202,7 @@ describe "Server" do
         @product1['_id'] = '1'
         params = {'create'=>{'1'=>@product1},:client_id => @c.id,:source_name => @s.name,
           :version => ClientSync::VERSION}
-        do_post "/application", params
+        do_post "/api/application/queue_updates", params
         last_response.should be_ok
         last_response.body.should == ''
         verify_result("test_create_storage" => {'1'=>@product1})
@@ -211,7 +211,7 @@ describe "Server" do
       it "should post records for update" do
         params = {'update'=>{'1'=>@product1},:client_id => @c.id,:source_name => @s.name,
           :version => ClientSync::VERSION}
-        do_post "/application", params
+        do_post "/api/application/queue_updates", params
         last_response.should be_ok
         last_response.body.should == ''
         verify_result("test_update_storage" => {'1'=>@product1})
@@ -220,7 +220,7 @@ describe "Server" do
       it "should post records for delete" do
         params = {'delete'=>{'1'=>@product1},:client_id => @c.id,:source_name => @s.name,
           :version => ClientSync::VERSION}
-        do_post "/application", params
+        do_post "/api/application/queue_updates", params
         last_response.should be_ok
         last_response.body.should == ''
         verify_result("test_delete_storage" => {'1'=>@product1})
@@ -228,14 +228,14 @@ describe "Server" do
 
       it "should handle client posting broken json" do
         broken_json = "{\"foo\":\"bar\"\"}"
-        post "/application", broken_json, {'CONTENT_TYPE'=>'application/json'}
+        post "/api/application/queue_updates", broken_json, {'CONTENT_TYPE'=>'application/json'}
         last_response.status.should == 500
         last_response.body.should == "Server error while processing client data"
       end
 
       it "should handle client posting broken body" do
         broken_json = ['foo']
-        post "/application", broken_json, {'CONTENT_TYPE'=>'application/json'}
+        post "/api/application/queue_updates", broken_json, {'CONTENT_TYPE'=>'application/json'}
         last_response.status.should == 500
         last_response.body.should == "Internal server error"
       end
@@ -244,7 +244,7 @@ describe "Server" do
         cs = ClientSync.new(@s,@c,1)
         data = {'1'=>@product1,'2'=>@product2}
         set_test_data('test_db_storage',data)
-        get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+        get "/api/application/query",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
         last_response.should be_ok
         last_response.content_type.should =~ /application\/json/
         token = @c.get_value(:page_token)
@@ -256,12 +256,12 @@ describe "Server" do
         cs = ClientSync.new(@s,@c,1)
         data = {'1'=>@product1,'2'=>@product2}
         set_test_data('test_db_storage',data)
-        get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+        get "/api/application/query",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
         last_response.should be_ok
         token = @c.get_value(:page_token)
         JSON.parse(last_response.body).should == [{"version"=>ClientSync::VERSION},{"token"=>token}, 
           {"count"=>2}, {"progress_count"=>0}, {"total_count"=>2},{'insert'=>data}]
-        get "/application",:client_id => @c.id,:source_name => @s.name,:token => token,
+        get "/api/application/query",:client_id => @c.id,:source_name => @s.name,:token => token,
           :version => ClientSync::VERSION
         last_response.should be_ok
         JSON.parse(last_response.body).should == [{"version"=>ClientSync::VERSION},{"token"=>''}, 
@@ -269,7 +269,7 @@ describe "Server" do
       end
 
       it "should create source for dynamic adapter if source_name is unknown" do
-        get "/application",:client_id => @c.id,:source_name => 'Broken',:version => ClientSync::VERSION
+        get "/api/application/query",:client_id => @c.id,:source_name => 'Broken',:version => ClientSync::VERSION
         last_response.status.should == 200
       end
 
@@ -279,7 +279,7 @@ describe "Server" do
         data = {'1'=>@product1,'2'=>@product2}
         set_test_data('test_db_storage',data)
 
-        get "/application",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
+        get "/api/application/query",:client_id => @c.id,:source_name => @s.name,:version => ClientSync::VERSION
         last_response.should be_ok
         token = @c.get_value(:page_token)
         JSON.parse(last_response.body).should == [{"version"=>ClientSync::VERSION},{"token"=>token}, 
@@ -288,7 +288,7 @@ describe "Server" do
         Store.flash_data('test_db_storage')
         @s.read_state.refresh_time = Time.now.to_i      
 
-        get "/application",:client_id => @c.id,:source_name => @s.name,:token => token,
+        get "/api/application/query",:client_id => @c.id,:source_name => @s.name,:token => token,
           :version => ClientSync::VERSION
         last_response.should be_ok
         token = @c.get_value(:page_token)
@@ -302,7 +302,7 @@ describe "Server" do
         Store.put_data('test_db_storage',@data)
         params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
           :version => ClientSync::VERSION}
-        get "/application/search",params
+        get "/api/application/search",params
         last_response.content_type.should =~ /application\/json/
         token = @c.get_value(:search_token)
         JSON.parse(last_response.body).should == [[{'version'=>ClientSync::VERSION},{'token'=>token},
@@ -315,7 +315,7 @@ describe "Server" do
         error = set_test_data('test_db_storage',@data,msg,'search error')
         params = {:client_id => @c.id,:sources => sources,:search => {'name' => 'iPhone'},
           :version => ClientSync::VERSION}
-        get "/application/search",params
+        get "/api/application/search",params
         JSON.parse(last_response.body).should == [[{'version'=>ClientSync::VERSION},
           {'source'=>sources[0][:name]},{'search-error'=>{'search-error'=>{'message'=>msg}}}]]
       end
@@ -325,7 +325,7 @@ describe "Server" do
         sources = [{:name=>'SimpleAdapter'},{:name=>'SampleAdapter'}]
         params = {:client_id => @c.id,:sources => sources,:search => {'search' => 'bar'},
           :version => ClientSync::VERSION}
-        get "/application/search",params
+        get "/api/application/search",params
         @c.source_name = 'SimpleAdapter'
         token1 = @c.get_value(:search_token)
         @c.source_name = 'SampleAdapter'
@@ -340,25 +340,35 @@ describe "Server" do
 
     describe "bulk data routes" do
       before(:each) do
-        do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
+        do_post "/api/application/clientlogin", "login" => @u.login, "password" => 'testpass'
       end
 
       after(:each) do
         delete_data_directory
       end
 
-      it "should make initial bulk data request and receive wait" do
+      it "should make initial bulk data request and receive wait (and no deprecation warning)" do
+        set_state('test_db_storage' => @data)
+        get "/api/application/bulk_data", :partition => :user, :client_id => @c.id
+        last_response.should be_ok
+        last_response.body.should == {:result => :wait}.to_json
+        warning_header = last_response.headers['Warning']
+        warning_header.should == nil or warning_header.index('deprecated').should == nil
+      end
+      
+      it "should make old-way initial bulk data request and receive wait along with deprecation warning" do
         set_state('test_db_storage' => @data)
         get "/application/bulk_data", :partition => :user, :client_id => @c.id
         last_response.should be_ok
         last_response.body.should == {:result => :wait}.to_json
+        last_response.headers['Warning'].index('deprecated').should_not == nil
       end
 
       it "should receive url when bulk data is available" do
         set_state('test_db_storage' => @data)
-        get "/application/bulk_data", :partition => :user, :client_id => @c.id
+        get "/api/application/bulk_data", :partition => :user, :client_id => @c.id
         BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
-        get "/application/bulk_data", :partition => :user, :client_id => @c.id
+        get "/api/application/bulk_data", :partition => :user, :client_id => @c.id
         last_response.should be_ok
         data = BulkData.load(bulk_data_docname(@a.id,@u.id))
         last_response.body.should == {:result => :url, 
@@ -368,9 +378,9 @@ describe "Server" do
 
       it "should download bulk data file" do
         set_state('test_db_storage' => @data)
-        get "/application/bulk_data", :partition => :user, :client_id => @c.id
+        get "/api/application/bulk_data", :partition => :user, :client_id => @c.id
         BulkDataJob.perform("data_name" => bulk_data_docname(@a.id,@u.id))
-        get "/application/bulk_data", :partition => :user, :client_id => @c.id
+        get "/api/application/bulk_data", :partition => :user, :client_id => @c.id
         get JSON.parse(last_response.body)["url"]
         last_response.should be_ok
         File.open('test.data','wb') {|f| f.puts last_response.body}
@@ -381,7 +391,7 @@ describe "Server" do
       it "should receive nop when no sources are available for partition" do
         set_state('test_db_storage' => @data)
         Source.load('SimpleAdapter',@s_params).partition = :user
-        get "/application/bulk_data", :partition => :app, :client_id => @c.id
+        get "/api/application/bulk_data", :partition => :app, :client_id => @c.id
         last_response.should be_ok
         last_response.body.should == {:result => :nop}.to_json
       end
@@ -389,7 +399,7 @@ describe "Server" do
 
     describe "blob sync" do
       before(:each) do
-        do_post "/application/clientlogin", "login" => @u.login, "password" => 'testpass'
+        do_post "/api/application/clientlogin", "login" => @u.login, "password" => 'testpass'
       end
       it "should upload blob in multipart post" do
         file1,file2 = 'upload1.txt','upload2.txt'
@@ -401,7 +411,7 @@ describe "Server" do
           :client_id => @c.id,:source_name => @s.name,
           :version => ClientSync::VERSION,
           :blob_fields => ['txtfile-rhoblob']}.to_json
-        post "/application", 
+        post "/api/application/queue_updates", 
           {:cud => cud,'txtfile-rhoblob-1' => 
             Rack::Test::UploadedFile.new(File.join(File.dirname(__FILE__),'..','testdata',file1), "application/octet-stream"),
             'txtfile-rhoblob-2' => 

@@ -13,3 +13,6 @@ examples/simple/settings/apple_push_cert.pem
 *.bak
 .buildpath
 .project
+.idea
+.bundle
+.swp

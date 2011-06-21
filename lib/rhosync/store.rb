@@ -29,6 +29,7 @@ module Rhosync
           if data.is_a?(Hash)
             @@db.pipelined do
               data.each do |key,value|
+                raise ArgumentError, "Invalid value object: #{value.inspect}. Hash is expected." unless value.is_a?(Hash)   
                 value.each do |attrib,value|
                   unless _is_reserved?(attrib,value)
                     @@db.sadd(dockey,setelement(key,attrib,value))
@@ -152,10 +153,10 @@ module Rhosync
       def get_lock(dockey,timeout=0,raise_on_expire=false)
         lock_key = _lock_key(dockey)
         current_time = Time.now.to_i   
-        ts = current_time+timeout+1
+        ts = current_time+(Rhosync.lock_duration || timeout)+1
         loop do 
           if not @@db.setnx(lock_key,ts)
-            if raise_on_expire
+            if raise_on_expire or Rhosync.raise_on_expired_lock
               if @@db.get(lock_key).to_i <= current_time
                 # lock expired before operation which set it up completed
                 # this process cannot continue without corrupting locked data 
@@ -176,23 +177,6 @@ module Rhosync
         end
         return ts
       end
-    
-      # def get_lock(dockey,timeout=0)
-      #   lock_key = _lock_key(dockey)
-      #   current_time = Time.now.to_i   
-      #   ts = current_time+timeout+1
-      #   if not @@db.setnx(lock_key,ts)
-      #     loop do 
-      #       if @@db.get(lock_key).to_i <= current_time and 
-      #         @@db.getset(lock_key,ts).to_i <= current_time
-      #         break
-      #       end
-      #       sleep(1)
-      #       current_time = Time.now.to_i
-      #     end
-      #   end
-      #   return ts
-      # end
       
       # Due to redis bug #140, setnx always returns true so this doesn't work
       # def get_lock(dockey,timeout=0)

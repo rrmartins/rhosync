@@ -73,7 +73,6 @@ describe "PingJob" do
       params = {"user_id" => @u.id, "api_token" => @api_token,
         "sources" => [@s.name], "message" => 'hello world', 
         "vibrate" => '5', "badge" => '5', "sound" => 'hello.mp3',"phone_id"=>nil}
-
       # another client with the same device pin ...
       @c1 = Client.create(@c_fields,{:source_name => @s_fields[:name]})
       # and yet another one ...

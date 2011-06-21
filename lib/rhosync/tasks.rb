@@ -51,6 +51,16 @@ module Rhosync
       RUBY_PLATFORM =~ /(win|w)32$/
     end
     
+    # FIXME:
+    def ruby19?
+      RUBY_VERSION =~ /1.9/ 
+    end
+
+    # FIXME:
+    def jruby?
+      defined?(JRUBY_VERSION)
+    end
+      
     def thin?
       begin
         require 'thin'
@@ -79,6 +89,24 @@ EOF
       puts msg
       exit 1
     end
+
+    def jetty_rackup?
+      'jruby -S jetty-rackup'
+    end
+
+#     def mizuno?
+#       begin
+#         require 'mizuno'
+#         'jruby -S mizuno'
+#       rescue
+#         msg =<<-EOF
+# Could not find 'mizuno' on your system.  Please install it:
+#   jruby -S gem install mizuno
+# EOF
+#         puts msg
+#         exit 1
+#       end
+#     end
   end
 end
 
@@ -209,7 +237,7 @@ namespace :rhosync do
   
   begin
     require 'rspec/core/rake_task'
-    require 'rcov/rcovtask' unless windows?
+    require 'rcov/rcovtask' unless (windows? || ruby19?) # FIXME:
     
     desc "Run source adapter specs"
     task :spec do
@@ -217,7 +245,7 @@ namespace :rhosync do
       RSpec::Core::RakeTask.new('rhosync:spec') do |t|
         t.pattern = FileList[files]
         t.rspec_opts = %w(-fn -b --color)
-        unless windows?
+        unless (windows? || ruby19?) # FIXME: 
           t.rcov = true
           t.rcov_opts = ['--exclude', 'spec/*,gems/*']
         end
@@ -235,10 +263,14 @@ namespace :rhosync do
   
   desc "Start rhosync server"
   task :start => :dtach_installed do
-    cmd = thin? || mongrel? || report_missing_server
+    cmd = (jruby?) ? jetty_rackup? : (thin? || mongrel? || report_missing_server)
+    # cmd = (jruby?) ? mizuno? : (thin? || mongrel? || report_missing_server)
     if windows?
       puts 'Starting server in new window...'
       system("start cmd.exe /c #{cmd} config.ru")
+    elsif jruby?
+      puts 'Starting server in jruby environment...'
+      system("#{cmd} config.ru")
     else
       puts 'Detach with Ctrl+\  Re-attach with rake rhosync:attach'
       sleep 2
@@ -280,6 +312,37 @@ namespace :rhosync do
       puts SecureRandom.hex(64)
     rescue LoadError
       puts "Missing secure random generator.  Try running `rake secret` in a rails application instead."
+    end
+  end
+  
+  desc "Build executable WAR file to be used in Java App Servers"
+  task :war do
+    if jruby? then
+      puts "building the WAR file"
+      if not File::exists? "config/warble.rb"
+        puts "generating Warbler's config file"
+        includeDirs = []
+        Dir.mkdir('config') if not File.exists?('config')
+        aFile = File.new("config/warble.rb", "w+")
+        if aFile
+          includeDirs = FileList['*'].exclude do |entry|
+            entry if (not File.directory? entry) || (entry == 'spec')
+          end
+          configFile = "Warbler::Config.new do |config|\n" +
+            "config.dirs = %w(#{includeDirs.join(' ')})\n" +
+            "config.includes = FileList[\"./*\"]\n" +
+            "config.excludes = FileList[\"./*.war\",'spec']\nend"
+          aFile.write("#{configFile}")
+          aFile.close
+        else
+          puts "Unable to create config/warble.rb file!"
+        end
+      end
+      # build the executable WAR using the config/warble.rb file
+      ENV['BUNDLE_WITHOUT'] = ['development','test'].join(':')
+      sh 'warble executable war'
+    else
+      puts "Cannot build WAR files outside of JRuby environment!"
     end
   end
 end

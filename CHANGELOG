@@ -1,4 +1,4 @@
-## 2.2.0 (not released)
+## 3.0 (not released)
 * #11102931 ping api accepts vibrate string and int
 * #7197617 test spec helpers support pass through
 * #11944605 implemented pass through feature
@@ -9,15 +9,26 @@
 * #12105115 - removed unnecessary log4r dependency
 * added bundler to manage gem's dependencies, migrated from rspec1 to rspec2  
 * #5687948 - fixed issue "iPhone push specs failed" 
-* use redis 2.2.6 by default						
+* use redis 2.2.10 by default						
 * #13616807 - Rake task spec:all fails for enterprise ruby (ree)
-* #13776713 - Rake -v 0.9.0 breaks rhosync rake tasks 
-
+* #13776713 - Rake -v 0.9.0 breaks rhosync rake tasks
+* #14514773 - REST API push_object, push_deletes :md_size count fix  
+* #5687948  - fixed issue "iPhone push specs failed"
+* #12854737 - string vs. symbol problem in ruby 1.9 model.rb (contribute to ruby 1.9 support)
+* #11692191 - ruby 1.9 support
+* #2020980  - Test on JRuby. Code reworked to fully support JRuby platform.
+* #14087743 - Merging the /login and /get_api_token methods.  
+* #14713569 - Moving all Server REST API calls into namespaces. 
+* #14284841 - Merge ruby_19 branch into master
+* #14784949 - Suppress rake -v 0.9.2 warning messages while running tasks. 
+* #3174947  - RESTful routes for client management
+ 
 ## 2.1.7 (2011-05-31)
 * #14021681 - check for client on client_sync class methods
 * #14082861 - expose Store.lock timeout to high-level functions
 * #14082589 - fixed source loading so a unique instance is loaded
 * #14124195 - concurrency issue under load for same user via push_objects api
+* #14511763 - added global options `raise_on_expired_lock` (true/false) and `lock_duration` (sec) settings
 
 ## 2.1.6 (2011-05-25)
 * #13830841 - fixed issue where current_user.login doesn't match @source.user_id

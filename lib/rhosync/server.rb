@@ -4,6 +4,7 @@ require 'erb'
 require 'json'
 require 'fileutils'
 require 'rhosync'
+require 'x_domain_session_wrapper'
 
 module Rhosync
   
@@ -39,7 +40,7 @@ module Rhosync
       end
 
       def check_api_token
-        request_action == 'get_api_token' or 
+        request_action == 'login' or request_action == 'get_api_token' or 
           (params[:api_token] and ApiToken.is_exist?(params[:api_token]))
       end
 
@@ -55,7 +56,7 @@ module Rhosync
 
       def login_required
         current_user.nil?
-      end
+      end  
 
       def login
         if params[:login] == 'rhoadmin'
@@ -66,7 +67,6 @@ module Rhosync
         if user
           session[:login] = user.login
           session[:app_name] = APP_NAME
-          true
         else
           false
         end
@@ -88,7 +88,7 @@ module Rhosync
       end
 
       def api_user
-        if request_action == 'get_api_token'
+        if request_action == 'get_api_token' or request_action == 'login'
           current_user
         else
           u = ApiToken.load(params[:api_token])
@@ -137,9 +137,39 @@ module Rhosync
       def catch_all
         begin
           yield
+        rescue ApiException => ae
+          throw :halt, [ae.error_code, ae.message]
         rescue Exception => e
           log e.message + e.backtrace.join("\n")
           throw :halt, [500, e.message]
+        end
+      end
+      
+      def mark_deprecated_call_and_reroute(name, namespace, *params)
+        namespace_val = namespace.nil? ? "<namespace>" : "#{namespace}"
+        http_method = request.get? ? "GET" : "POST"
+        warning_message = "Use of the #{http_method} #{request.route} is deprecated. Use #{http_method} /api/#{namespace_val}/#{name} instead."
+        response.headers['Warning'] = warning_message
+        Rhosync.log warning_message
+        if namespace != nil  
+          call env.merge('PATH_INFO' => "/api/#{namespace}/#{name}")
+        else
+          yield *params
+        end
+      end
+      
+      def execute_api_call(client_call = false)
+        if client_call or check_api_token
+          catch_all do
+            res = yield params, (client_call ? current_user : api_user), self
+            if params.has_key? :warning
+              Rhosync.log params[:warning]
+              response.headers['Warning'] = params[:warning]
+            end
+            res
+          end
+        else
+          throw :halt, [422, "No API token provided"]
         end
       end
     end
@@ -154,6 +184,7 @@ module Rhosync
             :key => 'rhosync_session',
             :expire_after => 31536000,
             :secret => @@secret     
+      use XDomainSessionWrapper
       super
     end
     
@@ -200,7 +231,7 @@ module Rhosync
     end
 
     %w[get post].each do |verb|
-      send(verb, "/application*") do
+      send(verb, "/*application*") do
         unless request_action == 'clientlogin'
           throw :halt, [401, "Not authenticated"] if login_required
         end
@@ -214,85 +245,27 @@ module Rhosync
 
     # Collection routes
     post '/login' do
-      logout
-      do_login
-    end
-
-    post '/application/clientlogin' do
-      catch_all do      
-        logout
-        do_login
-      end
-    end
-
-    get '/application/clientcreate' do
-      catch_all do 
-        content_type :json
-        client = Client.create(:user_id => current_user.id,:app_id => current_app.id)
-        client.update_fields(params)
-        { "client" => { "client_id" =>  client.id.to_s } }.merge!(source_config).to_json
-      end
-    end
-
-    post '/application/clientregister' do
-      catch_all do 
-        current_client.update_fields(params)
-        source_config.to_json
-      end
-    end
-
-    get '/application/clientreset' do
-      catch_all do 
-        ClientSync.reset(current_client)
-        source_config.to_json
-      end
+      mark_deprecated_call_and_reroute(:login, :admin, self, params)
     end
 
     # Member routes
     get '/application' do
-      catch_all do
-        content_type :json
-        res = current_client_sync.send_cud(params[:token],params[:query]).to_json
-        res
-      end
+      mark_deprecated_call_and_reroute(:query, :application, self, params)
     end
 
     post '/application' do
-      catch_all do
-        current_client_sync.receive_cud(params)
-        status 200
-      end
+      mark_deprecated_call_and_reroute(:queue_updates, :application, self, params)
     end
-
-    get '/application/bulk_data' do
-      catch_all do
-        content_type :json
-        data = ClientSync.bulk_data(params[:partition].to_sym,current_client)
-        data.to_json
+      
+    def self.api(name, namespace = nil, verb = :post, &block)
+      old_api_prefix = (namespace == :application) ? :application : :api
+      client_call = (namespace == :application) ? true : false
+      send verb, "/#{old_api_prefix}/#{name}" do
+        mark_deprecated_call_and_reroute(name, namespace, &block)
       end
-    end
-
-    get '/application/search' do
-      catch_all do
-        content_type :json
-        ClientSync.search_all(current_client,params).to_json
-      end
-    end
-
-    def self.api(name)
-      post "/api/#{name}" do
-        if check_api_token
-          begin
-            yield params,api_user
-          rescue ApiException => ae
-            throw :halt, [ae.error_code, ae.message]  
-          rescue Exception => e
-            log e.message + "\n" + e.backtrace.join("\n")
-            throw :halt, [500, e.message]
-          end
-        else
-          throw :halt, [422, "No API token provided"]
-        end
+      
+      send verb, "/api/#{namespace}/#{name}" do
+        execute_api_call client_call, &block
       end
     end
   end

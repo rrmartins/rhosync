@@ -1,6 +1,6 @@
 source 'http://rubygems.org'
 
-gem 'rhosync', '<%=gem_version%>'
+gem 'rhosync', '>= 3.0.0'
 
 platforms :jruby do
   gem 'jdbc-sqlite3', :require => false

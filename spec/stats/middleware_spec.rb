@@ -13,7 +13,7 @@ describe "Middleware" do
     Store.db.flushdb
     app = mock('app')
     app.stub!(:call)
-    @middleware = Middleware.new(app)
+    @middleware_new_routes = Middleware.new(app)
     Store.stub!(:lock).and_yield
   end
   
@@ -26,7 +26,7 @@ describe "Middleware" do
       'REQUEST_METHOD' => 'GET',
       'PATH_INFO' => '/api/application/query'
     }
-    10.times { @middleware.call(env) }
+    10.times { @middleware_new_routes.call(env) }
     metric = 'http:GET:/api/application/query:SampleAdapter'
     Record.key(metric).should == "stat:#{metric}"
 

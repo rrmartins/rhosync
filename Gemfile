@@ -8,7 +8,7 @@ platforms :jruby do
   gem 'dbi'
   gem 'dbd-jdbc', :require => 'dbd/Jdbc'
   gem 'jruby-openssl'
-  gem 'jruby-rack'
+  gem 'trinidad'
   gem 'warbler'
 end
 

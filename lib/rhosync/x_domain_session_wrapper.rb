@@ -4,12 +4,14 @@ class XDomainSessionWrapper
   def initialize(app, opts={})
     @app = app
     @session_cookie = opts[:session_cookie] || 'rhosync_session'
+    @api_uri_regexp = opts[:api_uri_regexp] || /\A\/api\/application/
+    @login_uri_regexp = opts[:login_uri_regexp] || /\A\/api\/application\/clientlogin/
     yield self if block_given?
   end
 
   def is_sync_protocol(env)
     # if it is rhosync protocol URI
-    /\A\/application/.match(env['REQUEST_PATH'])
+    @api_uri_regexp.match(env['REQUEST_PATH'])
   end
 
   def call(env)
@@ -26,7 +28,7 @@ class XDomainSessionWrapper
       cookies = headers['Set-Cookie'].to_s
       #puts "<----- Cookies: #{cookies}"
       # put cookies to body as JSON on login success
-      if /\/clientlogin/.match(env['REQUEST_PATH']) && status == 200
+      if @login_uri_regexp.match(env['REQUEST_PATH']) && status == 200
         body = session_json_from(cookies)
         headers['Content-Length'] = body.length.to_s
       end

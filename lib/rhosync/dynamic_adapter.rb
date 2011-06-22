@@ -56,7 +56,7 @@ module Rhosync
 
     def send_objects(action, source_name, partition, obj = {}) # :nodoc:
       validate_args(action, source_name, partition, obj)
-      process(:post, "/rhosync/#{action}", 
+      process(:post, "/rhoconnect/#{action}", 
         {
           :resource => source_name,
           :partition => partition,

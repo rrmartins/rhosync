@@ -12,6 +12,9 @@ rescue LoadError
   require 'rhosync/console/server'
 end
 
+require 'vendor/rhosync/lib/x_domain_session_wrapper'
+use XDomainSessionWrapper
+
 # By default, turn on the resque web console
 require 'resque/server'
 
@@ -25,6 +28,19 @@ Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.enable  :stats
 Rhosync::Server.set     :secret, '<changeme>'
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
+                     
+# configure Cross-Domain Resource Sharing
+require 'vendor/rhosync/lib/rack/cors'
+use Rack::Cors do |cfg|
+  cfg.allow do |allow|
+    allow.origins /.*/
+#        /http:\/\/192\.168\.0\.\d{1,3}(:\d+)?/,
+#        /http:\/\/localhost(:\d+)?/, /http:\/\/127\.0\.0\.\d{1,3}(:\d+)?/,
+#        /file:\/\//, /null/, /.*/
+    allow.resource '/application',   :headers => :any, :methods => [:get, :post, :put, :delete], :credentials => true
+    allow.resource '/application/*', :headers => :any, :methods => [:get, :post, :put, :delete], :credentials => true
+  end
+end                     
                            
 # Load our rhosync application
 require 'application'

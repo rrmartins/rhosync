@@ -1,4 +1,7 @@
 #!/usr/bin/env ruby
+require 'rubygems'
+require 'bundler'
+Bundler.require
 
 path = File.join(File.dirname(__FILE__),'..','..','lib')
 $:.unshift path

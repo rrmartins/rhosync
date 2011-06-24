@@ -19,6 +19,19 @@ include Rhosync
 
 require 'rhosync/test_methods'
 
+# Monkey patch to fix the following issue:
+# /Library/Ruby/Gems/1.8/gems/rspec-core-2.5.1/lib/rspec/core/shared_example_group.rb:45:
+# in `ensure_shared_example_group_name_not_taken': Shared example group '...' already exists (ArgumentError)
+module RSpec
+  module Core
+    module SharedExampleGroup
+    private
+      def ensure_shared_example_group_name_not_taken(name)
+      end
+    end
+  end
+end
+
 shared_examples_for "SpecHelper" do
   include Rhosync::TestMethods
   

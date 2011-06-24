@@ -12,7 +12,7 @@ describe "App" do
 
     it "should add source adapters" do
       @a1 = App.load(@a_fields[:name])
-      @a1.sources.members.sort.should == ["FixedSchemaAdapter", "SampleAdapter"]
+      @a1.sources.sort.should == ["FixedSchemaAdapter", "SampleAdapter", "SimpleAdapter"]
     end    
   end  
 end

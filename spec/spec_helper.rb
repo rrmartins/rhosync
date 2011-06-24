@@ -25,6 +25,10 @@ module TestHelpers
     File.expand_path(File.join(File.dirname(__FILE__),'apps','rhotestapp'))
   end
   
+  def get_emptyapp_path
+    File.expand_path(File.join(File.dirname(__FILE__),'apps','emptyapp'))
+  end
+  
   def do_post(url,params)
     post url, params.to_json, {'CONTENT_TYPE'=>'application/json'}
   end

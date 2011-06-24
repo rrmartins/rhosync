@@ -1,5 +1,5 @@
 Server.api :list_sources, :source  do |params,user|
-  sources = App.load(APP_NAME).sources.members
+  sources = App.load(APP_NAME).sources
   if params[:partition_type].nil? or params[:partition_type] == 'all'
     sources.to_json 
   else

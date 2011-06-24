@@ -52,13 +52,15 @@ shared_examples_for "SharedRhosyncHelper" do |params|
     @s = Source.create(@s_fields,@s_params)
     @s1 = Source.create(@s1_fields,@s_params)
     @s2 = Source.create({:name=> 'Product2'},@s_params)
+    @s3 = Source.create({:name=> 'SimpleAdapter',:partition_type=> 'app'},@s_params)
     @s1.belongs_to = [{'brand' => 'SampleAdapter'}].to_json    
     config = Rhosync.source_config["sources"]['FixedSchemaAdapter']
     @s1.update(config)
     @r = @s.read_state
     @a.sources << @s.id
     @a.sources << @s1.id
-    Source.update_associations(@a.sources.members)
+    @a.sources << @s3.id
+    Source.update_associations(@a.sources)
     @a.users << @u.id
     
     # "RhosyncDataHelper"  
@@ -149,7 +151,7 @@ shared_examples_for "ApiHelper" do
     @r = @s.read_state
     @a.sources << @s.id
     @a.sources << @s1.id
-    Source.update_associations(@a.sources.members)
+    Source.update_associations(@a.sources)
     @a.users << @u.id
 
     @source = 'Product'

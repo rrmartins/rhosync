@@ -117,7 +117,7 @@ module Rhosync
       true
     end
     
-    def _process_create(client_id,key,value,links,creates,deletes)
+    def _process_create(client,key,value,links,creates,deletes)
       # Perform operation
       link = @adapter.create value
       # Store object-id link for the client
@@ -134,14 +134,21 @@ module Rhosync
       end
     end
     
-    def _process_update(client_id,key,value)
-      # Add id to object hash to forward to backend call
-      value['id'] = key
-      # Perform operation
-      @adapter.update value
+    def _process_update(client,key,value)
+      begin
+        # Add id to object hash to forward to backend call
+        value['id'] = key
+        # Perform operation
+        @adapter.update value
+      rescue Exception => e
+        # TODO: This will be slow!
+        cd = client.get_data(:cd)
+        client.put_data(:update_rollback,{key => cd[key]},true)
+        raise e
+      end
     end
     
-    def _process_delete(client_id,key,value,dels)
+    def _process_delete(client,key,value,dels)
       value['id'] = key
       # Perform operation
       @adapter.delete value
@@ -167,11 +174,11 @@ module Rhosync
           # Call on source adapter to process individual object
           case operation
           when 'create'
-            _process_create(client_id,key,value,links,creates,deletes)
+            _process_create(client,key,value,links,creates,deletes)
           when 'update'
-            _process_update(client_id,key,value)
+            _process_update(client,key,value)
           when 'delete'
-            _process_delete(client_id,key,value,dels)
+            _process_delete(client,key,value,dels)
           end
         rescue Exception => e
           log "SourceAdapter raised #{operation} exception: #{e}"

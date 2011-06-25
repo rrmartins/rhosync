@@ -67,7 +67,7 @@ describe "Protocol" do
     @r = @s.read_state
     @a.sources << @s.id
     @a.sources << @s1.id
-    Source.update_associations(@a.sources.members)
+    Source.update_associations(@a.sources)
     @a.users << @u.id
   end
     

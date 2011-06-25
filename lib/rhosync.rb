@@ -100,14 +100,12 @@ module Rhosync
         check_for_schema_field!(fields)
         fields[:name] = source_name
         Source.create(fields,{:app_id => app.name})
-        unless app.sources.members.include?(source_name)
-          app.sources << source_name
-        end
+        app.sources << source_name
         # load ruby file for source adapter to re-load class
         load under_score(source_name+'.rb')
       end
       # Create associations for all sources
-      Source.update_associations(app.sources.members)
+      Source.update_associations(app.sources)
     end
   end
   

@@ -50,13 +50,9 @@ describe "Rhosync" do
   end
 
   it "should bootstrap app with no sources" do
-    app = App.create(:name => test_app_name)
-    Rhosync.stub!(:get_config).and_return(
-      { Rhosync.environment.to_sym => { :licensefile => 'settings/license.key' } }
-    )
-    App.should_receive(:load).twice.with(test_app_name).and_return(app)
-    Rhosync.bootstrap(get_testapp_path)
-    App.load(test_app_name).sources.members.should == []
+    App.create(:name => test_app_name).delete
+    Rhosync.bootstrap(get_emptyapp_path)
+    App.load(test_app_name).sources.should == []
   end
 
   it "should exit if schema config exists" do

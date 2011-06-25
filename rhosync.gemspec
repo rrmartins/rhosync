@@ -33,7 +33,7 @@ Gem::Specification.new do |s|
   s.add_dependency('json', '~> 1.4.2')
   s.add_dependency('rubyzip', '~> 0.9.4')
   s.add_dependency('uuidtools', '>= 2.1.1')
-  s.add_dependency('redis', '~> 2.1.1')
+  s.add_dependency('redis', '>= 2.2.0')
   s.add_dependency('resque', '~> 1.14.0')
   s.add_dependency('rest-client', '~> 1.6.1')
   s.add_dependency('templater', '~> 1.0.0')

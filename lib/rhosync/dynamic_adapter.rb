@@ -10,7 +10,7 @@ module Rhosync
     def initialize(source, partition=nil, uri=nil)
       @source = source
       @uri = uri || Rhosync.appserver
-      @partition = partition
+      @partition = partition || current_user.login
       
       if @uri
         @uri = URI.parse(@uri)
@@ -25,7 +25,7 @@ module Rhosync
     end
     
     def login
-      #TODO write authentication method
+      send_objects('authenticate',@source.name, @partition)
     end
     
     def query(params=nil)

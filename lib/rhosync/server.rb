@@ -109,7 +109,7 @@ module Rhosync
             {:user_id => user.login,:app_id => APP_NAME})
              
           # if source does not exist create one for dynamic adapter
-          @source = Source.create({:name => params[:source_name]},{:app_id => APP_NAME}) unless @source
+          @source = Source.create({:name => params[:source_name]},{:user_id => user.login, :app_id => APP_NAME}) unless @source
           
           #raise "ERROR: Source '#{params[:source_name]}' requested by client doesn't exist.\n" unless @source
           @source

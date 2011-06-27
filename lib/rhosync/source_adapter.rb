@@ -27,7 +27,9 @@ module Rhosync
             source.name = source.name.dup if source.name.frozen?
             source.name.strip!
           end
-          if Object.const_defined?(source.name)
+          # fix until source adpaters are phased out, checking for Rhosync namespace 
+          # so that backend models with same name as Rhoconnect models are instantiated correctly
+          if Object.const_defined?(source.name) && Object.const_get(source.name).to_s.split("::").first != 'Rhosync'
             require under_score(source.name)
             adapter=(Object.const_get(source.name)).new(source)
           else

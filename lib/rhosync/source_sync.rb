@@ -143,7 +143,7 @@ module Rhosync
       rescue Exception => e
         # TODO: This will be slow!
         cd = client.get_data(:cd)
-        client.put_data(:update_rollback,{key => cd[key]},true)
+        client.put_data(:update_rollback,{key => cd[key]},true) if cd[key]
         raise e
       end
     end
@@ -182,6 +182,7 @@ module Rhosync
           end
         rescue Exception => e
           log "SourceAdapter raised #{operation} exception: #{e}"
+          log e.backtrace.join("\n")
           errors ||= {}
           errors[key] = value
           errors["#{key}-error"] = {'message'=>e.message}

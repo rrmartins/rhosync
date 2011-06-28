@@ -185,6 +185,9 @@ module Rhosync
           c.rename("#{operation}_errors","#{operation}_errors_page")
         end
       end
+      @client.lock("update_rollback") do |c|
+        c.rename("update_rollback","update_rollback_page")
+      end
     end
     
     # Computes create links for a client and stores a copy as links page
@@ -344,6 +347,7 @@ module Rhosync
       ['create','update','delete'].each do |operation|
         @client.flash_data("#{operation}_errors_page")
       end
+      @client.flash_data("update_rollback_page")
     end
     
     def _send_errors
@@ -352,6 +356,7 @@ module Rhosync
         res["#{operation}-error"] = @client.get_data("#{operation}_errors_page")
       end
       res["source-error"] = @source.lock(:errors) { |s| s.get_data(:errors) }
+      res["update-rollback"] = @client.get_data(:update_rollback_page)
       res.reject! {|key,value| value.nil? or value.empty?}
       res
     end

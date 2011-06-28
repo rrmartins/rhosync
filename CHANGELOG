@@ -1,5 +1,6 @@
 ## 2.1.8
 * updated to rake 0.9.2
+* #14911833 - Add support for rolling back updates on sync errors
 
 ## 2.1.7
 * #14021681 - check for client on client_sync class methods

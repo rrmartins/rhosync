@@ -145,11 +145,15 @@ describe "SourceSync" do
       it "should do update with errors" do
         msg = "Error updating record"
         data = add_error_object({'4'=> { 'price' => '199.99' }},msg)
-        set_state(@c.docname(:update) => data)
+        set_state(@c.docname(:update) => data,
+          @c.docname(:cd) => { ERROR => { 'price' => '99.99' } }
+        )
         @ss.update(@c.id)
-        verify_result(@c.docname(:update_errors) =>
-          {"#{ERROR}-error"=>{"message"=>msg}, ERROR=>data[ERROR]},
-            @c.docname(:update) => {'4'=> { 'price' => '199.99'}})
+        verify_result(
+          @c.docname(:update_errors) =>
+            {"#{ERROR}-error"=>{"message"=>msg}, ERROR=>data[ERROR]},
+          @c.docname(:update) => {'4'=> { 'price' => '199.99'}},
+          @c.docname(:update_rollback) => {ERROR=>{"price"=>"99.99"}})
       end
     end
     

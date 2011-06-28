@@ -68,6 +68,9 @@ describe "ClientSync" do
       end
       
       it "should handle update errors" do
+        broken_object = { ERROR => { 'price' => '99.99' } }
+        set_state(@c.docname(:cd) => broken_object)
+        set_test_data('test_db_storage',broken_object)
         receive_and_send_cud('update')
       end
       
@@ -97,10 +100,19 @@ describe "ClientSync" do
       def receive_and_send_cud(operation)
         msg = "Error #{operation} record"
         op_data = {operation=>{ERROR=>{'an_attribute'=>msg,'name'=>'wrongname'}}}
-        @cs.receive_cud(op_data)
-        @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
-          {"token"=>""}, {"count"=>0}, {"progress_count"=>0}, {"total_count"=>0},
-          {"#{operation}-error"=>{"#{ERROR}-error"=>{"message"=>msg},ERROR=>op_data[operation][ERROR]}}]
+        @cs.receive_cud(op_data) 
+        if operation == 'update'
+          @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
+            {"token"=>""}, {"count"=>0}, {"progress_count"=>1}, {"total_count"=>1},
+            {
+              "update-rollback"=>{"0_broken_object_id"=>{"price"=>"99.99"}},
+              "#{operation}-error"=>{"#{ERROR}-error"=>{"message"=>msg},ERROR=>op_data[operation][ERROR]}
+            }]
+        else
+          @cs.send_cud.should == [{"version"=>ClientSync::VERSION},
+            {"token"=>""}, {"count"=>0}, {"progress_count"=>0}, {"total_count"=>0},
+            {"#{operation}-error"=>{"#{ERROR}-error"=>{"message"=>msg},ERROR=>op_data[operation][ERROR]}}]
+        end
       end
     end
   

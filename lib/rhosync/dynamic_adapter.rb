@@ -10,7 +10,7 @@ module Rhosync
     def initialize(source, partition=nil, uri=nil)
       @source = source
       @uri = uri || Rhosync.appserver
-      @partition = partition || current_user.login
+      @partition = partition || @source.user.login
       
       if @uri
         @uri = URI.parse(@uri)
@@ -24,8 +24,10 @@ module Rhosync
       super(source)
     end
     
-    def login
-      send_objects('authenticate',@source.name, @partition)
+    def self.authenticate(login,password)
+      hsh = {:login => login, :password => password, :api_token => Rhosync.api_token}.to_json
+      headers = {:content_type => :json, :accept => :json}
+      RestClient.post "#{Rhosync.appserver}/rhoconnect/authenticate", hsh, headers
     end
     
     def query(params=nil)

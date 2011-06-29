@@ -23,7 +23,11 @@ module Rhosync
     end
 
     def authenticate(login, password, session)
-      auth_result = self.delegate.authenticate(login, password, session) if self.delegate
+      if Rhosync.appserver
+        auth_result = DynamicAdapter.authenticate(login,password)
+      elsif self.delegate
+        auth_result = self.delegate.authenticate(login, password, session) 
+      end
       
       if auth_result
         login = auth_result if auth_result.is_a? String

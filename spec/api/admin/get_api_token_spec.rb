@@ -15,6 +15,7 @@ describe "RhosyncApiGetApiToken" do
     end
 
     it "should fail to login and get token if user is not rhoadmin" do
+      Rhosync.appserver = nil
       post "/api/admin/login", :login => @u_fields[:login],:password => 'testpass'
       last_response.status.should == 422    
       last_response.body.should == 'Invalid/missing API user'

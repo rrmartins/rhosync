@@ -5,6 +5,12 @@ require File.join(File.dirname(__FILE__), 'support', 'shared_examples')
 describe "DynamicAdapter" do
   it_behaves_like "SharedRhosyncHelper", :rhosync_data => true do
     
+    it "should return login when backend service defined" do
+      stub_request(:post, "http://test.com/rhoconnect/authenticate").to_return(:body => "lucas")
+      Rhosync.appserver = 'http://test.com'
+      DynamicAdapter.authenticate('lucas','').should == 'lucas'
+    end
+    
     it "should query dynamic adapter service" do
       data = {'1'=>@product1} 
       stub_request(:post, "http://test.rhosync.com/rhoconnect/query").with(:headers => {'Content-Type' => 'application/json'}).to_return(:status => 200, :body => data.to_json)

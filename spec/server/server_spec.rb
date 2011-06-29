@@ -14,6 +14,7 @@ describe "Server" do
 
       Rhosync.bootstrap(get_testapp_path) do |rhosync|
         rhosync.vendor_directory = File.join(rhosync.base_directory,'..','..','..','vendor')
+        rhosync.appserver = nil
       end
       Rhosync::Server.set :environment, :test
       Rhosync::Server.set :run, false
@@ -83,6 +84,7 @@ describe "Server" do
       end
 
       it "should return nil if params[:source_name] is missing" do
+        #stub_request(:post, "http://test.rhosync.com/rhoconnect/query")
         get "/api/application/query"
         last_response.status.should == 500
       end
@@ -91,6 +93,13 @@ describe "Server" do
     describe "auth routes" do
       it "should login user with correct username,password" do
         do_post "/api/application/clientlogin", "login" => @u.login, "password" => 'testpass'
+        last_response.should be_ok
+      end
+      
+      it "should login user with correct username,password if backend servcie defined" do
+        stub_request(:post, "http://test.com/rhoconnect/authenticate").to_return(:body => "lucas")
+        Rhosync.appserver = 'http://test.com'
+        do_post "/api/application/clientlogin", "login" => 'lucas', "password" => 'testpass'
         last_response.should be_ok
       end
 

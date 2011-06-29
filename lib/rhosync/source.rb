@@ -236,6 +236,11 @@ module Rhosync
       self.partition_type = value
     end
     
+    def flash_store_data
+      flash_data('*')
+      flash_data(poll_interval_key)
+    end
+    
     def user_by_partition
       self.partition.to_sym == :user ? self.user_id : '__shared__'
     end

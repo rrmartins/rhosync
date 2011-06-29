@@ -231,6 +231,11 @@ eol
   
   ['create','update','delete'].each do |operation|
     it "client #{operation} object(s) with error" do
+      if operation == 'update'
+        broken_object = { ERROR => { 'price' => '99.99' } }
+        set_state(@c.docname(:cd) => broken_object)
+        set_test_data('test_db_storage',broken_object)
+      end
       params = {operation=>{ERROR=>{'an_attribute'=>"error #{operation}",'name'=>'wrongname'}},
                 :client_id => @c.id,
                 :source_name => @s.name}

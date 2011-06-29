@@ -176,7 +176,7 @@ module Rhosync
       rescue Exception => e
         # TODO: This will be slow!
         cd = client.get_data(:cd)
-        client.put_data(:update_rollback,{key => cd[key]},true)
+        client.put_data(:update_rollback,{key => cd[key]},true) if cd[key]
         raise e
       end
     end

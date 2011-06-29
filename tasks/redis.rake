@@ -7,7 +7,7 @@ def windows?
 end
 
 if windows?
-	$redis_ver = "redis-2.2.10"
+	$redis_ver = "redis-2.2.11"
 	$redis_zip = "C:/#{$redis_ver}.zip"
 	$redis_dest = "C:/"
 end
@@ -161,7 +161,7 @@ namespace :redis do
     else
       sh 'rm -rf /tmp/redis/' if File.exists?("#{RedisRunner.redisdir}")
       sh 'git clone git://github.com/antirez/redis.git /tmp/redis -n'
-      sh "cd #{RedisRunner.redisdir} && git reset --hard && git checkout 2.2.10"
+      sh "cd #{RedisRunner.redisdir} && git reset --hard && git checkout 2.2.11"
     end
   end
 

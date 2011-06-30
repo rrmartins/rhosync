@@ -10,7 +10,7 @@ module Rhosync
     def initialize(source, partition=nil, uri=nil)
       @source = source
       @uri = uri || Rhosync.appserver
-      @partition = partition || @source.user.login
+      @partition = partition || @source.user_id
       
       if @uri
         @uri = URI.parse(@uri)

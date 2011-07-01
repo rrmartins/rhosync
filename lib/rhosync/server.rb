@@ -5,6 +5,7 @@ require 'json'
 require 'fileutils'
 require 'rhosync'
 require 'x_domain_session_wrapper'
+require 'cors'
 
 module Rhosync
   
@@ -185,6 +186,15 @@ module Rhosync
             :expire_after => 31536000,
             :secret => @@secret     
       use XDomainSessionWrapper
+      use Rack::Cors do |cfg|
+        cfg.allow do |allow|
+          allow.origins /.*/
+          allow.resource '/application',   :headers => :any, :methods => [:get, :post, :put, :delete], :credentials => true
+          allow.resource '/application/*', :headers => :any, :methods => [:get, :post, :put, :delete], :credentials => true
+          allow.resource '/api/application',   :headers => :any, :methods => [:get, :post, :put, :delete], :credentials => true
+          allow.resource '/api/application/*', :headers => :any, :methods => [:get, :post, :put, :delete], :credentials => true
+        end
+      end
       super
     end
     

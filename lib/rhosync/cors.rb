@@ -1,5 +1,3 @@
-# https://github.com/dipspb/rack-cors
-
 require 'logger'
 
 module Rack
@@ -16,6 +14,13 @@ module Rack
     end
 
     def call(env)
+      if env['HTTP_ORIGIN'] == 'null'
+        env['HTTP_ORIGIN'] = 'file://'
+      end
+      if env['HTTP_X_ORIGIN'] and not env['HTTP_ORIGIN']
+        puts 'ORIGIN header is empty, X-ORIGIN workaround header applied.'
+        env['HTTP_ORIGIN'] = env['HTTP_X_ORIGIN']
+      end
       cors_headers = nil
       if env['HTTP_ORIGIN']
         debug(env) do
@@ -48,6 +53,9 @@ module Rack
           @logger = ::Logger.new(STDOUT).tap {|logger| logger.level = ::Logger::Severity::INFO}
         end
         logger.debug(message, &block)
+        #TODO: remove debug output from code!
+        message = yield
+        puts message
       end
 
       def all_resources
@@ -70,29 +78,32 @@ module Rack
       end
 
       class Resources
+
         def initialize
           @origins = []
           @resources = []
-#          @public_resources = false
-          @public_resources = true
+          @public_resources = false
         end
 
         def origins(*args)
           @origins = args.flatten.collect do |n|
-            case n
-            when /^https?:\/\// then n
-            when '*'
-              @public_resources = true
+            if n.class == Regexp
               n
             else
-              "http://#{n}"
+              case n
+              when /^[a-z]+:\/\// then n
+              when '*'
+                @public_resources = true
+                n
+              else
+                "http://#{n}"
+              end
             end
           end
         end
 
         def resource(path, opts={})
-#          @resources << Resource.new(public_resources?, path, opts)
-          @resources << Resource.new(true, path, opts)
+          @resources << Resource.new(public_resources?, path, opts)
         end
 
         def public_resources?
@@ -100,16 +111,10 @@ module Rack
         end
 
         def allow_origin?(source)
-#          calculated_origins = @origins.collect do |o|
-#            case o
-#              when o.class === "Proc"
-#                o.call(source)
-#              else
-#                o
-#            end
-#          end
-#          public_resources? || calculated_origins.include?(source)
-          true
+          result = public_resources? || @origins.include?(source) ||
+              (not (@origins.select {|n| n.class == Regexp && n.match(source)}).empty?)
+          #TODO: to fix  "n.match(source)". Unsure, but it may lead to security risks.
+          result
         end
 
         def find_resource(path)
@@ -118,7 +123,7 @@ module Rack
       end
 
       class Resource
-        attr_accessor :path, :methods, :headers, :max_age, :credentials, :pattern
+        attr_accessor :path, :methods, :headers, :expose, :max_age, :credentials, :pattern
 
         def initialize(public_resource, path, opts={})
           self.path        = path
@@ -134,6 +139,12 @@ module Rack
           else
             [opts[:headers]].flatten.collect{|h| h.downcase}
           end
+
+          self.expose = case opts[:expose]
+          when nil then nil
+          else
+            [opts[:expose]].flatten
+          end
         end
 
         def match?(path)
@@ -146,18 +157,13 @@ module Rack
         end
 
         def to_headers(env)
-          h = { 'Access-Control-Allow-Origin' => env['HTTP_ORIGIN'],
-            'Access-Control-Allow-Methods'    => methods.collect{|m| m.to_s.upcase}.join(', '),
-            'Access-Control-Max-Age'          => max_age.to_s }
-          h['Access-Control-Allow-Credentials'] = 'true' if credentials
-          h
-=begin
+          x_origin = env['HTTP_ACCESS_CONTROL_REQUEST_HEADERS']
           h = { 'Access-Control-Allow-Origin' => public_resource? ? '*' : env['HTTP_ORIGIN'],
             'Access-Control-Allow-Methods'    => methods.collect{|m| m.to_s.upcase}.join(', '),
+            'Access-Control-Expose-Headers'    => expose.nil? ? '' : expose.join(', '),
             'Access-Control-Max-Age'          => max_age.to_s }
           h['Access-Control-Allow-Credentials'] = 'true' if credentials
           h
-=end
         end
 
         protected

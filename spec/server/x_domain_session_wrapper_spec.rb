@@ -46,7 +46,7 @@ describe "XDomainSessionWrapper middleware" do
 
   it "should skip if it isn't a sync protocol URI, for new REST routes" do
     env = {
-        'REQUEST_PATH' => WRONG_URI,
+        'PATH_INFO' => WRONG_URI,
         'QUERY_STRING' => PROPER_QUERY_STRING
     }
     status, headers, body = @middleware_new_routes.call(env)
@@ -59,7 +59,7 @@ describe "XDomainSessionWrapper middleware" do
 
   it "should skip if it isn't a sync protocol URI, for old REST routes" do
     env = {
-        'REQUEST_PATH' => WRONG_URI,
+        'PATH_INFO' => WRONG_URI,
         'QUERY_STRING' => PROPER_QUERY_STRING
     }
     status, headers, body = @middleware_old_routes.call(env)
@@ -72,7 +72,7 @@ describe "XDomainSessionWrapper middleware" do
 
   it "should process cookie from QUERY_STRING if it is a sync protocol URI, for new REST routes" do
     env = {
-        'REQUEST_PATH' => PROPER_URI_NEW,
+        'PATH_INFO' => PROPER_URI_NEW,
         'QUERY_STRING' => PROPER_QUERY_STRING
     }
     status, headers, body = @middleware_new_routes.call(env)
@@ -85,7 +85,7 @@ describe "XDomainSessionWrapper middleware" do
 
   it "should process cookie from QUERY_STRING if it is a sync protocol URI, for old REST routes" do
     env = {
-        'REQUEST_PATH' => PROPER_URI_OLD,
+        'PATH_INFO' => PROPER_URI_OLD,
         'QUERY_STRING' => PROPER_QUERY_STRING
     }
     status, headers, body = @middleware_old_routes.call(env)
@@ -98,7 +98,7 @@ describe "XDomainSessionWrapper middleware" do
 
   it "shouldn't process cookie from QUERY_STRING if there is no appropriate parameter name or value, for new REST routes" do
     env = {
-        'REQUEST_PATH' => PROPER_URI_NEW,
+        'PATH_INFO' => PROPER_URI_NEW,
         'QUERY_STRING' => WRONG_QUERY_STRING
     }
     status, headers, body = @middleware_new_routes.call(env)
@@ -111,7 +111,7 @@ describe "XDomainSessionWrapper middleware" do
 
   it "shouldn't process cookie from QUERY_STRING if there is no appropriate parameter name or value, for old REST routes" do
     env = {
-        'REQUEST_PATH' => PROPER_URI_OLD,
+        'PATH_INFO' => PROPER_URI_OLD,
         'QUERY_STRING' => WRONG_QUERY_STRING
     }
     status, headers, body = @middleware_old_routes.call(env)
@@ -124,7 +124,7 @@ describe "XDomainSessionWrapper middleware" do
 
   it "should respond with cookie in a body if it is a login URI, for new REST routes" do
     env = {
-        'REQUEST_PATH' => LOGIN_URI_NEW,
+        'PATH_INFO' => LOGIN_URI_NEW,
         'QUERY_STRING' => PROPER_QUERY_STRING
     }
     status, headers, body = @middleware_new_routes.call(env)
@@ -137,7 +137,7 @@ describe "XDomainSessionWrapper middleware" do
 
   it "should respond with cookie in a body if it is a login URI, for old REST routes" do
     env = {
-        'REQUEST_PATH' => LOGIN_URI_OLD,
+        'PATH_INFO' => LOGIN_URI_OLD,
         'QUERY_STRING' => PROPER_QUERY_STRING
     }
     status, headers, body = @middleware_old_routes.call(env)

@@ -24,6 +24,7 @@
 * #14784949 - Suppress rake -v 0.9.2 warning messages while running tasks. 
 * #3174947  - RESTful routes for client management
 * #14968209 - Generated Specs are failing on 2nd generated source
+* #15270505 - sqlite3 is not listed as a dependency of rhosync gem (3.0.0)
 
 ## 2.1.8 (not released)
 * updated to rake 0.9.2	

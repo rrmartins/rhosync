@@ -4,16 +4,8 @@ source "http://rubygems.org"
 gemspec
 
 platforms :jruby do
-  gem 'jdbc-sqlite3', :require => false
-  gem 'dbi'
-  gem 'dbd-jdbc', :require => 'dbd/Jdbc'
-  gem 'jruby-openssl'
   gem 'trinidad'
   gem 'warbler'
-end
-
-platforms :ruby do
-  gem 'sqlite3'
 end
 
 group :development do

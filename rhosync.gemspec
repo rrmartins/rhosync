@@ -37,4 +37,14 @@ Gem::Specification.new do |s|
   s.add_dependency('resque', '~> 1.14.0')
   s.add_dependency('rest-client', '~> 1.6.1')
   s.add_dependency('templater', '~> 1.0.0')
+
+  # Platform specific gems
+  if defined?(JRUBY_VERSION)
+    s.add_dependency('jdbc-sqlite3', ">= 3.7.2")
+    s.add_dependency('dbi', ">= 0.4.5")
+    s.add_dependency('dbd-jdbc', ">= 0.1.4")
+    s.add_dependency('jruby-openssl', ">= 0.7.4")
+  else
+    s.add_dependency('sqlite3-ruby', ">= 1.2.5")
+  end
 end

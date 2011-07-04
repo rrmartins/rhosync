@@ -16,10 +16,7 @@ class XDomainSessionWrapper
 
   def call(env)
     if is_sync_protocol(env)
-      #env.each{|f| puts '------->> ' +f.inspect}
-      # extract cookie from url if empty
       env['HTTP_COOKIE'] = env['HTTP_COOKIE'] || CGI.unescape(get_session_from_url(env))
-      puts "FIXED HTTP_COOKIE: #{env['HTTP_COOKIE']}"
     end
 
     status, headers, body = @app.call(env)

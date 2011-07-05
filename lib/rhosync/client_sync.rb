@@ -129,20 +129,22 @@ module Rhosync
     
     # Checks if schema changed
     def schema_changed?
-      schema_sha1 = @source.get_value(:schema_sha1)
-      
-      if @client.get_value(:schema_sha1).nil?
+      if @source_sync.adapter.respond_to?(:schema)
+        schema_sha1 = @source.get_value(:schema_sha1)
+        if @client.get_value(:schema_sha1).nil?
+          @client.put_value(:schema_sha1,schema_sha1)
+          return false
+        elsif @client.get_value(:schema_sha1) == schema_sha1
+          return false
+        end
         @client.put_value(:schema_sha1,schema_sha1)
-        return false
-      elsif @client.get_value(:schema_sha1) == schema_sha1
+        @client.put_value(:schema_page,schema_sha1)
+        return true
+      else
         return false
       end
-      
-      @client.put_value(:schema_sha1,schema_sha1)
-      @client.put_value(:schema_page,schema_sha1)
-      true
     end
-    
+
     # Computes the metadata sha1 and returns metadata if client's sha1 doesn't 
     # match source's sha1
     def compute_metadata

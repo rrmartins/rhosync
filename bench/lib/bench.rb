@@ -42,13 +42,13 @@ module Bench
     
     def get_server_state(doc)
       token = get_token
-      @body = RestClient.post("#{@host}/api/get_db_doc",
+      @body = RestClient.post("#{@host}/api/source/get_db_doc",
         {:api_token => token, :doc => doc}.to_json, :content_type => :json)
       JSON.parse(@body.to_s)
     end
     
     def reset_app
-      RestClient.post("#{@host}/api/reset",{:api_token => get_token}.to_json, :content_type => :json)
+      RestClient.post("#{@host}/api/admin/reset",{:api_token => get_token}.to_json, :content_type => :json)
     end
     
     # def create_user
@@ -61,13 +61,13 @@ module Bench
     
     def set_server_state(doc,data)
       token = get_token
-      RestClient.post("#{@host}/api/set_db_doc",
+      RestClient.post("#{@host}/api/source/set_db_doc",
         {:api_token => token, :doc => doc, :data => data}.to_json, :content_type => :json)
     end
     
     def reset_refresh_time(source_name,poll_interval=nil)
       token = get_token
-      RestClient.post("#{@host}/api/set_refresh_time",
+      RestClient.post("#{@host}/api/source/set_refresh_time",
         {:api_token => token, :source_name => source_name,
           :user_name => @user_name, 
           :poll_interval => poll_interval}.to_json, 
@@ -76,10 +76,8 @@ module Bench
     
     def get_token
       unless @token
-        res = RestClient.post("#{@host}/login", 
+        @token = RestClient.post("#{@host}/api/admin/login", 
           {:login => @admin_login, :password => @admin_password}.to_json, :content_type => :json)
-        res.cookies['rhosync_session'] = CGI.escape(res.cookies['rhosync_session'])
-        @token = RestClient.post("#{@host}/api/get_api_token",'',{:cookies => res.cookies})
       end
       @token
     end

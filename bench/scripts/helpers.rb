@@ -67,7 +67,7 @@ module BenchHelpers
   end  
       
   def get_all_objects(caller,config,session,expected_md,create_objs=nil,timeout=10)
-    session.get "get-cud", config.base_url do
+    session.get "get-cud", "#{config.base_url}/query" do
       {'source_name' => 'MockAdapter', 'client_id' => session.client_id, 'p_size' => @datasize}
     end
     sleep rand(timeout)
@@ -82,7 +82,7 @@ module BenchHelpers
 
     while token != '' do
       sleep rand(timeout)
-      session.get "ack-cud", config.base_url do
+      session.get "ack-cud", "#{config.base_url}/query"  do
         { 'source_name' => 'MockAdapter', 
           'client_id' => session.client_id,
           'token' => token}

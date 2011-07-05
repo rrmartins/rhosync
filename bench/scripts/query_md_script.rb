@@ -25,7 +25,7 @@ Bench.test do |config,session|
   sleep rand(10)
   session.get "clientcreate", "#{config.base_url}/clientcreate"
   client_id = JSON.parse(session.last_result.body)['client']['client_id']
-  session.get "get-cud", config.base_url do
+  session.get "get-cud", "#{config.base_url}/query" do
     {'source_name' => 'MockAdapter', 'client_id' => client_id, 'p_size' => @datasize}
   end
   sleep rand(10)
@@ -34,7 +34,7 @@ Bench.test do |config,session|
     {:count => @datasize},{:progress_count => 0},{:total_count => @datasize}, 
     {:insert => @expected}].to_json)
   sleep rand(10)
-  session.get "ack-cud", config.base_url do
+  session.get "ack-cud", "#{config.base_url}/query" do
     { 'source_name' => 'MockAdapter', 
       'client_id' => client_id,
       'token' => token}

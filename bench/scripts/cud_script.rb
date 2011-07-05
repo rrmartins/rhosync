@@ -2,8 +2,8 @@ include BenchHelpers
 bench_log "Simulate creating multiple objects"
 
 Bench.config do |config|
-  config.concurrency = 1
-  config.iterations  = 1
+  config.concurrency = 5
+  config.iterations  = 2
   config.user_name = "benchuser"
   config.password = "password"
   config.get_test_server
@@ -36,7 +36,8 @@ Bench.test do |config,session|
   session.get "clientcreate", "#{config.base_url}/clientcreate"
   session.client_id = JSON.parse(session.last_result.body)['client']['client_id']
   create_objs = @create_objects[session.thread_id][session.iteration]
-  session.post "create-object", config.base_url, :content_type => :json do
+  session.post "create-object", "#{config.base_url}/queue_updates", :content_type => :json do
+#  session.post "create-object", config.base_url, :content_type => :json do
     {:source_name => 'MockAdapter', :client_id => session.client_id,
      :create => create_objs, :version => 3}.to_json
   end

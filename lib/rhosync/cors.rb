@@ -36,7 +36,7 @@ module Rack
               "Preflight Headers:\n" +
                   headers.collect{|kv| "  #{kv.join(': ')}"}.join("\n")
             end
-            return [200, headers, []]
+            return [200, headers, ['']]
           end
         else
           cors_headers = process_cors(env)

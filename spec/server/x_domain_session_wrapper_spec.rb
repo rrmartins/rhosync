@@ -23,7 +23,7 @@ describe "XDomainSessionWrapper middleware" do
 
   class StubApp
     def call(env)
-      [200, {'Set-Cookie' => COOKIE_ANOTHER_NV, 'Content-Length' => '0'}, '']
+      [200, {'Set-Cookie' => COOKIE_ANOTHER_NV, 'Content-Length' => '0'}, ['']]
     end
   end
 
@@ -53,8 +53,8 @@ describe "XDomainSessionWrapper middleware" do
     200.should == status
     COOKIE_ANOTHER_NV.should == headers['Set-Cookie']
     COOKIE_NV.should_not == env['HTTP_COOKIE']
-    headers['Content-Length'].should == body.length.to_s
-    ''.should == body
+    headers['Content-Length'].should == body[0].length.to_s
+    ''.should == body[0]
   end
 
   it "should skip if it isn't a sync protocol URI, for old REST routes" do
@@ -66,8 +66,8 @@ describe "XDomainSessionWrapper middleware" do
     200.should == status
     COOKIE_ANOTHER_NV.should == headers['Set-Cookie']
     COOKIE_NV.should_not == env['HTTP_COOKIE']
-    headers['Content-Length'].should == body.length.to_s
-    ''.should == body
+    headers['Content-Length'].should == body[0].length.to_s
+    ''.should == body[0]
   end
 
   it "should process cookie from QUERY_STRING if it is a sync protocol URI, for new REST routes" do
@@ -79,8 +79,8 @@ describe "XDomainSessionWrapper middleware" do
     200.should == status
     COOKIE_ANOTHER_NV.should == headers['Set-Cookie']
     env['HTTP_COOKIE'].should == COOKIE_VALUE
-    headers['Content-Length'].should == body.length.to_s
-    ''.should == body
+    headers['Content-Length'].should == body[0].length.to_s
+    ''.should == body[0]
   end
 
   it "should process cookie from QUERY_STRING if it is a sync protocol URI, for old REST routes" do
@@ -92,8 +92,8 @@ describe "XDomainSessionWrapper middleware" do
     200.should == status
     COOKIE_ANOTHER_NV.should == headers['Set-Cookie']
     env['HTTP_COOKIE'].should == COOKIE_VALUE
-    headers['Content-Length'].should == body.length.to_s
-    ''.should == body
+    headers['Content-Length'].should == body[0].length.to_s
+    ''.should == body[0]
   end
 
   it "shouldn't process cookie from QUERY_STRING if there is no appropriate parameter name or value, for new REST routes" do
@@ -105,8 +105,8 @@ describe "XDomainSessionWrapper middleware" do
     200.should == status
     COOKIE_ANOTHER_NV.should == headers['Set-Cookie']
     env['HTTP_COOKIE'].should_not == COOKIE_VALUE
-    headers['Content-Length'].should == body.length.to_s
-    ''.should == body
+    headers['Content-Length'].should == body[0].length.to_s
+    ''.should == body[0]
   end
 
   it "shouldn't process cookie from QUERY_STRING if there is no appropriate parameter name or value, for old REST routes" do
@@ -118,8 +118,8 @@ describe "XDomainSessionWrapper middleware" do
     200.should == status
     COOKIE_ANOTHER_NV.should == headers['Set-Cookie']
     env['HTTP_COOKIE'].should_not == COOKIE_VALUE
-    headers['Content-Length'].should == body.length.to_s
-    ''.should == body
+    headers['Content-Length'].should == body[0].length.to_s
+    ''.should == body[0]
   end
 
   it "should respond with cookie in a body if it is a login URI, for new REST routes" do
@@ -131,8 +131,8 @@ describe "XDomainSessionWrapper middleware" do
     200.should == status
     headers['Set-Cookie'].should == COOKIE_ANOTHER_NV
     env['HTTP_COOKIE'].should == COOKIE_VALUE
-    headers['Content-Length'].should == body.length.to_s
-    ''.should_not == body
+    headers['Content-Length'].should == body[0].length.to_s
+    ''.should_not == body[0]
   end
 
   it "should respond with cookie in a body if it is a login URI, for old REST routes" do
@@ -144,7 +144,7 @@ describe "XDomainSessionWrapper middleware" do
     200.should == status
     headers['Set-Cookie'].should == COOKIE_ANOTHER_NV
     env['HTTP_COOKIE'].should == COOKIE_VALUE
-    headers['Content-Length'].should == body.length.to_s
-    ''.should_not == body
+    headers['Content-Length'].should == body[0].length.to_s
+    ''.should_not == body[0]
   end
 end

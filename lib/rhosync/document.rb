@@ -22,6 +22,7 @@ module Document
   end
   
   def flash_data(doctype)
+    puts docname(doctype)
     Store.flash_data(docname(doctype))
   end
   

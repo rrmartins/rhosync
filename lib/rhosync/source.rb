@@ -215,7 +215,19 @@ module Rhosync
     def read_state
       id = {:app_id => self.app_id,:user_id => user_by_partition,
         :source_name => self.name}
-      ReadState.load(id) || ReadState.create(id)  
+      load_read_state || ReadState.create(id)
+    end
+    
+    def load_read_state
+      id = {:app_id => self.app_id,:user_id => user_by_partition,
+        :source_name => self.name}
+      ReadState.load(id)
+    end
+    
+    def delete_user_read_state
+      id = {:app_id => self.app_id,:user_id => user_by_partition,
+        :source_name => self.name}
+      ReadState.delete_user(id)
     end
     
     def doc_suffix(doctype)
@@ -237,6 +249,7 @@ module Rhosync
     end
     
     def flash_store_data
+      delete_user_read_state
       flash_data('*')
       flash_data(poll_interval_key)
     end

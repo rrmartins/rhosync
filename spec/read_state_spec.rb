@@ -22,4 +22,13 @@ describe "ReadState" do
     ReadState.delete(@a_fields[:name])
     Store.db.keys("read_state*").should == []
   end
+  
+  it "should delete read_state from source" do
+    time = Time.now.to_i
+    @s.read_state.refresh_time = time
+    @s.load_read_state.refresh_time.should == time
+    
+    @s.delete_user_read_state
+    @s.load_read_state.should == nil
+  end
 end

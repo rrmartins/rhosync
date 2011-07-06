@@ -24,7 +24,7 @@ ROOT_PATH = File.expand_path(File.dirname(__FILE__))
 Rhosync::Server.disable :run
 Rhosync::Server.disable :clean_trace
 Rhosync::Server.enable  :raise_errors
-Rhosync::Server.set     :secret,      '<changeme>'
+Rhosync::Server.set     :secret,      '9190460215b23fe06be01f1f26e7c24032827054e06e4727413cd0300a103a107283d47b829a6f2ea28d9b3de0524f01f5b25d1efe405e90fc269be0c353178a'
 Rhosync::Server.set     :root,        ROOT_PATH
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
 

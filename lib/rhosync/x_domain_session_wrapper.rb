@@ -19,22 +19,19 @@ class XDomainSessionWrapper
       env['HTTP_COOKIE'] = env['HTTP_COOKIE'] || CGI.unescape(get_session_from_url(env))
     end
 
-    response = @app.call(env)
+    status, headers, body = @app.call(env)
 
     if is_sync_protocol(env)
-      cookies = response[1]['Set-Cookie'].to_s
+      cookies = headers['Set-Cookie'].to_s
       #puts "<----- Cookies: #{cookies}"
       # put cookies to body as JSON on login success
-      if @login_uri_regexp.match(env['PATH_INFO']) && response[0] == 200
+      if @login_uri_regexp.match(env['PATH_INFO']) && status == 200
         body = session_json_from(cookies)
-        response[1]['Content-Length'] = body.length.to_s
-        # TODO: This is temporary workaround since ruby 1.9 strings don't respond_to? :each
-        response[2] = RUBY_VERSION.match(/1.8/) ? body : [body]
+        headers['Content-Length'] = body.length.to_s
       end
     end
 
-    puts "response: #{response.inspect}"
-    response
+    [status, headers, body]
   end
 
   def session_json_from(cookies)

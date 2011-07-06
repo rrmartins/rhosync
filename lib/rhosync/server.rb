@@ -4,8 +4,8 @@ require 'erb'
 require 'json'
 require 'fileutils'
 require 'rhosync'
-require 'rhosync/x_domain_session_wrapper'
-require 'rhosync/cors'
+require 'x_domain_session_wrapper'
+require 'cors'
 
 module Rhosync
   

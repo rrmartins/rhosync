@@ -36,15 +36,15 @@ module Rack
               "Preflight Headers:\n" +
                   headers.collect{|kv| "  #{kv.join(': ')}"}.join("\n")
             end
-            return [200, headers, '']
+            return [200, headers, []]
           end
         else
           cors_headers = process_cors(env)
         end
       end
-      response = @app.call(env)
-      response[1].merge!(cors_headers) if cors_headers
-      response
+      status, headers, body = @app.call env
+      headers = headers.merge(cors_headers) if cors_headers
+      [status, headers, body]
     end
 
     protected

@@ -12,8 +12,11 @@ describe "RhosyncApiDeleteUser" do
       #set up two users with data for the same source
       params2 = {:app_id => APP_NAME,:user_id => 'testuser1'}
       params3 = {:app_id => APP_NAME,:user_id => 'testuser'}
+      time = Time.now.to_i
       s  = Source.load('SampleAdapter', params2)
+      s.read_state.refresh_time = time
       s2 = Source.load('SampleAdapter', params3)
+      s2.read_state.refresh_time = time
       set_state(s.docname(:delete) => {'4'=>@product4})
       set_state(s2.docname(:delete) => {'4'=>@product4})
       verify_result(s.docname(:delete) => {'4'=>@product4})
@@ -24,7 +27,8 @@ describe "RhosyncApiDeleteUser" do
       last_response.should be_ok
       verify_result(s.docname(:delete) => {})
       verify_result(s2.docname(:delete) => {'4'=>@product4})
-      
+      s.load_read_state.should == nil
+      s2.load_read_state.refresh_time.should == time
       User.is_exist?(params[:attributes][:login]).should == false
       App.load(test_app_name).users.members.should == ["testuser"]
     end

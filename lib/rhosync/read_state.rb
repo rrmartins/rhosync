@@ -18,6 +18,10 @@ module Rhosync
     def self.delete(app_id)
       Store.flash_data("#{class_prefix(self)}:#{app_id}:*")
     end
+    
+    def self.delete_user(params)
+      Store.flash_data("#{class_prefix(self)}:#{params[:app_id]}:#{params[:user_id]}:#{params[:source_name]}:*")
+    end
 
     private
     def self.get_id(params)

@@ -12,7 +12,7 @@ rescue LoadError
   require 'rhosync/console/server'
 end
 
-require 'vendor/rhosync/lib/x_domain_session_wrapper'
+require 'x_domain_session_wrapper'
 use XDomainSessionWrapper
 
 # By default, turn on the resque web console
@@ -30,7 +30,7 @@ Rhosync::Server.set     :secret, '<changeme>'
 Rhosync::Server.use     Rack::Static, :urls => ["/data"], :root => Rhosync::Server.root
                      
 # configure Cross-Domain Resource Sharing
-require 'vendor/rhosync/lib/rack/cors'
+require 'cors'
 use Rack::Cors do |cfg|
   cfg.allow do |allow|
     allow.origins /.*/

@@ -16,3 +16,4 @@ examples/simple/settings/apple_push_cert.pem
 .idea
 .bundle
 .swp
+*.sh

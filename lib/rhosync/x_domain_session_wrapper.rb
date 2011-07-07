@@ -31,6 +31,8 @@ class XDomainSessionWrapper
       end
     end
 
+    # The Body itself should not be an instance of String,as this will break in Ruby 1.9
+    body = ["#{body}"] if body.is_a?(String)
     [status, headers, body]
   end
 

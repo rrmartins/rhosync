@@ -45,6 +45,6 @@ Gem::Specification.new do |s|
     s.add_dependency('dbd-jdbc', ">= 0.1.4")
     s.add_dependency('jruby-openssl', ">= 0.7.4")
   else
-    s.add_dependency('sqlite3-ruby', ">= 1.2.5")
+    s.add_dependency('sqlite3', ">= 1.3.3")
   end
 end

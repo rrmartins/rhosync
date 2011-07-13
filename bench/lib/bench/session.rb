@@ -30,8 +30,8 @@ module Bench
       begin
         result.time = time do
           headers.merge!(:cookies => @cookies)
-            result.last_response = send(verb,url,headers)
-            @last_result = result  
+          result.last_response = send(verb,url,headers)
+          @last_result = result
         end
         bench_log "#{log_prefix} #{verb.to_s.upcase.gsub(/_/,'')} #{url} #{@last_result.code} #{result.time}"      
       rescue RestClient::Exception => e

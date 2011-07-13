@@ -1,6 +1,6 @@
 require File.join(File.dirname(__FILE__),'..','spec_helper')
 require File.join(File.dirname(__FILE__), '..', 'support', 'shared_examples')
-require 'faker'
+require 'ffaker'
 
 def get_test_data(num=1000)
   file = File.join("spec","testdata","#{num}-data.txt")

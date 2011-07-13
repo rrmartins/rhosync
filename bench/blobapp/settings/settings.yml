@@ -1,0 +1,16 @@
+:sources: 
+  BlobAdapter: 
+    :poll_interval: 300
+ 
+:test: 
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/api/application/
+  :licensefile: settings/license.key
+:development: 
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/api/application/
+  :licensefile: settings/license.key
+:production: 
+  :redis: localhost:6379
+  :syncserver: http://localhost:9292/api/application/
+  :licensefile: settings/license.key

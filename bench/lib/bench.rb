@@ -29,6 +29,7 @@ module Bench
     attr_accessor :admin_password, :user_name
     attr_accessor :password, :host, :base_url, :token
     attr_accessor :total_time, :sessions, :verify_error
+    attr_accessor :adapter_name
     
     def config
       begin
@@ -82,8 +83,9 @@ module Bench
       @token
     end
     
-    def get_test_server
-      load_settings(File.join(File.dirname(__FILE__),'..','benchapp','settings','settings.yml'))
+    def get_test_server(app_name = nil)
+      app_name = 'benchapp' unless app_name
+      load_settings(File.join(File.dirname(__FILE__),'..',app_name,'settings','settings.yml'))
       @base_url = $settings[:development][:syncserver].gsub(/\/$/,'')
       uri = URI.parse(@base_url)
       port = (uri.port and uri.port != 80) ? ":"+uri.port.to_s : "" 
